@@ -1,0 +1,62 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact Us",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "save": "Save",
+    "search": "Search",
+    "loading": "Loading...",
+    "noData": "No Data",
+    "error": "Error",
+    "success": "Success"
+  },
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "services": "Services",
+    "about": "About Us"
+  },
+  "header": {
+    "create": {
+      "article": "Article",
+      "image": "Image",
+      "video": "Video"
+    },
+    "messages": "Messages",
+    "viewAllMessages": "View All Messages",
+    "viewProfile": "View Profile",
+    "settings": "Settings",
+    "favorites": "My Favorites",
+    "wallet": "My Wallet",
+    "loginPrompt": "Login to see more features",
+    "systemSettings": "System Settings",
+    "switchLanguage": "Switch Language",
+    "appearanceSettings": "Appearance Settings",
+    "autoTranslate": "Auto-translate recommended content",
+    "followSystem": "Follow System"
+  },
+  "form": {
+    "email": "Email",
+    "password": "Password",
+    "username": "Username",
+    "required": "This field is required",
+    "invalidEmail": "Invalid email format",
+    "passwordTooShort": "Password must be at least 8 characters"
+  },
+  "home": {
+    "title": "PicArt - Creative Sharing Community",
+    "description": "Discover and share creative content, interact with creators",
+    "trending": "Trending Topics",
+    "recommended": "Recommended",
+    "quickPost": "Quick Post"
+  }
+}

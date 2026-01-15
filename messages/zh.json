@@ -1,0 +1,62 @@
+{
+  "common": {
+    "welcome": "欢迎",
+    "home": "首页",
+    "about": "关于",
+    "contact": "联系我们",
+    "login": "登录",
+    "logout": "退出",
+    "register": "注册",
+    "submit": "提交",
+    "cancel": "取消",
+    "confirm": "确认",
+    "delete": "删除",
+    "edit": "编辑",
+    "save": "保存",
+    "search": "搜索",
+    "loading": "加载中...",
+    "noData": "暂无数据",
+    "error": "错误",
+    "success": "成功"
+  },
+  "nav": {
+    "home": "首页",
+    "products": "产品",
+    "services": "服务",
+    "about": "关于我们"
+  },
+  "header": {
+    "create": {
+      "article": "文章",
+      "image": "图片",
+      "video": "视频"
+    },
+    "messages": "消息通知",
+    "viewAllMessages": "查看全部消息",
+    "viewProfile": "查看个人主页",
+    "settings": "设置",
+    "favorites": "我的收藏",
+    "wallet": "我的钱包",
+    "loginPrompt": "登录以查看更多功能",
+    "systemSettings": "系统设置",
+    "switchLanguage": "切换语言",
+    "appearanceSettings": "外观设置",
+    "autoTranslate": "自动翻译推荐内容",
+    "followSystem": "跟随系统"
+  },
+  "form": {
+    "email": "邮箱",
+    "password": "密码",
+    "username": "用户名",
+    "required": "此字段为必填项",
+    "invalidEmail": "邮箱格式不正确",
+    "passwordTooShort": "密码至少需要8个字符"
+  },
+  "home": {
+    "title": "PicArt - 创意分享社区",
+    "description": "发现和分享创意内容，与创作者互动交流",
+    "trending": "热门话题",
+    "recommended": "推荐关注",
+    "quickPost": "快速发布"
+  }
+}

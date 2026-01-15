@@ -5,6 +5,19 @@
   --foreground: #171717;
 }
 
+@theme {
+  /* 已有的颜色配置 */
+  --color-primary: #6680ff;
+
+  --color-border: #f5f6fb;
+    /* 如果需要添加次要色 */
+    --color-secondary: #00000073;
+
+  /* 自定义字体 */
+  --font-sans: 'Roboto', 'Arial', ui-sans-serif, system-ui, sans-serif;
+}
+
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
