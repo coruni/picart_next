@@ -51,17 +51,17 @@ export function Header() {
                   <div className="p-3 space-y-2">
                     <Link
                       href="/create/post"
-                      className="flex items-center gap-3 px-4 py-2 bg-[#F6F9FB] dark:bg-gray-700 hover:bg-[#EDF2F7] dark:hover:bg-gray-600 rounded-lg transition-colors group/item whitespace-nowrap"
+                      className="flex items-center gap-3 px-4 py-2 bg-[#F6F9FB] hover:bg-primary/20 hover:text-primary rounded-lg transition-colors group/item whitespace-nowrap"
                     >
                       <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center shrink-0">
                         <PenIcon className="size-5 text-green-600 dark:text-green-300" />
                       </div>
-                      <span className="text-sm font-medium text-foreground flex-1">{tHeader("create.article")}</span>
-                      <ChevronRight className="size-4 text-gray-400 group-hover/item:text-gray-600 dark:group-hover/item:text-gray-300 transition-colors" />
+                      <span className="text-sm font-medium flex-1">{tHeader("create.article")}</span>
+                      <ChevronRight className="size-4 transition-colors" />
                     </Link>
                     <Link
                       href="/create/image"
-                      className="flex items-center gap-3 px-4 py-3 bg-[#F6F9FB] dark:bg-gray-700 hover:bg-[#EDF2F7] dark:hover:bg-gray-600 rounded-lg transition-colors group/item whitespace-nowrap"
+                      className="flex items-center gap-3 px-4 py-2 bg-[#F6F9FB] hover:bg-primary/20 hover:text-primary rounded-lg transition-colors group/item whitespace-nowrap"
                     >
                       <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center shrink-0">
                         <svg className="size-5 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,11 +69,11 @@ export function Header() {
                         </svg>
                       </div>
                       <span className="text-sm font-medium text-foreground flex-1">{tHeader("create.image")}</span>
-                      <ChevronRight className="size-4 text-gray-400 group-hover/item:text-gray-600 dark:group-hover/item:text-gray-300 transition-colors" />
+                      <ChevronRight className="size-4 transition-colors" />
                     </Link>
                     <Link
                       href="/create/video"
-                      className="flex items-center gap-3 px-4 py-3 bg-[#F6F9FB] dark:bg-gray-700 hover:bg-[#EDF2F7] dark:hover:bg-gray-600 rounded-lg transition-colors group/item whitespace-nowrap"
+                      className="flex items-center gap-3 px-4 py-2 bg-[#F6F9FB] hover:bg-primary/20 hover:text-primary rounded-lg transition-colors group/item whitespace-nowrap"
                     >
                       <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900 flex items-center justify-center shrink-0">
                         <svg className="size-5 text-orange-600 dark:text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -81,7 +81,7 @@ export function Header() {
                         </svg>
                       </div>
                       <span className="text-sm font-medium text-foreground flex-1">{tHeader("create.video")}</span>
-                      <ChevronRight className="size-4 text-gray-400 group-hover/item:text-gray-600 dark:group-hover/item:text-gray-300 transition-colors" />
+                      <ChevronRight className="size-4 transition-colors" />
                     </Link>
                   </div>
                 </div>
@@ -149,7 +149,7 @@ export function Header() {
                         {/* 空白占位图 */}
                         <div className="flex items-center justify-center flex-col gap-2">
                           <Image src="/placeholder/empty.png" width={200} height={150} alt="empty"></Image>
-                          <span className=" text-foreground text-sm mb-2 text-secondary">登录查看更多精彩内容</span>
+                          <span className="text-sm mb-2 text-secondary">登录查看更多精彩内容</span>
                         </div>
                         <div className="flex justify-center items-center">
                           <Button variant="default" className="rounded-full" size="md">
