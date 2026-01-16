@@ -7,7 +7,16 @@ import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { NotificationContainer } from "@/components/NotificationContainer";
 import { generateSiteMetadata } from "@/lib/seo";
+import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
+import { UserStateProvider } from "@/components/providers/UserStateProvider";
+import { getServerCookie } from "@/lib/server-cookies";
+import { userControllerGetProfile } from "@/api";
+import { initializeInterceptors } from "@/rumtime.config";
+import type { UserProfile } from "@/types";
 import "../globals.css";
+
+const TOKEN_COOKIE_NAME = "auth-token";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -47,15 +56,38 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
 
+  // 获取服务端的 token，用于初始化客户端状态
+  const initialToken = await getServerCookie(TOKEN_COOKIE_NAME);
+
+  // 如果有 token，在服务端获取用户资料
+  let initialUser: UserProfile | null = null;
+  if (initialToken) {
+    try {
+      // 初始化拦截器，让它自动处理 Authorization 和 Device-Id
+      await initializeInterceptors();
+      const response = await userControllerGetProfile();
+      initialUser = response?.data?.data || null;
+    } catch (error) {
+      console.error("服务端获取用户资料失败:", error);
+      // 如果获取失败，客户端会处理（可能是 token 过期）
+    }
+  }
+
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <NextIntlClientProvider messages={messages}>
-          <Header />
-          {children}
-          <NotificationContainer />
+          {/* 设备指纹初始化 */}
+          <DeviceFingerprintProvider />
+
+          {/* 用户状态同步 */}
+          <UserStateProvider initialToken={initialToken} initialUser={initialUser}>
+            <Header />
+            {children}
+            <NotificationContainer />
+          </UserStateProvider>
         </NextIntlClientProvider>
       </body>
     </html>

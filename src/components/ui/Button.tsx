@@ -1,6 +1,6 @@
 import { ButtonHTMLAttributes, forwardRef } from "react";
 import { cn } from "@/lib/utils";
-import { Circle } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: "default" | "primary" | "secondary" | "outline" | "ghost" | "danger";
@@ -24,16 +24,16 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref
     ) => {
         const baseStyles =
-            "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
+            "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer";
 
         const variants = {
             default: "bg-primary/20 text-primary hover:bg-primary hover:text-white! focus:ring-primary/50",
             primary:
-                "bg-primary-500 text-white hover:bg-primary-600 focus:ring-primary-500 shadow-sm hover:shadow-md",
+                "bg-primary text-white hover:bg-primary focus:ring-primary shadow-sm hover:shadow-md",
             secondary:
-                "bg-secondary-500 text-white hover:bg-secondary-600 focus:ring-secondary-500 shadow-sm hover:shadow-md",
+                "bg-secondary text-white hover:bg-secondary focus:ring-secondary-500 shadow-sm hover:shadow-md",
             outline:
-                "border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white dark:hover:bg-primary-500 focus:ring-primary-500",
+                "border-2 border-primary text-primary hover:bg-primary hover:text-white dark:hover:bg-primary focus:ring-primary",
             ghost:
                 "text-foreground hover:bg-muted focus:ring-muted",
             danger:
@@ -43,7 +43,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         const sizes = {
             sm: "px-3 py-1.5 text-sm",
             md: "px-4 h-8 text-sm",
-            lg: "px-6 py-3 text-base",
+            lg: "px-6 h-12 text-base",
         };
 
         return (
@@ -60,10 +60,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
                 disabled={disabled || loading}
                 {...props}
             >
-                {loading && (
-                    <Circle />
-                )}
-                {children}
+                {loading ? (
+                    <LoaderCircle className="animate-spin size-5" />
+                ) : children}
+
             </button>
         );
     }

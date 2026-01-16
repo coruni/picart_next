@@ -1,4 +1,4 @@
-import { configControllerGetPublicConfigs } from "@/api/generated";
+import { configControllerGetPublicConfigs } from "@/api";
 import type { Metadata } from "next";
 
 /**
@@ -6,13 +6,7 @@ import type { Metadata } from "next";
  */
 export async function getPublicConfig() {
   try {
-    const response = await configControllerGetPublicConfigs({
-      headers: {
-        "Device-Id": "web-app",
-        "Device-Type": "web",
-      },
-    });
-
+    const response = await configControllerGetPublicConfigs();
     if (response.data?.data) {
       return response.data.data;
     }
@@ -141,13 +135,13 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
       description: config.site_description || config.site_subtitle || "A modern image sharing platform",
       images: config.site_logo
         ? [
-            {
-              url: config.site_logo,
-              width: 1200,
-              height: 630,
-              alt: config.site_name || "PicArt",
-            },
-          ]
+          {
+            url: config.site_logo,
+            width: 1200,
+            height: 630,
+            alt: config.site_name || "PicArt",
+          },
+        ]
         : undefined,
     },
     twitter: {
@@ -221,13 +215,13 @@ export async function generateArticleMetadata(
       description: article.description || "",
       images: article.cover
         ? [
-            {
-              url: article.cover,
-              width: 1200,
-              height: 630,
-              alt: article.title,
-            },
-          ]
+          {
+            url: article.cover,
+            width: 1200,
+            height: 630,
+            alt: article.title,
+          },
+        ]
         : undefined,
       publishedTime: article.createdAt,
     },
@@ -273,13 +267,13 @@ export async function generateAuthorMetadata(
       description: author.bio || "",
       images: author.avatar
         ? [
-            {
-              url: author.avatar,
-              width: 400,
-              height: 400,
-              alt: author.username,
-            },
-          ]
+          {
+            url: author.avatar,
+            width: 400,
+            height: 400,
+            alt: author.username,
+          },
+        ]
         : undefined,
     },
     twitter: {

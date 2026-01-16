@@ -11,7 +11,7 @@
 
   --color-border: #f5f6fb;
     /* 如果需要添加次要色 */
-    --color-secondary: #00000073;
+  --color-secondary: #00000073;
 
   /* 自定义字体 */
   --font-sans: 'Roboto', 'Arial', ui-sans-serif, system-ui, sans-serif;

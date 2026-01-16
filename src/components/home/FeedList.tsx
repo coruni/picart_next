@@ -5,14 +5,10 @@ import type { ArticleList } from "@/types";
 export async function FeedList() {
   // SSR: 在服务端获取数据
   const response = await articleControllerFindAll({
-    query: {
-      page: 1,
-      limit: 20,
-      type: "all",
-    },
+    
   });
 
-  const articles = response.data?.data || [];
+  const articles = response.data?.data.data || [];
 
   if (articles.length === 0) {
     return (

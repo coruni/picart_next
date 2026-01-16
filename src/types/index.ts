@@ -11,7 +11,7 @@ export type {
   BaseResponseDto as ApiResponse,
   PaginatedResponseDto,
   ListResponseDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // 导入响应类型用于提取数据类型
 import type {
@@ -57,7 +57,7 @@ import type {
   ReportControllerFindAllResponse,
   ReportControllerFindOneResponse,
   ReportControllerGetStatisticsResponse,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 从响应类型中提取数据类型 ====================
 

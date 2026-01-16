@@ -1,9 +1,18 @@
 "use client";
 
 import { useNotificationStore } from "@/stores";
+import { useEffect, useState } from "react";
 
 export function NotificationContainer() {
-  const { notifications, removeNotification } = useNotificationStore();
+  const [isHydrated, setIsHydrated] = useState(false);
+  const notificationStore = useNotificationStore();
+  
+  const notifications = isHydrated ? notificationStore.notifications : [];
+  const removeNotification = notificationStore.removeNotification;
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   if (notifications.length === 0) return null;
 

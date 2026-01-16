@@ -21,12 +21,12 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 /**
  * AppController_getHello
  */
-export const appControllerGetHello = <ThrowOnError extends boolean = false>(options: Options<AppControllerGetHelloData, ThrowOnError>) => (options.client ?? client).get<AppControllerGetHelloResponses, unknown, ThrowOnError>({ url: '/', ...options });
+export const appControllerGetHello = <ThrowOnError extends boolean = false>(options?: Options<AppControllerGetHelloData, ThrowOnError>) => (options?.client ?? client).get<AppControllerGetHelloResponses, unknown, ThrowOnError>({ url: '/', ...options });
 
 /**
  * 获取所有角色
  */
-export const roleControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<RoleControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<RoleControllerFindAllResponses, unknown, ThrowOnError>({ url: '/role', ...options });
+export const roleControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<RoleControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<RoleControllerFindAllResponses, unknown, ThrowOnError>({ url: '/role', ...options });
 
 /**
  * 创建角色
@@ -65,12 +65,12 @@ export const roleControllerUpdate = <ThrowOnError extends boolean = false>(optio
 /**
  * 分页获取角色列表
  */
-export const roleControllerFindWithPagination = <ThrowOnError extends boolean = false>(options: Options<RoleControllerFindWithPaginationData, ThrowOnError>) => (options.client ?? client).get<RoleControllerFindWithPaginationResponses, unknown, ThrowOnError>({ url: '/role/list', ...options });
+export const roleControllerFindWithPagination = <ThrowOnError extends boolean = false>(options?: Options<RoleControllerFindWithPaginationData, ThrowOnError>) => (options?.client ?? client).get<RoleControllerFindWithPaginationResponses, unknown, ThrowOnError>({ url: '/role/list', ...options });
 
 /**
  * 获取活跃角色列表
  */
-export const roleControllerGetActiveRoles = <ThrowOnError extends boolean = false>(options: Options<RoleControllerGetActiveRolesData, ThrowOnError>) => (options.client ?? client).get<RoleControllerGetActiveRolesResponses, unknown, ThrowOnError>({ url: '/role/active', ...options });
+export const roleControllerGetActiveRoles = <ThrowOnError extends boolean = false>(options?: Options<RoleControllerGetActiveRolesData, ThrowOnError>) => (options?.client ?? client).get<RoleControllerGetActiveRolesResponses, unknown, ThrowOnError>({ url: '/role/active', ...options });
 
 /**
  * 为角色分配权限
@@ -97,7 +97,7 @@ export const roleControllerToggleStatus = <ThrowOnError extends boolean = false>
 /**
  * 获取所有配置
  */
-export const configControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<ConfigControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<ConfigControllerFindAllResponses, ConfigControllerFindAllErrors, ThrowOnError>({ url: '/config', ...options });
+export const configControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<ConfigControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<ConfigControllerFindAllResponses, ConfigControllerFindAllErrors, ThrowOnError>({ url: '/config', ...options });
 
 /**
  * 更新所有配置
@@ -153,12 +153,12 @@ export const configControllerUpdateByKey = <ThrowOnError extends boolean = false
 /**
  * 获取所有公共配置
  */
-export const configControllerGetPublicConfigs = <ThrowOnError extends boolean = false>(options: Options<ConfigControllerGetPublicConfigsData, ThrowOnError>) => (options.client ?? client).get<ConfigControllerGetPublicConfigsResponses, unknown, ThrowOnError>({ url: '/config/public', ...options });
+export const configControllerGetPublicConfigs = <ThrowOnError extends boolean = false>(options?: Options<ConfigControllerGetPublicConfigsData, ThrowOnError>) => (options?.client ?? client).get<ConfigControllerGetPublicConfigsResponses, unknown, ThrowOnError>({ url: '/config/public', ...options });
 
 /**
  * 获取广告配置
  */
-export const configControllerGetAdvertisementConfig = <ThrowOnError extends boolean = false>(options: Options<ConfigControllerGetAdvertisementConfigData, ThrowOnError>) => (options.client ?? client).get<ConfigControllerGetAdvertisementConfigResponses, unknown, ThrowOnError>({ url: '/config/advertisement', ...options });
+export const configControllerGetAdvertisementConfig = <ThrowOnError extends boolean = false>(options?: Options<ConfigControllerGetAdvertisementConfigData, ThrowOnError>) => (options?.client ?? client).get<ConfigControllerGetAdvertisementConfigResponses, unknown, ThrowOnError>({ url: '/config/advertisement', ...options });
 
 /**
  * 删除配置
@@ -223,7 +223,7 @@ export const userControllerUpdate = <ThrowOnError extends boolean = false>(optio
 /**
  * 获取当前用户信息
  */
-export const userControllerGetProfile = <ThrowOnError extends boolean = false>(options: Options<UserControllerGetProfileData, ThrowOnError>) => (options.client ?? client).get<UserControllerGetProfileResponses, UserControllerGetProfileErrors, ThrowOnError>({ url: '/user/profile', ...options });
+export const userControllerGetProfile = <ThrowOnError extends boolean = false>(options?: Options<UserControllerGetProfileData, ThrowOnError>) => (options?.client ?? client).get<UserControllerGetProfileResponses, UserControllerGetProfileErrors, ThrowOnError>({ url: '/user/profile', ...options });
 
 /**
  * 获取粉丝数量
@@ -248,7 +248,7 @@ export const userControllerGetFollowings = <ThrowOnError extends boolean = false
 /**
  * 获取当前用户抽成配置
  */
-export const userControllerGetUserCommissionConfig = <ThrowOnError extends boolean = false>(options: Options<UserControllerGetUserCommissionConfigData, ThrowOnError>) => (options.client ?? client).get<UserControllerGetUserCommissionConfigResponses, UserControllerGetUserCommissionConfigErrors, ThrowOnError>({ url: '/user/commission/config', ...options });
+export const userControllerGetUserCommissionConfig = <ThrowOnError extends boolean = false>(options?: Options<UserControllerGetUserCommissionConfigData, ThrowOnError>) => (options?.client ?? client).get<UserControllerGetUserCommissionConfigResponses, UserControllerGetUserCommissionConfigErrors, ThrowOnError>({ url: '/user/commission/config', ...options });
 
 /**
  * 设置用户抽成配置
@@ -265,7 +265,7 @@ export const userControllerSetUserCommissionConfig = <ThrowOnError extends boole
 /**
  * 获取当前用户配置
  */
-export const userControllerGetUserConfig = <ThrowOnError extends boolean = false>(options: Options<UserControllerGetUserConfigData, ThrowOnError>) => (options.client ?? client).get<UserControllerGetUserConfigResponses, UserControllerGetUserConfigErrors, ThrowOnError>({ url: '/user/config', ...options });
+export const userControllerGetUserConfig = <ThrowOnError extends boolean = false>(options?: Options<UserControllerGetUserConfigData, ThrowOnError>) => (options?.client ?? client).get<UserControllerGetUserConfigResponses, UserControllerGetUserConfigErrors, ThrowOnError>({ url: '/user/config', ...options });
 
 /**
  * 更新当前用户配置
@@ -318,7 +318,7 @@ export const userControllerRefreshToken = <ThrowOnError extends boolean = false>
 /**
  * 退出登录（单设备）
  */
-export const userControllerLogout = <ThrowOnError extends boolean = false>(options: Options<UserControllerLogoutData, ThrowOnError>) => (options.client ?? client).post<UserControllerLogoutResponses, unknown, ThrowOnError>({ url: '/user/logout', ...options });
+export const userControllerLogout = <ThrowOnError extends boolean = false>(options?: Options<UserControllerLogoutData, ThrowOnError>) => (options?.client ?? client).post<UserControllerLogoutResponses, unknown, ThrowOnError>({ url: '/user/logout', ...options });
 
 /**
  * 关注用户
@@ -345,12 +345,12 @@ export const userControllerCalculateCommission = <ThrowOnError extends boolean =
 /**
  * 钱包充值
  */
-export const userControllerRechargeWallet = <ThrowOnError extends boolean = false>(options: Options<UserControllerRechargeWalletData, ThrowOnError>) => (options.client ?? client).post<UserControllerRechargeWalletResponses, UserControllerRechargeWalletErrors, ThrowOnError>({ url: '/user/wallet/recharge', ...options });
+export const userControllerRechargeWallet = <ThrowOnError extends boolean = false>(options?: Options<UserControllerRechargeWalletData, ThrowOnError>) => (options?.client ?? client).post<UserControllerRechargeWalletResponses, UserControllerRechargeWalletErrors, ThrowOnError>({ url: '/user/wallet/recharge', ...options });
 
 /**
  * 钱包提现
  */
-export const userControllerWithdrawWallet = <ThrowOnError extends boolean = false>(options: Options<UserControllerWithdrawWalletData, ThrowOnError>) => (options.client ?? client).post<UserControllerWithdrawWalletResponses, UserControllerWithdrawWalletErrors, ThrowOnError>({ url: '/user/wallet/withdraw', ...options });
+export const userControllerWithdrawWallet = <ThrowOnError extends boolean = false>(options?: Options<UserControllerWithdrawWalletData, ThrowOnError>) => (options?.client ?? client).post<UserControllerWithdrawWalletResponses, UserControllerWithdrawWalletErrors, ThrowOnError>({ url: '/user/wallet/withdraw', ...options });
 
 /**
  * 发送邮箱验证码（通用接口）
@@ -367,12 +367,12 @@ export const userControllerSendVerificationCode = <ThrowOnError extends boolean 
 /**
  * 重置密码
  */
-export const userControllerResetPassword = <ThrowOnError extends boolean = false>(options: Options<UserControllerResetPasswordData, ThrowOnError>) => (options.client ?? client).post<UserControllerResetPasswordResponses, UserControllerResetPasswordErrors, ThrowOnError>({ url: '/user/password/reset', ...options });
+export const userControllerResetPassword = <ThrowOnError extends boolean = false>(options?: Options<UserControllerResetPasswordData, ThrowOnError>) => (options?.client ?? client).post<UserControllerResetPasswordResponses, UserControllerResetPasswordErrors, ThrowOnError>({ url: '/user/password/reset', ...options });
 
 /**
  * 批量检查并更新所有用户的会员状态
  */
-export const userControllerBatchCheckMembershipStatus = <ThrowOnError extends boolean = false>(options: Options<UserControllerBatchCheckMembershipStatusData, ThrowOnError>) => (options.client ?? client).post<UserControllerBatchCheckMembershipStatusResponses, UserControllerBatchCheckMembershipStatusErrors, ThrowOnError>({ url: '/user/membership/batch-check', ...options });
+export const userControllerBatchCheckMembershipStatus = <ThrowOnError extends boolean = false>(options?: Options<UserControllerBatchCheckMembershipStatusData, ThrowOnError>) => (options?.client ?? client).post<UserControllerBatchCheckMembershipStatusResponses, UserControllerBatchCheckMembershipStatusErrors, ThrowOnError>({ url: '/user/membership/batch-check', ...options });
 
 /**
  * 修改密码（需要原密码）
@@ -389,7 +389,7 @@ export const userControllerChangePassword = <ThrowOnError extends boolean = fals
 /**
  * 手动签到
  */
-export const userControllerSignIn = <ThrowOnError extends boolean = false>(options: Options<UserControllerSignInData, ThrowOnError>) => (options.client ?? client).post<UserControllerSignInResponses, UserControllerSignInErrors, ThrowOnError>({
+export const userControllerSignIn = <ThrowOnError extends boolean = false>(options?: Options<UserControllerSignInData, ThrowOnError>) => (options?.client ?? client).post<UserControllerSignInResponses, UserControllerSignInErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/user/sign-in',
     ...options
@@ -410,7 +410,7 @@ export const userControllerUpdateNotificationSettings = <ThrowOnError extends bo
 /**
  * 更新用户抽成设置
  */
-export const userControllerUpdateCommissionSettings = <ThrowOnError extends boolean = false>(options: Options<UserControllerUpdateCommissionSettingsData, ThrowOnError>) => (options.client ?? client).patch<UserControllerUpdateCommissionSettingsResponses, UserControllerUpdateCommissionSettingsErrors, ThrowOnError>({ url: '/user/config/commission', ...options });
+export const userControllerUpdateCommissionSettings = <ThrowOnError extends boolean = false>(options?: Options<UserControllerUpdateCommissionSettingsData, ThrowOnError>) => (options?.client ?? client).patch<UserControllerUpdateCommissionSettingsResponses, UserControllerUpdateCommissionSettingsErrors, ThrowOnError>({ url: '/user/config/commission', ...options });
 
 /**
  * 获取钱包交易记录
@@ -420,12 +420,12 @@ export const userControllerGetWalletTransactions = <ThrowOnError extends boolean
 /**
  * 获取钱包统计信息
  */
-export const userControllerGetWalletStatistics = <ThrowOnError extends boolean = false>(options: Options<UserControllerGetWalletStatisticsData, ThrowOnError>) => (options.client ?? client).get<UserControllerGetWalletStatisticsResponses, UserControllerGetWalletStatisticsErrors, ThrowOnError>({ url: '/user/wallet/statistics', ...options });
+export const userControllerGetWalletStatistics = <ThrowOnError extends boolean = false>(options?: Options<UserControllerGetWalletStatisticsData, ThrowOnError>) => (options?.client ?? client).get<UserControllerGetWalletStatisticsResponses, UserControllerGetWalletStatisticsErrors, ThrowOnError>({ url: '/user/wallet/statistics', ...options });
 
 /**
  * 获取钱包余额
  */
-export const userControllerGetWalletBalance = <ThrowOnError extends boolean = false>(options: Options<UserControllerGetWalletBalanceData, ThrowOnError>) => (options.client ?? client).get<UserControllerGetWalletBalanceResponses, UserControllerGetWalletBalanceErrors, ThrowOnError>({ url: '/user/wallet/balance', ...options });
+export const userControllerGetWalletBalance = <ThrowOnError extends boolean = false>(options?: Options<UserControllerGetWalletBalanceData, ThrowOnError>) => (options?.client ?? client).get<UserControllerGetWalletBalanceResponses, UserControllerGetWalletBalanceErrors, ThrowOnError>({ url: '/user/wallet/balance', ...options });
 
 /**
  * 获取签到记录
@@ -439,7 +439,7 @@ export const userControllerGetSignInRecords = <ThrowOnError extends boolean = fa
 /**
  * 获取签到统计
  */
-export const userControllerGetSignInStats = <ThrowOnError extends boolean = false>(options: Options<UserControllerGetSignInStatsData, ThrowOnError>) => (options.client ?? client).get<UserControllerGetSignInStatsResponses, UserControllerGetSignInStatsErrors, ThrowOnError>({
+export const userControllerGetSignInStats = <ThrowOnError extends boolean = false>(options?: Options<UserControllerGetSignInStatsData, ThrowOnError>) => (options?.client ?? client).get<UserControllerGetSignInStatsResponses, UserControllerGetSignInStatsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/user/sign-in/stats',
     ...options
@@ -448,7 +448,7 @@ export const userControllerGetSignInStats = <ThrowOnError extends boolean = fals
 /**
  * 获取文章列表
  */
-export const articleControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<ArticleControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<ArticleControllerFindAllResponses, unknown, ThrowOnError>({ url: '/article', ...options });
+export const articleControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<ArticleControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<ArticleControllerFindAllResponses, unknown, ThrowOnError>({ url: '/article', ...options });
 
 /**
  * 创建文章
@@ -497,7 +497,7 @@ export const articleControllerGetLikeCount = <ThrowOnError extends boolean = fal
 /**
  * 搜索文章
  */
-export const articleControllerSearch = <ThrowOnError extends boolean = false>(options: Options<ArticleControllerSearchData, ThrowOnError>) => (options.client ?? client).get<ArticleControllerSearchResponses, ArticleControllerSearchErrors, ThrowOnError>({ url: '/article/search', ...options });
+export const articleControllerSearch = <ThrowOnError extends boolean = false>(options?: Options<ArticleControllerSearchData, ThrowOnError>) => (options?.client ?? client).get<ArticleControllerSearchResponses, ArticleControllerSearchErrors, ThrowOnError>({ url: '/article/search', ...options });
 
 /**
  * 获取相关文章
@@ -512,22 +512,22 @@ export const articleControllerFindByAuthor = <ThrowOnError extends boolean = fal
 /**
  * 获取已发布文章ID列表
  */
-export const articleControllerGetPublishedArticleIds = <ThrowOnError extends boolean = false>(options: Options<ArticleControllerGetPublishedArticleIdsData, ThrowOnError>) => (options.client ?? client).get<ArticleControllerGetPublishedArticleIdsResponses, unknown, ThrowOnError>({ url: '/article/published/ids', ...options });
+export const articleControllerGetPublishedArticleIds = <ThrowOnError extends boolean = false>(options?: Options<ArticleControllerGetPublishedArticleIdsData, ThrowOnError>) => (options?.client ?? client).get<ArticleControllerGetPublishedArticleIdsResponses, unknown, ThrowOnError>({ url: '/article/published/ids', ...options });
 
 /**
  * 获取用户点赞文章列表
  */
-export const articleControllerGetLikedArticles = <ThrowOnError extends boolean = false>(options: Options<ArticleControllerGetLikedArticlesData, ThrowOnError>) => (options.client ?? client).get<ArticleControllerGetLikedArticlesResponses, unknown, ThrowOnError>({ url: '/article/liked', ...options });
+export const articleControllerGetLikedArticles = <ThrowOnError extends boolean = false>(options?: Options<ArticleControllerGetLikedArticlesData, ThrowOnError>) => (options?.client ?? client).get<ArticleControllerGetLikedArticlesResponses, unknown, ThrowOnError>({ url: '/article/liked', ...options });
 
 /**
  * 获取用户浏览历史列表
  */
-export const articleControllerGetUserBrowseHistory = <ThrowOnError extends boolean = false>(options: Options<ArticleControllerGetUserBrowseHistoryData, ThrowOnError>) => (options.client ?? client).get<ArticleControllerGetUserBrowseHistoryResponses, unknown, ThrowOnError>({ url: '/article/browse/history', ...options });
+export const articleControllerGetUserBrowseHistory = <ThrowOnError extends boolean = false>(options?: Options<ArticleControllerGetUserBrowseHistoryData, ThrowOnError>) => (options?.client ?? client).get<ArticleControllerGetUserBrowseHistoryResponses, unknown, ThrowOnError>({ url: '/article/browse/history', ...options });
 
 /**
  * 获取浏览统计
  */
-export const articleControllerGetBrowseStats = <ThrowOnError extends boolean = false>(options: Options<ArticleControllerGetBrowseStatsData, ThrowOnError>) => (options.client ?? client).get<ArticleControllerGetBrowseStatsResponses, unknown, ThrowOnError>({ url: '/article/browse/stats', ...options });
+export const articleControllerGetBrowseStats = <ThrowOnError extends boolean = false>(options?: Options<ArticleControllerGetBrowseStatsData, ThrowOnError>) => (options?.client ?? client).get<ArticleControllerGetBrowseStatsResponses, unknown, ThrowOnError>({ url: '/article/browse/stats', ...options });
 
 /**
  * 获取最近浏览的文章
@@ -571,12 +571,12 @@ export const articleControllerLike = <ThrowOnError extends boolean = false>(opti
 /**
  * 批量删除浏览记录
  */
-export const articleControllerBatchDeleteBrowseHistory = <ThrowOnError extends boolean = false>(options: Options<ArticleControllerBatchDeleteBrowseHistoryData, ThrowOnError>) => (options.client ?? client).post<ArticleControllerBatchDeleteBrowseHistoryResponses, unknown, ThrowOnError>({ url: '/article/browse/batch-delete', ...options });
+export const articleControllerBatchDeleteBrowseHistory = <ThrowOnError extends boolean = false>(options?: Options<ArticleControllerBatchDeleteBrowseHistoryData, ThrowOnError>) => (options?.client ?? client).post<ArticleControllerBatchDeleteBrowseHistoryResponses, unknown, ThrowOnError>({ url: '/article/browse/batch-delete', ...options });
 
 /**
  * 清空浏览历史
  */
-export const articleControllerClearBrowseHistory = <ThrowOnError extends boolean = false>(options: Options<ArticleControllerClearBrowseHistoryData, ThrowOnError>) => (options.client ?? client).delete<ArticleControllerClearBrowseHistoryResponses, unknown, ThrowOnError>({ url: '/article/browse', ...options });
+export const articleControllerClearBrowseHistory = <ThrowOnError extends boolean = false>(options?: Options<ArticleControllerClearBrowseHistoryData, ThrowOnError>) => (options?.client ?? client).delete<ArticleControllerClearBrowseHistoryResponses, unknown, ThrowOnError>({ url: '/article/browse', ...options });
 
 /**
  * 获取文章评论列表
@@ -733,7 +733,7 @@ export const categoryControllerUpdate = <ThrowOnError extends boolean = false>(o
 /**
  * 获取所有权限
  */
-export const permissionControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<PermissionControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<PermissionControllerFindAllResponses, PermissionControllerFindAllErrors, ThrowOnError>({ url: '/permission', ...options });
+export const permissionControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<PermissionControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<PermissionControllerFindAllResponses, PermissionControllerFindAllErrors, ThrowOnError>({ url: '/permission', ...options });
 
 /**
  * 创建权限
@@ -772,7 +772,7 @@ export const permissionControllerUpdate = <ThrowOnError extends boolean = false>
 /**
  * 获取所有订单列表（管理员权限）
  */
-export const orderControllerGetAllOrders = <ThrowOnError extends boolean = false>(options: Options<OrderControllerGetAllOrdersData, ThrowOnError>) => (options.client ?? client).get<OrderControllerGetAllOrdersResponses, unknown, ThrowOnError>({ url: '/order', ...options });
+export const orderControllerGetAllOrders = <ThrowOnError extends boolean = false>(options?: Options<OrderControllerGetAllOrdersData, ThrowOnError>) => (options?.client ?? client).get<OrderControllerGetAllOrdersResponses, unknown, ThrowOnError>({ url: '/order', ...options });
 
 /**
  * 获取订单详情
@@ -787,17 +787,17 @@ export const orderControllerFindByOrderNo = <ThrowOnError extends boolean = fals
 /**
  * 获取钱包余额
  */
-export const orderControllerGetWalletBalance = <ThrowOnError extends boolean = false>(options: Options<OrderControllerGetWalletBalanceData, ThrowOnError>) => (options.client ?? client).get<OrderControllerGetWalletBalanceResponses, OrderControllerGetWalletBalanceErrors, ThrowOnError>({ url: '/order/wallet/balance', ...options });
+export const orderControllerGetWalletBalance = <ThrowOnError extends boolean = false>(options?: Options<OrderControllerGetWalletBalanceData, ThrowOnError>) => (options?.client ?? client).get<OrderControllerGetWalletBalanceResponses, OrderControllerGetWalletBalanceErrors, ThrowOnError>({ url: '/order/wallet/balance', ...options });
 
 /**
  * 获取用户订单列表
  */
-export const orderControllerGetUserOrders = <ThrowOnError extends boolean = false>(options: Options<OrderControllerGetUserOrdersData, ThrowOnError>) => (options.client ?? client).get<OrderControllerGetUserOrdersResponses, unknown, ThrowOnError>({ url: '/order/user', ...options });
+export const orderControllerGetUserOrders = <ThrowOnError extends boolean = false>(options?: Options<OrderControllerGetUserOrdersData, ThrowOnError>) => (options?.client ?? client).get<OrderControllerGetUserOrdersResponses, unknown, ThrowOnError>({ url: '/order/user', ...options });
 
 /**
  * 获取待支付订单
  */
-export const orderControllerGetPendingOrders = <ThrowOnError extends boolean = false>(options: Options<OrderControllerGetPendingOrdersData, ThrowOnError>) => (options.client ?? client).get<OrderControllerGetPendingOrdersResponses, unknown, ThrowOnError>({ url: '/order/pending', ...options });
+export const orderControllerGetPendingOrders = <ThrowOnError extends boolean = false>(options?: Options<OrderControllerGetPendingOrdersData, ThrowOnError>) => (options?.client ?? client).get<OrderControllerGetPendingOrdersResponses, unknown, ThrowOnError>({ url: '/order/pending', ...options });
 
 /**
  * 取消订单
@@ -836,17 +836,17 @@ export const orderControllerCreateMembershipOrder = <ThrowOnError extends boolea
 /**
  * 获取我的邀请列表
  */
-export const inviteControllerGetMyInvites = <ThrowOnError extends boolean = false>(options: Options<InviteControllerGetMyInvitesData, ThrowOnError>) => (options.client ?? client).get<InviteControllerGetMyInvitesResponses, InviteControllerGetMyInvitesErrors, ThrowOnError>({ url: '/invite/my', ...options });
+export const inviteControllerGetMyInvites = <ThrowOnError extends boolean = false>(options?: Options<InviteControllerGetMyInvitesData, ThrowOnError>) => (options?.client ?? client).get<InviteControllerGetMyInvitesResponses, InviteControllerGetMyInvitesErrors, ThrowOnError>({ url: '/invite/my', ...options });
 
 /**
  * 获取邀请统计信息
  */
-export const inviteControllerGetInviteStats = <ThrowOnError extends boolean = false>(options: Options<InviteControllerGetInviteStatsData, ThrowOnError>) => (options.client ?? client).get<InviteControllerGetInviteStatsResponses, InviteControllerGetInviteStatsErrors, ThrowOnError>({ url: '/invite/stats', ...options });
+export const inviteControllerGetInviteStats = <ThrowOnError extends boolean = false>(options?: Options<InviteControllerGetInviteStatsData, ThrowOnError>) => (options?.client ?? client).get<InviteControllerGetInviteStatsResponses, InviteControllerGetInviteStatsErrors, ThrowOnError>({ url: '/invite/stats', ...options });
 
 /**
  * 获取邀请收益记录
  */
-export const inviteControllerGetMyInviteEarnings = <ThrowOnError extends boolean = false>(options: Options<InviteControllerGetMyInviteEarningsData, ThrowOnError>) => (options.client ?? client).get<InviteControllerGetMyInviteEarningsResponses, InviteControllerGetMyInviteEarningsErrors, ThrowOnError>({ url: '/invite/earnings', ...options });
+export const inviteControllerGetMyInviteEarnings = <ThrowOnError extends boolean = false>(options?: Options<InviteControllerGetMyInviteEarningsData, ThrowOnError>) => (options?.client ?? client).get<InviteControllerGetMyInviteEarningsResponses, InviteControllerGetMyInviteEarningsErrors, ThrowOnError>({ url: '/invite/earnings', ...options });
 
 /**
  * 获取邀请详情
@@ -885,7 +885,7 @@ export const uploadControllerGetFileInfo = <ThrowOnError extends boolean = false
 /**
  * 获取所有上传文件
  */
-export const uploadControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<UploadControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<UploadControllerFindAllResponses, unknown, ThrowOnError>({ url: '/upload', ...options });
+export const uploadControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<UploadControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<UploadControllerFindAllResponses, unknown, ThrowOnError>({ url: '/upload', ...options });
 
 /**
  * 上传文件
@@ -907,7 +907,7 @@ export const uploadControllerRemove = <ThrowOnError extends boolean = false>(opt
 /**
  * 获取当前用户所有消息（含全员通知）
  */
-export const messageControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<MessageControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<MessageControllerFindAllResponses, unknown, ThrowOnError>({ url: '/message', ...options });
+export const messageControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<MessageControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<MessageControllerFindAllResponses, unknown, ThrowOnError>({ url: '/message', ...options });
 
 /**
  * 创建消息（支持全员、部分、个人通知）
@@ -924,7 +924,7 @@ export const messageControllerCreate = <ThrowOnError extends boolean = false>(op
 /**
  * 高级查询消息
  */
-export const messageControllerSearch = <ThrowOnError extends boolean = false>(options: Options<MessageControllerSearchData, ThrowOnError>) => (options.client ?? client).get<MessageControllerSearchResponses, unknown, ThrowOnError>({ url: '/message/search', ...options });
+export const messageControllerSearch = <ThrowOnError extends boolean = false>(options?: Options<MessageControllerSearchData, ThrowOnError>) => (options?.client ?? client).get<MessageControllerSearchResponses, unknown, ThrowOnError>({ url: '/message/search', ...options });
 
 /**
  * 删除消息
@@ -951,7 +951,7 @@ export const messageControllerUpdate = <ThrowOnError extends boolean = false>(op
 /**
  * 获取未读消息数量
  */
-export const messageControllerGetUnreadCount = <ThrowOnError extends boolean = false>(options: Options<MessageControllerGetUnreadCountData, ThrowOnError>) => (options.client ?? client).get<MessageControllerGetUnreadCountResponses, unknown, ThrowOnError>({ url: '/message/unread/count', ...options });
+export const messageControllerGetUnreadCount = <ThrowOnError extends boolean = false>(options?: Options<MessageControllerGetUnreadCountData, ThrowOnError>) => (options?.client ?? client).get<MessageControllerGetUnreadCountResponses, unknown, ThrowOnError>({ url: '/message/unread/count', ...options });
 
 /**
  * 标记消息为已读
@@ -985,24 +985,24 @@ export const messageControllerBatchOperation = <ThrowOnError extends boolean = f
 /**
  * 获取所有轮播
  */
-export const bannerControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<BannerControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<BannerControllerFindAllResponses, unknown, ThrowOnError>({ url: '/banners', ...options });
+export const bannerControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<BannerControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<BannerControllerFindAllResponses, unknown, ThrowOnError>({ url: '/banners', ...options });
 
 /**
  * 创建轮播
  */
-export const bannerControllerCreate = <ThrowOnError extends boolean = false>(options: Options<BannerControllerCreateData, ThrowOnError>) => (options.client ?? client).post<BannerControllerCreateResponses, unknown, ThrowOnError>({
+export const bannerControllerCreate = <ThrowOnError extends boolean = false>(options?: Options<BannerControllerCreateData, ThrowOnError>) => (options?.client ?? client).post<BannerControllerCreateResponses, unknown, ThrowOnError>({
     url: '/banners',
     ...options,
     headers: {
         'Content-Type': 'application/json',
-        ...options.headers
+        ...options?.headers
     }
 });
 
 /**
  * 获取活动轮播
  */
-export const bannerControllerFindActive = <ThrowOnError extends boolean = false>(options: Options<BannerControllerFindActiveData, ThrowOnError>) => (options.client ?? client).get<BannerControllerFindActiveResponses, unknown, ThrowOnError>({ url: '/banners/active', ...options });
+export const bannerControllerFindActive = <ThrowOnError extends boolean = false>(options?: Options<BannerControllerFindActiveData, ThrowOnError>) => (options?.client ?? client).get<BannerControllerFindActiveResponses, unknown, ThrowOnError>({ url: '/banners/active', ...options });
 
 /**
  * 删除轮播
@@ -1065,7 +1065,7 @@ export const paymentControllerWechatNotify = <ThrowOnError extends boolean = fal
 /**
  * 测试易支付签名计算
  */
-export const paymentControllerTestEpaySignature = <ThrowOnError extends boolean = false>(options: Options<PaymentControllerTestEpaySignatureData, ThrowOnError>) => (options.client ?? client).post<PaymentControllerTestEpaySignatureResponses, unknown, ThrowOnError>({ url: '/payment/test/epay-signature', ...options });
+export const paymentControllerTestEpaySignature = <ThrowOnError extends boolean = false>(options?: Options<PaymentControllerTestEpaySignatureData, ThrowOnError>) => (options?.client ?? client).post<PaymentControllerTestEpaySignatureResponses, unknown, ThrowOnError>({ url: '/payment/test/epay-signature', ...options });
 
 /**
  * 易支付支付回调
@@ -1090,7 +1090,7 @@ export const paymentControllerFindUserPayments = <ThrowOnError extends boolean =
 /**
  * 获取举报列表
  */
-export const reportControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<ReportControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<ReportControllerFindAllResponses, unknown, ThrowOnError>({ url: '/report', ...options });
+export const reportControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<ReportControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<ReportControllerFindAllResponses, unknown, ThrowOnError>({ url: '/report', ...options });
 
 /**
  * 创建举报
@@ -1107,7 +1107,7 @@ export const reportControllerCreate = <ThrowOnError extends boolean = false>(opt
 /**
  * 获取举报统计
  */
-export const reportControllerGetStatistics = <ThrowOnError extends boolean = false>(options: Options<ReportControllerGetStatisticsData, ThrowOnError>) => (options.client ?? client).get<ReportControllerGetStatisticsResponses, unknown, ThrowOnError>({ url: '/report/statistics', ...options });
+export const reportControllerGetStatistics = <ThrowOnError extends boolean = false>(options?: Options<ReportControllerGetStatisticsData, ThrowOnError>) => (options?.client ?? client).get<ReportControllerGetStatisticsResponses, unknown, ThrowOnError>({ url: '/report/statistics', ...options });
 
 /**
  * 删除举报记录
@@ -1183,12 +1183,12 @@ export const decorationControllerGetUserDecorations = <ThrowOnError extends bool
 /**
  * 获取我的活动进度
  */
-export const decorationControllerGetMyActivityProgress = <ThrowOnError extends boolean = false>(options: Options<DecorationControllerGetMyActivityProgressData, ThrowOnError>) => (options.client ?? client).get<DecorationControllerGetMyActivityProgressResponses, unknown, ThrowOnError>({ url: '/decoration/activity/progress/my', ...options });
+export const decorationControllerGetMyActivityProgress = <ThrowOnError extends boolean = false>(options?: Options<DecorationControllerGetMyActivityProgressData, ThrowOnError>) => (options?.client ?? client).get<DecorationControllerGetMyActivityProgressResponses, unknown, ThrowOnError>({ url: '/decoration/activity/progress/my', ...options });
 
 /**
  * 获取当前使用的装饰品
  */
-export const decorationControllerGetCurrentDecorations = <ThrowOnError extends boolean = false>(options: Options<DecorationControllerGetCurrentDecorationsData, ThrowOnError>) => (options.client ?? client).get<DecorationControllerGetCurrentDecorationsResponses, unknown, ThrowOnError>({ url: '/decoration/user/current/decorations', ...options });
+export const decorationControllerGetCurrentDecorations = <ThrowOnError extends boolean = false>(options?: Options<DecorationControllerGetCurrentDecorationsData, ThrowOnError>) => (options?.client ?? client).get<DecorationControllerGetCurrentDecorationsResponses, unknown, ThrowOnError>({ url: '/decoration/user/current/decorations', ...options });
 
 /**
  * 购买装饰品
@@ -1232,12 +1232,12 @@ export const decorationControllerClaimActivityReward = <ThrowOnError extends boo
 /**
  * 清理过期装饰品
  */
-export const decorationControllerCleanExpired = <ThrowOnError extends boolean = false>(options: Options<DecorationControllerCleanExpiredData, ThrowOnError>) => (options.client ?? client).post<DecorationControllerCleanExpiredResponses, unknown, ThrowOnError>({ url: '/decoration/clean-expired', ...options });
+export const decorationControllerCleanExpired = <ThrowOnError extends boolean = false>(options?: Options<DecorationControllerCleanExpiredData, ThrowOnError>) => (options?.client ?? client).post<DecorationControllerCleanExpiredResponses, unknown, ThrowOnError>({ url: '/decoration/clean-expired', ...options });
 
 /**
  * 获取收藏夹列表
  */
-export const favoriteControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<FavoriteControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<FavoriteControllerFindAllResponses, unknown, ThrowOnError>({ url: '/favorite', ...options });
+export const favoriteControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<FavoriteControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<FavoriteControllerFindAllResponses, unknown, ThrowOnError>({ url: '/favorite', ...options });
 
 /**
  * 创建收藏夹
@@ -1308,17 +1308,17 @@ export const favoriteControllerRemoveFromFavorite = <ThrowOnError extends boolea
 /**
  * 获取积分交易记录
  */
-export const pointsControllerGetTransactions = <ThrowOnError extends boolean = false>(options: Options<PointsControllerGetTransactionsData, ThrowOnError>) => (options.client ?? client).get<PointsControllerGetTransactionsResponses, PointsControllerGetTransactionsErrors, ThrowOnError>({ url: '/points/transactions', ...options });
+export const pointsControllerGetTransactions = <ThrowOnError extends boolean = false>(options?: Options<PointsControllerGetTransactionsData, ThrowOnError>) => (options?.client ?? client).get<PointsControllerGetTransactionsResponses, PointsControllerGetTransactionsErrors, ThrowOnError>({ url: '/points/transactions', ...options });
 
 /**
  * 获取积分统计信息
  */
-export const pointsControllerGetStats = <ThrowOnError extends boolean = false>(options: Options<PointsControllerGetStatsData, ThrowOnError>) => (options.client ?? client).get<PointsControllerGetStatsResponses, PointsControllerGetStatsErrors, ThrowOnError>({ url: '/points/stats', ...options });
+export const pointsControllerGetStats = <ThrowOnError extends boolean = false>(options?: Options<PointsControllerGetStatsData, ThrowOnError>) => (options?.client ?? client).get<PointsControllerGetStatsResponses, PointsControllerGetStatsErrors, ThrowOnError>({ url: '/points/stats', ...options });
 
 /**
  * 获取所有积分规则
  */
-export const pointsControllerFindAllRules = <ThrowOnError extends boolean = false>(options: Options<PointsControllerFindAllRulesData, ThrowOnError>) => (options.client ?? client).get<PointsControllerFindAllRulesResponses, unknown, ThrowOnError>({ url: '/points/rules', ...options });
+export const pointsControllerFindAllRules = <ThrowOnError extends boolean = false>(options?: Options<PointsControllerFindAllRulesData, ThrowOnError>) => (options?.client ?? client).get<PointsControllerFindAllRulesResponses, unknown, ThrowOnError>({ url: '/points/rules', ...options });
 
 /**
  * 创建积分规则
@@ -1357,7 +1357,7 @@ export const pointsControllerUpdateRule = <ThrowOnError extends boolean = false>
 /**
  * 获取所有积分任务
  */
-export const pointsControllerFindAllTasks = <ThrowOnError extends boolean = false>(options: Options<PointsControllerFindAllTasksData, ThrowOnError>) => (options.client ?? client).get<PointsControllerFindAllTasksResponses, unknown, ThrowOnError>({ url: '/points/tasks', ...options });
+export const pointsControllerFindAllTasks = <ThrowOnError extends boolean = false>(options?: Options<PointsControllerFindAllTasksData, ThrowOnError>) => (options?.client ?? client).get<PointsControllerFindAllTasksResponses, unknown, ThrowOnError>({ url: '/points/tasks', ...options });
 
 /**
  * 创建积分任务
@@ -1425,7 +1425,7 @@ export const pointsControllerClaimTaskReward = <ThrowOnError extends boolean = f
 /**
  * 获取表情列表
  */
-export const emojiControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<EmojiControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<EmojiControllerFindAllResponses, unknown, ThrowOnError>({ url: '/emoji', ...options });
+export const emojiControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<EmojiControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<EmojiControllerFindAllResponses, unknown, ThrowOnError>({ url: '/emoji', ...options });
 
 /**
  * 创建表情
@@ -1464,22 +1464,22 @@ export const emojiControllerUpdate = <ThrowOnError extends boolean = false>(opti
 /**
  * 获取我的收藏
  */
-export const emojiControllerGetFavorites = <ThrowOnError extends boolean = false>(options: Options<EmojiControllerGetFavoritesData, ThrowOnError>) => (options.client ?? client).get<EmojiControllerGetFavoritesResponses, unknown, ThrowOnError>({ url: '/emoji/favorites/list', ...options });
+export const emojiControllerGetFavorites = <ThrowOnError extends boolean = false>(options?: Options<EmojiControllerGetFavoritesData, ThrowOnError>) => (options?.client ?? client).get<EmojiControllerGetFavoritesResponses, unknown, ThrowOnError>({ url: '/emoji/favorites/list', ...options });
 
 /**
  * 获取表情分类列表
  */
-export const emojiControllerGetCategories = <ThrowOnError extends boolean = false>(options: Options<EmojiControllerGetCategoriesData, ThrowOnError>) => (options.client ?? client).get<EmojiControllerGetCategoriesResponses, unknown, ThrowOnError>({ url: '/emoji/categories/list', ...options });
+export const emojiControllerGetCategories = <ThrowOnError extends boolean = false>(options?: Options<EmojiControllerGetCategoriesData, ThrowOnError>) => (options?.client ?? client).get<EmojiControllerGetCategoriesResponses, unknown, ThrowOnError>({ url: '/emoji/categories/list', ...options });
 
 /**
  * 获取热门表情
  */
-export const emojiControllerGetPopular = <ThrowOnError extends boolean = false>(options: Options<EmojiControllerGetPopularData, ThrowOnError>) => (options.client ?? client).get<EmojiControllerGetPopularResponses, unknown, ThrowOnError>({ url: '/emoji/popular/list', ...options });
+export const emojiControllerGetPopular = <ThrowOnError extends boolean = false>(options?: Options<EmojiControllerGetPopularData, ThrowOnError>) => (options?.client ?? client).get<EmojiControllerGetPopularResponses, unknown, ThrowOnError>({ url: '/emoji/popular/list', ...options });
 
 /**
  * 获取最近添加的表情
  */
-export const emojiControllerGetRecent = <ThrowOnError extends boolean = false>(options: Options<EmojiControllerGetRecentData, ThrowOnError>) => (options.client ?? client).get<EmojiControllerGetRecentResponses, unknown, ThrowOnError>({ url: '/emoji/recent/list', ...options });
+export const emojiControllerGetRecent = <ThrowOnError extends boolean = false>(options?: Options<EmojiControllerGetRecentData, ThrowOnError>) => (options?.client ?? client).get<EmojiControllerGetRecentResponses, unknown, ThrowOnError>({ url: '/emoji/recent/list', ...options });
 
 /**
  * 取消收藏

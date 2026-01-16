@@ -93,7 +93,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -155,7 +155,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -308,7 +308,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -397,7 +397,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -549,7 +549,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -619,7 +619,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -739,7 +739,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -918,7 +918,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -1083,7 +1083,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -1165,7 +1165,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -1237,7 +1237,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -1299,7 +1299,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -1441,7 +1441,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -1523,7 +1523,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -1620,7 +1620,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -1772,7 +1772,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -1869,7 +1869,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -1943,7 +1943,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -2021,7 +2021,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -2350,7 +2350,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -2525,7 +2525,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -2620,7 +2620,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -2726,7 +2726,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -3147,7 +3147,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -3241,7 +3241,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -3323,7 +3323,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -3401,7 +3401,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -3485,7 +3485,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -3923,7 +3923,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -4026,7 +4026,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -4152,7 +4152,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -4247,7 +4247,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -4407,7 +4407,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -4586,7 +4586,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -4666,7 +4666,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -4849,7 +4849,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -4933,7 +4933,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -5339,7 +5339,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -5763,7 +5763,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -5850,7 +5850,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -5922,7 +5922,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -5994,7 +5994,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -6056,7 +6056,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -6136,7 +6136,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -6206,7 +6206,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -6276,7 +6276,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -6360,7 +6360,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -6434,7 +6434,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -6504,7 +6504,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -6584,7 +6584,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -6658,7 +6658,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -6738,7 +6738,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -6835,7 +6835,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -6951,7 +6951,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -7017,7 +7017,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -7135,7 +7135,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -7205,7 +7205,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -7287,7 +7287,7 @@
             "name": "title",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -7296,7 +7296,7 @@
             "name": "categoryId",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "number"
             }
@@ -7305,7 +7305,7 @@
             "name": "type",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -7325,7 +7325,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -7799,7 +7799,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -8291,7 +8291,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -8775,7 +8775,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -8857,7 +8857,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -9532,7 +9532,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -9612,7 +9612,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -9667,7 +9667,7 @@
             "name": "keyword",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -9699,7 +9699,7 @@
             "name": "categoryId",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "number"
             }
@@ -9719,7 +9719,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -10181,7 +10181,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -10361,7 +10361,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -10801,7 +10801,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -10920,7 +10920,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -11035,7 +11035,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -11155,7 +11155,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -11226,7 +11226,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -11634,7 +11634,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -12065,7 +12065,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -12137,7 +12137,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -12219,7 +12219,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -12299,7 +12299,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -12361,7 +12361,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -12456,7 +12456,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -12551,7 +12551,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -12625,7 +12625,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -12721,7 +12721,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -12845,7 +12845,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -12905,7 +12905,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -13022,7 +13022,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -13128,7 +13128,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -13200,7 +13200,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -13272,7 +13272,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -13374,7 +13374,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -13527,7 +13527,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -13708,7 +13708,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -13853,7 +13853,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -13949,7 +13949,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -14033,7 +14033,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -14111,7 +14111,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -14231,7 +14231,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -14478,7 +14478,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -14671,7 +14671,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -14900,7 +14900,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -15210,7 +15210,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -15284,7 +15284,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -15362,7 +15362,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -15463,7 +15463,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -15552,7 +15552,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -15655,7 +15655,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -15791,7 +15791,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -15863,7 +15863,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -15939,7 +15939,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -16005,7 +16005,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -16124,7 +16124,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -16186,7 +16186,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -16258,7 +16258,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -16342,7 +16342,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -16416,7 +16416,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -16496,7 +16496,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -16599,7 +16599,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -16665,7 +16665,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -16754,7 +16754,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -16830,7 +16830,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -16900,7 +16900,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -16988,7 +16988,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -17078,7 +17078,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -17174,7 +17174,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -17246,7 +17246,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -17353,7 +17353,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -17454,7 +17454,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -17770,7 +17770,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -18015,7 +18015,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -18343,7 +18343,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -18620,7 +18620,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -18700,7 +18700,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -18762,7 +18762,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -18873,7 +18873,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -18970,7 +18970,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -19042,7 +19042,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -19137,7 +19137,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -19284,7 +19284,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -19435,7 +19435,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -19562,7 +19562,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -19695,7 +19695,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -19765,7 +19765,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -19837,7 +19837,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -19909,7 +19909,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -19981,7 +19981,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -20053,7 +20053,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -20196,7 +20196,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -20268,7 +20268,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -20340,7 +20340,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -20420,7 +20420,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -20556,7 +20556,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -20971,7 +20971,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -21134,7 +21134,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -21291,7 +21291,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -21704,7 +21704,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -21784,7 +21784,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -21864,7 +21864,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -22107,7 +22107,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -22292,7 +22292,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -22473,7 +22473,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -22656,7 +22656,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -22745,7 +22745,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -23026,7 +23026,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -23270,7 +23270,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -23332,7 +23332,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -23565,7 +23565,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -23668,7 +23668,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -23750,7 +23750,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -23985,7 +23985,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -24057,7 +24057,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -24119,7 +24119,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -24210,7 +24210,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -24482,7 +24482,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -24651,7 +24651,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -24912,7 +24912,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -24992,7 +24992,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -25087,7 +25087,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -25159,7 +25159,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -25231,7 +25231,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -25293,7 +25293,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -25385,7 +25385,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -25492,7 +25492,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -25562,7 +25562,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -25632,7 +25632,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -25692,7 +25692,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -25786,7 +25786,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -25860,7 +25860,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -25956,7 +25956,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -26030,7 +26030,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -26090,7 +26090,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -26184,7 +26184,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -26258,7 +26258,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -26354,7 +26354,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -26428,7 +26428,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -26508,7 +26508,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -26602,7 +26602,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -26775,7 +26775,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -26835,7 +26835,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -26917,7 +26917,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -26987,7 +26987,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -27067,7 +27067,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -27152,7 +27152,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -27214,7 +27214,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -27285,7 +27285,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -27356,7 +27356,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -27428,7 +27428,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",
@@ -27498,7 +27498,7 @@
             "name": "Device-Id",
             "in": "header",
             "description": "",
-            "required": true,
+            "required": false,
             "example": "{{deviceId}}",
             "schema": {
               "type": "string",

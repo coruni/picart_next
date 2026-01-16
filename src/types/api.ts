@@ -8,7 +8,7 @@ export type {
   BaseResponseDto,
   PaginatedResponseDto,
   ListResponseDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 用户相关 ====================
 // 请求类型
@@ -20,7 +20,7 @@ export type {
   UserCommissionConfigDto,
   UpdateUserConfigDto,
   UpdateUserNoticeDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // 响应类型
 export type {
@@ -35,7 +35,7 @@ export type {
   UserControllerGetUserConfigResponse,
   UserControllerGetWalletBalanceResponse,
   UserControllerGetWalletTransactionsResponse,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 角色和权限 ====================
 // 请求类型
@@ -47,7 +47,7 @@ export type {
   CreatePermissionDto,
   UpdatePermissionDto,
   AssignPermissionsDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // 响应类型
 export type {
@@ -61,7 +61,7 @@ export type {
   PermissionControllerFindOneResponse,
   PermissionControllerCreateResponse,
   PermissionControllerUpdateResponse,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 文章相关 ====================
 // 请求类型
@@ -70,7 +70,7 @@ export type {
   UpdateArticleDto,
   ArticleLikeDto,
   RecordBrowseHistoryDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // 响应类型
 export type {
@@ -85,19 +85,19 @@ export type {
   ArticleControllerGetUserBrowseHistoryResponse,
   ArticleControllerGetRecentBrowsedArticlesResponse,
   ArticleControllerGetBrowseHistoryResponse,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 评论相关 ====================
 // 请求类型
 export type {
   CreateCommentDto,
   UpdateCommentDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // 响应类型
 export type {
   CommentControllerGetRepliesResponse,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 分类和标签 ====================
 // 请求类型
@@ -106,7 +106,7 @@ export type {
   UpdateCategoryDto,
   CreateTagDto,
   UpdateTagDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // 响应类型
 export type {
@@ -117,7 +117,7 @@ export type {
   TagControllerFindAllResponse,
   TagControllerFindOneResponse,
   TagControllerCreateResponse,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 收藏相关 ====================
 // 请求类型
@@ -125,14 +125,14 @@ export type {
   CreateFavoriteDto,
   UpdateFavoriteDto,
   AddToFavoriteDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // 响应类型
 export type {
   FavoriteControllerFindAllResponse,
   FavoriteControllerFindOneResponse,
   FavoriteControllerCreateResponse,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 订单和支付 ====================
 // 请求类型
@@ -142,7 +142,7 @@ export type {
   CreatePaymentDto,
   AlipayNotifyDto,
   WechatNotifyDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 积分相关 ====================
 // 请求类型
@@ -153,7 +153,7 @@ export type {
   UpdatePointsTaskDto,
   AddPointsDto,
   SpendPointsDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 装饰相关 ====================
 // 请求类型
@@ -162,7 +162,7 @@ export type {
   UpdateDecorationDto,
   PurchaseDecorationDto,
   GiftDecorationDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // 响应类型
 export type {
@@ -174,7 +174,7 @@ export type {
   DecorationControllerGetUserDecorationsResponse,
   DecorationControllerGetCurrentDecorationsResponse,
   DecorationControllerUseDecorationResponse,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 消息相关 ====================
 // 请求类型
@@ -183,7 +183,7 @@ export type {
   UpdateMessageDto,
   BatchMessageDto,
   MarkAllReadDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // 响应类型
 export type {
@@ -193,21 +193,21 @@ export type {
   MessageControllerSearchResponse,
   MessageControllerGetUnreadCountResponse,
   MessageControllerMarkAsReadResponse,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 邀请相关 ====================
 // 请求类型
 export type {
   CreateInviteDto,
   UseInviteDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 配置相关 ====================
 // 请求类型
 export type {
   CreateConfigDto,
   UpdateConfigDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // 响应类型
 export type {
@@ -215,7 +215,7 @@ export type {
   ConfigControllerFindByGroupResponse,
   ConfigControllerGetPublicConfigsResponse,
   ConfigControllerGetAdvertisementConfigResponse,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 上传相关 ====================
 // 请求类型
@@ -225,21 +225,21 @@ export type {
   UpdateUploadDto,
   UploadEmojiDto,
   DownloadDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // 响应类型
 export type {
   UploadControllerFindAllResponse,
   UploadControllerGetFileInfoResponse,
   UploadControllerUploadFileResponse,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== Banner 相关 ====================
 // 请求类型
 export type {
   CreateBannerDto,
   UpdateBannerDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // 响应类型
 export type {
@@ -247,21 +247,21 @@ export type {
   BannerControllerFindOneResponse,
   BannerControllerFindActiveResponse,
   BannerControllerCreateResponse,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 表情相关 ====================
 // 请求类型
 export type {
   CreateEmojiDto,
   UpdateEmojiDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 举报相关 ====================
 // 请求类型
 export type {
   CreateReportDto,
   UpdateReportDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // 响应类型
 export type {
@@ -269,12 +269,12 @@ export type {
   ReportControllerFindOneResponse,
   ReportControllerCreateResponse,
   ReportControllerGetStatisticsResponse,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
 // ==================== 邮件相关 ====================
 // 请求类型
 export type {
   SendMailDto,
   CalculateCommissionDto,
-} from "@/api/generated/types.gen";
+} from "@/api/types.gen";
 
