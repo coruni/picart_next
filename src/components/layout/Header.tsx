@@ -5,10 +5,12 @@ import { useTranslations } from "next-intl";
 import { ChevronRight, PenIcon } from "lucide-react";
 import { MessageDropdown } from "./MessageDropdown";
 import { UserDropdown } from "./UserDropdown";
+import { useAppStore } from "@/stores";
 
 export function Header() {
   const t = useTranslations("common");
   const tHeader = useTranslations("header");
+  const siteConfig = useAppStore((state) => state.siteConfig)
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-white">
@@ -17,7 +19,7 @@ export function Header() {
           {/* Logo */}
           <div className="flex items-center gap-4">
             <Link href="/" className="text-primary text-3xl font-bold">
-              PICART
+              {siteConfig?.site_name}
             </Link>
           </div>
 
@@ -27,7 +29,7 @@ export function Header() {
               <input
                 type="text"
                 placeholder={t("search")}
-                className="w-full h-full pl-12 pr-4 border hover:ring-primary hover:ring-1 border-border rounded-full focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent transition-all bg-gray-50 focus:bg-white"
+                className="w-full h-full pl-12 pr-4 border hover:ring-primary hover:ring-1 border-border rounded-full focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent transition-all bg-gray-50 dark:bg-gray-500 focus:bg-white hover:bg-white dark:hover:bg-gray-800"
               />
             </div>
           </div>

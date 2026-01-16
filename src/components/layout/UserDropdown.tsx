@@ -35,8 +35,16 @@ export function UserDropdown() {
   return (
     <>
       <div className="relative group">
-        <div className="flex items-center justify-center rounded-full cursor-pointer bg-gray-200 hover:ring-2 hover:ring-primary transition-all">
-          {user?.avatar && typeof user.avatar === "string" ? (
+        <div className="flex items-center justify-center rounded-full cursor-pointer bg-primary/20 hover:ring-2 hover:ring-primary transition-all">
+          <Image
+            src={typeof user?.avatar === 'string' && user.avatar ? user.avatar : '/placeholder/avatar_placeholder.png'}
+            alt={user?.username || "用户"}
+            width={40}
+            height={40}
+            className="rounded-full object-cover"
+          />
+
+          {/* {user?.avatar && typeof user.avatar === "string" ? (
             <Image
               src={user.avatar}
               alt={user.username || "用户"}
@@ -48,7 +56,7 @@ export function UserDropdown() {
             <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-bold" onClick={handleLoginDialogOpen}>
               <span className="text-sm">{user?.username?.[0]?.toUpperCase() || "U"}</span>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Hover 面板 */}
@@ -202,7 +210,7 @@ export function UserDropdown() {
               </button>
             ) : (
               <button
-              onClick={openLoginDialog}
+                onClick={openLoginDialog}
                 className="flex items-center cursor-pointer  w-full text-gray-500 gap-2 px-2 h-10 hover:bg-primary/20 hover:text-primary  rounded-lg transition-colors"
               >
                 <LogIn className="size-5" />
