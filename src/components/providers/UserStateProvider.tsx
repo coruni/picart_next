@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/stores/useUserStore";
 import { initializeInterceptors } from "@/rumtime.config";
-import type { UserProfile } from "@/types";
+import type { PublicConfigs, UserProfile } from "@/types";
+import { useAppStore } from "@/stores";
 
 interface UserStateProviderProps {
   initialToken: string | null;
   initialUser: UserProfile | null;
+  initialConfig: PublicConfigs | null;
   children: React.ReactNode;
 }
 
@@ -15,23 +17,24 @@ interface UserStateProviderProps {
  * 用户状态提供者
  * 在客户端 hydration 时同步服务端的认证状态和用户资料
  */
-export function UserStateProvider({ initialToken, initialUser, children }: UserStateProviderProps) {
+export function UserStateProvider({ initialToken, initialUser, initialConfig, children }: UserStateProviderProps) {
   const [isInitialized, setIsInitialized] = useState(false);
-  
+
   // 使用 selector 获取响应式状态
   const token = useUserStore((state) => state.token);
   const user = useUserStore((state) => state.user);
   const setToken = useUserStore((state) => state.setToken);
   const setUser = useUserStore((state) => state.setUser);
   const logout = useUserStore((state) => state.logout);
+  const setConfig = useAppStore((state) => state.setSiteConfig);
 
   useEffect(() => {
     // 只在初始化时执行一次
     if (isInitialized) return;
-    
+
     // 初始化 API 客户端拦截器
     initializeInterceptors();
-    
+
     // 服务端没有 token，但客户端 store 有 token，说明用户已登出，清除客户端状态
     if (!initialToken && token) {
       logout();
@@ -50,8 +53,12 @@ export function UserStateProvider({ initialToken, initialUser, children }: UserS
       setUser(null);
     }
 
+    // 保存配置信息
+    if (initialConfig) {
+      setConfig(initialConfig)
+    }
+
     setIsInitialized(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // 只在组件挂载时执行一次
 
   // 在初始化完成前，不渲染子组件，避免水合错误

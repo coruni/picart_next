@@ -10,7 +10,7 @@ import { generateSiteMetadata } from "@/lib/seo";
 import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
 import { UserStateProvider } from "@/components/providers/UserStateProvider";
 import { getServerCookie } from "@/lib/server-cookies";
-import { userControllerGetProfile } from "@/api";
+import { configControllerGetPublicConfigs, userControllerGetProfile } from "@/api";
 import { initializeInterceptors } from "@/rumtime.config";
 import type { UserProfile } from "@/types";
 import "../globals.css";
@@ -68,10 +68,12 @@ export default async function LocaleLayout({
       const response = await userControllerGetProfile();
       initialUser = response?.data?.data || null;
     } catch (error) {
-      console.error("服务端获取用户资料失败:", error);
       // 如果获取失败，客户端会处理（可能是 token 过期）
     }
   }
+
+  // 获取网站配置
+  const { data } = await configControllerGetPublicConfigs();
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -83,7 +85,7 @@ export default async function LocaleLayout({
           <DeviceFingerprintProvider />
 
           {/* 用户状态同步 */}
-          <UserStateProvider initialToken={initialToken} initialUser={initialUser}>
+          <UserStateProvider initialToken={initialToken} initialUser={initialUser} initialConfig={data?.data!}>
             <Header />
             {children}
             <NotificationContainer />

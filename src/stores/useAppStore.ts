@@ -1,3 +1,4 @@
+import { PublicConfigs } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -5,10 +6,12 @@ interface AppState {
   theme: "light" | "dark" | "system";
   sidebarOpen: boolean;
   locale: string;
+  siteConfig: PublicConfigs;
   setTheme: (theme: "light" | "dark" | "system") => void;
   toggleSidebar: () => void;
   setSidebarOpen: (open: boolean) => void;
   setLocale: (locale: string) => void;
+  setSiteConfig: (siteConfig: PublicConfigs) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -17,7 +20,7 @@ export const useAppStore = create<AppState>()(
       theme: "system",
       sidebarOpen: true,
       locale: "zh",
-
+      siteConfig: {} as PublicConfigs,
       setTheme: (theme) =>
         set({
           theme,
@@ -31,6 +34,11 @@ export const useAppStore = create<AppState>()(
       setSidebarOpen: (open) =>
         set({
           sidebarOpen: open,
+        }),
+
+      setSiteConfig: (siteConfig: PublicConfigs) =>
+        set({
+          siteConfig,
         }),
 
       setLocale: (locale) =>
