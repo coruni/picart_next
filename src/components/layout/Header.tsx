@@ -13,12 +13,12 @@ export function Header() {
   const siteConfig = useAppStore((state) => state.siteConfig)
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-white">
+    <header className="sticky top-0 z-50  bg-white">
       <div className="px-10 mx-auto">
         <div className="flex items-center justify-between gap-4 h-15">
           {/* Logo */}
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-primary text-3xl font-bold">
+            <Link href="/" className="text-primary text-3xl font-bold line-clamp-1 text-nowrap">
               {siteConfig?.site_name}
             </Link>
           </div>

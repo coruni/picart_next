@@ -11,5 +11,6 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/(zh|en)/:path*"],
+  // 排除静态文件和 API 路由
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };
