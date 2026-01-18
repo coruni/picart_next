@@ -16,7 +16,7 @@ export const RecommendUserWidget = async () => {
 
     const userCard = (user: UserList[number]) => {
         return (
-            <div className="px-2 cursor-pointer hover:bg-primary/15 rounded-xl pb-5">
+            <div className="px-2 cursor-pointer hover:bg-primary/15 rounded-xl pb-5" key={user.id}>
                 <div className="py-2 my-1 flex items-center">
                     <Avatar url={user.avatar} size="sm" className="bg-card rounded-full" />
                     <div className="ml-3 flex-1">

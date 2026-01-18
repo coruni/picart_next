@@ -48,7 +48,7 @@ body {
 }
 
 .right-container {
-  @apply w-84 shrink-0 relative
+  @apply w-84 shrink-0 relative hidden md:block
 }
 
 /* Swiper custom styles */
