@@ -367,7 +367,14 @@ export const userControllerSendVerificationCode = <ThrowOnError extends boolean 
 /**
  * 重置密码
  */
-export const userControllerResetPassword = <ThrowOnError extends boolean = false>(options?: Options<UserControllerResetPasswordData, ThrowOnError>) => (options?.client ?? client).post<UserControllerResetPasswordResponses, UserControllerResetPasswordErrors, ThrowOnError>({ url: '/user/password/reset', ...options });
+export const userControllerResetPassword = <ThrowOnError extends boolean = false>(options?: Options<UserControllerResetPasswordData, ThrowOnError>) => (options?.client ?? client).post<UserControllerResetPasswordResponses, UserControllerResetPasswordErrors, ThrowOnError>({
+    url: '/user/password/reset',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
 
 /**
  * 批量检查并更新所有用户的会员状态

@@ -54,6 +54,7 @@ export async function Sidebar() {
                   src={banner.imageUrl}
                   alt={banner.title || "广告"}
                   fill
+                  sizes="(max-width: 768px) 100vw, 300px"
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               )}

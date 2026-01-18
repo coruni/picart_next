@@ -3649,7 +3649,11 @@ export type UserControllerSendVerificationCodeResponses = {
 };
 
 export type UserControllerResetPasswordData = {
-    body?: never;
+    body?: {
+        email: string;
+        code: string;
+        newPassword: string;
+    };
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -4344,10 +4348,10 @@ export type ArticleControllerFindOneResponses = {
             listRequireLogin: boolean;
             viewPrice: string;
             type: string;
-            content: string;
+            content: unknown;
             images: Array<string>;
             sort: number;
-            summary: string;
+            summary: unknown;
             views: number;
             likes: number;
             commentCount: number;
@@ -4357,33 +4361,24 @@ export type ArticleControllerFindOneResponses = {
             author: {
                 id: number;
                 username: string;
-                nickname: unknown;
-                avatar: unknown;
+                nickname: string;
+                avatar: string;
                 background: unknown;
                 level: number;
                 membershipLevel: number;
                 membershipStatus: string;
-                membershipStartDate: unknown;
+                membershipStartDate: string;
                 membershipEndDate: unknown;
                 status: string;
                 createdAt: string;
                 updatedAt: string;
-                description: unknown;
+                description: string;
                 followerCount: number;
                 followingCount: number;
                 lastActiveAt: unknown;
-                lastLoginAt: unknown;
+                lastLoginAt: string;
                 gender: string;
                 isMember: boolean;
-                equippedDecorations: {
-                    AVATAR_FRAME: {
-                        id: number;
-                        name: string;
-                        type: string;
-                        imageUrl: string;
-                        rarity: string;
-                    };
-                };
                 isFollowed: boolean;
             };
             category: {
@@ -4392,6 +4387,22 @@ export type ArticleControllerFindOneResponses = {
                 description: string;
                 parentId: number;
                 link: string;
+                parent: {
+                    id: number;
+                    name: string;
+                    description: string;
+                    parentId: unknown;
+                    link: string;
+                    avatar: string;
+                    background: string;
+                    cover: string;
+                    sort: number;
+                    status: string;
+                    articleCount: number;
+                    followCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
                 avatar: string;
                 background: string;
                 cover: string;
@@ -4405,10 +4416,10 @@ export type ArticleControllerFindOneResponses = {
             tags: Array<{
                 id: number;
                 name: string;
-                description: string;
+                description: string | null;
                 avatar: string;
-                background: string;
-                cover: string;
+                background: string | null;
+                cover: string | null;
                 sort: number;
                 articleCount: number;
                 followCount: number;

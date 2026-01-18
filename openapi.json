@@ -6388,6 +6388,32 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "code": {
+                    "type": "string"
+                  },
+                  "newPassword": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email",
+                  "code",
+                  "newPassword"
+                ]
+              },
+              "examples": {}
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "重置成功",
@@ -8364,7 +8390,7 @@
                           "type": "string"
                         },
                         "content": {
-                          "type": "string"
+                          "type": "null"
                         },
                         "images": {
                           "type": "array",
@@ -8376,7 +8402,7 @@
                           "type": "integer"
                         },
                         "summary": {
-                          "type": "string"
+                          "type": "null"
                         },
                         "views": {
                           "type": "integer"
@@ -8406,10 +8432,10 @@
                               "type": "string"
                             },
                             "nickname": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "avatar": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "background": {
                               "type": "null"
@@ -8424,7 +8450,7 @@
                               "type": "string"
                             },
                             "membershipStartDate": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "membershipEndDate": {
                               "type": "null"
@@ -8439,7 +8465,7 @@
                               "type": "string"
                             },
                             "description": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "followerCount": {
                               "type": "integer"
@@ -8451,48 +8477,13 @@
                               "type": "null"
                             },
                             "lastLoginAt": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "gender": {
                               "type": "string"
                             },
                             "isMember": {
                               "type": "boolean"
-                            },
-                            "equippedDecorations": {
-                              "type": "object",
-                              "properties": {
-                                "AVATAR_FRAME": {
-                                  "type": "object",
-                                  "properties": {
-                                    "id": {
-                                      "type": "integer"
-                                    },
-                                    "name": {
-                                      "type": "string"
-                                    },
-                                    "type": {
-                                      "type": "string"
-                                    },
-                                    "imageUrl": {
-                                      "type": "string"
-                                    },
-                                    "rarity": {
-                                      "type": "string"
-                                    }
-                                  },
-                                  "required": [
-                                    "id",
-                                    "name",
-                                    "type",
-                                    "imageUrl",
-                                    "rarity"
-                                  ]
-                                }
-                              },
-                              "required": [
-                                "AVATAR_FRAME"
-                              ]
                             },
                             "isFollowed": {
                               "type": "boolean"
@@ -8519,7 +8510,6 @@
                             "lastLoginAt",
                             "gender",
                             "isMember",
-                            "equippedDecorations",
                             "isFollowed"
                           ]
                         },
@@ -8540,6 +8530,69 @@
                             },
                             "link": {
                               "type": "string"
+                            },
+                            "parent": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "integer"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "parentId": {
+                                  "type": "null"
+                                },
+                                "link": {
+                                  "type": "string"
+                                },
+                                "avatar": {
+                                  "type": "string"
+                                },
+                                "background": {
+                                  "type": "string"
+                                },
+                                "cover": {
+                                  "type": "string"
+                                },
+                                "sort": {
+                                  "type": "integer"
+                                },
+                                "status": {
+                                  "type": "string"
+                                },
+                                "articleCount": {
+                                  "type": "integer"
+                                },
+                                "followCount": {
+                                  "type": "integer"
+                                },
+                                "createdAt": {
+                                  "type": "string"
+                                },
+                                "updatedAt": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "name",
+                                "description",
+                                "parentId",
+                                "link",
+                                "avatar",
+                                "background",
+                                "cover",
+                                "sort",
+                                "status",
+                                "articleCount",
+                                "followCount",
+                                "createdAt",
+                                "updatedAt"
+                              ]
                             },
                             "avatar": {
                               "type": "string"
@@ -8575,6 +8628,7 @@
                             "description",
                             "parentId",
                             "link",
+                            "parent",
                             "avatar",
                             "background",
                             "cover",
@@ -8598,16 +8652,19 @@
                                 "type": "string"
                               },
                               "description": {
-                                "type": "string"
+                                "type": "string",
+                                "nullable": true
                               },
                               "avatar": {
                                 "type": "string"
                               },
                               "background": {
-                                "type": "string"
+                                "type": "string",
+                                "nullable": true
                               },
                               "cover": {
-                                "type": "string"
+                                "type": "string",
+                                "nullable": true
                               },
                               "sort": {
                                 "type": "integer"

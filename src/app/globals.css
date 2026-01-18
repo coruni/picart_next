@@ -10,7 +10,7 @@
   --color-primary: #6680ff;
 
   --color-border: #f5f6fb;
-    /* 如果需要添加次要色 */
+  /* 如果需要添加次要色 */
   --color-secondary: #00000073;
 
   /* 自定义字体 */
@@ -36,4 +36,120 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.page-container {
+  @apply min-h-[calc(100vh-60px)] relative flex gap-6 flex-1;
+}
+
+.left-container {
+  @apply bg-white dark:bg-gray-800 rounded-xl flex-1 max-w-full;
+}
+
+.right-container {
+  @apply w-84 shrink-0
+}
+
+/* Swiper custom styles */
+
+.main-swiper {
+  width: 100% !important;
+}
+
+.main-swiper .swiper-slide {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+
+.thumbs-swiper .swiper-slide-thumb-active .relative {
+  border-color: var(--color-primary);
+  border-width: 3px;
+  outline-offset: 4px;
+}
+
+
+/* React Viewer 自定义样式 */
+.react-viewer-canvas {
+  left: 120px !important;
+  right: 120px !important;
+  width: calc(100% - 240px) !important;
+}
+
+.react-viewer-transition {
+  @apply transition-none!
+}
+
+.react-viewer-close {
+  @apply left-2! top-2! rounded-full! flex items-center justify-center
+}
+
+.react-viewer-close>i {
+  @apply top-0! left-0!
+}
+
+.react-viewer-navbar {
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  right: 16px;
+  height: 100%;
+  width: 60px;
+  top: 0;
+  background-color: transparent !important;
+  overflow-y: auto;
+  @apply hidden md:flex
+}
+
+.react-viewer-list {
+  max-height: 536px;
+  height: 100% !important;
+  position: relative;
+  margin-left: unset !important;
+  overflow-y: auto;
+  overflow-x: visible !important;
+  scrollbar-width: none !important;
+  padding: 2px;
+}
+
+.react-viewer-list::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.react-viewer-list>li {
+  height: 60px !important;
+  width: 60px !important;
+  margin: 2px;
+  @apply rounded-lg overflow-visible
+}
+.react-viewer-list>li.active {
+  @apply outline outline-white outline-2 box-border
+}
+.react-viewer-image{
+  object-fit: scale-down;
+}
+
+.react-viewer-list>li>img {
+  height: 60px !important;
+  width: 60px !important;
+  margin-left:0 !important;
+  object-fit: cover;
+  @apply rounded-lg
+}
+
+.react-viewer-mask {
+  backdrop-filter: blur(20px);
+  background-color: rgba(0, 0, 0, .85);
+}
+
+.react-viewer-toolbar {
+  height: auto !important;
+  padding: 8px 12px !important;
+  @apply bg-[#000000d9] inline-flex rounded-xl gap-2
+}
+
+.react-viewer-toolbar li {
+  @apply h-auto! w-auto!
 }

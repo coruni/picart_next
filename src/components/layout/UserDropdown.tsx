@@ -35,13 +35,13 @@ export function UserDropdown() {
   return (
     <>
       <div className="relative group">
-        <div className="flex items-center justify-center rounded-full cursor-pointer bg-primary/20 hover:ring-2 hover:ring-primary transition-all">
+        <div className="flex items-center justify-center shrink-0 rounded-full cursor-pointer bg-primary/20 hover:ring-2 hover:ring-primary transition-all">
           <Image
             src={typeof user?.avatar === 'string' && user.avatar ? user.avatar : '/placeholder/avatar_placeholder.png'}
             alt={user?.username || "用户"}
             width={40}
             height={40}
-            className="rounded-full object-cover"
+            className="rounded-full object-cover w-10 h-10 "
           />
 
           {/* {user?.avatar && typeof user.avatar === "string" ? (

@@ -39,15 +39,28 @@ export interface DialogDescriptionProps {
 }
 
 export function Dialog({ open, onOpenChange, children, unmountOnClose = true }: DialogProps) {
+  const dialogIdRef = useRef(`dialog-${Math.random().toString(36).substr(2, 9)}`);
+
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
+      document.body.setAttribute('data-dialog-open', dialogIdRef.current);
     } else {
-      document.body.style.overflow = "";
+      // 只有当前 dialog 关闭时才恢复滚动
+      const currentDialogId = document.body.getAttribute('data-dialog-open');
+      if (currentDialogId === dialogIdRef.current) {
+        document.body.style.overflow = "";
+        document.body.removeAttribute('data-dialog-open');
+      }
     }
 
     return () => {
-      document.body.style.overflow = "";
+      // 清理时检查是否是当前 dialog
+      const currentDialogId = document.body.getAttribute('data-dialog-open');
+      if (currentDialogId === dialogIdRef.current) {
+        document.body.style.overflow = "";
+        document.body.removeAttribute('data-dialog-open');
+      }
     };
   }, [open]);
 

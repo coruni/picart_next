@@ -40,7 +40,7 @@ export function FeedTabs() {
                         key={tab.value}
                         href={tab.href}
                         className={cn(
-                            "relative pb-3 px-1 text-base font-medium transition-colors",
+                            "relative px-1 pb-2 text-base font-medium transition-colors h-full",
                             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                             isActive
                                 ? "text-foreground"
@@ -49,7 +49,7 @@ export function FeedTabs() {
                     >
                         {tab.label}
                         {isActive && (
-                            <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full w-1/2 translate-x-1/2" />
+                            <span className="absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-full w-1/2 translate-x-1/2" />
                         )}
                     </Link>
                 );

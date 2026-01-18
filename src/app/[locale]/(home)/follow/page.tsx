@@ -1,11 +1,9 @@
-import { Suspense } from "react";
-import { FeedList } from "@/components/home/FeedList";
-import { FeedListSkeleton } from "@/components/home/FeedListSkeleton";
+import { articleControllerFindAll } from "@/api";
 
-export default function FollowPage() {
+export default async function FollowPage() {
+  
+
   return (
-    <Suspense fallback={<FeedListSkeleton />}>
-      <FeedList type="follow" />
-    </Suspense>
+   <></>
   );
 }

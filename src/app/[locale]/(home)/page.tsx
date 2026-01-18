@@ -1,11 +1,22 @@
-import { Suspense } from "react";
-import { FeedList } from "@/components/home/FeedList";
-import { FeedListSkeleton } from "@/components/home/FeedListSkeleton";
+import { articleControllerFindAll } from "@/api";
+import { ArticleListClient } from "@/components/home/ArticleListClient";
 
-export default function HomePage() {
+export default async function HomePage() {
+  // SSR: 服务端获取第一页数据
+  const initialData = await articleControllerFindAll({
+    query: {
+      page: 1,
+      limit: 20,
+    },
+  })
+
+  const articles = initialData?.data?.data?.data || [];
+  const total = initialData?.data?.data.meta.total || 0;
+
   return (
-    <Suspense fallback={<FeedListSkeleton />}>
-      <FeedList type="recommend" />
-    </Suspense>
+    <ArticleListClient
+      initArticles={articles}
+      initTotal={total} initPage={2}      
+    />
   );
 }

@@ -11,6 +11,8 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // 排除静态文件和 API 路由
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  // 排除静态文件、API 路由和 public 目录
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)).*)",
+  ],
 };

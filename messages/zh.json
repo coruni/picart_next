@@ -110,5 +110,29 @@
     "trending": "热门话题",
     "recommended": "推荐关注",
     "quickPost": "快速发布"
+  },
+  "articleList": {
+    "loading": "加载中...",
+    "loadMore": "滚动加载更多",
+    "loadFailed": "加载更多文章失败，请重试",
+    "retry": "重试",
+    "allLoaded": "已加载全部文章",
+    "noArticles": "暂无文章"
+  },
+  "followButton": {
+    "follow": "关注",
+    "following": "已关注",
+    "unfollow": "取消关注",
+    "followSuccess": "已关注 {username}",
+    "unfollowSuccess": "已取消关注 {username}",
+    "followError": "关注失败",
+    "unfollowError": "取消关注失败"
+  },
+  "time": {
+    "justNow": "刚刚",
+    "minutesAgo": "{count}分钟前",
+    "hoursAgo": "{count}小时前",
+    "daysAgo": "{count}天前",
+    "monthDay": "{month}月{day}日"
   }
 }

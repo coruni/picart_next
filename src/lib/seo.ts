@@ -1,4 +1,5 @@
 import { configControllerGetPublicConfigs } from "@/api";
+import { ArticleDetail } from "@/types";
 import type { Metadata } from "next";
 
 /**
@@ -178,14 +179,7 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
  * 生成文章页面 SEO 元数据
  */
 export async function generateArticleMetadata(
-  article: {
-    title: string;
-    description?: string;
-    cover?: string;
-    author?: string;
-    tags?: string[];
-    createdAt?: string;
-  },
+  article: ArticleDetail,
   locale: string = "zh"
 ): Promise<Metadata> {
   const config = await getPublicConfig();

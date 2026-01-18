@@ -110,5 +110,29 @@
     "trending": "Trending Topics",
     "recommended": "Recommended",
     "quickPost": "Quick Post"
+  },
+  "articleList": {
+    "loading": "Loading...",
+    "loadMore": "Scroll to load more",
+    "loadFailed": "Failed to load more articles, please try again",
+    "retry": "Retry",
+    "allLoaded": "All articles loaded",
+    "noArticles": "No articles"
+  },
+  "followButton": {
+    "follow": "Follow",
+    "following": "Following",
+    "unfollow": "Unfollow",
+    "followSuccess": "Followed {username}",
+    "unfollowSuccess": "Unfollowed {username}",
+    "followError": "Failed to follow",
+    "unfollowError": "Failed to unfollow"
+  },
+  "time": {
+    "justNow": "just now",
+    "minutesAgo": "{count} minutes ago",
+    "hoursAgo": "{count} hours ago",
+    "daysAgo": "{count} days ago",
+    "monthDay": "{month}/{day}"
   }
 }
