@@ -2520,7 +2520,7 @@ export type UserControllerFindAllData = {
         'Device-Type'?: string;
     };
     path?: never;
-    query: {
+    query?: {
         /**
          * 页码
          */
@@ -2529,7 +2529,7 @@ export type UserControllerFindAllData = {
          * 每页数量
          */
         limit?: number;
-        username: string;
+        username?: string;
     };
     url: '/user';
 };
@@ -2545,15 +2545,15 @@ export type UserControllerFindAllResponses = {
             data: Array<{
                 id?: number;
                 username?: string;
-                nickname?: unknown;
+                nickname?: string;
                 password?: string;
                 email?: string;
                 phone?: unknown;
                 status?: string;
                 banned?: unknown;
                 banReason?: unknown;
-                avatar?: unknown;
-                description?: unknown;
+                avatar?: string;
+                description?: string;
                 background?: unknown;
                 address?: unknown;
                 gender?: string;
@@ -2568,20 +2568,20 @@ export type UserControllerFindAllResponses = {
                 membershipLevel?: number;
                 membershipLevelName?: string;
                 membershipStatus?: string;
-                membershipStartDate?: unknown;
+                membershipStartDate?: string;
                 membershipEndDate?: unknown;
-                lastLoginAt?: unknown;
+                lastLoginAt?: string;
                 lastActiveAt?: unknown;
                 refreshToken?: unknown;
                 inviterId?: unknown;
-                myInviteCode?: string;
+                myInviteCode?: unknown;
                 inviteCode?: unknown;
                 inviteEarnings?: string;
                 inviteCount?: number;
                 roles?: Array<{
                     id?: number;
                     name?: string;
-                    displayName?: string;
+                    displayName?: unknown;
                     description?: string;
                     isActive?: boolean;
                     isSystem?: boolean;
@@ -2613,21 +2613,12 @@ export type UserControllerFindAllResponses = {
                     enableSmsNotification: boolean;
                     enablePushNotification: boolean;
                     hideFavorites: boolean;
-                    remark: unknown;
+                    remark: string;
                     createdAt: string;
                     updatedAt: string;
                 };
                 createdAt?: string;
                 updatedAt?: string;
-                equippedDecorations?: {
-                    AVATAR_FRAME: {
-                        id: number;
-                        name: string;
-                        type: string;
-                        imageUrl: string;
-                        rarity: string;
-                    };
-                };
                 isMember?: boolean;
                 isFollowed?: boolean;
             }>;
@@ -5820,7 +5811,7 @@ export type TagControllerFindAllData = {
         'Device-Type'?: string;
     };
     path?: never;
-    query: {
+    query?: {
         /**
          * 页码
          */
@@ -5829,7 +5820,7 @@ export type TagControllerFindAllData = {
          * 每页数量
          */
         limit?: number;
-        name: string;
+        name?: string;
     };
     url: '/tag';
 };
@@ -5843,17 +5834,17 @@ export type TagControllerFindAllResponses = {
         message: string;
         data: {
             data: Array<{
-                id?: number;
-                name?: string;
-                description?: string;
-                avatar?: string;
-                background?: string;
-                cover?: string;
-                sort?: number;
-                articleCount?: number;
-                followCount?: number;
-                createdAt?: string;
-                updatedAt?: string;
+                id: number;
+                name: string;
+                description: string;
+                avatar: string;
+                background: string;
+                cover: string;
+                sort: number;
+                articleCount: number;
+                followCount: number;
+                createdAt: string;
+                updatedAt: string;
             }>;
             meta: {
                 total: number;

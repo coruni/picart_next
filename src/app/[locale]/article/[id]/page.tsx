@@ -104,7 +104,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                 <div className="px-6 mt-4">
                     {/* 来自哪个分类 */}
                     <div className="text-secondary text-xs leading-4">
-                        <span>{article?.category?.parent?.name}•{article?.category?.name}</span>
+                        <span>{article?.category?.parent?.name} • {article?.category?.name}</span>
                     </div>
                 </div>
             </div>

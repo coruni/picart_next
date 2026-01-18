@@ -8,11 +8,11 @@
 @theme {
   /* 已有的颜色配置 */
   --color-primary: #6680ff;
-
   --color-border: #f5f6fb;
   /* 如果需要添加次要色 */
   --color-secondary: #00000073;
-
+  /* Card 背景颜色 */
+  --color-card: #ffffff;
   /* 自定义字体 */
   --font-sans: 'Roboto', 'Arial', ui-sans-serif, system-ui, sans-serif;
 }
@@ -29,6 +29,7 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --color-card: #1f2937;
   }
 }
 
@@ -47,7 +48,7 @@ body {
 }
 
 .right-container {
-  @apply w-84 shrink-0
+  @apply w-84 shrink-0 relative
 }
 
 /* Swiper custom styles */
@@ -100,7 +101,10 @@ body {
   overflow-y: auto;
   @apply hidden md:flex
 }
-
+.circle-loading{
+  height: 40px !important;
+  width: 40px !important;
+}
 .react-viewer-list {
   max-height: 536px;
   height: 100% !important;

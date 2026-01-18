@@ -71,7 +71,7 @@ export function UserDropdown() {
                 {/* 个人主页 */}
                 <Link
                   href="/profile"
-                  className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/20 hover:text-primary rounded-lg transition-colors mb-1"
+                  className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex items-center justify-center shrink-0">
@@ -87,7 +87,7 @@ export function UserDropdown() {
               <div className="p-1">
                 <Link
                   href="/profile/messages"
-                  className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/20 hover:text-primary rounded-lg transition-colors mb-1"
+                  className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex items-center justify-center shrink-0">
@@ -103,7 +103,7 @@ export function UserDropdown() {
               <div className="p-1">
                 <Link
                   href="/profile/privacy"
-                  className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/20 hover:text-primary rounded-lg transition-colors mb-1"
+                  className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex items-center justify-center shrink-0">
@@ -119,7 +119,7 @@ export function UserDropdown() {
               <div className="p-1">
                 <Link
                   href="/profile/blocked-users"
-                  className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/20 hover:text-primary rounded-lg transition-colors mb-1"
+                  className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex items-center justify-center shrink-0">
@@ -141,7 +141,7 @@ export function UserDropdown() {
             {/* 切换语言 */}
             <Link
               href="#"
-              className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/20 hover:text-primary rounded-lg transition-colors mb-1"
+              className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1"
             >
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center shrink-0">
@@ -160,7 +160,7 @@ export function UserDropdown() {
           <div className="p-1">
             <Link
               href="#"
-              className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/20 hover:text-primary rounded-lg transition-colors mb-1"
+              className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1"
             >
               <div className="flex items-center gap-3">
                 <div className="rounded-full flex items-center justify-center shrink-0">
@@ -177,7 +177,7 @@ export function UserDropdown() {
 
           {/* 自动翻译推荐内容 */}
           <div className="p-1">
-            <div className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/20 hover:text-primary rounded-lg transition-colors mb-1">
+            <div className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1">
               <div className="flex items-center gap-3">
                 <div className="rounded-full flex items-center justify-center shrink-0">
                   <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -203,7 +203,7 @@ export function UserDropdown() {
             {isAuthenticated ? (
               <button
                 onClick={handleLogout}
-                className="flex items-center cursor-pointer text-gray-500 gap-2 px-2 h-10 w-full hover:bg-primary/20  hover:text-primary rounded-lg transition-colors"
+                className="flex items-center cursor-pointer text-gray-500 gap-2 px-2 h-10 w-full hover:bg-primary/15  hover:text-primary rounded-lg transition-colors"
               >
                 <Power className="size-5" />
                 <span className="text-sm font-medium">{t("logout")}</span>
@@ -211,7 +211,7 @@ export function UserDropdown() {
             ) : (
               <button
                 onClick={openLoginDialog}
-                className="flex items-center cursor-pointer  w-full text-gray-500 gap-2 px-2 h-10 hover:bg-primary/20 hover:text-primary  rounded-lg transition-colors"
+                className="flex items-center cursor-pointer  w-full text-gray-500 gap-2 px-2 h-10 hover:bg-primary/15 hover:text-primary  rounded-lg transition-colors"
               >
                 <LogIn className="size-5" />
                 <span className="text-sm font-medium">{t("login")}</span>

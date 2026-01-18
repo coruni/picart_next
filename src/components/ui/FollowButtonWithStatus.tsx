@@ -1,22 +1,28 @@
 "use client";
 
-import { ArticleDetail, ArticleList } from "@/types";
+import { ArticleDetail, ArticleList, UserList } from "@/types";
 import { Button } from "./Button";
 import { useState } from "react";
 import { userControllerFollow, userControllerUnfollow } from "@/api";
 import { useUserStore } from "@/stores/useUserStore";
 import { useTranslations } from "next-intl";
-import { useNotificationStore } from "@/stores/useNotificationStore";
+import { cn } from "@/lib";
 
-type Author = ArticleList[number]['author'] | ArticleDetail['author'];
+type Author = ArticleList[number]['author'] | ArticleDetail['author'] | UserList[number];
 
 type FollowButtonWithStatusProps = {
     author: Author;
+    size?: 'sm' | 'md' | 'lg';
+    className?: string;
+    children?: React.ReactNode;
     onFollowChange?: (isFollowed: boolean) => void;
 };
 
 export const FollowButtonWithStatus = ({
     author,
+    size = "md",
+    className,
+    children,
     onFollowChange
 }: FollowButtonWithStatusProps) => {
     const t = useTranslations('followButton');
@@ -36,7 +42,7 @@ export const FollowButtonWithStatus = ({
             if (isFollowed) {
                 // Unfollow
                 await userControllerUnfollow({
-                    path: { id: author.id.toString() }
+                    path: { id: author.id!.toString() }
                 });
                 setIsFollowed(false);
                 onFollowChange?.(false);
@@ -44,7 +50,7 @@ export const FollowButtonWithStatus = ({
             } else {
                 // Follow
                 await userControllerFollow({
-                    path: { id: author.id.toString() }
+                    path: { id: author.id!.toString() }
                 });
                 setIsFollowed(true);
                 onFollowChange?.(true);
@@ -60,19 +66,22 @@ export const FollowButtonWithStatus = ({
 
     return (
         <Button
-            className={`ml-2 rounded-full px-6 min-w-22 `}
+            className={cn(`ml-2 rounded-full px-6`, className)}
             onClick={handleFollowToggle}
             disabled={isLoading}
-            size="md"
+            size={size}
         >
-            <span className="text-xs">
-                {isLoading
-                    ? '...'
-                    : isFollowed
-                        ? t('following')
-                        : t('follow')
-                }
-            </span>
+            {children ? children : (
+                <span className="text-xs">
+                    {isLoading
+                        ? '...'
+                        : isFollowed
+                            ? t('following')
+                            : t('follow')
+                    }
+                </span>
+            )}
+
         </Button>
     );
 };

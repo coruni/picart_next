@@ -128,6 +128,18 @@
     "followError": "Failed to follow",
     "unfollowError": "Failed to unfollow"
   },
+  "sidebar": {
+    "loginPrompt": "Login in seconds to see more exciting content.",
+    "login": "Login",
+    "quickPost": "Create a post",
+    "image": "Image",
+    "article": "Article",
+    "video": "Video",
+    "hotTopics": "Hot Topics",
+    "posts": "posts",
+    "members": "members",
+    "recommendUsers": "Recommended"
+  },
   "time": {
     "justNow": "just now",
     "minutesAgo": "{count} minutes ago",

@@ -118,12 +118,12 @@ export const ArticleListClient = (props: ArticleListClientProps) => {
           className="flex items-center justify-center py-8"
         >
           {loading ? (
-            <div className="flex items-center gap-2 text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span>{t('loading')}</span>
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              <span className="text-secondary text-sm">{t('loading')}</span>
             </div>
           ) : (
-            <div className="text-muted-foreground text-sm">
+            <div className="text-foreground text-sm">
               {t('loadMore')}
             </div>
           )}

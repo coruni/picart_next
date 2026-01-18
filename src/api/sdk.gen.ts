@@ -180,7 +180,7 @@ export const configControllerUpdate = <ThrowOnError extends boolean = false>(opt
 /**
  * 获取用户列表
  */
-export const userControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<UserControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<UserControllerFindAllResponses, unknown, ThrowOnError>({ url: '/user', ...options });
+export const userControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<UserControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<UserControllerFindAllResponses, unknown, ThrowOnError>({ url: '/user', ...options });
 
 /**
  * 创建用户
@@ -652,7 +652,7 @@ export const commentControllerLike = <ThrowOnError extends boolean = false>(opti
 /**
  * 获取所有标签
  */
-export const tagControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<TagControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<TagControllerFindAllResponses, unknown, ThrowOnError>({ url: '/tag', ...options });
+export const tagControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<TagControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<TagControllerFindAllResponses, unknown, ThrowOnError>({ url: '/tag', ...options });
 
 /**
  * 创建标签

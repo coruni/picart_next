@@ -48,7 +48,7 @@ export function Header() {
                   <div className="p-3 space-y-2">
                     <Link
                       href="/create/post"
-                      className="flex items-center gap-3 px-4 py-2 bg-[#F6F9FB] hover:bg-primary/20 hover:text-primary rounded-lg transition-colors group/item whitespace-nowrap"
+                      className="flex items-center gap-3 px-4 py-2 bg-[#F6F9FB] hover:bg-primary/15 hover:text-primary rounded-lg transition-colors group/item whitespace-nowrap"
                     >
                       <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center shrink-0">
                         <PenIcon className="size-5 text-green-600 dark:text-green-300" />
@@ -58,7 +58,7 @@ export function Header() {
                     </Link>
                     <Link
                       href="/create/image"
-                      className="flex items-center gap-3 px-4 py-2 bg-[#F6F9FB] hover:bg-primary/20 hover:text-primary rounded-lg transition-colors group/item whitespace-nowrap"
+                      className="flex items-center gap-3 px-4 py-2 bg-[#F6F9FB] hover:bg-primary/15 hover:text-primary rounded-lg transition-colors group/item whitespace-nowrap"
                     >
                       <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center shrink-0">
                         <svg className="size-5 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +70,7 @@ export function Header() {
                     </Link>
                     <Link
                       href="/create/video"
-                      className="flex items-center gap-3 px-4 py-2 bg-[#F6F9FB] hover:bg-primary/20 hover:text-primary rounded-lg transition-colors group/item whitespace-nowrap"
+                      className="flex items-center gap-3 px-4 py-2 bg-[#F6F9FB] hover:bg-primary/15 hover:text-primary rounded-lg transition-colors group/item whitespace-nowrap"
                     >
                       <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900 flex items-center justify-center shrink-0">
                         <svg className="size-5 text-orange-600 dark:text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

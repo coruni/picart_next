@@ -123,7 +123,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                     </div>
                     {/* 关注 */}
                     <div className="ml-3 flex items-center w-auto">
-                        <FollowButtonWithStatus author={article.author} />
+                        <FollowButtonWithStatus author={article.author}  className="min-w-22"/>
                     </div>
 
                 </div>

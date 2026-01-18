@@ -2706,7 +2706,7 @@
             "name": "username",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -2783,7 +2783,7 @@
                                 "type": "string"
                               },
                               "nickname": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "password": {
                                 "type": "string"
@@ -2804,10 +2804,10 @@
                                 "type": "null"
                               },
                               "avatar": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "description": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "background": {
                                 "type": "null"
@@ -2840,7 +2840,7 @@
                                 "type": "integer"
                               },
                               "wallet": {
-                                "type": "integer"
+                                "type": "number"
                               },
                               "membershipLevel": {
                                 "type": "integer"
@@ -2852,13 +2852,13 @@
                                 "type": "string"
                               },
                               "membershipStartDate": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "membershipEndDate": {
                                 "type": "null"
                               },
                               "lastLoginAt": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "lastActiveAt": {
                                 "type": "null"
@@ -2870,7 +2870,7 @@
                                 "type": "null"
                               },
                               "myInviteCode": {
-                                "type": "string"
+                                "type": "null"
                               },
                               "inviteCode": {
                                 "type": "null"
@@ -2893,7 +2893,7 @@
                                       "type": "string"
                                     },
                                     "displayName": {
-                                      "type": "string"
+                                      "type": "null"
                                     },
                                     "description": {
                                       "type": "string"
@@ -2996,7 +2996,7 @@
                                     "type": "boolean"
                                   },
                                   "remark": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "createdAt": {
                                     "type": "string"
@@ -3035,41 +3035,6 @@
                               },
                               "updatedAt": {
                                 "type": "string"
-                              },
-                              "equippedDecorations": {
-                                "type": "object",
-                                "properties": {
-                                  "AVATAR_FRAME": {
-                                    "type": "object",
-                                    "properties": {
-                                      "id": {
-                                        "type": "integer"
-                                      },
-                                      "name": {
-                                        "type": "string"
-                                      },
-                                      "type": {
-                                        "type": "string"
-                                      },
-                                      "imageUrl": {
-                                        "type": "string"
-                                      },
-                                      "rarity": {
-                                        "type": "string"
-                                      }
-                                    },
-                                    "required": [
-                                      "id",
-                                      "name",
-                                      "type",
-                                      "imageUrl",
-                                      "rarity"
-                                    ]
-                                  }
-                                },
-                                "required": [
-                                  "AVATAR_FRAME"
-                                ]
                               },
                               "isMember": {
                                 "type": "boolean"
@@ -13411,7 +13376,7 @@
             "name": "name",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -13514,7 +13479,20 @@
                               "updatedAt": {
                                 "type": "string"
                               }
-                            }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "description",
+                              "avatar",
+                              "background",
+                              "cover",
+                              "sort",
+                              "articleCount",
+                              "followCount",
+                              "createdAt",
+                              "updatedAt"
+                            ]
                           }
                         },
                         "meta": {

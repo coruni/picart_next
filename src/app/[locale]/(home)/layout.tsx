@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Sidebar } from "@/components/home/Sidebar";
+import { Sidebar } from "@/components/sidebar/Sidebar";
 import { FeedTabs } from "@/components/home/FeedTabs";
 
 interface HomeLayoutProps {
@@ -20,10 +20,8 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
       </div>
 
       {/* 右侧边栏 - 切换时不会重新渲染 */}
-      <div className="right-container">
-        <div className="sticky top-4 space-y-4">
-          <Sidebar />
-        </div>
+      <div className="right-container space-y-4">
+        <Sidebar />
       </div>
     </div>
   );
