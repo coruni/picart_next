@@ -34,6 +34,7 @@ export const Avatar = ({
         <div className={cn(avatarVariants({ size }), "transition-all", className)}>
             {avatarFrame && (
                 <Image
+                    quality={95}
                     src={avatarFrame}
                     alt="avatar frame"
                     fill

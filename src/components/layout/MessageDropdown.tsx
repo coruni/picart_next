@@ -123,6 +123,7 @@ export function MessageDropdown() {
                                 src="/placeholder/empty.png"
                                 width={200}
                                 height={150}
+                                quality={95}
                                 alt="message-empty"
                                 loading="eager"
                                 style={{ height: 150, width: 200 }}

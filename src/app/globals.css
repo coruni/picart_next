@@ -95,7 +95,7 @@ body {
   position: fixed;
   right: 16px;
   height: 100%;
-  width: 60px;
+  width: 68px;
   top: 0;
   background-color: transparent !important;
   overflow-y: auto;
@@ -113,7 +113,7 @@ body {
   overflow-y: auto;
   overflow-x: visible !important;
   scrollbar-width: none !important;
-  padding: 2px;
+  padding: 2px 4px 2px 2px; /* 右边增加 padding 为边框留空间 */
 }
 
 .react-viewer-list::-webkit-scrollbar {
@@ -129,8 +129,10 @@ body {
   @apply rounded-lg overflow-visible
 }
 .react-viewer-list>li.active {
-  @apply outline outline-white outline-2 box-border
+  @apply outline-2 outline-primary
 }
+
+
 .react-viewer-image{
   object-fit: scale-down;
 }

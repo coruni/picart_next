@@ -4031,65 +4031,72 @@ export type ArticleControllerFindAllResponses = {
         message: string;
         data: {
             data: Array<{
-                id?: number;
-                title?: string;
-                requireLogin?: boolean;
-                requireFollow?: boolean;
-                requirePayment?: boolean;
-                requireMembership?: boolean;
-                listRequireLogin?: boolean;
-                viewPrice?: string;
-                type?: string;
-                content?: string;
-                images?: Array<string>;
-                sort?: number;
-                summary?: string;
-                views?: number;
-                likes?: number;
-                commentCount?: number;
-                status?: string;
-                cover?: string;
-                authorId?: number;
-                author?: {
+                id: number;
+                title: string;
+                requireLogin: boolean;
+                requireFollow: boolean;
+                requirePayment: boolean;
+                requireMembership: boolean;
+                listRequireLogin: boolean;
+                viewPrice: string;
+                type: string;
+                content: string | null;
+                images: Array<string>;
+                sort: number;
+                summary: unknown;
+                views: number;
+                likes: number;
+                commentCount: number;
+                status: string;
+                cover: string;
+                authorId: number;
+                author: {
                     id: number;
                     username: string;
-                    nickname: unknown;
-                    avatar: unknown;
+                    nickname: string;
+                    avatar: string;
                     background: unknown;
                     level: number;
                     membershipLevel: number;
                     membershipStatus: string;
-                    membershipStartDate: unknown;
+                    membershipStartDate: string;
                     membershipEndDate: unknown;
                     status: string;
                     createdAt: string;
                     updatedAt: string;
-                    description: unknown;
+                    description: string;
                     followerCount: number;
                     followingCount: number;
                     lastActiveAt: unknown;
-                    lastLoginAt: unknown;
+                    lastLoginAt: string;
                     gender: string;
                     isMember: boolean;
-                    equippedDecorations: {
-                        AVATAR_FRAME: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
-                    };
                     isFollowed: boolean;
                 };
-                category?: {
+                category: {
                     id: number;
                     name: string;
                     description: string;
                     parentId: number;
                     link: string;
+                    parent: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        parentId: unknown;
+                        link: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
                     avatar: string;
-                    background: string;
+                    background: string | null;
                     cover: string;
                     sort: number;
                     status: string;
@@ -4098,35 +4105,44 @@ export type ArticleControllerFindAllResponses = {
                     createdAt: string;
                     updatedAt: string;
                 };
-                tags?: Array<{
+                tags: Array<{
                     id: number;
                     name: string;
-                    description: string;
+                    description: string | null;
                     avatar: string;
-                    background: string;
-                    cover: string;
+                    background: string | null;
+                    cover: string | null;
                     sort: number;
                     articleCount: number;
                     followCount: number;
                     createdAt: string;
                     updatedAt: string;
                 }>;
-                downloads?: Array<{
-                    id?: number;
-                    type?: string;
-                    url?: string;
-                    password?: string;
-                    extractionCode?: string;
-                    articleId?: number;
-                    createdAt?: string;
-                    updatedAt?: string;
+                downloads: Array<{
+                    id: number;
+                    type: string;
+                    url: string;
+                    password: string;
+                    extractionCode: string;
+                    articleId: number;
+                    createdAt: string;
+                    updatedAt: string;
                 }>;
-                downloadCount?: number;
-                createdAt?: string;
-                updatedAt?: string;
-                isLiked?: boolean;
-                isPaid?: boolean;
-                imageCount?: number;
+                downloadCount: number;
+                createdAt: string;
+                updatedAt: string;
+                isLiked: boolean;
+                isPaid: boolean;
+                imageCount: number;
+                reactionStats: {
+                    like: number;
+                    love: number;
+                    haha: number;
+                    wow: number;
+                    sad: number;
+                    angry: number;
+                    dislike: number;
+                };
             }>;
             meta: {
                 total: number;
@@ -4433,6 +4449,15 @@ export type ArticleControllerFindOneResponses = {
             isLiked: boolean;
             isPaid: boolean;
             imageCount: number;
+            reactionStats: {
+                like: number;
+                love: number;
+                haha: number;
+                wow: number;
+                sad: number;
+                angry: number;
+                dislike: number;
+            };
         };
     };
 };
@@ -4910,56 +4935,72 @@ export type ArticleControllerFindByAuthorResponses = {
         message: string;
         data: {
             data: Array<{
-                id?: number;
-                title?: string;
-                requireLogin?: boolean;
-                requireFollow?: boolean;
-                requirePayment?: boolean;
-                requireMembership?: boolean;
-                listRequireLogin?: boolean;
-                viewPrice?: string;
-                type?: string;
-                content?: string;
-                images?: Array<string>;
-                sort?: number;
-                summary?: string;
-                views?: number;
-                likes?: number;
-                commentCount?: number;
-                status?: string;
-                cover?: string;
-                authorId?: number;
-                author?: {
+                id: number;
+                title: string;
+                requireLogin: boolean;
+                requireFollow: boolean;
+                requirePayment: boolean;
+                requireMembership: boolean;
+                listRequireLogin: boolean;
+                viewPrice: string;
+                type: string;
+                content: string | null;
+                images: Array<string>;
+                sort: number;
+                summary: unknown;
+                views: number;
+                likes: number;
+                commentCount: number;
+                status: string;
+                cover: string;
+                authorId: number;
+                author: {
                     id: number;
                     username: string;
-                    nickname: unknown;
-                    avatar: unknown;
+                    nickname: string;
+                    avatar: string;
                     background: unknown;
                     level: number;
                     membershipLevel: number;
                     membershipStatus: string;
-                    membershipStartDate: unknown;
+                    membershipStartDate: string;
                     membershipEndDate: unknown;
                     status: string;
                     createdAt: string;
                     updatedAt: string;
-                    description: unknown;
+                    description: string;
                     followerCount: number;
                     followingCount: number;
                     lastActiveAt: unknown;
-                    lastLoginAt: unknown;
+                    lastLoginAt: string;
                     gender: string;
                     isMember: boolean;
                     isFollowed: boolean;
                 };
-                category?: {
+                category: {
                     id: number;
                     name: string;
                     description: string;
                     parentId: number;
                     link: string;
+                    parent: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        parentId: unknown;
+                        link: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
                     avatar: string;
-                    background: string;
+                    background: string | null;
                     cover: string;
                     sort: number;
                     status: string;
@@ -4968,35 +5009,44 @@ export type ArticleControllerFindByAuthorResponses = {
                     createdAt: string;
                     updatedAt: string;
                 };
-                tags?: Array<{
+                tags: Array<{
                     id: number;
                     name: string;
-                    description: string;
+                    description: string | null;
                     avatar: string;
-                    background: string;
-                    cover: string;
+                    background: string | null;
+                    cover: string | null;
                     sort: number;
                     articleCount: number;
                     followCount: number;
                     createdAt: string;
                     updatedAt: string;
                 }>;
-                downloads?: Array<{
-                    id?: number;
-                    type?: string;
-                    url?: string;
-                    password?: string;
-                    extractionCode?: string;
-                    articleId?: number;
-                    createdAt?: string;
-                    updatedAt?: string;
+                downloads: Array<{
+                    id: number;
+                    type: string;
+                    url: string;
+                    password: string;
+                    extractionCode: string;
+                    articleId: number;
+                    createdAt: string;
+                    updatedAt: string;
                 }>;
-                downloadCount?: number;
-                createdAt?: string;
-                updatedAt?: string;
-                isLiked?: boolean;
-                isPaid?: boolean;
-                imageCount?: number;
+                downloadCount: number;
+                createdAt: string;
+                updatedAt: string;
+                isLiked: boolean;
+                isPaid: boolean;
+                imageCount: number;
+                reactionStats: {
+                    like: number;
+                    love: number;
+                    haha: number;
+                    wow: number;
+                    sad: number;
+                    angry: number;
+                    dislike: number;
+                };
             }>;
             meta: {
                 total: number;
@@ -5065,8 +5115,126 @@ export type ArticleControllerGetLikedArticlesResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<{
+                id: number;
+                title: string;
+                requireLogin: boolean;
+                requireFollow: boolean;
+                requirePayment: boolean;
+                requireMembership: boolean;
+                listRequireLogin: boolean;
+                viewPrice: string;
+                type: string;
+                content: string | null;
+                images: Array<string>;
+                sort: number;
+                summary: unknown;
+                views: number;
+                likes: number;
+                commentCount: number;
+                status: string;
+                cover: string;
+                authorId: number;
+                author: {
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    avatar: string;
+                    background: unknown;
+                    level: number;
+                    membershipLevel: number;
+                    membershipStatus: string;
+                    membershipStartDate: string | null;
+                    membershipEndDate: unknown;
+                    status: string;
+                    createdAt: string;
+                    updatedAt: string;
+                    description: string;
+                    followerCount: number;
+                    followingCount: number;
+                    lastActiveAt: unknown;
+                    lastLoginAt: string;
+                    gender: string;
+                    isMember: boolean;
+                    isFollowed: boolean;
+                };
+                category: {
+                    id: number;
+                    name: string;
+                    description: string;
+                    parentId: number;
+                    link: string;
+                    parent: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        parentId: unknown;
+                        link: string;
+                        avatar: string;
+                        background: string | null;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                    avatar: string;
+                    background: string | null;
+                    cover: string;
+                    sort: number;
+                    status: string;
+                    articleCount: number;
+                    followCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                tags: Array<{
+                    id: number;
+                    name: string;
+                    description: string | null;
+                    avatar: string;
+                    background: string | null;
+                    cover: string | null;
+                    sort: number;
+                    articleCount: number;
+                    followCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                }>;
+                downloadCount: number;
+                createdAt: string;
+                updatedAt: string;
+                isLiked: boolean;
+                isPaid: boolean;
+                imageCount: number;
+                reactionStats: {
+                    like: number;
+                    love: number;
+                    haha: number;
+                    wow: number;
+                    sad: number;
+                    angry: number;
+                    dislike: number;
+                };
+                userReaction: string;
+            }>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
 };
+
+export type ArticleControllerGetLikedArticlesResponse = ArticleControllerGetLikedArticlesResponses[keyof ArticleControllerGetLikedArticlesResponses];
 
 export type ArticleControllerGetUserBrowseHistoryData = {
     body?: never;
@@ -6115,7 +6283,7 @@ export type CategoryControllerFindAllData = {
         'Device-Type'?: string;
     };
     path?: never;
-    query: {
+    query?: {
         /**
          * 页码
          */
@@ -6124,9 +6292,9 @@ export type CategoryControllerFindAllData = {
          * 每页数量
          */
         limit?: number;
-        name: string;
-        status: string;
-        parentId: number;
+        name?: string;
+        status?: string;
+        parentId?: number;
     };
     url: '/category';
 };

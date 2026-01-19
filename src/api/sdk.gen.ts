@@ -701,7 +701,7 @@ export const tagControllerFollow = <ThrowOnError extends boolean = false>(option
 /**
  * 获取所有分类
  */
-export const categoryControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<CategoryControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<CategoryControllerFindAllResponses, unknown, ThrowOnError>({ url: '/category', ...options });
+export const categoryControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<CategoryControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<CategoryControllerFindAllResponses, unknown, ThrowOnError>({ url: '/category', ...options });
 
 /**
  * 创建分类

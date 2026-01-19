@@ -6,8 +6,12 @@ import { ChevronRight, PenIcon } from "lucide-react";
 import { MessageDropdown } from "./MessageDropdown";
 import { UserDropdown } from "./UserDropdown";
 import { useAppStore } from "@/stores";
-
-export function Header() {
+import { HeaderTabs } from "../home/HeaderTabs";
+import { CategoryList } from "@/types";
+type HeaderProps = {
+  categories?: CategoryList;
+};
+export function Header({ categories }: HeaderProps) {
   const t = useTranslations("common");
   const tHeader = useTranslations("header");
   const siteConfig = useAppStore((state) => state.siteConfig)
@@ -21,6 +25,9 @@ export function Header() {
             <Link href="/" className="text-primary text-3xl font-bold line-clamp-1 text-nowrap">
               {siteConfig?.site_name}
             </Link>
+
+            <HeaderTabs categories={categories!}/>
+
           </div>
 
           {/* 搜索框 */}

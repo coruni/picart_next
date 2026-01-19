@@ -41,6 +41,7 @@ export function ImageGallery({ images, alt = "Gallery image" }: ImageGalleryProp
                     <Image
                         src={images[0]}
                         width={1280}
+                        quality={95}
                         height={800}
                         className="w-full h-auto transition-transform group-hover:scale-105"
                         alt={alt}
@@ -89,10 +90,10 @@ export function ImageGallery({ images, alt = "Gallery image" }: ImageGalleryProp
                                     <Image
                                         src={image}
                                         fill
-                                        sizes="(max-width: 768px) 100px, 120px"
+                                        quality={95}
+                                        sizes="(max-width: 768px) 100px, 128px"
                                         className="object-cover"
                                         alt={`${alt} thumbnail ${index + 1}`}
-                                        sizes="128px"
                                     />
                                 </div>
                             </SwiperSlide>
@@ -120,10 +121,11 @@ export function ImageGallery({ images, alt = "Gallery image" }: ImageGalleryProp
                                     <Image
                                         src={image}
                                         width={0}
+                                        quality={95}
                                         height={0}
                                         className="w-full h-auto object-cover block max-h-[1066px]"
                                         alt={`${alt} ${index + 1}`}
-                                        sizes="(max-width: 1280px) 100vw, 1280px"
+                                        sizes="(max-width: 1280px) 100vw, 1920px"
                                         priority={index === 0}
                                         onLoad={(e) => {
                                             const img = e.currentTarget;

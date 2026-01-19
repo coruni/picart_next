@@ -1,4 +1,4 @@
-import type { ArticleList } from "@/types"
+import type { ArticleDetail, ArticleList } from "@/types"
 import Image from "next/image";
 import { Avatar } from "./ui/Avatar";
 import { formatRelativeTime } from "@/lib";
@@ -7,7 +7,7 @@ import { Button } from "./ui/Button";
 import { FollowButtonWithStatus } from "./ui/FollowButtonWithStatus";
 import { EllipsisVertical, Eye, FileImage, GalleryHorizontalEnd, Hash, MessageCircleMore, ThumbsUp } from "lucide-react";
 import Link from "next/link";
-type Article = ArticleList[number];
+type Article = ArticleList[number] | ArticleDetail;
 type ArticleCardProps = {
     article: Article;
 }
@@ -24,6 +24,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                         src={article.cover}
                         alt={article?.title!}
                         fill
+                        quality={95}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="absolute inset-0 object-cover"
                     />
@@ -46,6 +47,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                             src={article.images[0]}
                             alt={article?.title!}
                             width={0}
+                            quality={95}
                             height={0}
                             sizes="50vw"
                             className="w-full h-auto object-cover"
@@ -65,6 +67,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                                     alt={`${article?.title} ${idx + 1}`}
                                     width={0}
                                     height={0}
+                                    quality={95}
                                     sizes="31vw"
                                     className="w-full h-auto object-cover"
                                 />
@@ -87,6 +90,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                                 alt={`${article?.title} ${idx + 1}`}
                                 width={0}
                                 height={0}
+                                quality={95}
                                 sizes="20vw"
                                 className="w-full h-full object-cover"
                             />

@@ -20,7 +20,7 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
       </div>
 
       {/* 右侧边栏 - 切换时不会重新渲染 */}
-      <div className="right-container space-y-4">
+      <div className="right-container">
         <Sidebar />
       </div>
     </div>

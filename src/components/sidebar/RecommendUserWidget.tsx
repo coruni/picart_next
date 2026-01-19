@@ -5,14 +5,34 @@ import { Avatar } from "../ui/Avatar"
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus"
 import { Plus } from "lucide-react"
 import Image from "next/image"
+import { getTranslations } from "next-intl/server"
+
 export const RecommendUserWidget = async () => {
-    const { data } = await userControllerFindAll({
-        query: {
-            page: 1,
-            limit: 3
-        }
-    })
-    const users = data?.data?.data
+    const t = await getTranslations('sidebar');
+    
+    let users: UserList = [];
+    try {
+        const { data } = await userControllerFindAll({
+            query: {
+                page: 1,
+                limit: 3
+            }
+        });
+        users = data?.data?.data || [];
+    } catch (error) {
+        console.error('Failed to fetch users:', error);
+        // 返回空的组件或错误状态
+        return (
+            <section className="py-4 px-2 bg-card rounded-xl">
+                <div className=" text-ellipsis line-clamp-1 overflow-hidden leading-6 font-medium mb-3 px-2">
+                    <span>{t('recommendUsers')}</span>
+                </div>
+                <div className="text-center py-4 text-muted-foreground text-sm">
+                    {t('loadError', { defaultValue: '加载失败' })}
+                </div>
+            </section>
+        );
+    }
 
     const userCard = (user: UserList[number]) => {
         return (
@@ -48,13 +68,11 @@ export const RecommendUserWidget = async () => {
     return (
         <section className="py-4 px-2 bg-card rounded-xl">
             <div className=" text-ellipsis line-clamp-1 overflow-hidden leading-6 font-medium mb-3 px-2">
-                <span>推荐用户</span>
+                <span>{t('recommendUsers')}</span>
             </div>
-            {users?.map((user) => {
-                return userCard(user)
-            })}
+            {users.map((user) => userCard(user))}
             <div className="px-2 mt-2">
-                <span className="text-sm text-primary hover:text-primary/80 cursor-pointer">查看更多</span>
+                <span className="text-sm text-primary hover:text-primary/80 cursor-pointer">{t('viewMore', { defaultValue: '查看更多' })}</span>
             </div>
         </section>
     )

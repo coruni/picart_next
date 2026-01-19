@@ -262,7 +262,7 @@ export function ImageViewer({
                     rotatable={true}
                     scalable={true}
                     loop={true}
-                    disableMouseZoom={false}
+                    disableMouseZoom={true}
                     noClose={false}
                     defaultScale={1}
                     minScale={0.5}

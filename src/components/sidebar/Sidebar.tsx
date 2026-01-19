@@ -13,7 +13,7 @@ export async function Sidebar() {
   const banners = response.data?.data || [];
 
   return (
-    <>
+    <div className="space-y-4 relative">
       {/* 登录 */}
       <LoginWidget />
       {/* 发帖 */}
@@ -22,7 +22,8 @@ export async function Sidebar() {
       <RecommendUserWidget />
       {/* 热门话题 */}
       <RecommendTagWidget />
-    </>
+    </div>
+
 
   );
 }

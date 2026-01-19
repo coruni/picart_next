@@ -1,34 +1,36 @@
-"use client";
+"use server";
 
 import { tagControllerFindAll } from "@/api"
 import { TagList } from "@/types"
-import { useTranslations } from "next-intl"
-import { useEffect, useState } from "react"
+import { getTranslations } from "next-intl/server"
 
-export const RecommendTagWidget = () => {
-    const t = useTranslations('sidebar');
-    const [tags, setTags] = useState<TagList>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchTags = async () => {
-            try {
-                const { data } = await tagControllerFindAll({
-                    query: {
-                        page: 1,
-                        limit: 4
-                    }
-                });
-                setTags(data?.data.data || []);
-            } catch (error) {
-                console.error('Failed to fetch tags:', error);
-            } finally {
-                setLoading(false);
+export const RecommendTagWidget = async () => {
+    const t = await getTranslations('sidebar');
+    
+    let tags: TagList = [];
+    try {
+        const { data } = await tagControllerFindAll({
+            query: {
+                page: 1,
+                limit: 4
             }
-        };
+        });
+        tags = data?.data?.data || [];
+    } catch (error) {
+        console.error('Failed to fetch tags:', error);
+        // 返回错误状态的组件
+        return (
+            <section className="rounded-xl py-4 px-2 bg-card">
+                <div className=" text-ellipsis line-clamp-1 overflow-hidden leading-6  font-medium px-2 mb-3">
+                    <span>{t('hotTopics')}</span>
+                </div>
+                <div className="text-center py-4 text-muted-foreground text-sm">
+                    {t('loadError')}
+                </div>
+            </section>
+        );
+    }
 
-        fetchTags();
-    }, []);
     const tagCard = (tag: TagList[number]) => {
         return (
             <div key={tag.id} className="py-2 px-3 rounded-lg cursor-pointer hover:bg-primary/15">
@@ -45,33 +47,12 @@ export const RecommendTagWidget = () => {
         )
     }
 
-    if (loading) {
-        return (
-            <section className="rounded-xl py-4 px-2 bg-card">
-                <div className=" text-ellipsis line-clamp-1 overflow-hidden leading-6  font-medium px-2 mb-3">
-                    <span>{t('hotTopics')}</span>
-                </div>
-                <div className="animate-pulse space-y-2">
-                    {[...Array(4)].map((_, i) => (
-                        <div key={i} className="py-2 px-3">
-                            <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                            <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                        </div>
-                    ))}
-                </div>
-
-            </section>
-        );
-    }
     return (
         <section className="rounded-xl py-4 px-2 bg-card">
             <div className=" text-ellipsis line-clamp-1 overflow-hidden leading-6  font-medium px-2 mb-3">
                 <span>{t('hotTopics')}</span>
             </div>
             {tags.map((tag) => tagCard(tag))}
-            <div className="px-2 mt-2">
-                <span className="text-sm text-primary hover:text-primary/80 cursor-pointer">查看更多</span>
-            </div>
         </section>
     )
 }

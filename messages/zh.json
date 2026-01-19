@@ -111,6 +111,20 @@
     "recommended": "推荐关注",
     "quickPost": "快速发布"
   },
+  "headerTabs": {
+    "home": "首页",
+    "channels": "频道"
+  },
+  "channels": {
+    "genshin": "原神",
+    "hsr": "崩坏：星穹铁道",
+    "zzz": "绝区零",
+    "hi3": "Honkai Impact 3rd",
+    "tot": "未定事件簿",
+    "petit": "Petit Planet",
+    "elves": "崩坏：因缘精灵",
+    "hoyolab": "HoYoLAB"
+  },
   "articleList": {
     "loading": "加载中...",
     "loadMore": "滚动加载更多",
@@ -138,7 +152,9 @@
     "hotTopics": "热门话题",
     "posts": "投稿数",
     "members": "成员数",
-    "recommendUsers": "推荐关注"
+    "recommendUsers": "推荐用户",
+    "viewMore": "查看更多",
+    "loadError": "加载失败"
   },
   "time": {
     "justNow": "刚刚",

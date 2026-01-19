@@ -111,6 +111,20 @@
     "recommended": "Recommended",
     "quickPost": "Quick Post"
   },
+  "headerTabs": {
+    "home": "Home",
+    "channels": "Channels"
+  },
+  "channels": {
+    "genshin": "Genshin Impact",
+    "hsr": "Honkai: Star Rail",
+    "zzz": "Zenless Zone Zero",
+    "hi3": "Honkai Impact 3rd",
+    "tot": "Tears of Themis",
+    "petit": "Petit Planet",
+    "elves": "Honkai: Elves",
+    "hoyolab": "HoYoLAB"
+  },
   "articleList": {
     "loading": "Loading...",
     "loadMore": "Scroll to load more",
@@ -138,7 +152,9 @@
     "hotTopics": "Hot Topics",
     "posts": "posts",
     "members": "members",
-    "recommendUsers": "Recommended"
+    "recommendUsers": "Recommended Users",
+    "viewMore": "View More",
+    "loadError": "Failed to load"
   },
   "time": {
     "justNow": "just now",

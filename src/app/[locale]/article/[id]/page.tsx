@@ -1,6 +1,7 @@
 import { articleControllerFindOne } from "@/api";
 import { ArticleAuthor } from "@/components/ArticleAuthor";
 import { ImageGallery } from "@/components/ImageGallery";
+import { Sidebar } from "@/components/sidebar/Sidebar";
 import { generateArticleMetadata } from "@/lib";
 import { Dot, MoreHorizontal } from "lucide-react";
 import { Metadata } from "next";
@@ -72,6 +73,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                                 src={article.cover}
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                quality={95}
                                 className="object-cover"
                                 alt={article.title}
                             />
@@ -109,7 +111,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                 </div>
             </div>
             <div className="right-container">
-                123
+                <Sidebar />
             </div>
         </div>
     );

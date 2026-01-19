@@ -38,7 +38,7 @@ export function ArticleAuthor({ author, createdAt, onFollow }: ArticleAuthorProp
         // 监听滚动
         scrollHandler = () => {
             const scrollTop = window.scrollY || document.documentElement.scrollTop;
-            const stickyTop = 60; // 标题栏高度
+            const stickyTop = 118; // 标题栏高度
 
             // 当滚动距离超过元素原始位置减去吸顶位置时，变为sticky
             if (scrollTop >= originalTop - stickyTop) {
