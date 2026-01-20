@@ -15,7 +15,7 @@ type AccountInfoProps = {
 export const AccountInfo = ({ user, isSelf }: AccountInfoProps) => {
     const scrolled = useScrollThreshold(240, true)
     return (
-        <div className="px-10 z-10 sticky top-15 bg-card">
+        <div className="px-10 z-10 sticky top-15 bg-card border-t-border border-t">
             <div className="flex items-center h-14 space-x-4">
                 {/* 头像 */}
                 <div className={cn(

@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import Image from "next/image";
 import { Globe, Moon, ChevronRight, LogIn, Power, User, MessageCircle, Lock, UserRoundX } from "lucide-react";
 import { useTranslations } from "next-intl";

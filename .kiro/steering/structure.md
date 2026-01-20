@@ -31,13 +31,14 @@ Auto-generated API client from OpenAPI spec. Do not manually edit files in this 
 
 ### Components (`src/components/`)
 
-- `ui/` - Base UI components (Button, Dialog, FloatingInput, Form, Input, Switch)
-- `layout/` - Layout components (Header, UserDropdown, UserLoginDialog)
-- `home/` - Home page specific components (FeedCard, FeedList, Sidebar, etc.)
+- `ui/` - Base UI components (Button, Dialog, FloatingInput, Form, Input, Switch, Avatar, Tabs, FollowButtonWithStatus)
+- `layout/` - Layout components (Header, UserDropdown, UserLoginDialog, MessageDropdown)
+- `account/` - Account page components (AccountInfo)
+- `article/` - Article related components (ArticleCard, ArticleAuthor, ImageGallery, ImageViewer)
+- `home/` - Home page specific components (ArticleListClient, FeedTabs, HeaderTabs)
+- `sidebar/` - Sidebar widgets (Sidebar, ArticleCreateWidget, RecommendUserWidget, RecommentTagWidget, LoadingWidget)
 - `providers/` - React context providers (DeviceFingerprintProvider, UserStateProvider)
-- `LanguageSwitcher.tsx` - Locale switching
-- `ThemeSwitcher.tsx` - Dark/light mode toggle
-- `NotificationContainer.tsx` - Toast notifications
+- `shared/` - Shared utility components (LanguageSwitcher, ThemeSwitcher, NotificationContainer)
 
 ### State Management (`src/stores/`)
 

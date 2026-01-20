@@ -106,7 +106,7 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
 
   return {
     title: {
-      default: config.site_name || "PicArt",
+      default: `${config.site_name} | ${config.site_subtitle}` || "PicArt",
       template: `%s | ${config.site_name || "PicArt"}`,
     },
     description: config.site_description || config.site_subtitle || "A modern image sharing platform",

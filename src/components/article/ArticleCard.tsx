@@ -1,11 +1,12 @@
+"use client"
 import type { ArticleDetail, ArticleList } from "@/types"
 import Image from "next/image";
-import { Avatar } from "./ui/Avatar";
+import { Avatar } from "@/components/ui/Avatar";
 import { formatRelativeTime } from "@/lib";
 import { useTranslations } from "next-intl";
-import { FollowButtonWithStatus } from "./ui/FollowButtonWithStatus";
+import { FollowButtonWithStatus } from "@/components/ui/FollowButtonWithStatus";
 import { EllipsisVertical, Eye, FileImage, GalleryHorizontalEnd, Hash, HeartCrack, MessageCircleMore, ThumbsUp } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { useRef, useState } from "react";
 import { useClickOutside } from "@/hooks";
 

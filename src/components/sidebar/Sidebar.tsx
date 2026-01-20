@@ -1,6 +1,6 @@
 import { bannerControllerFindActive } from "@/api";
 import Image from "next/image";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { LoginWidget } from "./LoadingWidget";
 import { ArticleCreateWidget } from "./ArticleCreateWidget";
 import { RecommendUserWidget } from "./RecommendUserWidget";

@@ -3,7 +3,7 @@ import Image from "next/image";
 import { userControllerFindOne } from "@/api";
 import { notFound } from "next/navigation";
 
-import { AccountInfo } from "@/components/layout/AccountInfo";
+import { AccountInfo, AccountTabs } from "@/components/account";
 interface AccountLayoutProps {
     children: ReactNode;
     params: Promise<{ id: string; locale: string }>;
@@ -31,19 +31,19 @@ export default async function AccountLayout({ children, params }: AccountLayoutP
             <div className="mt-75 w-full z-10 relative bg-border dark:bg-gray-800">
                 {/* 用户信息 */}
                 <AccountInfo user={user} />
-
                 {/* 子页面内容 */}
                 <div className="page-container pt-4!">
                     <div className="left-container">
+                        {/* Tabs 导航 */}
+                        <div className="px-10 h-14 flex items-center border-b border-border sticky top-[120px] bg-card z-10 rounded-t-xl">
+                            <AccountTabs />
+                        </div>
                         {children}
-
                     </div>
                     <div className="right-container">
-
+                        {/* 侧边栏内容 */}
                     </div>
-
                 </div>
-
             </div>
         </>
     );

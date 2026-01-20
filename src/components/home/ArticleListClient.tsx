@@ -1,7 +1,7 @@
 "use client";
 import { ArticleList } from "@/types";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ArticleCard } from "../ArticleCard";
+import { ArticleCard } from "@/components/article";
 import { articleControllerFindAll } from "@/api";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";

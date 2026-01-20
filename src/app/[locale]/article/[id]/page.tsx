@@ -1,6 +1,5 @@
 import { articleControllerFindOne } from "@/api";
-import { ArticleAuthor } from "@/components/ArticleAuthor";
-import { ImageGallery } from "@/components/ImageGallery";
+import { ArticleAuthor, ImageGallery } from "@/components/article";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { generateArticleMetadata } from "@/lib";
 import { Dot, MoreHorizontal } from "lucide-react";

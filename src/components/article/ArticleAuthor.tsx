@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { formatRelativeTime } from "@/lib/utils";
-import { Button } from "./ui/Button";
-import { Avatar } from "./ui/Avatar";
+import { Button } from "@/components/ui/Button";
+import { Avatar } from "@/components/ui/Avatar";
 import { useTranslations } from "next-intl";
 import type { ArticleDetail } from "@/types";
+import { Link } from "@/i18n/routing";
 
 type ArticleAuthorProps = {
     author: ArticleDetail['author']
@@ -88,11 +89,11 @@ export function ArticleAuthor({ author, createdAt, onFollow }: ArticleAuthorProp
 
                 {/* 用户名 */}
                 <div className="ml-3 flex flex-col flex-1">
-                    <div className="flex items-center leading-5">
+                    <Link href={`/account/${author.id}`} className="flex items-center leading-5">
                         <span className="font-bold hover:text-primary">
                             {(author?.nickname || author?.username) as string}
                         </span>
-                    </div>
+                    </Link>
                     {!isSticky && (
                         <div className="mt-1 leading-4">
                             <span className="text-xs text-secondary">

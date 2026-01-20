@@ -5,7 +5,7 @@ import { getMessages } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
-import { NotificationContainer } from "@/components/NotificationContainer";
+import { NotificationContainer } from "@/components/shared";
 import { generateSiteMetadata } from "@/lib/seo";
 import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
 import { UserStateProvider } from "@/components/providers/UserStateProvider";
