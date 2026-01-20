@@ -14,10 +14,16 @@
     "edit": "编辑",
     "save": "保存",
     "search": "搜索",
+    "all": "全部",
+    "searchAll": "搜索全部内容",
     "loading": "加载中...",
     "noData": "暂无数据",
     "error": "错误",
-    "success": "成功"
+    "success": "成功",
+    "searchHistory": "历史搜索",
+    "hotSearches": "热门搜索",
+    "clear": "清空",
+    "noSearchHistory": "暂无搜索历史"
   },
   "nav": {
     "home": "首页",

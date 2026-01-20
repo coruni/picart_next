@@ -11,6 +11,7 @@ import { CategoryList } from "@/types";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
+import { SearchBox } from "./SearchBox";
 
 type HeaderProps = {
   categories?: CategoryList;
@@ -27,6 +28,11 @@ export function Header({ categories }: HeaderProps) {
 
   // 使用自定义 hook 监听滚动
   const scrolled = useScrollThreshold(240, isAccountPage);
+
+  const handleSearch = (query: string, categoryId?: number) => {
+    // TODO: 实现搜索逻辑
+    console.log('Search:', { query, categoryId });
+  };
 
   return (
     <header
@@ -48,32 +54,12 @@ export function Header({ categories }: HeaderProps) {
           </div>
 
           {/* 搜索框 */}
-          <div className="flex-1 items-center justify-center hidden md:flex">
-            <div className="relative group max-w-md h-9 w-full">
-              <input
-                type="text"
-                placeholder={t("search")}
-                className={cn(
-                  "w-full h-full pl-12 pr-4 rounded-full transition-all",
-                  "placeholder:text-secondary placeholder:text-sm",
-                  "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary",
-                  // 普通页面样式
-                  (!isAccountPage || scrolled) && [
-                    "bg-[#f1f4f9] border border-border",
-                    "hover:bg-card hover:border-primary hover:ring-1 hover:ring-primary",
-                    "focus:bg-card",
-                  ],
-                  // Account 页面未滚动时的透明样式
-                  isAccountPage && !scrolled && [
-                    "bg-[#00000066] border border-[#ffffff66]",
-                    "hover:border-white hover:ring-1 hover:ring-white/50",
-                    "focus:border-white focus:ring-white/50",
-                    "placeholder:text-white/70"
-                  ]
-                )}
-              />
-            </div>
-          </div>
+          <SearchBox
+            categories={categories}
+            isAccountPage={isAccountPage}
+            scrolled={scrolled}
+            onSearch={handleSearch}
+          />
 
           {/* 右侧操作 */}
           <div className="flex items-center gap-4">

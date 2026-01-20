@@ -10,6 +10,7 @@ import { generateSiteMetadata } from "@/lib/seo";
 import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
 import { UserStateProvider } from "@/components/providers/UserStateProvider";
 import { getServerCookie } from "@/lib/server-cookies";
+import NextTopLoader from 'nextjs-toploader';
 import { categoryControllerFindAll, configControllerGetPublicConfigs, userControllerGetProfile } from "@/api";
 import { initializeInterceptors } from "@/rumtime.config";
 import type { UserProfile } from "@/types";
@@ -81,6 +82,7 @@ export default async function LocaleLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <NextTopLoader color="#6680ff" showSpinner={false} />
         <NextIntlClientProvider messages={messages}>
           {/* 设备指纹初始化 */}
           <DeviceFingerprintProvider />

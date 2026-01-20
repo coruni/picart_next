@@ -14,10 +14,16 @@
     "edit": "Edit",
     "save": "Save",
     "search": "Search",
+    "all": "All",
+    "searchAll": "Search all content",
     "loading": "Loading...",
     "noData": "No Data",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "searchHistory": "Search History",
+    "hotSearches": "Hot Searches",
+    "clear": "Clear",
+    "noSearchHistory": "No search history"
   },
   "nav": {
     "home": "Home",

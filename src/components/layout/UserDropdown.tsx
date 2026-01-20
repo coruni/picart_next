@@ -71,7 +71,7 @@ export function UserDropdown() {
               <div className="p-1">
                 {/* 个人主页 */}
                 <Link
-                  href="/profile"
+                  href={`/account/${user?.id}`}
                   className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1"
                 >
                   <div className="flex items-center gap-3">
