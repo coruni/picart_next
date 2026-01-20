@@ -10026,7 +10026,7 @@
             "name": "type",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -10035,7 +10035,7 @@
             "name": "categoryId",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "number"
             }
@@ -10044,7 +10044,7 @@
             "name": "keyword",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }

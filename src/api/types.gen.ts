@@ -4897,7 +4897,7 @@ export type ArticleControllerFindByAuthorData = {
     path: {
         id: string;
     };
-    query: {
+    query?: {
         /**
          * 页码
          */
@@ -4906,9 +4906,9 @@ export type ArticleControllerFindByAuthorData = {
          * 每页数量
          */
         limit?: number;
-        type: string;
-        categoryId: number;
-        keyword: string;
+        type?: string;
+        categoryId?: number;
+        keyword?: string;
     };
     url: '/article/author/{id}';
 };

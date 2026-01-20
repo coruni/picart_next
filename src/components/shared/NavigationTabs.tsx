@@ -58,7 +58,7 @@ export function NavigationTabs({
             key={tab.value}
             href={tab.href}
             className={cn(
-              "relative px-1 pb-2 text-base font-medium transition-colors h-full",
+              "relative px-1 py-2 text-base font-medium transition-colors h-full",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               tabClassName,
               active

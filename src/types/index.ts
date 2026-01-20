@@ -58,6 +58,7 @@ import type {
   ReportControllerFindOneResponse,
   ReportControllerGetStatisticsResponse,
   UserControllerFindOneResponse,
+  ArticleControllerFindByAuthorResponse,
 } from "@/api/types.gen";
 
 // ==================== 从响应类型中提取数据类型 ====================
@@ -74,6 +75,7 @@ export type UserConfigData = NonNullable<UserControllerGetUserConfigResponse["da
 
 // 文章相关数据类型
 export type ArticleList = NonNullable<ArticleControllerFindAllResponse["data"]['data']>;
+export type ArticleUserList = NonNullable<ArticleControllerFindByAuthorResponse['data']['data']>
 export type ArticleDetail = NonNullable<ArticleControllerFindOneResponse["data"]>;
 export type ArticleSearchResult = NonNullable<ArticleControllerSearchResponse["data"]['data']>;
 export type ArticleRecommendations = NonNullable<ArticleControllerFindRecommendationsResponse["data"]['data']>;

@@ -1,5 +1,5 @@
 import { articleControllerFindAll } from "@/api";
-import { ArticleListClient } from "@/components/home/ArticleListClient";
+import { ArticleListClient } from "@/components/home/ArticleList.client";
 
 export default async function HomePage() {
   // SSR: 服务端获取第一页数据
@@ -16,7 +16,8 @@ export default async function HomePage() {
   return (
     <ArticleListClient
       initArticles={articles}
-      initTotal={total} initPage={2}      
+      initTotal={total}
+      initPage={2}
     />
   );
 }

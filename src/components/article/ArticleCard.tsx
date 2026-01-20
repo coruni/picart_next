@@ -13,8 +13,9 @@ import { useClickOutside } from "@/hooks";
 type Article = ArticleList[number] | ArticleDetail;
 type ArticleCardProps = {
     article: Article;
+    showFollow: boolean;
 }
-export const ArticleCard = ({ article }: ArticleCardProps) => {
+export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) => {
     const t = useTranslations();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -139,9 +140,12 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                         </div>
                     </div>
                     {/* 关注 */}
-                    <div className="ml-3 flex items-center w-auto">
-                        <FollowButtonWithStatus author={article.author} className="min-w-22" />
-                    </div>
+                    {showFollow && (
+                        <div className="ml-3 flex items-center w-auto">
+                            <FollowButtonWithStatus author={article.author} className="min-w-22" />
+                        </div>
+                    )}
+
 
                 </div>
                 <div className="ml-3">
