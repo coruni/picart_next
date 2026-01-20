@@ -1,7 +1,7 @@
 
 "use client"
 import { useState, useEffect } from "react";
-import { Link } from "@/i18n/routing";
+import { EmptyState } from "@/components/shared";
 import Image from "next/image";
 import { MessageCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -9,6 +9,8 @@ import { useUserStore } from "@/stores";
 import { Button } from "@/components/ui/Button";
 import { MessageList } from "@/types";
 import { messageControllerFindAll } from "@/api";
+import { openLoginDialog } from "@/lib/modal-helpers";
+import { Link } from "@/i18n/routing";
 export function MessageDropdown() {
     const tHeader = useTranslations("header");
     const [isHydrated, setIsHydrated] = useState(false);
@@ -17,7 +19,7 @@ export function MessageDropdown() {
     const [isLoading, setIsLoading] = useState(false);
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
-    
+
     // 使用 selector 获取响应式状态
     const isAuthenticated = useUserStore((state) => state.isAuthenticated);
 
@@ -94,7 +96,7 @@ export function MessageDropdown() {
                                                 <p className="text-sm font-medium text-foreground truncate">
                                                     {message.id}
                                                 </p>
-                                                <span className="text-xs text-muted-foreground">{message.time}</span>
+                                                <span className="text-xs text-muted-foreground">{message.createdAt}</span>
                                             </div>
                                             <p className="text-sm text-muted-foreground truncate">{message.content}</p>
                                         </div>
@@ -116,30 +118,15 @@ export function MessageDropdown() {
                         </div>
                     </>
                 ) : (
-                    <div className="flex flex-col pb-12">
-                        {/* 空白占位图 */}
-                        <div className="flex items-center justify-center flex-col gap-2">
-                            <Image
-                                src="/placeholder/empty.png"
-                                width={200}
-                                height={150}
-                                quality={95}
-                                alt="message-empty"
-                                loading="eager"
-                                style={{ height: 150, width: 200 }}
-                                draggable={false}
-                                className=" object-cover"
-                            />
-                            <span className="text-sm mb-2 text-secondary">登录查看更多精彩内容</span>
-                        </div>
-                        <div className="flex justify-center items-center">
-                            <Link href="/login">
-                                <Button variant="default" className="rounded-full" size="md">
-                                    去登录
-                                </Button>
-                            </Link>
-                        </div>
-                    </div>
+                    <EmptyState
+                        message="登录查看更多精彩内容"
+                        buttonText="去登录"
+                        customButton={
+                            <Button className="rounded-full" onClick={openLoginDialog}>
+                                去登录
+                            </Button>
+                        }
+                    />
                 )}
             </div>
         </div>
