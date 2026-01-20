@@ -11,7 +11,7 @@ import  {ImageViewer}  from "./ImageViewer";
 // 导入 Swiper 样式
 import "swiper/css";
 import "swiper/css/thumbs";
-import "swiper/css/free-mode";
+// import "swiper/css/free-mode";
 
 type ImageGalleryProps = {
     images: string[];
@@ -74,7 +74,7 @@ export function ImageGallery({ images, alt = "Gallery image" }: ImageGalleryProp
         <>
             <div className="w-full space-y-2">
                 {/* 缩略图 Swiper - 上方，横向滚动 */}
-                <div className="max-w-[920px]">
+                <div className="max-w-[calc(920px-48px)] box-content overflow-hidden">
                     <Swiper
                         onSwiper={setThumbsSwiper}
                         modules={[FreeMode, Thumbs]}
@@ -82,7 +82,7 @@ export function ImageGallery({ images, alt = "Gallery image" }: ImageGalleryProp
                         slidesPerView="auto"
                         freeMode={true}
                         watchSlidesProgress={true}
-                        className="thumbs-swiper"
+                        className="thumbs-swiper max-w-full overflow-visible!"
                     >
                         {images.map((image, index) => (
                             <SwiperSlide key={`thumb-${index}`} style={{ width: '128px', height: '128px' }} className="shrink-0">

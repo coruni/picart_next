@@ -54,12 +54,22 @@ export function Header({ categories }: HeaderProps) {
                 type="text"
                 placeholder={t("search")}
                 className={cn(
-                  "w-full h-full pl-12 pr-4 border hover:ring-primary hover:ring-1 placeholder:text-secondary placeholder:text-sm",
-                  " rounded-full focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent transition-all",
-                  "",
-                  !isAccountPage || scrolled && "bg-[#f1f4f9] border-border dark:bg-gray-500 focus:bg-card hover:bg-card dark:hover:bg-gray-800",
-                  isAccountPage && !scrolled && "bg-[#00000066] border-[#ffffff66] ",
-
+                  "w-full h-full pl-12 pr-4 rounded-full transition-all",
+                  "placeholder:text-secondary placeholder:text-sm",
+                  "focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary",
+                  // 普通页面样式
+                  (!isAccountPage || scrolled) && [
+                    "bg-[#f1f4f9] border border-border",
+                    "hover:bg-card hover:border-primary hover:ring-1 hover:ring-primary",
+                    "focus:bg-card",
+                  ],
+                  // Account 页面未滚动时的透明样式
+                  isAccountPage && !scrolled && [
+                    "bg-[#00000066] border border-[#ffffff66]",
+                    "hover:border-white hover:ring-1 hover:ring-white/50",
+                    "focus:border-white focus:ring-white/50",
+                    "placeholder:text-white/70"
+                  ]
                 )}
               />
             </div>

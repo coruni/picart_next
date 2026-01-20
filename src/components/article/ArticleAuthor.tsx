@@ -81,12 +81,13 @@ export function ArticleAuthor({ author, createdAt, onFollow }: ArticleAuthorProp
         >
             <div className="flex items-center flex-1 cursor-pointer mx-auto w-full">
                 {/* 头像 */}
-                <Avatar
-                    size={isSticky ? 'sm' : 'lg'}
-                    url={author?.avatar}
-                    avatarFrame={author?.equippedDecorations?.AVATAR_FRAME?.imageUrl || ''}
-                />
-
+                <Link href={`/account/${author.id}`} className="shrink-0">
+                    <Avatar
+                        size={isSticky ? 'sm' : 'lg'}
+                        url={author?.avatar}
+                        avatarFrame={author?.equippedDecorations?.AVATAR_FRAME?.imageUrl || ''}
+                    />
+                </Link>
                 {/* 用户名 */}
                 <div className="ml-3 flex flex-col flex-1">
                     <Link href={`/account/${author.id}`} className="flex items-center leading-5">

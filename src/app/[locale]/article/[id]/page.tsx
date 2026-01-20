@@ -50,9 +50,9 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
 
     return (
         <div className="page-container">
-            <div className="left-container">
+            <div className="left-container ">
                 {/* 顶部header */}
-                <div className="px-4 h-14 flex items-center border-b rounded-t-xl border-border sticky top-[50px] bg-white dark:bg-gray-800 z-10 relative">
+                <div className="px-4 h-14 flex items-center border-b  rounded-t-xl border-border sticky top-[50px] bg-white dark:bg-gray-800 z-10">
                     <div className="h-full flex-1 flex items-center">
                         <span className="font-bold text-base pr-6">
                             帖子详情页
@@ -92,7 +92,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                     {/* 文章信息 */}
                     <div className="mt-4 px-6">
                         {/* 图册 */}
-                        <div className="flex relative">
+                        <div className="flex relative overflow-hidden">
                             <ImageGallery images={article?.images!} />
                         </div>
                         {/* 内容 */}
