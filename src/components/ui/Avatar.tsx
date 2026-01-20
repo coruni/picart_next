@@ -31,7 +31,7 @@ export const Avatar = ({
     avatarFrame
 }: AvatarProps) => {
     return (
-        <div className={cn(avatarVariants({ size }), "transition-all", className)}>
+        <div className={cn(avatarVariants({ size }), "transition-all shrink-0", className)}>
             {avatarFrame && (
                 <Image
                     quality={95}
@@ -39,7 +39,7 @@ export const Avatar = ({
                     alt="avatar frame"
                     fill
                     sizes="(max-width: 768px) 64px, 80px"
-                    className="absolute inset-0 z-10 pointer-events-none"
+                    className="absolute inset-0 z-10 pointer-events-none shrink-0"
                 />
             )}
             <Image
@@ -47,7 +47,7 @@ export const Avatar = ({
                 alt="avatar"
                 fill
                 sizes="(max-width: 768px) 64px, 80px"
-                className="rounded-full object-cover"
+                className="rounded-full object-cover shrink-0"
             />
         </div>
     );

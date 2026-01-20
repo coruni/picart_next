@@ -3,16 +3,22 @@ import Image from "next/image";
 import { Avatar } from "./ui/Avatar";
 import { formatRelativeTime } from "@/lib";
 import { useTranslations } from "next-intl";
-import { Button } from "./ui/Button";
 import { FollowButtonWithStatus } from "./ui/FollowButtonWithStatus";
-import { EllipsisVertical, Eye, FileImage, GalleryHorizontalEnd, Hash, MessageCircleMore, ThumbsUp } from "lucide-react";
+import { EllipsisVertical, Eye, FileImage, GalleryHorizontalEnd, Hash, HeartCrack, MessageCircleMore, ThumbsUp } from "lucide-react";
 import Link from "next/link";
+import { useRef, useState } from "react";
+import { useClickOutside } from "@/hooks";
+
 type Article = ArticleList[number] | ArticleDetail;
 type ArticleCardProps = {
     article: Article;
 }
 export const ArticleCard = ({ article }: ArticleCardProps) => {
     const t = useTranslations();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useClickOutside(menuRef, () => setIsMenuOpen(false));
 
     // 构建封面/图片元素组件
     const MediaElement = () => {
@@ -115,7 +121,11 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
             <div className="flex items-center">
                 <div className="flex items-center flex-1 cursor-pointer">
                     {/* 头像 */}
-                    <Avatar size="lg" url={article.author?.avatar} avatarFrame={article.author?.equippedDecorations?.AVATAR_FRAME?.imageUrl || ''} />
+                    <Avatar 
+                        size="lg" 
+                        url={article.author?.avatar} 
+                        avatarFrame={(article.author as any)?.equippedDecorations?.AVATAR_FRAME?.imageUrl || ''} 
+                    />
                     {/* 用户名 */}
                     <div className="ml-3 flex flex-col flex-1">
                         <div className=" flex items-center leading-5">
@@ -127,13 +137,37 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                     </div>
                     {/* 关注 */}
                     <div className="ml-3 flex items-center w-auto">
-                        <FollowButtonWithStatus author={article.author}  className="min-w-22"/>
+                        <FollowButtonWithStatus author={article.author} className="min-w-22" />
                     </div>
 
                 </div>
                 <div className="ml-3">
-                    <div className="relative">
-                        <EllipsisVertical size={20} className="text-secondary cursor-pointer" />
+                    <div className="relative" ref={menuRef}>
+                        <EllipsisVertical 
+                            size={20} 
+                            className="text-secondary cursor-pointer" 
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        />
+                        {/* 操作面板 */}
+                        {isMenuOpen && (
+                            <div className="absolute top-8 right-0 rounded-xl drop-shadow-xl bg-card min-w-50 z-10">
+                                <div className="p-2">
+                                    <div className="px-2 font-medium">
+                                        <span>更多</span>
+                                    </div>
+                                    <div 
+                                        className="cursor-pointer p-2 text-sm hover:bg-primary/15 group hover:text-primary rounded-xl flex items-center gap-2"
+                                        onClick={() => {
+                                            // TODO: 处理"不喜欢"逻辑
+                                            setIsMenuOpen(false);
+                                        }}
+                                    >
+                                        <HeartCrack size={20} className="text-secondary group-hover:text-primary" />
+                                        <span>我不喜欢这个内容</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -141,8 +175,8 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
             <section className="cursor-pointer">
                 <Link href={`/article/${article.id}`}>
                     <h3 className="mt-2 font-bold hover:text-primary">{article?.title}</h3>
-                    {article.summary && (
-                        <p className="leading-5 text-secondary">{article?.summary}</p>
+                    {article.summary && typeof article.summary === 'string' && (
+                        <p className="leading-5 text-secondary">{article.summary}</p>
                     )}
                     <MediaElement />
                 </Link>
