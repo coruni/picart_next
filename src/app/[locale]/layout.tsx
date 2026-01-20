@@ -88,7 +88,7 @@ export default async function LocaleLayout({
           {/* 用户状态同步 */}
           <UserStateProvider initialToken={initialToken} initialUser={initialUser} initialConfig={data?.data!}>
             <Header categories={category.data?.data.data} />
-            <div className="max-w-7xl mx-auto pt-4 flex flex-col flex-1">
+            <div className="flex flex-col flex-1 min-h-screen">
               {children}
             </div>
             <NotificationContainer />

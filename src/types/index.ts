@@ -57,6 +57,7 @@ import type {
   ReportControllerFindAllResponse,
   ReportControllerFindOneResponse,
   ReportControllerGetStatisticsResponse,
+  UserControllerFindOneResponse,
 } from "@/api/types.gen";
 
 // ==================== 从响应类型中提取数据类型 ====================
@@ -64,6 +65,7 @@ import type {
 // 用户相关数据类型
 export type UserProfile = NonNullable<UserControllerGetProfileResponse["data"]>;
 export type UserList = NonNullable<UserControllerFindAllResponse["data"]['data']>;
+export type UserDetail = NonNullable<UserControllerFindOneResponse["data"]>;
 export type LoginResult = NonNullable<UserControllerLoginResponse["data"]>;
 export type RegisterResult = NonNullable<UserControllerRegisterUserResponse["data"]>;
 export type WalletBalance = NonNullable<UserControllerGetWalletBalanceResponse["data"]['data']>;

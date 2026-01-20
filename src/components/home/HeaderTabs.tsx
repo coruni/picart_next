@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { categoryControllerFindAll } from "@/api";
 import { CategoryList } from "@/types";
 
 interface TabItem {
@@ -17,7 +16,8 @@ interface TabItem {
 }
 
 type HeaderTabsProps = {
-    categories: CategoryList
+    categories: CategoryList,
+    labelClassName?: string;
 }
 
 // 路径匹配规则
@@ -28,7 +28,7 @@ function isTabActive(currentPath: string, tabHref: string): boolean {
     return currentPath.startsWith(tabHref);
 }
 
-export function HeaderTabs({ categories }: HeaderTabsProps) {
+export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
     const channels = categories.filter((category) => !category.link)
     const t = useTranslations('headerTabs');
     const pathname = usePathname();
@@ -43,8 +43,8 @@ export function HeaderTabs({ categories }: HeaderTabsProps) {
     ];
 
     return (
-        <div className="relative inline-flex items-center group">
-            <div className="inline-flex items-center gap-6 bg-card rounded-lg px-4 py-2">
+        <div className="relative inline-flex items-center">
+            <div className="inline-flex items-center gap-6 px-4 py-2">
                 {tabs.map((tab) => {
                     const isActive = isTabActive(currentPath, tab.href);
 
@@ -53,15 +53,17 @@ export function HeaderTabs({ categories }: HeaderTabsProps) {
                             <Link
                                 href={tab.href}
                                 className={cn(
-                                    "relative px-1 pb-2 text-base font-medium transition-colors h-full flex items-center gap-1 hover:text-foreground",
+                                    "relative px-1 pb-2 text-base group-hover:text-foreground transition-colors h-full flex items-center gap-1 hover:text-foreground font-semibold",
                                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                                     isActive
                                         ? "text-foreground"
                                         : "text-secondary"
                                 )}
                             >
-                                {tab.label}
-                                {tab.hasDropdown && <ChevronDown size={16} className="group-hover:rotate-180 transition-all" />}
+                                <span className={cn("inline-flex items-center", labelClassName)}>
+                                    {tab.label}
+                                    {tab.hasDropdown && <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />}
+                                </span>
                                 <span className={cn(
                                     'absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-full w-5 translate-x-1/2 transition-opacity',
                                     isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'

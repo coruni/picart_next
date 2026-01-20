@@ -1672,7 +1672,6 @@ export type UpdateEmojiDto = {
 export type AppControllerGetHelloData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -1689,7 +1688,6 @@ export type AppControllerGetHelloResponses = {
 export type RoleControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -1731,7 +1729,6 @@ export type RoleControllerFindAllResponse = RoleControllerFindAllResponses[keyof
 export type RoleControllerCreateData = {
     body: CreateRoleDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -1753,7 +1750,6 @@ export type RoleControllerCreateResponse = RoleControllerCreateResponses[keyof R
 export type RoleControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -1775,7 +1771,6 @@ export type RoleControllerRemoveResponses = {
 export type RoleControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -1817,7 +1812,6 @@ export type RoleControllerFindOneResponse = RoleControllerFindOneResponses[keyof
 export type RoleControllerUpdateData = {
     body: UpdateRoleDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -1841,7 +1835,6 @@ export type RoleControllerUpdateResponse = RoleControllerUpdateResponses[keyof R
 export type RoleControllerFindWithPaginationData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -1900,7 +1893,6 @@ export type RoleControllerFindWithPaginationResponse = RoleControllerFindWithPag
 export type RoleControllerGetActiveRolesData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -1942,7 +1934,6 @@ export type RoleControllerGetActiveRolesResponse = RoleControllerGetActiveRolesR
 export type RoleControllerAssignPermissionsData = {
     body: AssignPermissionsDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -1964,7 +1955,6 @@ export type RoleControllerAssignPermissionsResponses = {
 export type RoleControllerCopyRoleData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -1986,7 +1976,6 @@ export type RoleControllerCopyRoleResponses = {
 export type RoleControllerToggleStatusData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2008,7 +1997,6 @@ export type RoleControllerToggleStatusResponses = {
 export type ConfigControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2057,7 +2045,6 @@ export type ConfigControllerFindAllResponse = ConfigControllerFindAllResponses[k
 export type ConfigControllerUpdateAllData = {
     body: Array<string>;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2092,7 +2079,6 @@ export type ConfigControllerUpdateAllResponses = {
 export type ConfigControllerCreateData = {
     body: CreateConfigDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2127,7 +2113,6 @@ export type ConfigControllerCreateResponses = {
 export type ConfigControllerFindByGroupData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2181,7 +2166,6 @@ export type ConfigControllerFindByGroupResponse = ConfigControllerFindByGroupRes
 export type ConfigControllerUpdateGroupData = {
     body: Array<string>;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2221,7 +2205,6 @@ export type ConfigControllerUpdateGroupResponses = {
 export type ConfigControllerFindByKeyData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2253,7 +2236,6 @@ export type ConfigControllerFindByKeyResponses = {
 export type ConfigControllerUpdateByKeyData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2297,7 +2279,6 @@ export type ConfigControllerUpdateByKeyResponses = {
 export type ConfigControllerGetPublicConfigsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2384,7 +2365,6 @@ export type ConfigControllerGetPublicConfigsResponse = ConfigControllerGetPublic
 export type ConfigControllerGetAdvertisementConfigData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2430,7 +2410,6 @@ export type ConfigControllerGetAdvertisementConfigResponse = ConfigControllerGet
 export type ConfigControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2470,7 +2449,6 @@ export type ConfigControllerRemoveResponses = {
 export type ConfigControllerUpdateData = {
     body?: UpdateConfigDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2514,7 +2492,6 @@ export type ConfigControllerUpdateResponses = {
 export type UserControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2546,16 +2523,12 @@ export type UserControllerFindAllResponses = {
                 id?: number;
                 username?: string;
                 nickname?: string;
-                password?: string;
-                email?: string;
-                phone?: unknown;
                 status?: string;
                 banned?: unknown;
                 banReason?: unknown;
                 avatar?: string;
                 description?: string;
                 background?: unknown;
-                address?: unknown;
                 gender?: string;
                 birthDate?: unknown;
                 articleCount?: number;
@@ -2593,34 +2566,10 @@ export type UserControllerFindAllResponses = {
                     createdAt?: string;
                     updatedAt?: string;
                 }>;
-                config?: {
-                    id: number;
-                    userId: number;
-                    articleCommissionRate: string;
-                    membershipCommissionRate: string;
-                    productCommissionRate: string;
-                    serviceCommissionRate: string;
-                    enableCustomCommission: boolean;
-                    enableSystemNotification: boolean;
-                    enableCommentNotification: boolean;
-                    enableLikeNotification: boolean;
-                    enableFollowNotification: boolean;
-                    enableMessageNotification: boolean;
-                    enableOrderNotification: boolean;
-                    enablePaymentNotification: boolean;
-                    enableInviteNotification: boolean;
-                    enableEmailNotification: boolean;
-                    enableSmsNotification: boolean;
-                    enablePushNotification: boolean;
-                    hideFavorites: boolean;
-                    remark: string;
-                    createdAt: string;
-                    updatedAt: string;
-                };
                 createdAt?: string;
                 updatedAt?: string;
-                isMember?: boolean;
                 isFollowed?: boolean;
+                isMember?: boolean;
             }>;
             meta: {
                 total: number;
@@ -2637,7 +2586,6 @@ export type UserControllerFindAllResponse = UserControllerFindAllResponses[keyof
 export type UserControllerCreateData = {
     body: CreateUserDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2672,7 +2620,6 @@ export type UserControllerCreateResponses = {
 export type UserControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2705,7 +2652,6 @@ export type UserControllerRemoveResponses = {
 export type UserControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2732,13 +2678,69 @@ export type UserControllerFindOneResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            username: string;
+            nickname: string;
+            status: string;
+            banned: unknown;
+            banReason: unknown;
+            avatar: string;
+            description: string;
+            background: unknown;
+            gender: string;
+            birthDate: unknown;
+            articleCount: number;
+            followerCount: number;
+            followingCount: number;
+            level: number;
+            experience: number;
+            score: number;
+            wallet: number;
+            membershipLevel: number;
+            membershipLevelName: string;
+            membershipStatus: string;
+            membershipStartDate: string;
+            membershipEndDate: unknown;
+            lastLoginAt: string;
+            lastActiveAt: unknown;
+            refreshToken: unknown;
+            inviterId: unknown;
+            myInviteCode: unknown;
+            inviteCode: unknown;
+            inviteEarnings: string;
+            inviteCount: number;
+            roles: Array<{
+                id?: number;
+                name?: string;
+                displayName?: unknown;
+                description?: string;
+                isActive?: boolean;
+                isSystem?: boolean;
+                permissions?: Array<{
+                    id: number;
+                    name: string;
+                    description: string;
+                }>;
+                createdAt?: string;
+                updatedAt?: string;
+            }>;
+            createdAt: string;
+            updatedAt: string;
+            isFollowed: boolean;
+            isMember: boolean;
+        };
+    };
 };
+
+export type UserControllerFindOneResponse = UserControllerFindOneResponses[keyof UserControllerFindOneResponses];
 
 export type UserControllerUpdateData = {
     body: UpdateUserDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2775,7 +2777,6 @@ export type UserControllerUpdateResponses = {
 export type UserControllerGetProfileData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2894,7 +2895,6 @@ export type UserControllerGetProfileResponse = UserControllerGetProfileResponses
 export type UserControllerGetFollowerCountData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2921,7 +2921,6 @@ export type UserControllerGetFollowerCountResponse = UserControllerGetFollowerCo
 export type UserControllerGetFollowingCountData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2948,7 +2947,6 @@ export type UserControllerGetFollowingCountResponse = UserControllerGetFollowing
 export type UserControllerGetFollowersData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -2976,7 +2974,6 @@ export type UserControllerGetFollowersResponses = {
 export type UserControllerGetFollowingsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3028,7 +3025,6 @@ export type UserControllerGetFollowingsResponse = UserControllerGetFollowingsRes
 export type UserControllerGetUserCommissionConfigData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3084,7 +3080,6 @@ export type UserControllerGetUserCommissionConfigResponse = UserControllerGetUse
 export type UserControllerSetUserCommissionConfigData = {
     body: UserCommissionConfigDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3115,7 +3110,6 @@ export type UserControllerSetUserCommissionConfigResponses = {
 export type UserControllerGetUserConfigData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3175,7 +3169,6 @@ export type UserControllerGetUserConfigResponse = UserControllerGetUserConfigRes
 export type UserControllerUpdateUserConfigData = {
     body: UpdateUserConfigDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3210,7 +3203,6 @@ export type UserControllerUpdateUserConfigResponses = {
 export type UserControllerLoginData = {
     body: LoginDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3321,7 +3313,6 @@ export type UserControllerLoginResponse = UserControllerLoginResponses[keyof Use
 export type UserControllerRegisterUserData = {
     body: CreateUserDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3443,7 +3434,6 @@ export type UserControllerRefreshTokenData = {
     };
     headers?: {
         'Device-Id'?: string;
-        Authorization?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
     };
@@ -3460,7 +3450,6 @@ export type UserControllerLogoutData = {
     body?: never;
     headers?: {
         'Device-Id'?: string;
-        Authorization?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
     };
@@ -3476,7 +3465,6 @@ export type UserControllerLogoutResponses = {
 export type UserControllerFollowData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3495,7 +3483,6 @@ export type UserControllerFollowResponses = {
 export type UserControllerUnfollowData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3514,7 +3501,6 @@ export type UserControllerUnfollowResponses = {
 export type UserControllerCalculateCommissionData = {
     body: CalculateCommissionDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3545,7 +3531,6 @@ export type UserControllerCalculateCommissionResponses = {
 export type UserControllerRechargeWalletData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3576,7 +3561,6 @@ export type UserControllerRechargeWalletResponses = {
 export type UserControllerWithdrawWalletData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3607,7 +3591,6 @@ export type UserControllerWithdrawWalletResponses = {
 export type UserControllerSendVerificationCodeData = {
     body: SendMailDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3646,7 +3629,6 @@ export type UserControllerResetPasswordData = {
         newPassword: string;
     };
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3681,7 +3663,6 @@ export type UserControllerResetPasswordResponses = {
 export type UserControllerBatchCheckMembershipStatusData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3712,7 +3693,6 @@ export type UserControllerBatchCheckMembershipStatusResponses = {
 export type UserControllerChangePasswordData = {
     body: ChangePasswordDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3743,7 +3723,6 @@ export type UserControllerChangePasswordResponses = {
 export type UserControllerSignInData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3774,7 +3753,6 @@ export type UserControllerSignInResponses = {
 export type UserControllerUpdateNotificationSettingsData = {
     body: UpdateUserNoticeDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3805,7 +3783,6 @@ export type UserControllerUpdateNotificationSettingsResponses = {
 export type UserControllerUpdateCommissionSettingsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3836,7 +3813,6 @@ export type UserControllerUpdateCommissionSettingsResponses = {
 export type UserControllerGetWalletTransactionsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3879,7 +3855,6 @@ export type UserControllerGetWalletTransactionsResponse = UserControllerGetWalle
 export type UserControllerGetWalletStatisticsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3906,7 +3881,6 @@ export type UserControllerGetWalletStatisticsResponses = {
 export type UserControllerGetWalletBalanceData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3944,7 +3918,6 @@ export type UserControllerGetWalletBalanceResponse = UserControllerGetWalletBala
 export type UserControllerGetSignInRecordsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -3973,7 +3946,6 @@ export type UserControllerGetSignInRecordsResponses = {
 export type UserControllerGetSignInStatsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -4000,7 +3972,6 @@ export type UserControllerGetSignInStatsResponses = {
 export type ArticleControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -4159,7 +4130,6 @@ export type ArticleControllerFindAllResponse = ArticleControllerFindAllResponses
 export type ArticleControllerCreateData = {
     body: CreateArticleDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -4282,7 +4252,6 @@ export type ArticleControllerCreateResponse = ArticleControllerCreateResponses[k
 export type ArticleControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -4319,7 +4288,6 @@ export type ArticleControllerRemoveResponses = {
 export type ArticleControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -4467,7 +4435,6 @@ export type ArticleControllerFindOneResponse = ArticleControllerFindOneResponses
 export type ArticleControllerUpdateData = {
     body: UpdateArticleDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -4656,7 +4623,6 @@ export type ArticleControllerUpdateResponse = ArticleControllerUpdateResponses[k
 export type ArticleControllerGetLikeStatusData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -4689,7 +4655,6 @@ export type ArticleControllerGetLikeStatusResponses = {
 export type ArticleControllerGetLikeCountData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -4718,7 +4683,6 @@ export type ArticleControllerGetLikeCountResponses = {
 export type ArticleControllerSearchData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -4891,7 +4855,6 @@ export type ArticleControllerSearchResponse = ArticleControllerSearchResponses[k
 export type ArticleControllerFindRecommendationsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -4927,7 +4890,6 @@ export type ArticleControllerFindRecommendationsResponse = ArticleControllerFind
 export type ArticleControllerFindByAuthorData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5088,7 +5050,6 @@ export type ArticleControllerFindByAuthorResponse = ArticleControllerFindByAutho
 export type ArticleControllerGetPublishedArticleIdsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5117,7 +5078,6 @@ export type ArticleControllerGetPublishedArticleIdsResponse = ArticleControllerG
 export type ArticleControllerGetLikedArticlesData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5264,7 +5224,6 @@ export type ArticleControllerGetLikedArticlesResponse = ArticleControllerGetLike
 export type ArticleControllerGetUserBrowseHistoryData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5316,7 +5275,6 @@ export type ArticleControllerGetUserBrowseHistoryResponse = ArticleControllerGet
 export type ArticleControllerGetBrowseStatsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5333,7 +5291,6 @@ export type ArticleControllerGetBrowseStatsResponses = {
 export type ArticleControllerGetRecentBrowsedArticlesData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5442,7 +5399,6 @@ export type ArticleControllerGetRecentBrowsedArticlesResponse = ArticleControlle
 export type ArticleControllerDeleteBrowseHistoryData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5461,7 +5417,6 @@ export type ArticleControllerDeleteBrowseHistoryResponses = {
 export type ArticleControllerGetBrowseHistoryData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5569,7 +5524,6 @@ export type ArticleControllerGetBrowseHistoryResponse = ArticleControllerGetBrow
 export type ArticleControllerUpdateBrowseProgressData = {
     body: RecordBrowseHistoryDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5588,7 +5542,6 @@ export type ArticleControllerUpdateBrowseProgressResponses = {
 export type ArticleControllerLikeData = {
     body: ArticleLikeDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5621,7 +5574,6 @@ export type ArticleControllerLikeResponses = {
 export type ArticleControllerBatchDeleteBrowseHistoryData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5638,7 +5590,6 @@ export type ArticleControllerBatchDeleteBrowseHistoryResponses = {
 export type ArticleControllerClearBrowseHistoryData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5655,7 +5606,6 @@ export type ArticleControllerClearBrowseHistoryResponses = {
 export type CommentControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5686,7 +5636,6 @@ export type CommentControllerFindAllResponses = {
 export type CommentControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5723,7 +5672,6 @@ export type CommentControllerRemoveResponses = {
 export type CommentControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5761,7 +5709,6 @@ export type CommentControllerFindOneResponses = {
 export type CommentControllerUpdateData = {
     body: UpdateCommentDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5802,7 +5749,6 @@ export type CommentControllerUpdateResponses = {
 export type CommentControllerFindAllCommentsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5834,7 +5780,6 @@ export type CommentControllerFindAllCommentsResponses = {
 export type CommentControllerCreateData = {
     body: CreateCommentDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5869,7 +5814,6 @@ export type CommentControllerCreateResponses = {
 export type CommentControllerGetRepliesData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5912,7 +5856,6 @@ export type CommentControllerGetRepliesResponse = CommentControllerGetRepliesRes
 export type CommentControllerGetUserCommentsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5943,7 +5886,6 @@ export type CommentControllerGetUserCommentsResponses = {
 export type CommentControllerGetCommentCountData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5965,7 +5907,6 @@ export type CommentControllerGetCommentCountResponses = {
 export type CommentControllerLikeData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -5998,7 +5939,6 @@ export type CommentControllerLikeResponses = {
 export type TagControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6054,7 +5994,6 @@ export type TagControllerFindAllResponse = TagControllerFindAllResponses[keyof T
 export type TagControllerCreateData = {
     body: CreateTagDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6111,7 +6050,6 @@ export type TagControllerCreateResponse = TagControllerCreateResponses[keyof Tag
 export type TagControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6148,7 +6086,6 @@ export type TagControllerRemoveResponses = {
 export type TagControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6195,7 +6132,6 @@ export type TagControllerFindOneResponse = TagControllerFindOneResponses[keyof T
 export type TagControllerUpdateData = {
     body: UpdateTagDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6236,7 +6172,6 @@ export type TagControllerUpdateResponses = {
 export type TagControllerUnfollowData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6269,7 +6204,6 @@ export type TagControllerUnfollowResponses = {
 export type TagControllerFollowData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6302,7 +6236,6 @@ export type TagControllerFollowResponses = {
 export type CategoryControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6379,7 +6312,6 @@ export type CategoryControllerFindAllResponse = CategoryControllerFindAllRespons
 export type CategoryControllerCreateData = {
     body: CreateCategoryDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6439,7 +6371,6 @@ export type CategoryControllerCreateResponse = CategoryControllerCreateResponses
 export type CategoryControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6476,7 +6407,6 @@ export type CategoryControllerRemoveResponses = {
 export type CategoryControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6543,7 +6473,6 @@ export type CategoryControllerFindOneResponse = CategoryControllerFindOneRespons
 export type CategoryControllerUpdateData = {
     body: UpdateCategoryDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6641,7 +6570,6 @@ export type CategoryControllerUpdateResponse = CategoryControllerUpdateResponses
 export type PermissionControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6674,7 +6602,6 @@ export type PermissionControllerFindAllResponse = PermissionControllerFindAllRes
 export type PermissionControllerCreateData = {
     body: CreatePermissionDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6711,7 +6638,6 @@ export type PermissionControllerCreateResponse = PermissionControllerCreateRespo
 export type PermissionControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6748,7 +6674,6 @@ export type PermissionControllerRemoveResponses = {
 export type PermissionControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6787,7 +6712,6 @@ export type PermissionControllerFindOneResponse = PermissionControllerFindOneRes
 export type PermissionControllerUpdateData = {
     body: UpdatePermissionDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6830,7 +6754,6 @@ export type PermissionControllerUpdateResponse = PermissionControllerUpdateRespo
 export type OrderControllerGetAllOrdersData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6871,7 +6794,6 @@ export type OrderControllerGetAllOrdersResponses = {
 export type OrderControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6900,7 +6822,6 @@ export type OrderControllerFindOneResponses = {
 export type OrderControllerFindByOrderNoData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6929,7 +6850,6 @@ export type OrderControllerFindByOrderNoResponses = {
 export type OrderControllerGetWalletBalanceData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6956,7 +6876,6 @@ export type OrderControllerGetWalletBalanceResponses = {
 export type OrderControllerGetUserOrdersData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -6993,7 +6912,6 @@ export type OrderControllerGetUserOrdersResponses = {
 export type OrderControllerGetPendingOrdersData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7013,7 +6931,6 @@ export type OrderControllerGetPendingOrdersResponses = {
 export type OrderControllerCancelOrderData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7050,7 +6967,6 @@ export type OrderControllerCancelOrderResponses = {
 export type OrderControllerRequestRefundData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7087,7 +7003,6 @@ export type OrderControllerRequestRefundResponses = {
 export type OrderControllerCreateArticleOrderData = {
     body: CreateArticleOrderDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7118,7 +7033,6 @@ export type OrderControllerCreateArticleOrderResponses = {
 export type OrderControllerCreateMembershipOrderData = {
     body: CreateMembershipOrderDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7149,7 +7063,6 @@ export type OrderControllerCreateMembershipOrderResponses = {
 export type InviteControllerGetMyInvitesData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7185,7 +7098,6 @@ export type InviteControllerGetMyInvitesResponses = {
 export type InviteControllerGetInviteStatsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7212,7 +7124,6 @@ export type InviteControllerGetInviteStatsResponses = {
 export type InviteControllerGetMyInviteEarningsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7248,7 +7159,6 @@ export type InviteControllerGetMyInviteEarningsResponses = {
 export type InviteControllerGetInviteDetailData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7281,7 +7191,6 @@ export type InviteControllerGetInviteDetailResponses = {
 export type InviteControllerUseInviteData = {
     body: UseInviteDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7320,7 +7229,6 @@ export type InviteControllerUseInviteResponses = {
 export type InviteControllerCreateInviteData = {
     body: CreateInviteDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7351,7 +7259,6 @@ export type InviteControllerCreateInviteResponses = {
 export type UploadControllerGetFileInfoData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7385,7 +7292,6 @@ export type UploadControllerGetFileInfoResponse = UploadControllerGetFileInfoRes
 export type UploadControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7416,7 +7322,6 @@ export type UploadControllerFindAllResponse = UploadControllerFindAllResponses[k
 export type UploadControllerUploadFileData = {
     body: Array<string>;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7453,7 +7358,6 @@ export type UploadControllerUploadFileResponse = UploadControllerUploadFileRespo
 export type UploadControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7497,7 +7401,6 @@ export type UploadControllerRemoveResponses = {
 export type MessageControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7587,7 +7490,6 @@ export type MessageControllerFindAllResponse = MessageControllerFindAllResponses
 export type MessageControllerCreateData = {
     body: CreateMessageDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7628,7 +7530,6 @@ export type MessageControllerCreateResponse = MessageControllerCreateResponses[k
 export type MessageControllerSearchData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7742,7 +7643,6 @@ export type MessageControllerSearchResponse = MessageControllerSearchResponses[k
 export type MessageControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7764,7 +7664,6 @@ export type MessageControllerRemoveResponses = {
 export type MessageControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7838,7 +7737,6 @@ export type MessageControllerFindOneResponse = MessageControllerFindOneResponses
 export type MessageControllerUpdateData = {
     body: UpdateMessageDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7860,7 +7758,6 @@ export type MessageControllerUpdateResponses = {
 export type MessageControllerGetUnreadCountData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7887,7 +7784,6 @@ export type MessageControllerGetUnreadCountResponse = MessageControllerGetUnread
 export type MessageControllerMarkAsReadData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7918,7 +7814,6 @@ export type MessageControllerMarkAsReadResponse = MessageControllerMarkAsReadRes
 export type MessageControllerMarkAllAsReadData = {
     body: MarkAllReadDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7935,7 +7830,6 @@ export type MessageControllerMarkAllAsReadResponses = {
 export type MessageControllerBatchOperationData = {
     body: BatchMessageDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -7952,7 +7846,6 @@ export type MessageControllerBatchOperationResponses = {
 export type BannerControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8002,7 +7895,6 @@ export type BannerControllerFindAllResponse = BannerControllerFindAllResponses[k
 export type BannerControllerCreateData = {
     body?: CreateBannerDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8039,7 +7931,6 @@ export type BannerControllerCreateResponse = BannerControllerCreateResponses[key
 export type BannerControllerFindActiveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8072,7 +7963,6 @@ export type BannerControllerFindActiveResponse = BannerControllerFindActiveRespo
 export type BannerControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8091,7 +7981,6 @@ export type BannerControllerRemoveResponses = {
 export type BannerControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8126,7 +8015,6 @@ export type BannerControllerFindOneResponse = BannerControllerFindOneResponses[k
 export type BannerControllerUpdateData = {
     body?: UpdateBannerDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8145,7 +8033,6 @@ export type BannerControllerUpdateResponses = {
 export type PaymentControllerCreatePaymentData = {
     body: CreatePaymentDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8165,7 +8052,6 @@ export type PaymentControllerCreatePaymentResponses = {
 export type PaymentControllerAlipayNotifyData = {
     body: AlipayNotifyDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8185,7 +8071,6 @@ export type PaymentControllerAlipayNotifyResponses = {
 export type PaymentControllerWechatNotifyData = {
     body: WechatNotifyDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8205,7 +8090,6 @@ export type PaymentControllerWechatNotifyResponses = {
 export type PaymentControllerTestEpaySignatureData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8225,7 +8109,6 @@ export type PaymentControllerTestEpaySignatureResponses = {
 export type PaymentControllerEpayNotifyData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8282,7 +8165,6 @@ export type PaymentControllerEpayNotifyResponses = {
 export type PaymentControllerFindPaymentRecordData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8304,7 +8186,6 @@ export type PaymentControllerFindPaymentRecordResponses = {
 export type PaymentControllerFindPaymentByOrderIdData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8326,7 +8207,6 @@ export type PaymentControllerFindPaymentByOrderIdResponses = {
 export type PaymentControllerFindUserPaymentsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8349,7 +8229,6 @@ export type PaymentControllerFindUserPaymentsResponses = {
 export type ReportControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8488,7 +8367,6 @@ export type ReportControllerFindAllResponse = ReportControllerFindAllResponses[k
 export type ReportControllerCreateData = {
     body: CreateReportDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8531,7 +8409,6 @@ export type ReportControllerCreateResponse = ReportControllerCreateResponses[key
 export type ReportControllerGetStatisticsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8573,7 +8450,6 @@ export type ReportControllerGetStatisticsResponse = ReportControllerGetStatistic
 export type ReportControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8595,7 +8471,6 @@ export type ReportControllerRemoveResponses = {
 export type ReportControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8703,7 +8578,6 @@ export type ReportControllerFindOneResponse = ReportControllerFindOneResponses[k
 export type ReportControllerUpdateData = {
     body: UpdateReportDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8725,7 +8599,6 @@ export type ReportControllerUpdateResponses = {
 export type DecorationControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8797,7 +8670,6 @@ export type DecorationControllerFindAllResponse = DecorationControllerFindAllRes
 export type DecorationControllerCreateData = {
     body: CreateDecorationDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8843,7 +8715,6 @@ export type DecorationControllerCreateResponse = DecorationControllerCreateRespo
 export type DecorationControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8865,7 +8736,6 @@ export type DecorationControllerRemoveResponses = {
 export type DecorationControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8915,7 +8785,6 @@ export type DecorationControllerFindOneResponse = DecorationControllerFindOneRes
 export type DecorationControllerUpdateData = {
     body: UpdateDecorationDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -8963,7 +8832,6 @@ export type DecorationControllerUpdateResponse = DecorationControllerUpdateRespo
 export type DecorationControllerGetMyDecorationsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9042,7 +8910,6 @@ export type DecorationControllerGetMyDecorationsResponse = DecorationControllerG
 export type DecorationControllerGetUserDecorationsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9123,7 +8990,6 @@ export type DecorationControllerGetUserDecorationsResponse = DecorationControlle
 export type DecorationControllerGetMyActivityProgressData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9143,7 +9009,6 @@ export type DecorationControllerGetMyActivityProgressResponses = {
 export type DecorationControllerGetCurrentDecorationsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9206,7 +9071,6 @@ export type DecorationControllerGetCurrentDecorationsResponse = DecorationContro
 export type DecorationControllerPurchaseData = {
     body: PurchaseDecorationDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9234,7 +9098,6 @@ export type DecorationControllerPurchaseError = DecorationControllerPurchaseErro
 export type DecorationControllerGiftData = {
     body: GiftDecorationDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9254,7 +9117,6 @@ export type DecorationControllerGiftResponses = {
 export type DecorationControllerUseDecorationData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9317,7 +9179,6 @@ export type DecorationControllerUseDecorationResponse = DecorationControllerUseD
 export type DecorationControllerUnuseDecorationData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9339,7 +9200,6 @@ export type DecorationControllerUnuseDecorationResponses = {
 export type DecorationControllerClaimActivityRewardData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9361,7 +9221,6 @@ export type DecorationControllerClaimActivityRewardResponses = {
 export type DecorationControllerCleanExpiredData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9381,7 +9240,6 @@ export type DecorationControllerCleanExpiredResponses = {
 export type FavoriteControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9467,7 +9325,6 @@ export type FavoriteControllerFindAllResponse = FavoriteControllerFindAllRespons
 export type FavoriteControllerCreateData = {
     body: CreateFavoriteDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9506,7 +9363,6 @@ export type FavoriteControllerCreateResponse = FavoriteControllerCreateResponses
 export type FavoriteControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9528,7 +9384,6 @@ export type FavoriteControllerRemoveResponses = {
 export type FavoriteControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9598,7 +9453,6 @@ export type FavoriteControllerFindOneResponse = FavoriteControllerFindOneRespons
 export type FavoriteControllerUpdateData = {
     body: UpdateFavoriteDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9620,7 +9474,6 @@ export type FavoriteControllerUpdateResponses = {
 export type FavoriteControllerGetFavoriteItemsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9651,7 +9504,6 @@ export type FavoriteControllerGetFavoriteItemsResponses = {
 export type FavoriteControllerGetArticleFavoriteInfoData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9673,7 +9525,6 @@ export type FavoriteControllerGetArticleFavoriteInfoResponses = {
 export type FavoriteControllerCheckArticleInFavoritesData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9695,7 +9546,6 @@ export type FavoriteControllerCheckArticleInFavoritesResponses = {
 export type FavoriteControllerAddToFavoriteData = {
     body: AddToFavoriteDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9712,7 +9562,6 @@ export type FavoriteControllerAddToFavoriteResponses = {
 export type FavoriteControllerRemoveFromFavoriteData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9738,7 +9587,6 @@ export type FavoriteControllerRemoveFromFavoriteResponses = {
 export type PointsControllerGetTransactionsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9786,7 +9634,6 @@ export type PointsControllerGetTransactionsResponses = {
 export type PointsControllerGetStatsData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9817,7 +9664,6 @@ export type PointsControllerGetStatsResponses = {
 export type PointsControllerFindAllRulesData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9837,7 +9683,6 @@ export type PointsControllerFindAllRulesResponses = {
 export type PointsControllerCreateRuleData = {
     body: CreatePointsRuleDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9872,7 +9717,6 @@ export type PointsControllerCreateRuleResponses = {
 export type PointsControllerRemoveRuleData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9909,7 +9753,6 @@ export type PointsControllerRemoveRuleResponses = {
 export type PointsControllerFindOneRuleData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9938,7 +9781,6 @@ export type PointsControllerFindOneRuleResponses = {
 export type PointsControllerUpdateRuleData = {
     body: UpdatePointsRuleDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9979,7 +9821,6 @@ export type PointsControllerUpdateRuleResponses = {
 export type PointsControllerFindAllTasksData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -9999,7 +9840,6 @@ export type PointsControllerFindAllTasksResponses = {
 export type PointsControllerCreateTaskData = {
     body: CreatePointsTaskDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10034,7 +9874,6 @@ export type PointsControllerCreateTaskResponses = {
 export type PointsControllerRemoveTaskData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10071,7 +9910,6 @@ export type PointsControllerRemoveTaskResponses = {
 export type PointsControllerFindOneTaskData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10100,7 +9938,6 @@ export type PointsControllerFindOneTaskResponses = {
 export type PointsControllerUpdateTaskData = {
     body: UpdatePointsTaskDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10141,7 +9978,6 @@ export type PointsControllerUpdateTaskResponses = {
 export type PointsControllerAddPointsData = {
     body: AddPointsDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10172,7 +10008,6 @@ export type PointsControllerAddPointsResponses = {
 export type PointsControllerSpendPointsData = {
     body: SpendPointsDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10207,7 +10042,6 @@ export type PointsControllerSpendPointsResponses = {
 export type PointsControllerClaimTaskRewardData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10248,7 +10082,6 @@ export type PointsControllerClaimTaskRewardResponses = {
 export type EmojiControllerFindAllData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10302,7 +10135,6 @@ export type EmojiControllerFindAllResponses = {
 export type EmojiControllerCreateData = {
     body: CreateEmojiDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10319,7 +10151,6 @@ export type EmojiControllerCreateResponses = {
 export type EmojiControllerRemoveData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10341,7 +10172,6 @@ export type EmojiControllerRemoveResponses = {
 export type EmojiControllerFindOneData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10363,7 +10193,6 @@ export type EmojiControllerFindOneResponses = {
 export type EmojiControllerUpdateData = {
     body: UpdateEmojiDto;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10385,7 +10214,6 @@ export type EmojiControllerUpdateResponses = {
 export type EmojiControllerGetFavoritesData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10411,7 +10239,6 @@ export type EmojiControllerGetFavoritesResponses = {
 export type EmojiControllerGetCategoriesData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10428,7 +10255,6 @@ export type EmojiControllerGetCategoriesResponses = {
 export type EmojiControllerGetPopularData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10447,7 +10273,6 @@ export type EmojiControllerGetPopularResponses = {
 export type EmojiControllerGetRecentData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10466,7 +10291,6 @@ export type EmojiControllerGetRecentResponses = {
 export type EmojiControllerRemoveFromFavoritesData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
@@ -10488,7 +10312,6 @@ export type EmojiControllerRemoveFromFavoritesResponses = {
 export type EmojiControllerAddToFavoritesData = {
     body?: never;
     headers?: {
-        Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;

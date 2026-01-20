@@ -8,25 +8,42 @@ import { UserDropdown } from "./UserDropdown";
 import { useAppStore } from "@/stores";
 import { HeaderTabs } from "../home/HeaderTabs";
 import { CategoryList } from "@/types";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
+import { useScrollThreshold } from "@/hooks/useScrollThreshold";
+
 type HeaderProps = {
   categories?: CategoryList;
 };
+
 export function Header({ categories }: HeaderProps) {
   const t = useTranslations("common");
   const tHeader = useTranslations("header");
-  const siteConfig = useAppStore((state) => state.siteConfig)
+  const siteConfig = useAppStore((state) => state.siteConfig);
+  const pathname = usePathname();
+
+  // 判断是否在 account 页面
+  const isAccountPage = pathname.includes("/account/");
+
+  // 使用自定义 hook 监听滚动
+  const scrolled = useScrollThreshold(240, isAccountPage);
 
   return (
-    <header className="sticky top-0 z-50  bg-white">
+    <header
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 ",
+        isAccountPage && !scrolled ? "bg-transparent" : "bg-card"
+      )}
+    >
       <div className="px-10 mx-auto">
         <div className="flex items-center justify-between gap-4 h-15">
           {/* Logo */}
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-primary text-3xl font-bold line-clamp-1 text-nowrap">
+            <Link href="/" className={cn("text-primary text-3xl font-bold line-clamp-1 text-nowrap", isAccountPage && !scrolled && ("text-white"))}>
               {siteConfig?.site_name}
             </Link>
 
-            <HeaderTabs categories={categories!}/>
+            <HeaderTabs categories={categories!} labelClassName={isAccountPage && !scrolled ? "text-white" : undefined} />
 
           </div>
 
@@ -36,7 +53,14 @@ export function Header({ categories }: HeaderProps) {
               <input
                 type="text"
                 placeholder={t("search")}
-                className="w-full h-full pl-12 pr-4 border hover:ring-primary hover:ring-1 border-border rounded-full focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent transition-all bg-gray-50 dark:bg-gray-500 focus:bg-white hover:bg-white dark:hover:bg-gray-800"
+                className={cn(
+                  "w-full h-full pl-12 pr-4 border hover:ring-primary hover:ring-1 placeholder:text-secondary placeholder:text-sm",
+                  " rounded-full focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent transition-all",
+                  "",
+                  !isAccountPage || scrolled && "bg-[#f1f4f9] border-border dark:bg-gray-500 focus:bg-card hover:bg-card dark:hover:bg-gray-800",
+                  isAccountPage && !scrolled && "bg-[#00000066] border-[#ffffff66] ",
+
+                )}
               />
             </div>
           </div>
@@ -51,7 +75,7 @@ export function Header({ categories }: HeaderProps) {
                   <PenIcon className="size-5" />
                 </div>
                 {/* Hover 面板 */}
-                <div className="absolute right-0 mt-2 w-auto min-w-xs bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <div className="absolute right-0 mt-2 w-auto min-w-xs bg-card dark:bg-gray-800 rounded-xl shadow-lg border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                   <div className="p-3 space-y-2">
                     <Link
                       href="/create/post"

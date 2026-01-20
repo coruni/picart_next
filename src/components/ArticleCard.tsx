@@ -121,16 +121,18 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
             <div className="flex items-center">
                 <div className="flex items-center flex-1 cursor-pointer">
                     {/* 头像 */}
-                    <Avatar 
-                        size="lg" 
-                        url={article.author?.avatar} 
-                        avatarFrame={(article.author as any)?.equippedDecorations?.AVATAR_FRAME?.imageUrl || ''} 
-                    />
+                    <Link href={`/account/${article.author.id}`} className="shrink-0">
+                        <Avatar
+                            size="lg"
+                            url={article.author?.avatar}
+                            avatarFrame={(article.author as any)?.equippedDecorations?.AVATAR_FRAME?.imageUrl || ''}
+                        />
+                    </Link>
                     {/* 用户名 */}
                     <div className="ml-3 flex flex-col flex-1">
-                        <div className=" flex items-center leading-5">
+                        <Link href={`/account/${article.author.id}`} className=" flex items-center leading-5">
                             <span className="font-bold hover:text-primary">{(article?.author?.nickname || article?.author?.username) as string}</span>
-                        </div>
+                        </Link>
                         <div className="mt-1 leading-4">
                             <span className="text-xs text-secondary">{formatRelativeTime(article.createdAt!, t)} · {article?.category?.name}</span>
                         </div>
@@ -143,9 +145,9 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                 </div>
                 <div className="ml-3">
                     <div className="relative" ref={menuRef}>
-                        <EllipsisVertical 
-                            size={20} 
-                            className="text-secondary cursor-pointer" 
+                        <EllipsisVertical
+                            size={20}
+                            className="text-secondary cursor-pointer"
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                         />
                         {/* 操作面板 */}
@@ -155,7 +157,7 @@ export const ArticleCard = ({ article }: ArticleCardProps) => {
                                     <div className="px-2 font-medium">
                                         <span>更多</span>
                                     </div>
-                                    <div 
+                                    <div
                                         className="cursor-pointer p-2 text-sm hover:bg-primary/15 group hover:text-primary rounded-xl flex items-center gap-2"
                                         onClick={() => {
                                             // TODO: 处理"不喜欢"逻辑
