@@ -2536,10 +2536,10 @@
                                 "type": "string"
                               },
                               "banned": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "banReason": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "avatar": {
                                 "type": "string"
@@ -2548,7 +2548,7 @@
                                 "type": "string"
                               },
                               "background": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "gender": {
                                 "type": "string"
@@ -2590,25 +2590,25 @@
                                 "type": "string"
                               },
                               "membershipEndDate": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "lastLoginAt": {
                                 "type": "string"
                               },
                               "lastActiveAt": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "refreshToken": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "inviterId": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "myInviteCode": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "inviteCode": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "inviteEarnings": {
                                 "type": "string"
@@ -2882,10 +2882,10 @@
                           "type": "string"
                         },
                         "banned": {
-                          "type": "null"
+                          "type": "string"
                         },
                         "banReason": {
-                          "type": "null"
+                          "type": "string"
                         },
                         "avatar": {
                           "type": "string"
@@ -2894,13 +2894,13 @@
                           "type": "string"
                         },
                         "background": {
-                          "type": "null"
+                          "type": "string"
                         },
                         "gender": {
                           "type": "string"
                         },
                         "birthDate": {
-                          "type": "null"
+                          "type": "string"
                         },
                         "articleCount": {
                           "type": "integer"
@@ -2936,25 +2936,25 @@
                           "type": "string"
                         },
                         "membershipEndDate": {
-                          "type": "null"
+                          "type": "string"
                         },
                         "lastLoginAt": {
                           "type": "string"
                         },
                         "lastActiveAt": {
-                          "type": "null"
+                          "type": "string"
                         },
                         "refreshToken": {
-                          "type": "null"
+                          "type": "string"
                         },
                         "inviterId": {
-                          "type": "null"
+                          "type": "integer"
                         },
                         "myInviteCode": {
-                          "type": "null"
+                          "type": "string"
                         },
                         "inviteCode": {
-                          "type": "null"
+                          "type": "string"
                         },
                         "inviteEarnings": {
                           "type": "string"
@@ -6884,7 +6884,7 @@
                                 "type": "integer"
                               },
                               "summary": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "views": {
                                 "type": "integer"
@@ -7920,7 +7920,7 @@
                           "type": "string"
                         },
                         "content": {
-                          "type": "null"
+                          "type": "string"
                         },
                         "images": {
                           "type": "array",
@@ -7932,7 +7932,7 @@
                           "type": "integer"
                         },
                         "summary": {
-                          "type": "null"
+                          "type": "string"
                         },
                         "views": {
                           "type": "integer"
@@ -10144,7 +10144,7 @@
                                 "type": "integer"
                               },
                               "summary": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "views": {
                                 "type": "integer"
@@ -13275,6 +13275,343 @@
         "responses": {
           "200": {
             "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "content": {
+                                "type": "string"
+                              },
+                              "images": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "likes": {
+                                "type": "integer"
+                              },
+                              "replyCount": {
+                                "type": "integer"
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "author": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "username": {
+                                    "type": "string"
+                                  },
+                                  "nickname": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "banned": {
+                                    "type": "null"
+                                  },
+                                  "banReason": {
+                                    "type": "null"
+                                  },
+                                  "avatar": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "background": {
+                                    "type": "null"
+                                  },
+                                  "gender": {
+                                    "type": "string"
+                                  },
+                                  "birthDate": {
+                                    "type": "null"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followerCount": {
+                                    "type": "integer"
+                                  },
+                                  "followingCount": {
+                                    "type": "integer"
+                                  },
+                                  "level": {
+                                    "type": "integer"
+                                  },
+                                  "experience": {
+                                    "type": "integer"
+                                  },
+                                  "score": {
+                                    "type": "integer"
+                                  },
+                                  "wallet": {
+                                    "type": "number"
+                                  },
+                                  "membershipLevel": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevelName": {
+                                    "type": "string"
+                                  },
+                                  "membershipStatus": {
+                                    "type": "string"
+                                  },
+                                  "membershipStartDate": {
+                                    "type": "string"
+                                  },
+                                  "membershipEndDate": {
+                                    "type": "null"
+                                  },
+                                  "lastLoginAt": {
+                                    "type": "string"
+                                  },
+                                  "lastActiveAt": {
+                                    "type": "null"
+                                  },
+                                  "inviterId": {
+                                    "type": "null"
+                                  },
+                                  "myInviteCode": {
+                                    "type": "null"
+                                  },
+                                  "inviteCode": {
+                                    "type": "null"
+                                  },
+                                  "inviteEarnings": {
+                                    "type": "string"
+                                  },
+                                  "inviteCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "username",
+                                  "nickname",
+                                  "status",
+                                  "banned",
+                                  "banReason",
+                                  "avatar",
+                                  "description",
+                                  "background",
+                                  "gender",
+                                  "birthDate",
+                                  "articleCount",
+                                  "followerCount",
+                                  "followingCount",
+                                  "level",
+                                  "experience",
+                                  "score",
+                                  "wallet",
+                                  "membershipLevel",
+                                  "membershipLevelName",
+                                  "membershipStatus",
+                                  "membershipStartDate",
+                                  "membershipEndDate",
+                                  "lastLoginAt",
+                                  "lastActiveAt",
+                                  "inviterId",
+                                  "myInviteCode",
+                                  "inviteCode",
+                                  "inviteEarnings",
+                                  "inviteCount",
+                                  "createdAt",
+                                  "updatedAt"
+                                ]
+                              },
+                              "article": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "requireLogin": {
+                                    "type": "boolean"
+                                  },
+                                  "requireFollow": {
+                                    "type": "boolean"
+                                  },
+                                  "requirePayment": {
+                                    "type": "boolean"
+                                  },
+                                  "requireMembership": {
+                                    "type": "boolean"
+                                  },
+                                  "listRequireLogin": {
+                                    "type": "boolean"
+                                  },
+                                  "viewPrice": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string"
+                                  },
+                                  "content": {
+                                    "type": "string",
+                                    "nullable": true
+                                  },
+                                  "images": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "sort": {
+                                    "type": "integer"
+                                  },
+                                  "summary": {
+                                    "type": "null"
+                                  },
+                                  "views": {
+                                    "type": "integer"
+                                  },
+                                  "likes": {
+                                    "type": "integer"
+                                  },
+                                  "commentCount": {
+                                    "type": "integer"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "cover": {
+                                    "type": "string"
+                                  },
+                                  "authorId": {
+                                    "type": "integer"
+                                  },
+                                  "downloadCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "title",
+                                  "requireLogin",
+                                  "requireFollow",
+                                  "requirePayment",
+                                  "requireMembership",
+                                  "listRequireLogin",
+                                  "viewPrice",
+                                  "type",
+                                  "content",
+                                  "images",
+                                  "sort",
+                                  "summary",
+                                  "views",
+                                  "likes",
+                                  "commentCount",
+                                  "status",
+                                  "cover",
+                                  "authorId",
+                                  "downloadCount",
+                                  "createdAt",
+                                  "updatedAt"
+                                ]
+                              },
+                              "rootId": {
+                                "type": "integer"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "content",
+                              "images",
+                              "likes",
+                              "replyCount",
+                              "status",
+                              "author",
+                              "article",
+                              "rootId",
+                              "createdAt",
+                              "updatedAt"
+                            ]
+                          }
+                        },
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "page": {
+                              "type": "integer"
+                            },
+                            "limit": {
+                              "type": "integer"
+                            },
+                            "totalPages": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "total",
+                            "page",
+                            "limit",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "data",
+                        "meta"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           }
         },

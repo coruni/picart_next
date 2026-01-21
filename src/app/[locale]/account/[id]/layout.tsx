@@ -4,9 +4,22 @@ import { userControllerFindOne } from "@/api";
 import { notFound } from "next/navigation";
 
 import { AccountInfo, AccountTabs } from "@/components/account";
+import { Metadata } from "next";
+import { generateAuthorMetadata } from "@/lib";
+import { Sidebar } from "@/components/sidebar/Sidebar";
 interface AccountLayoutProps {
     children: ReactNode;
     params: Promise<{ id: string; locale: string }>;
+}
+// 动态生成元数据
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ locale: string, id: string }>;
+}): Promise<Metadata> {
+    const { id } = await params;
+    const { data } = await userControllerFindOne({ path: { id } })
+    return generateAuthorMetadata(data?.data!);
 }
 
 export default async function AccountLayout({ children, params }: AccountLayoutProps) {
@@ -42,6 +55,7 @@ export default async function AccountLayout({ children, params }: AccountLayoutP
                     </div>
                     <div className="right-container">
                         {/* 侧边栏内容 */}
+                        <Sidebar />
                     </div>
                 </div>
             </div>

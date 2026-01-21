@@ -1,5 +1,5 @@
 import { configControllerGetPublicConfigs } from "@/api";
-import { ArticleDetail } from "@/types";
+import { ArticleDetail, UserDetail } from "@/types";
 import type { Metadata } from "next";
 
 /**
@@ -198,15 +198,15 @@ export async function generateArticleMetadata(
 
   return {
     title: article.title,
-    description: article.description || config?.site_description || "",
+    description: article.summary || config?.site_description || "",
     keywords: keywords.length > 0 ? keywords : undefined,
-    authors: article.author ? [{ name: article.author }] : undefined,
+    authors: article.author ? [{ name: article.author.nickname || article.author.username }] : undefined,
     openGraph: {
       type: "article",
       locale: locale,
       siteName: siteName,
       title: article.title,
-      description: article.description || "",
+      description: article.summary || "",
       images: article.cover
         ? [
           {
@@ -222,7 +222,7 @@ export async function generateArticleMetadata(
     twitter: {
       card: "summary_large_image",
       title: article.title,
-      description: article.description || "",
+      description: article.summary || "",
       images: article.cover ? [article.cover] : undefined,
     },
   };
@@ -232,11 +232,7 @@ export async function generateArticleMetadata(
  * 生成作者页面 SEO 元数据
  */
 export async function generateAuthorMetadata(
-  author: {
-    username: string;
-    bio?: string;
-    avatar?: string;
-  },
+  author: UserDetail,
   locale: string = "zh"
 ): Promise<Metadata> {
   const config = await getPublicConfig();
@@ -250,30 +246,30 @@ export async function generateAuthorMetadata(
     .filter(Boolean);
 
   return {
-    title: `${author.username} - ${siteName}`,
-    description: author.bio || `${author.username} 的个人主页`,
+    title: `${author.nickname || author.username}`,
+    description: author.description || `${author.nickname || author.nickname} 的个人主页`,
     keywords: keywords.length > 0 ? keywords : undefined,
     openGraph: {
       type: "profile",
       locale: locale,
       siteName: siteName,
-      title: author.username,
-      description: author.bio || "",
+      title: author.nickname || author.username,
+      description: author.description || "",
       images: author.avatar
         ? [
           {
             url: author.avatar,
             width: 400,
             height: 400,
-            alt: author.username,
+            alt: author.nickname || author.username,
           },
         ]
         : undefined,
     },
     twitter: {
       card: "summary",
-      title: author.username,
-      description: author.bio || "",
+      title: author.nickname || author.username,
+      description: author.description || "",
       images: author.avatar ? [author.avatar] : undefined,
     },
   };

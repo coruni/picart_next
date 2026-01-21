@@ -2524,11 +2524,11 @@ export type UserControllerFindAllResponses = {
                 username?: string;
                 nickname?: string;
                 status?: string;
-                banned?: unknown;
-                banReason?: unknown;
+                banned?: string;
+                banReason?: string;
                 avatar?: string;
                 description?: string;
-                background?: unknown;
+                background?: string;
                 gender?: string;
                 birthDate?: unknown;
                 articleCount?: number;
@@ -2542,13 +2542,13 @@ export type UserControllerFindAllResponses = {
                 membershipLevelName?: string;
                 membershipStatus?: string;
                 membershipStartDate?: string;
-                membershipEndDate?: unknown;
+                membershipEndDate?: string;
                 lastLoginAt?: string;
-                lastActiveAt?: unknown;
-                refreshToken?: unknown;
-                inviterId?: unknown;
-                myInviteCode?: unknown;
-                inviteCode?: unknown;
+                lastActiveAt?: string;
+                refreshToken?: string;
+                inviterId?: string;
+                myInviteCode?: string;
+                inviteCode?: string;
                 inviteEarnings?: string;
                 inviteCount?: number;
                 roles?: Array<{
@@ -2686,13 +2686,13 @@ export type UserControllerFindOneResponses = {
             username: string;
             nickname: string;
             status: string;
-            banned: unknown;
-            banReason: unknown;
+            banned: string;
+            banReason: string;
             avatar: string;
             description: string;
-            background: unknown;
+            background: string;
             gender: string;
-            birthDate: unknown;
+            birthDate: string;
             articleCount: number;
             followerCount: number;
             followingCount: number;
@@ -2704,13 +2704,13 @@ export type UserControllerFindOneResponses = {
             membershipLevelName: string;
             membershipStatus: string;
             membershipStartDate: string;
-            membershipEndDate: unknown;
+            membershipEndDate: string;
             lastLoginAt: string;
-            lastActiveAt: unknown;
-            refreshToken: unknown;
-            inviterId: unknown;
-            myInviteCode: unknown;
-            inviteCode: unknown;
+            lastActiveAt: string;
+            refreshToken: string;
+            inviterId: number;
+            myInviteCode: string;
+            inviteCode: string;
             inviteEarnings: string;
             inviteCount: number;
             roles: Array<{
@@ -4014,7 +4014,7 @@ export type ArticleControllerFindAllResponses = {
                 content: string | null;
                 images: Array<string>;
                 sort: number;
-                summary: unknown;
+                summary: string;
                 views: number;
                 likes: number;
                 commentCount: number;
@@ -4323,10 +4323,10 @@ export type ArticleControllerFindOneResponses = {
             listRequireLogin: boolean;
             viewPrice: string;
             type: string;
-            content: unknown;
+            content: string;
             images: Array<string>;
             sort: number;
-            summary: unknown;
+            summary: string;
             views: number;
             likes: number;
             commentCount: number;
@@ -4934,7 +4934,7 @@ export type ArticleControllerFindByAuthorResponses = {
                 content: string | null;
                 images: Array<string>;
                 sort: number;
-                summary: unknown;
+                summary: string;
                 views: number;
                 likes: number;
                 commentCount: number;
@@ -5880,8 +5880,90 @@ export type CommentControllerGetUserCommentsResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<{
+                id: number;
+                content: string;
+                images: Array<string>;
+                likes: number;
+                replyCount: number;
+                status: string;
+                author: {
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: unknown;
+                    banReason: unknown;
+                    avatar: string;
+                    description: string;
+                    background: unknown;
+                    gender: string;
+                    birthDate: unknown;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    level: number;
+                    experience: number;
+                    score: number;
+                    wallet: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: unknown;
+                    lastLoginAt: string;
+                    lastActiveAt: unknown;
+                    inviterId: unknown;
+                    myInviteCode: unknown;
+                    inviteCode: unknown;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                article: {
+                    id: number;
+                    title: string;
+                    requireLogin: boolean;
+                    requireFollow: boolean;
+                    requirePayment: boolean;
+                    requireMembership: boolean;
+                    listRequireLogin: boolean;
+                    viewPrice: string;
+                    type: string;
+                    content: string | null;
+                    images: Array<string>;
+                    sort: number;
+                    summary: unknown;
+                    views: number;
+                    likes: number;
+                    commentCount: number;
+                    status: string;
+                    cover: string;
+                    authorId: number;
+                    downloadCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                rootId: number;
+                createdAt: string;
+                updatedAt: string;
+            }>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
 };
+
+export type CommentControllerGetUserCommentsResponse = CommentControllerGetUserCommentsResponses[keyof CommentControllerGetUserCommentsResponses];
 
 export type CommentControllerGetCommentCountData = {
     body?: never;

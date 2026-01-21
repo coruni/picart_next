@@ -1,7 +1,7 @@
 import { articleControllerFindByAuthor } from "@/api";
 import { ArticleListClient } from "@/components/account/ArticleList.client";
 
-export default async function AccountPage({
+export default async function AccountHomePage({
   params,
 }: {
   params: Promise<{ id: string; locale: string }>;
