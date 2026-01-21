@@ -1,4 +1,11 @@
 import { commentControllerGetUserComments } from "@/api";
+import { CommentListClient } from "@/components/account/CommentList.client";
+
+// Server action wrapper for client component
+async function fetchUserComments(params: any) {
+    "use server";
+    return await commentControllerGetUserComments(params);
+}
 
 export default async function AccountCommentPage({
     params,
@@ -10,8 +17,12 @@ export default async function AccountCommentPage({
     const { data } = await commentControllerGetUserComments({
         path: { userId: id }
     })
-    console.log('data', data)
     return (
-        <div>123123</div>
+        <CommentListClient
+            initPage={2}
+            initTotal={data?.data?.meta?.total || 0}
+            initComments={data?.data?.data || []}
+            id={id}
+        />
     )
 }

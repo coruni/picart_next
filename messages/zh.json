@@ -139,6 +139,17 @@
     "allLoaded": "已加载全部文章",
     "noArticles": "暂无文章"
   },
+  "commentList": {
+    "loading": "加载中...",
+    "loadMore": "滚动加载更多",
+    "loadFailed": "加载更多评论失败，请重试",
+    "retry": "重试",
+    "allLoaded": "已加载全部评论",
+    "noComments": "暂无评论",
+    "reply": "回复",
+    "replies": "条回复",
+    "viewMoreReplies": "查看更多 {count} 条回复"
+  },
   "followButton": {
     "follow": "关注",
     "following": "已关注",

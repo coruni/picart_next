@@ -59,6 +59,9 @@ import type {
   ReportControllerGetStatisticsResponse,
   UserControllerFindOneResponse,
   ArticleControllerFindByAuthorResponse,
+  CommentControllerFindAllCommentsResponses,
+  CommentControllerFindAllResponse,
+  CommentControllerGetUserCommentsResponse,
 } from "@/api/types.gen";
 
 // ==================== 从响应类型中提取数据类型 ====================
@@ -128,6 +131,10 @@ export type ActiveBanners = NonNullable<BannerControllerFindActiveResponse["data
 export type ReportList = NonNullable<ReportControllerFindAllResponse["data"]['data']>;
 export type ReportDetail = NonNullable<ReportControllerFindOneResponse["data"]>;
 export type ReportStatistics = NonNullable<ReportControllerGetStatisticsResponse["data"]>;
+
+// 评论相关数据类型
+export type CommentList = NonNullable<CommentControllerFindAllResponse["data"]['data']>;
+export type UserCommentList = NonNullable<CommentControllerGetUserCommentsResponse["data"]['data']>;
 
 // ==================== 自定义通用类型 ====================
 

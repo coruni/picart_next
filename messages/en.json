@@ -139,6 +139,17 @@
     "allLoaded": "All articles loaded",
     "noArticles": "No articles"
   },
+  "commentList": {
+    "loading": "Loading...",
+    "loadMore": "Scroll to load more",
+    "loadFailed": "Failed to load more comments, please try again",
+    "retry": "Retry",
+    "allLoaded": "All comments loaded",
+    "noComments": "No comments",
+    "reply": "Reply",
+    "replies": "replies",
+    "viewMoreReplies": "View {count} more replies"
+  },
   "followButton": {
     "follow": "Follow",
     "following": "Following",

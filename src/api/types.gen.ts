@@ -5630,8 +5630,187 @@ export type CommentControllerFindAllResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<{
+                id: number;
+                content: string;
+                images: Array<string>;
+                likes: number;
+                replyCount: number;
+                status: string;
+                author: {
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: unknown;
+                    banReason: unknown;
+                    avatar: string;
+                    description: string;
+                    background: unknown;
+                    gender: string;
+                    birthDate: unknown;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    level: number;
+                    experience: number;
+                    score: number;
+                    wallet: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: unknown;
+                    lastLoginAt: string;
+                    lastActiveAt: unknown;
+                    inviterId: unknown;
+                    myInviteCode: unknown;
+                    inviteCode: unknown;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    isMember: boolean;
+                };
+                article: {
+                    id: number;
+                    title: string;
+                    requireLogin: boolean;
+                    requireFollow: boolean;
+                    requirePayment: boolean;
+                    requireMembership: boolean;
+                    viewPrice: string;
+                    images: Array<string>;
+                    views: number;
+                    likes: number;
+                    cover: string;
+                    downloadCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                parent: unknown;
+                rootId: number;
+                replies: Array<{
+                    id?: number;
+                    content?: string;
+                    images?: Array<string>;
+                    likes?: number;
+                    replyCount?: number;
+                    status?: string;
+                    author?: {
+                        id: number;
+                        username: string;
+                        nickname: string;
+                        status: string;
+                        banned: unknown;
+                        banReason: unknown;
+                        avatar: string;
+                        description: string;
+                        background: unknown;
+                        gender: string;
+                        birthDate: unknown;
+                        articleCount: number;
+                        followerCount: number;
+                        followingCount: number;
+                        level: number;
+                        experience: number;
+                        score: number;
+                        wallet: number;
+                        membershipLevel: number;
+                        membershipLevelName: string;
+                        membershipStatus: string;
+                        membershipStartDate: string;
+                        membershipEndDate: unknown;
+                        lastLoginAt: string;
+                        lastActiveAt: unknown;
+                        inviterId: unknown;
+                        myInviteCode: unknown;
+                        inviteCode: unknown;
+                        inviteEarnings: string;
+                        inviteCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                        isMember: boolean;
+                    };
+                    article?: {
+                        id: number;
+                        title: string;
+                        requireLogin: boolean;
+                        requireFollow: boolean;
+                        requirePayment: boolean;
+                        requireMembership: boolean;
+                        viewPrice: string;
+                        images: Array<string>;
+                        views: number;
+                        likes: number;
+                        cover: string;
+                        downloadCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                    parent?: {
+                        id: number;
+                        author: {
+                            id: number;
+                            username: string;
+                            nickname: string;
+                            status: string;
+                            banned: unknown;
+                            banReason: unknown;
+                            avatar: string;
+                            description: string;
+                            background: unknown;
+                            gender: string;
+                            birthDate: unknown;
+                            articleCount: number;
+                            followerCount: number;
+                            followingCount: number;
+                            level: number;
+                            experience: number;
+                            score: number;
+                            wallet: number;
+                            membershipLevel: number;
+                            membershipLevelName: string;
+                            membershipStatus: string;
+                            membershipStartDate: string;
+                            membershipEndDate: unknown;
+                            lastLoginAt: string;
+                            lastActiveAt: unknown;
+                            inviterId: unknown;
+                            myInviteCode: unknown;
+                            inviteCode: unknown;
+                            inviteEarnings: string;
+                            inviteCount: number;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                    };
+                    rootId?: number;
+                    createdAt?: string;
+                    updatedAt?: string;
+                    parentId?: number;
+                    isLiked?: boolean;
+                }>;
+                createdAt: string;
+                updatedAt: string;
+                parentId: unknown;
+                isLiked: boolean;
+            }>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
 };
+
+export type CommentControllerFindAllResponse = CommentControllerFindAllResponses[keyof CommentControllerFindAllResponses];
 
 export type CommentControllerRemoveData = {
     body?: never;
@@ -5703,8 +5882,122 @@ export type CommentControllerFindOneResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<{
+                id: number;
+                content: string;
+                images: Array<string>;
+                likes: number;
+                replyCount: number;
+                status: string;
+                author: {
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: unknown;
+                    banReason: unknown;
+                    avatar: string;
+                    description: string;
+                    background: unknown;
+                    gender: string;
+                    birthDate: unknown;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    level: number;
+                    experience: number;
+                    score: number;
+                    wallet: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: unknown;
+                    lastLoginAt: string;
+                    lastActiveAt: unknown;
+                    inviterId: unknown;
+                    myInviteCode: unknown;
+                    inviteCode: unknown;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    isMember: boolean;
+                };
+                article: {
+                    id: number;
+                    title: string;
+                    requireLogin: boolean;
+                    requireFollow: boolean;
+                    requirePayment: boolean;
+                    requireMembership: boolean;
+                    viewPrice: string;
+                    images: Array<string>;
+                    views: number;
+                    likes: number;
+                    cover: string;
+                    downloadCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                parent: {
+                    id: number;
+                    author: {
+                        id: number;
+                        username: string;
+                        nickname: string;
+                        status: string;
+                        banned: unknown;
+                        banReason: unknown;
+                        avatar: string;
+                        description: string;
+                        background: unknown;
+                        gender: string;
+                        birthDate: unknown;
+                        articleCount: number;
+                        followerCount: number;
+                        followingCount: number;
+                        level: number;
+                        experience: number;
+                        score: number;
+                        wallet: number;
+                        membershipLevel: number;
+                        membershipLevelName: string;
+                        membershipStatus: string;
+                        membershipStartDate: string;
+                        membershipEndDate: unknown;
+                        lastLoginAt: string;
+                        lastActiveAt: unknown;
+                        inviterId: unknown;
+                        myInviteCode: unknown;
+                        inviteCode: unknown;
+                        inviteEarnings: string;
+                        inviteCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                };
+                rootId: number;
+                createdAt: string;
+                updatedAt: string;
+                parentId: number;
+                isLiked: boolean;
+            }>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
 };
+
+export type CommentControllerFindOneResponse = CommentControllerFindOneResponses[keyof CommentControllerFindOneResponses];
 
 export type CommentControllerUpdateData = {
     body: UpdateCommentDto;
