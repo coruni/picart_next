@@ -79,6 +79,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -129,6 +140,17 @@
           "角色管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -272,6 +294,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -347,6 +380,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -491,6 +535,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -547,6 +602,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -656,6 +722,17 @@
             "required": false,
             "schema": {
               "type": "boolean"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -827,6 +904,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -981,6 +1069,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -1052,6 +1151,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -1113,6 +1223,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -1163,6 +1284,17 @@
           "系统配置"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -1295,6 +1427,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -1365,6 +1508,17 @@
           "系统配置"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -1449,6 +1603,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -1593,6 +1758,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -1679,6 +1855,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -1739,6 +1926,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -1808,6 +2006,17 @@
           "系统配置"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -2127,6 +2336,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -2291,6 +2511,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -2372,6 +2603,17 @@
             "example": 0,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -2467,6 +2709,17 @@
             "required": false,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -2738,6 +2991,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -2818,6 +3082,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -3114,6 +3389,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -3178,6 +3464,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -3253,6 +3550,17 @@
           "用户管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -3681,6 +3989,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -3770,6 +4089,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -3888,6 +4218,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -3969,6 +4310,17 @@
               "maximum": 100,
               "default": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -4120,6 +4472,17 @@
           "用户管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -4289,6 +4652,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -4357,6 +4731,17 @@
           "用户管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -4530,6 +4915,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -4602,6 +4998,17 @@
           "用户管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -4997,6 +5404,17 @@
           "用户管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -5411,6 +5829,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -5487,6 +5916,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -5545,6 +5985,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -5609,6 +6060,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -5659,6 +6121,17 @@
           "用户管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -5729,6 +6202,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -5788,6 +6272,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -5846,6 +6341,17 @@
           "用户管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -5919,6 +6425,17 @@
           "用户管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -6009,6 +6526,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -6067,6 +6595,17 @@
           "用户管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -6137,6 +6676,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -6199,6 +6749,17 @@
           "用户管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -6268,6 +6829,17 @@
           "用户管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -6352,6 +6924,17 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -6460,6 +7043,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -6514,6 +7108,17 @@
           "用户管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -6622,6 +7227,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -6680,6 +7296,17 @@
           "用户管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -6787,6 +7414,17 @@
             "required": false,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -7363,6 +8001,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -7841,6 +8490,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -8384,6 +9044,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -8452,6 +9123,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -9119,6 +9801,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -9185,6 +9878,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -9281,6 +9985,17 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -9881,6 +10596,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -10047,6 +10773,17 @@
             "required": false,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -10625,6 +11362,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -10730,6 +11478,17 @@
               "maximum": 100,
               "default": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -11324,6 +12083,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -11433,6 +12203,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -11490,6 +12271,17 @@
             "required": true,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -11887,6 +12679,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -12310,6 +13113,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -12350,6 +13164,633 @@
         "security": []
       }
     },
+    "/article/favorited/list": {
+      "get": {
+        "summary": "获取收藏列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "articleController_getFavoritedArticles",
+        "tags": [
+          "文章管理"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户id",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "requireLogin": {
+                                "type": "boolean"
+                              },
+                              "requireFollow": {
+                                "type": "boolean"
+                              },
+                              "requirePayment": {
+                                "type": "boolean"
+                              },
+                              "requireMembership": {
+                                "type": "boolean"
+                              },
+                              "listRequireLogin": {
+                                "type": "boolean"
+                              },
+                              "viewPrice": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string"
+                              },
+                              "content": {
+                                "type": "string"
+                              },
+                              "images": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "sort": {
+                                "type": "integer"
+                              },
+                              "summary": {
+                                "type": "string"
+                              },
+                              "views": {
+                                "type": "integer"
+                              },
+                              "likes": {
+                                "type": "integer"
+                              },
+                              "favoriteCount": {
+                                "type": "integer"
+                              },
+                              "commentCount": {
+                                "type": "integer"
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "cover": {
+                                "type": "string"
+                              },
+                              "authorId": {
+                                "type": "integer"
+                              },
+                              "author": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "username": {
+                                    "type": "string"
+                                  },
+                                  "nickname": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "banned": {
+                                    "type": "null"
+                                  },
+                                  "banReason": {
+                                    "type": "null"
+                                  },
+                                  "avatar": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "background": {
+                                    "type": "null"
+                                  },
+                                  "gender": {
+                                    "type": "string"
+                                  },
+                                  "birthDate": {
+                                    "type": "null"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followerCount": {
+                                    "type": "integer"
+                                  },
+                                  "followingCount": {
+                                    "type": "integer"
+                                  },
+                                  "level": {
+                                    "type": "integer"
+                                  },
+                                  "experience": {
+                                    "type": "integer"
+                                  },
+                                  "score": {
+                                    "type": "integer"
+                                  },
+                                  "wallet": {
+                                    "type": "number"
+                                  },
+                                  "membershipLevel": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevelName": {
+                                    "type": "string"
+                                  },
+                                  "membershipStatus": {
+                                    "type": "string"
+                                  },
+                                  "membershipStartDate": {
+                                    "type": "string"
+                                  },
+                                  "membershipEndDate": {
+                                    "type": "null"
+                                  },
+                                  "lastLoginAt": {
+                                    "type": "string"
+                                  },
+                                  "lastActiveAt": {
+                                    "type": "null"
+                                  },
+                                  "inviterId": {
+                                    "type": "null"
+                                  },
+                                  "myInviteCode": {
+                                    "type": "null"
+                                  },
+                                  "inviteCode": {
+                                    "type": "null"
+                                  },
+                                  "inviteEarnings": {
+                                    "type": "string"
+                                  },
+                                  "inviteCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  },
+                                  "isMember": {
+                                    "type": "boolean"
+                                  },
+                                  "isFollowed": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "username",
+                                  "nickname",
+                                  "status",
+                                  "banned",
+                                  "banReason",
+                                  "avatar",
+                                  "description",
+                                  "background",
+                                  "gender",
+                                  "birthDate",
+                                  "articleCount",
+                                  "followerCount",
+                                  "followingCount",
+                                  "level",
+                                  "experience",
+                                  "score",
+                                  "wallet",
+                                  "membershipLevel",
+                                  "membershipLevelName",
+                                  "membershipStatus",
+                                  "membershipStartDate",
+                                  "membershipEndDate",
+                                  "lastLoginAt",
+                                  "lastActiveAt",
+                                  "inviterId",
+                                  "myInviteCode",
+                                  "inviteCode",
+                                  "inviteEarnings",
+                                  "inviteCount",
+                                  "createdAt",
+                                  "updatedAt",
+                                  "isMember",
+                                  "isFollowed"
+                                ]
+                              },
+                              "category": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "parentId": {
+                                    "type": "integer"
+                                  },
+                                  "link": {
+                                    "type": "string"
+                                  },
+                                  "parent": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "parentId": {
+                                        "type": "null"
+                                      },
+                                      "link": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "parentId",
+                                      "link",
+                                      "avatar",
+                                      "background",
+                                      "cover",
+                                      "sort",
+                                      "status",
+                                      "articleCount",
+                                      "followCount",
+                                      "createdAt",
+                                      "updatedAt"
+                                    ]
+                                  },
+                                  "avatar": {
+                                    "type": "string"
+                                  },
+                                  "background": {
+                                    "type": "string"
+                                  },
+                                  "cover": {
+                                    "type": "string"
+                                  },
+                                  "sort": {
+                                    "type": "integer"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "description",
+                                  "parentId",
+                                  "link",
+                                  "parent",
+                                  "avatar",
+                                  "background",
+                                  "cover",
+                                  "sort",
+                                  "status",
+                                  "articleCount",
+                                  "followCount",
+                                  "createdAt",
+                                  "updatedAt"
+                                ]
+                              },
+                              "tags": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer"
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "nullable": true
+                                    },
+                                    "avatar": {
+                                      "type": "string"
+                                    },
+                                    "background": {
+                                      "type": "string",
+                                      "nullable": true
+                                    },
+                                    "cover": {
+                                      "type": "string",
+                                      "nullable": true
+                                    },
+                                    "sort": {
+                                      "type": "integer"
+                                    },
+                                    "articleCount": {
+                                      "type": "integer"
+                                    },
+                                    "followCount": {
+                                      "type": "integer"
+                                    },
+                                    "createdAt": {
+                                      "type": "string"
+                                    },
+                                    "updatedAt": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "description",
+                                    "avatar",
+                                    "background",
+                                    "cover",
+                                    "sort",
+                                    "articleCount",
+                                    "followCount",
+                                    "createdAt",
+                                    "updatedAt"
+                                  ]
+                                }
+                              },
+                              "downloads": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer"
+                                    },
+                                    "type": {
+                                      "type": "string"
+                                    },
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "password": {
+                                      "type": "string"
+                                    },
+                                    "extractionCode": {
+                                      "type": "string"
+                                    },
+                                    "articleId": {
+                                      "type": "integer"
+                                    },
+                                    "createdAt": {
+                                      "type": "string"
+                                    },
+                                    "updatedAt": {
+                                      "type": "string"
+                                    }
+                                  }
+                                }
+                              },
+                              "downloadCount": {
+                                "type": "integer"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              },
+                              "favoritedAt": {
+                                "type": "string"
+                              },
+                              "isLiked": {
+                                "type": "boolean"
+                              },
+                              "isPaid": {
+                                "type": "boolean"
+                              },
+                              "imageCount": {
+                                "type": "integer"
+                              },
+                              "reactionStats": {
+                                "type": "object",
+                                "properties": {
+                                  "like": {
+                                    "type": "integer"
+                                  },
+                                  "love": {
+                                    "type": "integer"
+                                  },
+                                  "haha": {
+                                    "type": "integer"
+                                  },
+                                  "wow": {
+                                    "type": "integer"
+                                  },
+                                  "sad": {
+                                    "type": "integer"
+                                  },
+                                  "angry": {
+                                    "type": "integer"
+                                  },
+                                  "dislike": {
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "like",
+                                  "love",
+                                  "haha",
+                                  "wow",
+                                  "sad",
+                                  "angry",
+                                  "dislike"
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "page": {
+                              "type": "integer"
+                            },
+                            "limit": {
+                              "type": "integer"
+                            },
+                            "totalPages": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "total",
+                            "page",
+                            "limit",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "data",
+                        "meta"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
     "/article/{id}/browse/progress": {
       "post": {
         "summary": "更新文章浏览进度",
@@ -12368,6 +13809,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -12442,6 +13894,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -12500,6 +13963,205 @@
         "security": []
       }
     },
+    "/article/{id}/favorite": {
+      "post": {
+        "summary": "收藏文章",
+        "deprecated": false,
+        "description": "",
+        "operationId": "articleController_favoriteArticle",
+        "tags": [
+          "文章管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "favoriteId": {
+                              "type": "integer"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "favoriteId",
+                            "createdAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "success",
+                        "message",
+                        "data"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "delete": {
+        "summary": "取消收藏",
+        "deprecated": false,
+        "description": "",
+        "operationId": "articleController_unfavoriteArticle",
+        "tags": [
+          "文章管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
     "/article/browse/batch-delete": {
       "post": {
         "summary": "批量删除浏览记录",
@@ -12510,6 +14172,17 @@
           "文章管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -12561,6 +14234,17 @@
           "文章管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -12643,6 +14327,17 @@
               "maximum": 100,
               "default": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -13675,6 +15370,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -14338,6 +16044,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -14420,6 +16137,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -14536,6 +16264,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -14584,6 +16323,17 @@
           "评论管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -14691,6 +16441,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -14783,6 +16544,17 @@
               "maximum": 100,
               "default": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -15449,6 +17221,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -15507,6 +17290,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -15598,6 +17392,17 @@
             "required": false,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -15755,6 +17560,17 @@
           "标签管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -15926,6 +17742,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -16060,6 +17887,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -16145,6 +17983,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -16218,6 +18067,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -16282,6 +18142,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -16391,6 +18262,17 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -16630,6 +18512,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -16809,6 +18702,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -17027,6 +18931,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -17329,6 +19244,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -17391,6 +19317,17 @@
           "权限管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -17458,6 +19395,17 @@
           "权限管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -17549,6 +19497,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -17624,6 +19583,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -17716,6 +19686,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -17844,6 +19825,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -17902,6 +19894,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -17970,6 +19973,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -18024,6 +20038,17 @@
           "订单管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -18133,6 +20158,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -18183,6 +20219,17 @@
           "订单管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -18242,6 +20289,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -18318,6 +20376,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -18380,6 +20449,17 @@
           "订单管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -18449,6 +20529,17 @@
           "订单管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -18542,6 +20633,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -18596,6 +20698,17 @@
           "邀请管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -18675,6 +20788,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -18740,6 +20864,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -18798,6 +20933,17 @@
           "邀请管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -18876,6 +21022,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -18952,6 +21109,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -19040,6 +21208,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -19100,6 +21279,17 @@
           "上传管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -19197,6 +21387,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -19284,6 +21485,17 @@
               "maximum": 100,
               "default": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -19592,6 +21804,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -19823,6 +22046,17 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -20143,6 +22377,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -20409,6 +22654,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -20478,6 +22734,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -20528,6 +22795,17 @@
           "信息管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -20629,6 +22907,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -20715,6 +23004,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -20775,6 +23075,17 @@
           "信息管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -20857,6 +23168,17 @@
               "maximum": 100,
               "default": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -20995,6 +23317,17 @@
           "Banner"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -21136,6 +23469,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -21249,6 +23593,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -21374,6 +23729,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -21430,6 +23796,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -21494,6 +23871,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -21554,6 +23942,17 @@
           "支付管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -21616,6 +24015,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -21676,6 +24086,17 @@
           "支付管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -21809,6 +24230,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -21870,6 +24302,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -21928,6 +24371,17 @@
             "example": 0,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -21997,6 +24451,17 @@
             "required": true,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -22122,6 +24587,17 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -22529,6 +25005,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -22681,6 +25168,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -22824,6 +25322,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -23229,6 +25738,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -23298,6 +25818,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -23364,6 +25895,17 @@
             "required": true,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -23599,6 +26141,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -23773,6 +26326,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -23940,6 +26504,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -24115,6 +26690,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -24190,6 +26776,17 @@
             "required": false,
             "schema": {
               "type": "integer"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -24463,6 +27060,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -24696,6 +27304,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -24746,6 +27365,17 @@
           "装饰品管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -24969,6 +27599,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -25061,6 +27702,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -25129,6 +27781,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -25356,6 +28019,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -25417,6 +28091,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -25467,6 +28152,17 @@
           "装饰品管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -25545,6 +28241,17 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -25809,6 +28516,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -25964,6 +28682,17 @@
             "example": 0,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -26217,6 +28946,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -26283,6 +29023,17 @@
             "example": 0,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -26370,6 +29121,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -26428,6 +29190,17 @@
             "example": 0,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -26492,6 +29265,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -26542,6 +29326,17 @@
           "收藏管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -26621,6 +29416,17 @@
             "example": 0,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -26720,6 +29526,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -26778,6 +29595,17 @@
           "积分管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -26838,6 +29666,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -26886,6 +29725,17 @@
           "积分管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -26970,6 +29820,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -27030,6 +29891,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -27118,6 +29990,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -27181,6 +30064,17 @@
         ],
         "parameters": [
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -27229,6 +30123,17 @@
           "积分管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -27313,6 +30218,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -27373,6 +30289,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -27461,6 +30388,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -27523,6 +30461,17 @@
           "积分管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -27592,6 +30541,17 @@
           "积分管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -27673,6 +30633,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -27838,6 +30809,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -27886,6 +30868,17 @@
           "表情包管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -27958,6 +30951,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -28014,6 +31018,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -28083,6 +31098,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -28160,6 +31186,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -28210,6 +31247,17 @@
           "表情包管理"
         ],
         "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
           {
             "name": "Device-Id",
             "in": "header",
@@ -28271,6 +31319,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -28328,6 +31387,17 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {
@@ -28392,6 +31462,17 @@
             }
           },
           {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
             "name": "Device-Id",
             "in": "header",
             "description": "",
@@ -28448,6 +31529,17 @@
             "example": "",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
             }
           },
           {

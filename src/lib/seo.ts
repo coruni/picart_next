@@ -246,22 +246,22 @@ export async function generateAuthorMetadata(
     .filter(Boolean);
 
   return {
-    title: `${author.nickname || author.username}`,
-    description: author.description || `${author.nickname || author.nickname} 的个人主页`,
+    title: `${author?.nickname || author?.username}`,
+    description: author.description || `${author?.nickname || author?.nickname} 的个人主页`,
     keywords: keywords.length > 0 ? keywords : undefined,
     openGraph: {
       type: "profile",
       locale: locale,
       siteName: siteName,
-      title: author.nickname || author.username,
-      description: author.description || "",
-      images: author.avatar
+      title: author?.nickname || author?.username,
+      description: author?.description || "",
+      images: author?.avatar
         ? [
           {
-            url: author.avatar,
+            url: author?.avatar,
             width: 400,
             height: 400,
-            alt: author.nickname || author.username,
+            alt: author?.nickname || author?.username,
           },
         ]
         : undefined,

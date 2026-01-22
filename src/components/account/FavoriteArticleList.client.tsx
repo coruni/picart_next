@@ -2,24 +2,24 @@
 
 import { ArticleUserList } from "@/types";
 import { ArticleListClient as SharedArticleListClient } from "@/components/shared";
-import { articleControllerFindByAuthor } from "@/api";
-
-type ArticleListClientProps = {
-    initArticles: ArticleUserList;
+import { articleControllerGetFavoritedArticles, ArticleControllerGetFavoritedArticlesResponse } from "@/api";
+type FavoriteArticleList = NonNullable<ArticleControllerGetFavoritedArticlesResponse['data']['data']>
+type FavoriteArticleListClientProps = {
+    initArticles: ArticleUserList | FavoriteArticleList;
     initPage: number;
     initTotal: number;
     id: string;
     showFollow?: boolean;
 };
 
-export const ArticleListClient = (props: ArticleListClientProps) => {
+export const FavoriteArticleList = (props: FavoriteArticleListClientProps) => {
     return (
         <SharedArticleListClient
             initArticles={props.initArticles}
             showFollow={props.showFollow}
             initPage={props.initPage}
             initTotal={props.initTotal}
-            fetchArticles={articleControllerFindByAuthor}
+            fetchArticles={articleControllerGetFavoritedArticles}
             fetchParams={{ path: { id: props.id } }}
         />
     );

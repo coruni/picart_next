@@ -1,11 +1,6 @@
 import { commentControllerGetUserComments } from "@/api";
 import { CommentListClient } from "@/components/account/CommentList.client";
 
-// Server action wrapper for client component
-async function fetchUserComments(params: any) {
-    "use server";
-    return await commentControllerGetUserComments(params);
-}
 
 export default async function AccountCommentPage({
     params,
