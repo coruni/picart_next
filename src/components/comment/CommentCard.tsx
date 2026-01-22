@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Heart, MoreHorizontal, Reply } from "lucide-react";
+import { Heart, MessageCircle, MoreHorizontal, Reply, ThumbsUp } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
-import { cn } from "@/lib/utils";
-import { CommentList, UserCommentList } from "@/types";
-
+import { cn, formatRelativeTime } from "@/lib/utils";
+import { AllComments, CommentList, UserCommentList } from "@/types";
+import Image from "next/image";
 interface CommentCardProps {
-  comment: CommentList[number] | UserCommentList[number];
+  comment: UserCommentList[number];
   onLike?: (commentId: number) => void;
   onReply?: (commentId: number) => void;
   showReplies?: boolean;
@@ -26,13 +26,12 @@ export function CommentCard({
 }: CommentCardProps) {
   const t = useTranslations("time");
   const tComment = useTranslations("commentList");
-  
+
   // Handle both CommentList and UserCommentList structures
   const isUserComment = 'author' in comment;
-  const user = isUserComment ? (comment as UserCommentList[number]).author : (comment as CommentList[number]).user;
-  const hasReplies = 'replies' in comment && (comment as CommentList[number]).replies;
-  const isLikedValue = 'isLiked' in comment ? (comment as CommentList[number]).isLiked : false;
-  
+  const user = isUserComment ? (comment as UserCommentList[number]).author : (comment as CommentList[number]).author;
+  const isLikedValue = 'isLiked' in comment ? comment.isLiked : false;
+
   const [isLiked, setIsLiked] = useState(isLikedValue || false);
   const [likeCount, setLikeCount] = useState(comment.likes || 0);
   const [showAllReplies, setShowAllReplies] = useState(false);
@@ -64,105 +63,62 @@ export function CommentCard({
     });
   };
 
-  const displayedReplies = showAllReplies
-    ? hasReplies ? comment.replies : []
-    : hasReplies ? comment.replies?.slice(0, 3) : [];
-
   return (
-    <div className={cn(
-      "space-y-3",
-      isReply && "ml-12 border-l border-border pl-4",
-      className
-    )}>
-      <div className="flex gap-3">
-        {/* Avatar */}
-        <Avatar
-          url={user.avatar}
-          size="sm"
-        />
-
-        {/* Content */}
-        <div className="flex-1 space-y-2">
-          {/* User info and time */}
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-foreground">
-              {user.nickname}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              @{user.username}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {formatTime(comment.createdAt)}
-            </span>
-          </div>
-
-          {/* Comment content */}
-          <div className="text-sm text-foreground leading-relaxed">
-            {comment.content}
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleLike}
-              className={cn(
-                "flex items-center gap-1 text-xs transition-colors hover:text-red-500",
-                isLiked ? "text-red-500" : "text-muted-foreground"
-              )}
-            >
-              <Heart
-                size={14}
-                className={cn(isLiked && "fill-current")}
-              />
-              {likeCount > 0 && <span>{likeCount}</span>}
-            </button>
-
-            <button
-              onClick={handleReply}
-              className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-primary"
-            >
-              <Reply size={14} />
-              <span>{tComment("reply")}</span>
-            </button>
-
-            {comment.replyCount > 0 && (
-              <span className="text-xs text-muted-foreground">
-                {comment.replyCount} {tComment("replies")}
-              </span>
-            )}
-
-            <button className="ml-auto text-muted-foreground hover:text-foreground transition-colors">
-              <MoreHorizontal size={14} />
-            </button>
+    <div className="border-b border-border pb-4">
+      <div className="px-4 mt-4">
+        <div className="flex items-center ">
+          {/* 头像 */}
+          <Avatar size="lg" url={comment.author.avatar}></Avatar>
+          {/* 信息 */}
+          <div className="ml-3 flex flex-col flex-1 self-stretch justify-start">
+            <span className="leading-5 font-semibold hover:text-primary">{comment.author.nickname || comment.author.username}</span>
+            <span className="mt-1 text-secondary text-sm leading-3.5">{formatRelativeTime(comment.createdAt, t)}</span>
           </div>
         </div>
       </div>
+      {/* 内容 */}
+      <div className="ml-16 pl-3 pr-4 mt-2 cursor-pointer">
+        <div className="text-[#000000d9]" dangerouslySetInnerHTML={{ __html: String(comment.content || '') }}></div>
+      </div>
 
-      {/* Replies */}
-      {showReplies && hasReplies && comment.replies && comment.replies.length > 0 && (
-        <div className="space-y-3">
-          {displayedReplies?.map((reply) => (
-            <CommentCard
-              key={reply.id}
-              comment={reply}
-              onLike={onLike}
-              onReply={onReply}
-              showReplies={false}
-              isReply={true}
-            />
-          ))}
-
-          {/* Show more replies button */}
-          {comment.replies.length > 3 && !showAllReplies && (
-            <button
-              onClick={() => setShowAllReplies(true)}
-              className="ml-12 text-xs text-primary hover:text-primary/80 transition-colors"
-            >
-              {tComment("viewMoreReplies", { count: comment.replies.length - 3 })}
-            </button>
-          )}
+      {/* 回复了谁 */}
+      {comment.parent && (
+        <div className="ml-19 mt-2 pl-1.5 border-l-2 pr-4 border-[#f1f4f9] max-h-10">
+          <p className="text-secondary text-sm line-clamp-2 text-ellipsis">@{comment.parent.author.nickname || comment.parent.author.username}:{comment.parent.content}</p>
         </div>
       )}
+      {/* 文章信息 */}
+      <div className="ml-16 pl-3 pr-4 mt-3 cursor-pointer">
+        <div className="flex items-center h-12.5 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-600">
+          {(!!comment.article.cover || comment.article.images.length > 0) && (
+            <div className="size-12.5 bg-gray-50 relative">
+              <Image alt={comment.article.title} src={comment.article?.cover || comment.article.images?.[0] || ''} fill quality={95} className="object-cover"></Image>
+            </div>
+          )}
+          <div className="ml-3">
+            <span className="text-secondary line-clamp-1 text-ellipsis">{comment.article.title}</span>
+          </div>
+        </div>
+      </div>
+      {/* 底部信息 */}
+      <div className="ml-19 pr-4 mt-4">
+        <div className="flex items-center text-secondary ">
+          <span className="text-sm flex-1">{comment?.article?.category?.name}</span>
+          <div className="flex items-center text-sm leading-5">
+            <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-1 hover:text-primary cursor-pointer">
+                <MessageCircle size={18} />
+                <span>回复</span>
+              </div>
+              <div className="flex items-center space-x-1 hover:text-primary cursor-pointer">
+                <ThumbsUp size={18} />
+                <span>点赞</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }

@@ -12617,7 +12617,7 @@
             "in": "path",
             "description": "",
             "required": true,
-            "example": "",
+            "example": "1",
             "schema": {
               "type": "string"
             }
@@ -12880,8 +12880,17 @@
                                   "requireMembership": {
                                     "type": "boolean"
                                   },
+                                  "listRequireLogin": {
+                                    "type": "boolean"
+                                  },
                                   "viewPrice": {
                                     "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string"
+                                  },
+                                  "content": {
+                                    "type": "null"
                                   },
                                   "images": {
                                     "type": "array",
@@ -12889,14 +12898,92 @@
                                       "type": "string"
                                     }
                                   },
+                                  "sort": {
+                                    "type": "integer"
+                                  },
+                                  "summary": {
+                                    "type": "null"
+                                  },
                                   "views": {
                                     "type": "integer"
                                   },
                                   "likes": {
                                     "type": "integer"
                                   },
+                                  "commentCount": {
+                                    "type": "integer"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
                                   "cover": {
                                     "type": "string"
+                                  },
+                                  "authorId": {
+                                    "type": "integer"
+                                  },
+                                  "category": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "parentId": {
+                                        "type": "integer"
+                                      },
+                                      "link": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "parentId",
+                                      "link",
+                                      "avatar",
+                                      "background",
+                                      "cover",
+                                      "sort",
+                                      "status",
+                                      "articleCount",
+                                      "followCount",
+                                      "createdAt",
+                                      "updatedAt"
+                                    ]
                                   },
                                   "downloadCount": {
                                     "type": "integer"
@@ -12915,11 +13002,20 @@
                                   "requireFollow",
                                   "requirePayment",
                                   "requireMembership",
+                                  "listRequireLogin",
                                   "viewPrice",
+                                  "type",
+                                  "content",
                                   "images",
+                                  "sort",
+                                  "summary",
                                   "views",
                                   "likes",
+                                  "commentCount",
+                                  "status",
                                   "cover",
+                                  "authorId",
+                                  "category",
                                   "downloadCount",
                                   "createdAt",
                                   "updatedAt"
@@ -13117,8 +13213,17 @@
                                         "requireMembership": {
                                           "type": "boolean"
                                         },
+                                        "listRequireLogin": {
+                                          "type": "boolean"
+                                        },
                                         "viewPrice": {
                                           "type": "string"
+                                        },
+                                        "type": {
+                                          "type": "string"
+                                        },
+                                        "content": {
+                                          "type": "null"
                                         },
                                         "images": {
                                           "type": "array",
@@ -13126,14 +13231,92 @@
                                             "type": "string"
                                           }
                                         },
+                                        "sort": {
+                                          "type": "integer"
+                                        },
+                                        "summary": {
+                                          "type": "null"
+                                        },
                                         "views": {
                                           "type": "integer"
                                         },
                                         "likes": {
                                           "type": "integer"
                                         },
+                                        "commentCount": {
+                                          "type": "integer"
+                                        },
+                                        "status": {
+                                          "type": "string"
+                                        },
                                         "cover": {
                                           "type": "string"
+                                        },
+                                        "authorId": {
+                                          "type": "integer"
+                                        },
+                                        "category": {
+                                          "type": "object",
+                                          "properties": {
+                                            "id": {
+                                              "type": "integer"
+                                            },
+                                            "name": {
+                                              "type": "string"
+                                            },
+                                            "description": {
+                                              "type": "string"
+                                            },
+                                            "parentId": {
+                                              "type": "integer"
+                                            },
+                                            "link": {
+                                              "type": "string"
+                                            },
+                                            "avatar": {
+                                              "type": "string"
+                                            },
+                                            "background": {
+                                              "type": "string"
+                                            },
+                                            "cover": {
+                                              "type": "string"
+                                            },
+                                            "sort": {
+                                              "type": "integer"
+                                            },
+                                            "status": {
+                                              "type": "string"
+                                            },
+                                            "articleCount": {
+                                              "type": "integer"
+                                            },
+                                            "followCount": {
+                                              "type": "integer"
+                                            },
+                                            "createdAt": {
+                                              "type": "string"
+                                            },
+                                            "updatedAt": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "required": [
+                                            "id",
+                                            "name",
+                                            "description",
+                                            "parentId",
+                                            "link",
+                                            "avatar",
+                                            "background",
+                                            "cover",
+                                            "sort",
+                                            "status",
+                                            "articleCount",
+                                            "followCount",
+                                            "createdAt",
+                                            "updatedAt"
+                                          ]
                                         },
                                         "downloadCount": {
                                           "type": "integer"
@@ -13152,11 +13335,20 @@
                                         "requireFollow",
                                         "requirePayment",
                                         "requireMembership",
+                                        "listRequireLogin",
                                         "viewPrice",
+                                        "type",
+                                        "content",
                                         "images",
+                                        "sort",
+                                        "summary",
                                         "views",
                                         "likes",
+                                        "commentCount",
+                                        "status",
                                         "cover",
+                                        "authorId",
+                                        "category",
                                         "downloadCount",
                                         "createdAt",
                                         "updatedAt"
@@ -13167,6 +13359,21 @@
                                       "properties": {
                                         "id": {
                                           "type": "integer"
+                                        },
+                                        "content": {
+                                          "type": "string"
+                                        },
+                                        "images": {
+                                          "type": "null"
+                                        },
+                                        "likes": {
+                                          "type": "integer"
+                                        },
+                                        "replyCount": {
+                                          "type": "integer"
+                                        },
+                                        "status": {
+                                          "type": "string"
                                         },
                                         "author": {
                                           "type": "object",
@@ -13266,6 +13473,9 @@
                                             },
                                             "updatedAt": {
                                               "type": "string"
+                                            },
+                                            "isMember": {
+                                              "type": "boolean"
                                             }
                                           },
                                           "required": [
@@ -13300,13 +13510,31 @@
                                             "inviteEarnings",
                                             "inviteCount",
                                             "createdAt",
-                                            "updatedAt"
+                                            "updatedAt",
+                                            "isMember"
                                           ]
+                                        },
+                                        "rootId": {
+                                          "type": "null"
+                                        },
+                                        "createdAt": {
+                                          "type": "string"
+                                        },
+                                        "updatedAt": {
+                                          "type": "string"
                                         }
                                       },
                                       "required": [
                                         "id",
-                                        "author"
+                                        "content",
+                                        "images",
+                                        "likes",
+                                        "replyCount",
+                                        "status",
+                                        "author",
+                                        "rootId",
+                                        "createdAt",
+                                        "updatedAt"
                                       ]
                                     },
                                     "rootId": {
@@ -13537,10 +13765,10 @@
                                     "type": "string"
                                   },
                                   "banned": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "banReason": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "avatar": {
                                     "type": "string"
@@ -13549,13 +13777,13 @@
                                     "type": "string"
                                   },
                                   "background": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "gender": {
                                     "type": "string"
                                   },
                                   "birthDate": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "articleCount": {
                                     "type": "integer"
@@ -13591,22 +13819,22 @@
                                     "type": "string"
                                   },
                                   "membershipEndDate": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "lastLoginAt": {
                                     "type": "string"
                                   },
                                   "lastActiveAt": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "inviterId": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "myInviteCode": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "inviteCode": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "inviteEarnings": {
                                     "type": "string"
@@ -13681,7 +13909,16 @@
                                   "requireMembership": {
                                     "type": "boolean"
                                   },
+                                  "listRequireLogin": {
+                                    "type": "boolean"
+                                  },
                                   "viewPrice": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string"
+                                  },
+                                  "content": {
                                     "type": "string"
                                   },
                                   "images": {
@@ -13690,14 +13927,92 @@
                                       "type": "string"
                                     }
                                   },
+                                  "sort": {
+                                    "type": "integer"
+                                  },
+                                  "summary": {
+                                    "type": "string"
+                                  },
                                   "views": {
                                     "type": "integer"
                                   },
                                   "likes": {
                                     "type": "integer"
                                   },
+                                  "commentCount": {
+                                    "type": "integer"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
                                   "cover": {
                                     "type": "string"
+                                  },
+                                  "authorId": {
+                                    "type": "integer"
+                                  },
+                                  "category": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "parentId": {
+                                        "type": "integer"
+                                      },
+                                      "link": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "parentId",
+                                      "link",
+                                      "avatar",
+                                      "background",
+                                      "cover",
+                                      "sort",
+                                      "status",
+                                      "articleCount",
+                                      "followCount",
+                                      "createdAt",
+                                      "updatedAt"
+                                    ]
                                   },
                                   "downloadCount": {
                                     "type": "integer"
@@ -13716,11 +14031,20 @@
                                   "requireFollow",
                                   "requirePayment",
                                   "requireMembership",
+                                  "listRequireLogin",
                                   "viewPrice",
+                                  "type",
+                                  "content",
                                   "images",
+                                  "sort",
+                                  "summary",
                                   "views",
                                   "likes",
+                                  "commentCount",
+                                  "status",
                                   "cover",
+                                  "authorId",
+                                  "category",
                                   "downloadCount",
                                   "createdAt",
                                   "updatedAt"
@@ -13731,6 +14055,24 @@
                                 "properties": {
                                   "id": {
                                     "type": "integer"
+                                  },
+                                  "content": {
+                                    "type": "string"
+                                  },
+                                  "images": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "likes": {
+                                    "type": "integer"
+                                  },
+                                  "replyCount": {
+                                    "type": "integer"
+                                  },
+                                  "status": {
+                                    "type": "string"
                                   },
                                   "author": {
                                     "type": "object",
@@ -13830,6 +14172,9 @@
                                       },
                                       "updatedAt": {
                                         "type": "string"
+                                      },
+                                      "isMember": {
+                                        "type": "boolean"
                                       }
                                     },
                                     "required": [
@@ -13864,13 +14209,32 @@
                                       "inviteEarnings",
                                       "inviteCount",
                                       "createdAt",
-                                      "updatedAt"
+                                      "updatedAt",
+                                      "isMember"
                                     ]
+                                  },
+                                  "rootId": {
+                                    "type": "integer",
+                                    "nullable": true
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
                                   }
                                 },
                                 "required": [
                                   "id",
-                                  "author"
+                                  "content",
+                                  "images",
+                                  "likes",
+                                  "replyCount",
+                                  "status",
+                                  "author",
+                                  "rootId",
+                                  "createdAt",
+                                  "updatedAt"
                                 ]
                               },
                               "rootId": {
@@ -14512,10 +14876,10 @@
                                     "type": "string"
                                   },
                                   "banned": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "banReason": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "avatar": {
                                     "type": "string"
@@ -14524,13 +14888,13 @@
                                     "type": "string"
                                   },
                                   "background": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "gender": {
                                     "type": "string"
                                   },
                                   "birthDate": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "articleCount": {
                                     "type": "integer"
@@ -14566,22 +14930,22 @@
                                     "type": "string"
                                   },
                                   "membershipEndDate": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "lastLoginAt": {
                                     "type": "string"
                                   },
                                   "lastActiveAt": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "inviterId": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "myInviteCode": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "inviteCode": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "inviteEarnings": {
                                     "type": "string"
@@ -14594,6 +14958,9 @@
                                   },
                                   "updatedAt": {
                                     "type": "string"
+                                  },
+                                  "isMember": {
+                                    "type": "boolean"
                                   }
                                 },
                                 "required": [
@@ -14628,7 +14995,8 @@
                                   "inviteEarnings",
                                   "inviteCount",
                                   "createdAt",
-                                  "updatedAt"
+                                  "updatedAt",
+                                  "isMember"
                                 ]
                               },
                               "article": {
@@ -14675,7 +15043,7 @@
                                     "type": "integer"
                                   },
                                   "summary": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "views": {
                                     "type": "integer"
@@ -14694,6 +15062,70 @@
                                   },
                                   "authorId": {
                                     "type": "integer"
+                                  },
+                                  "category": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "parentId": {
+                                        "type": "integer"
+                                      },
+                                      "link": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string",
+                                        "nullable": true
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "parentId",
+                                      "link",
+                                      "avatar",
+                                      "background",
+                                      "cover",
+                                      "sort",
+                                      "status",
+                                      "articleCount",
+                                      "followCount",
+                                      "createdAt",
+                                      "updatedAt"
+                                    ]
                                   },
                                   "downloadCount": {
                                     "type": "integer"
@@ -14725,7 +15157,199 @@
                                   "status",
                                   "cover",
                                   "authorId",
+                                  "category",
                                   "downloadCount",
+                                  "createdAt",
+                                  "updatedAt"
+                                ]
+                              },
+                              "parent": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "content": {
+                                    "type": "string"
+                                  },
+                                  "images": {
+                                    "type": "string"
+                                  },
+                                  "likes": {
+                                    "type": "integer"
+                                  },
+                                  "replyCount": {
+                                    "type": "integer"
+                                  },
+                                  "status": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "author": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "username": {
+                                        "type": "string"
+                                      },
+                                      "nickname": {
+                                        "type": "string",
+                                        "nullable": true
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "banned": {
+                                        "type": "string"
+                                      },
+                                      "banReason": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string",
+                                        "nullable": true
+                                      },
+                                      "description": {
+                                        "type": "string",
+                                        "nullable": true
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "gender": {
+                                        "type": "string"
+                                      },
+                                      "birthDate": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followerCount": {
+                                        "type": "integer"
+                                      },
+                                      "followingCount": {
+                                        "type": "integer"
+                                      },
+                                      "level": {
+                                        "type": "integer"
+                                      },
+                                      "experience": {
+                                        "type": "integer"
+                                      },
+                                      "score": {
+                                        "type": "integer"
+                                      },
+                                      "wallet": {
+                                        "type": "integer"
+                                      },
+                                      "membershipLevel": {
+                                        "type": "integer"
+                                      },
+                                      "membershipLevelName": {
+                                        "type": "string"
+                                      },
+                                      "membershipStatus": {
+                                        "type": "string"
+                                      },
+                                      "membershipStartDate": {
+                                        "type": "string",
+                                        "nullable": true
+                                      },
+                                      "membershipEndDate": {
+                                        "type": "string",
+                                        "nullable": true
+                                      },
+                                      "lastLoginAt": {
+                                        "type": "string"
+                                      },
+                                      "lastActiveAt": {
+                                        "type": "string"
+                                      },
+                                      "inviterId": {
+                                        "type": "string"
+                                      },
+                                      "myInviteCode": {
+                                        "type": "string"
+                                      },
+                                      "inviteCode": {
+                                        "type": "string"
+                                      },
+                                      "inviteEarnings": {
+                                        "type": "string"
+                                      },
+                                      "inviteCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      },
+                                      "isMember": {
+                                        "type": "boolean"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "username",
+                                      "nickname",
+                                      "status",
+                                      "banned",
+                                      "banReason",
+                                      "avatar",
+                                      "description",
+                                      "background",
+                                      "gender",
+                                      "birthDate",
+                                      "articleCount",
+                                      "followerCount",
+                                      "followingCount",
+                                      "level",
+                                      "experience",
+                                      "score",
+                                      "wallet",
+                                      "membershipLevel",
+                                      "membershipLevelName",
+                                      "membershipStatus",
+                                      "membershipStartDate",
+                                      "membershipEndDate",
+                                      "lastLoginAt",
+                                      "lastActiveAt",
+                                      "inviterId",
+                                      "myInviteCode",
+                                      "inviteCode",
+                                      "inviteEarnings",
+                                      "inviteCount",
+                                      "createdAt",
+                                      "updatedAt",
+                                      "isMember"
+                                    ]
+                                  },
+                                  "rootId": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "content",
+                                  "images",
+                                  "likes",
+                                  "replyCount",
+                                  "status",
+                                  "author",
+                                  "rootId",
                                   "createdAt",
                                   "updatedAt"
                                 ]
@@ -14738,6 +15362,9 @@
                               },
                               "updatedAt": {
                                 "type": "string"
+                              },
+                              "parentId": {
+                                "type": "integer"
                               }
                             },
                             "required": [
@@ -14749,9 +15376,11 @@
                               "status",
                               "author",
                               "article",
+                              "parent",
                               "rootId",
                               "createdAt",
-                              "updatedAt"
+                              "updatedAt",
+                              "parentId"
                             ]
                           }
                         },

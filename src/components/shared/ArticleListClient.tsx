@@ -57,10 +57,10 @@ export const ArticleListClient = ({
         setError(null);
 
         try {
-            const nextPage = page + 1;
+            
             const response = await fetchArticles({
                 query: {
-                    page: nextPage,
+                    page: page,
                     limit: pageSize,
                 },
                 ...fetchParams,
@@ -73,7 +73,7 @@ export const ArticleListClient = ({
                     setHasMore(false);
                 } else {
                     setArticles((prev) => [...prev, ...newArticles]);
-                    setPage(nextPage);
+                    setPage(page+1);
 
                     // Check if we've loaded all articles based on total from response
                     const responseTotal = response.data.data.meta?.total || initTotal;

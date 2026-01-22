@@ -133,7 +133,8 @@ export type ReportDetail = NonNullable<ReportControllerFindOneResponse["data"]>;
 export type ReportStatistics = NonNullable<ReportControllerGetStatisticsResponse["data"]>;
 
 // 评论相关数据类型
-export type CommentList = NonNullable<CommentControllerFindAllResponse["data"]['data']>;
+export type AllComments = NonNullable<CommentControllerFindAllResponse["data"]['data']>;
+export type CommentList = NonNullable<CommentControllerGetUserCommentsResponse["data"]['data']>;
 export type UserCommentList = NonNullable<CommentControllerGetUserCommentsResponse["data"]['data']>;
 
 // ==================== 自定义通用类型 ====================
