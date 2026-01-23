@@ -110,7 +110,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                 </div>
             </div>
             <div className="right-container">
-                <Sidebar />
+                <Sidebar showAuthorInfo={true} showRecommendTag={false} showArticleCreate={false} author={article?.author}/>
             </div>
         </div>
     );

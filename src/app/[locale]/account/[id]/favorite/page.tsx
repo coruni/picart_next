@@ -18,7 +18,7 @@ export default async function AccountFavoritePage({
     })
     return (
         <FavoriteArticleList
-            initArticles={data?.data.data}
+            initArticles={data?.data.data || []}
             showFollow={false}
             initPage={2}
             initTotal={data?.data.meta.total!}

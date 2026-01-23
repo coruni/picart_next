@@ -67,7 +67,7 @@ export const RecommendUserWidget = async () => {
     }
     return (
         <section className="py-4 px-2 bg-card rounded-xl">
-            <div className=" text-ellipsis line-clamp-1 overflow-hidden leading-6 font-medium mb-3 px-2">
+            <div className=" text-ellipsis line-clamp-1 overflow-hidden leading-6 font-semibold mb-3 px-2">
                 <span>{t('recommendUsers')}</span>
             </div>
             {users.map((user) => userCard(user))}

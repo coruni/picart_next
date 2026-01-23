@@ -55,7 +55,7 @@ export default async function AccountLayout({ children, params }: AccountLayoutP
                     </div>
                     <div className="right-container">
                         {/* 侧边栏内容 */}
-                        <Sidebar />
+                        <Sidebar showArticleCreate={false} showRecommendTag={false} showRecommendUser={false} />
                     </div>
                 </div>
             </div>

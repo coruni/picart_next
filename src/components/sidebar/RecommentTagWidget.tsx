@@ -49,7 +49,7 @@ export const RecommendTagWidget = async () => {
 
     return (
         <section className="rounded-xl py-4 px-2 bg-card">
-            <div className=" text-ellipsis line-clamp-1 overflow-hidden leading-6  font-medium px-2 mb-3">
+            <div className=" text-ellipsis line-clamp-1 overflow-hidden leading-6  font-semibold px-2 mb-3">
                 <span>{t('hotTopics')}</span>
             </div>
             {tags.map((tag) => tagCard(tag))}
