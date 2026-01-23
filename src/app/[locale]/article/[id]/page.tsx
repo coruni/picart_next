@@ -1,8 +1,8 @@
 import { articleControllerFindOne } from "@/api";
-import { ArticleAuthor, ImageGallery } from "@/components/article";
+import { ArticleAuthor, ImageGallery, ArticleMenu } from "@/components/article";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { generateArticleMetadata } from "@/lib";
-import { Dot, MoreHorizontal } from "lucide-react";
+import { Dot } from "lucide-react";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
@@ -52,16 +52,17 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
         <div className="page-container">
             <div className="left-container ">
                 {/* 顶部header */}
-                <div className="px-4 h-14 flex items-center border-b  rounded-t-xl border-border sticky top-[50px] bg-white dark:bg-gray-800 z-10">
+                <div className="px-4 h-14 flex items-center border-b  rounded-t-xl border-border sticky top-[50px] bg-white dark:bg-gray-800 z-15">
                     <div className="h-full flex-1 flex items-center">
                         <span className="font-bold text-base pr-6">
                             帖子详情页
                         </span>
                     </div>
                     <div className="ml-4">
-                        <button className="cursor-pointer flex items-center hover:text-primary">
-                            <MoreHorizontal size={20} strokeWidth={2} />
-                        </button>
+                        <ArticleMenu 
+                            articleId={id} 
+                            authorId={article?.author?.id?.toString() || ''} 
+                        />
                     </div>
                 </div>
                 <section className="relative">

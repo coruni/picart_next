@@ -7,8 +7,7 @@ import { useTranslations } from "next-intl";
 import { FollowButtonWithStatus } from "@/components/ui/FollowButtonWithStatus";
 import { EllipsisVertical, Eye, FileImage, GalleryHorizontalEnd, Hash, HeartCrack, MessageCircleMore, ThumbsUp } from "lucide-react";
 import { Link } from "@/i18n/routing";
-import { useRef, useState } from "react";
-import { useClickOutside } from "@/hooks";
+import { DropdownMenu, MenuItem } from "@/components/shared";
 
 type Article = ArticleList[number] | ArticleDetail;
 type ArticleCardProps = {
@@ -17,10 +16,17 @@ type ArticleCardProps = {
 }
 export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) => {
     const t = useTranslations();
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const menuRef = useRef<HTMLDivElement>(null);
 
-    useClickOutside(menuRef, () => setIsMenuOpen(false));
+    const menuItems: MenuItem[] = [
+        {
+            label: "我不喜欢这个内容",
+            icon: <HeartCrack size={20} />,
+            onClick: () => {
+                // TODO: 处理"不喜欢"逻辑
+                console.log("不喜欢", article.id);
+            },
+        },
+    ];
 
     // 构建封面/图片元素组件
     const MediaElement = () => {
@@ -148,35 +154,18 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
 
 
                 </div>
-                <div className="ml-3">
-                    <div className="relative" ref={menuRef}>
+                <DropdownMenu
+                    trigger={
                         <EllipsisVertical
                             size={20}
-                            className="text-secondary cursor-pointer"
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className="text-secondary cursor-pointer hover:text-primary"
                         />
-                        {/* 操作面板 */}
-                        {isMenuOpen && (
-                            <div className="absolute top-8 right-0 rounded-xl drop-shadow-xl bg-card min-w-50 z-10">
-                                <div className="p-2">
-                                    <div className="px-2 font-medium">
-                                        <span>更多</span>
-                                    </div>
-                                    <div
-                                        className="cursor-pointer p-2 text-sm hover:bg-primary/15 group hover:text-primary rounded-xl flex items-center gap-2"
-                                        onClick={() => {
-                                            // TODO: 处理"不喜欢"逻辑
-                                            setIsMenuOpen(false);
-                                        }}
-                                    >
-                                        <HeartCrack size={20} className="text-secondary group-hover:text-primary" />
-                                        <span>我不喜欢这个内容</span>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                    }
+                    items={menuItems}
+                    title="更多"
+                    position="right"
+                    className="ml-2"
+                />
             </div>
             {/* 内容 */}
             <section className="cursor-pointer">

@@ -77,7 +77,7 @@ export function ArticleAuthor({ author, createdAt, onFollow }: ArticleAuthorProp
     return (
         <div
             ref={containerRef}
-            className={`h-12 px-6 flex items-center transition-all duration-200 sticky top-14 z-50`}
+            className={`h-12 px-6 flex items-center transition-all duration-200 sticky top-full z-10`}
         >
             <div className="flex items-center flex-1 cursor-pointer mx-auto w-full">
                 {/* 头像 */}
