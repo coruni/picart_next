@@ -171,7 +171,8 @@
     "noComments": "No comments",
     "reply": "Reply",
     "replies": "replies",
-    "viewMoreReplies": "View {count} more replies"
+    "viewMoreReplies": "View {count} more replies",
+    "like": "Like"
   },
   "followButton": {
     "follow": "Follow",

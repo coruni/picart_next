@@ -171,7 +171,8 @@
     "noComments": "暂无评论",
     "reply": "回复",
     "replies": "条回复",
-    "viewMoreReplies": "查看更多 {count} 条回复"
+    "viewMoreReplies": "查看更多 {count} 条回复",
+    "like": "点赞"
   },
   "followButton": {
     "follow": "关注",

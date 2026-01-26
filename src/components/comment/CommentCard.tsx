@@ -7,6 +7,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { cn, formatRelativeTime } from "@/lib/utils";
 import { AllComments, CommentList, UserCommentList } from "@/types";
 import Image from "next/image";
+import { Link } from "@/i18n/routing";
 interface CommentCardProps {
   comment: UserCommentList[number];
   onLike?: (commentId: number) => void;
@@ -89,7 +90,7 @@ export function CommentCard({
       )}
       {/* 文章信息 */}
       <div className="ml-16 pl-3 pr-4 mt-3 cursor-pointer">
-        <div className="flex items-center h-12.5 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-600">
+        <Link href={`/article/${comment.article.id}`} className="flex items-center h-12.5 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-600">
           {(!!comment.article.cover || comment.article.images.length > 0) && (
             <div className="size-12.5 bg-gray-50 relative">
               <Image alt={comment.article.title} src={comment.article?.cover || comment.article.images?.[0] || ''} fill quality={95} className="object-cover"></Image>
@@ -98,7 +99,7 @@ export function CommentCard({
           <div className="ml-3">
             <span className="text-secondary line-clamp-1 text-ellipsis">{comment.article.title}</span>
           </div>
-        </div>
+        </Link>
       </div>
       {/* 底部信息 */}
       <div className="ml-19 pr-4 mt-4">
@@ -106,13 +107,13 @@ export function CommentCard({
           <span className="text-sm flex-1">{comment?.article?.category?.name}</span>
           <div className="flex items-center text-sm leading-5">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-1 hover:text-primary cursor-pointer">
+              <div className="flex items-center space-x-1 hover:text-primary cursor-pointer" onClick={handleReply}>
                 <MessageCircle size={18} />
-                <span>回复</span>
+                <span>{tComment("reply")}</span>
               </div>
-              <div className="flex items-center space-x-1 hover:text-primary cursor-pointer">
+              <div className="flex items-center space-x-1 hover:text-primary cursor-pointer" onClick={handleLike}>
                 <ThumbsUp size={18} />
-                <span>点赞</span>
+                <span>{tComment("like")}</span>
               </div>
             </div>
           </div>

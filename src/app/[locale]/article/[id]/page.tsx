@@ -1,8 +1,8 @@
 import { articleControllerFindOne } from "@/api";
-import { ArticleAuthor, ImageGallery, ArticleMenu } from "@/components/article";
+import { ArticleAuthor, ImageGallery, ArticleMenu, ReactionStats } from "@/components/article";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { generateArticleMetadata } from "@/lib";
-import { Dot } from "lucide-react";
+import { Forward } from "lucide-react";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
@@ -37,7 +37,7 @@ export async function generateMetadata({
 export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
     const { id, locale } = await props.params;
     const { commentId } = await props.searchParams;
-    const t = await getTranslations();
+    
     // 请求文章详情
     const { data } = await articleControllerFindOne({
         path: { id }
@@ -46,9 +46,6 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
     if (!article) {
         notFound();
     }
-    console.log('Article ID:', id);
-    console.log('Locale:', locale);
-    console.log('Comment ID:', commentId);
     // 过滤js注入
     const content = article?.content?.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') || '';
 
@@ -109,9 +106,17 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                 {/* 底部信息 */}
                 <div className="px-6 mt-4">
                     {/* 来自哪个分类 */}
-                    <div className="text-secondary text-xs leading-4">
+                    <div className="text-secondary text-xs leading-4 ">
                         <span>{article?.category?.parent?.name} • {article?.category?.name}</span>
                     </div>
+                    <div className="mt-2 flex items-center space-x-1 text-secondary text-xs leading-4">
+                        <Forward size={16} />
+                        <span>可转载</span>
+                    </div>
+                    <ReactionStats 
+                        articleId={id} 
+                        initialStats={article?.reactionStats || {}} 
+                    />
                 </div>
             </div>
             <div className="right-container">

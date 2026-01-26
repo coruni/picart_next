@@ -5811,8 +5811,17 @@ export type ArticleControllerLikeResponses = {
     /**
      * 操作成功
      */
-    200: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+        };
+    };
 };
+
+export type ArticleControllerLikeResponse = ArticleControllerLikeResponses[keyof ArticleControllerLikeResponses];
 
 export type ArticleControllerUnfavoriteArticleData = {
     body?: never;
