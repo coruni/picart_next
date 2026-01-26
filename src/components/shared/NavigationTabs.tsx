@@ -70,7 +70,7 @@ export function NavigationTabs({
             {active && (
               <span
                 className={cn(
-                  "absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-full w-5 translate-x-1/2",
+                  "absolute bottom-0 left-1/2 -translate-x-1/2 h-1 bg-primary rounded-full w-5",
                   indicatorClassName
                 )}
               />
