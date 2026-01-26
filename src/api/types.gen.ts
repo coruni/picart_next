@@ -4047,6 +4047,7 @@ export type ArticleControllerFindAllData = {
         title?: string;
         categoryId?: number;
         type?: string;
+        tagId?: number;
     };
     url: '/article';
 };

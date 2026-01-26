@@ -39,7 +39,7 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
     // 标签数据
     const tabs: TabItem[] = [
         { label: t('home'), value: "home", href: "/" },
-        { label: t('channels'), value: "channels", href: "/channels", hasDropdown: true },
+        { label: t('channels'), value: "channels", href: "/channel", hasDropdown: true },
     ];
 
     return (

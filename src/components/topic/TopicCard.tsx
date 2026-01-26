@@ -1,5 +1,6 @@
 "use client"
 
+import { Link } from "@/i18n/routing"
 import { TagList } from "@/types"
 import { ChevronRight, Hash } from "lucide-react"
 import { useTranslations } from "next-intl"
@@ -9,9 +10,9 @@ type TagCardProps = {
 }
 export const TagCard = ({ tag }: TagCardProps) => {
     const t = useTranslations("tagCard")
-    
+
     return (
-        <div className="p-4 flex items-center space-x-4 rounded-xl cursor-pointer hover:bg-primary/15">
+        <Link href={`/topic/${tag.id}`} className="p-4 flex items-center space-x-4 rounded-xl cursor-pointer hover:bg-primary/15">
             <div className="flex-1 flex flex-col">
                 <div className="flex items-center space-x-2">
                     <div className="rounded-full p-1 text-white bg-primary">
@@ -27,8 +28,8 @@ export const TagCard = ({ tag }: TagCardProps) => {
                 </span>
             </div>
             <div className="flex items-center">
-                <ChevronRight size={16} className="text-secondary"/>
+                <ChevronRight size={16} className="text-secondary" />
             </div>
-        </div>
+        </Link>
     )
 }

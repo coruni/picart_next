@@ -2,26 +2,29 @@
 
 import { ArticleUserList } from "@/types";
 import { ArticleListClient as SharedArticleListClient } from "@/components/shared";
-import { articleControllerFindByAuthor } from "@/api";
+import { articleControllerFindAll } from "@/api";
 
-type ArticleListClientProps = {
+type TopicArticleListClientProps = {
     initArticles: ArticleUserList;
     initPage: number;
     initTotal: number;
     id: string;
     showFollow?: boolean;
+    fetchParams: { query: { tagId: string, type?: string } };
 };
 
-export const ArticleListClient = (props: ArticleListClientProps) => {
+export const TopicArticleListClient = (props: TopicArticleListClientProps) => {
+    const cacheKey = `topic-${props.id}-${props.fetchParams.query.type || 'hot'}`;
+    
     return (
         <SharedArticleListClient
             initArticles={props.initArticles}
             showFollow={props.showFollow}
             initPage={props.initPage}
             initTotal={props.initTotal}
-            fetchArticles={articleControllerFindByAuthor}
-            fetchParams={{ path: { id: props.id } }}
-            cacheKey={`account-articles-${props.id}`}
+            fetchArticles={articleControllerFindAll}
+            fetchParams={props.fetchParams}
+            cacheKey={cacheKey}
         />
     );
 };

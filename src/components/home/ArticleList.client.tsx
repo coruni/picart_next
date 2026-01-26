@@ -19,6 +19,7 @@ export const ArticleListClient = (props: ArticleListClientProps) => {
       initPage={props.initPage}
       initTotal={props.initTotal}
       fetchArticles={articleControllerFindAll}
+      cacheKey="home-articles"
     />
   );
 };

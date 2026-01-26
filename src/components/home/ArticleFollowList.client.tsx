@@ -25,6 +25,7 @@ export const ArticleFollowList = (props: ArticleListClientProps) => {
                     initPage={props.initPage}
                     initTotal={props.initTotal}
                     fetchArticles={articleControllerFindAll}
+                    cacheKey="home-follow-articles"
                 />
             ) : (
                 <EmptyState message="登录查看更多精彩内容" customButton={

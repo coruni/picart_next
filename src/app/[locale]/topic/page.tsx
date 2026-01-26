@@ -41,6 +41,7 @@ export default async function TopicPage() {
                     initPage={2}
                     initTotal={data?.data.meta.total!}
                     pageSize={10}
+                    cacheKey="topic-list"
                 />
             </div>
             <div className="right-container">

@@ -6,12 +6,14 @@ import { tagControllerFindAll } from "@/api";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { TagCard } from "./TopicCard";
+import { usePathname } from "next/navigation";
 
 type TagListClientProps = {
     initTags: TagList;
     initPage: number;
     initTotal: number;
     pageSize?: number;
+    cacheKey?: string;
 };
 
 export const TagListClient = ({
@@ -19,17 +21,123 @@ export const TagListClient = ({
     initPage,
     initTotal,
     pageSize = 10,
+    cacheKey
 }: TagListClientProps) => {
     const t = useTranslations("tagList");
-    const [page, setPage] = useState(initPage);
-    const [tags, setTags] = useState<TagList>(initTags);
+    const pathname = usePathname();
+    
+    // 生成唯一的缓存 key
+    const storageKey = cacheKey || `tag-list-${pathname}`;
+    const scrollKey = `${storageKey}-scroll`;
+    
+    // 检测是否是刷新操作并清空缓存（在组件初始化时立即执行）
+    const getInitialState = () => {
+        if (typeof window === 'undefined') {
+            return { tags: initTags, page: initPage };
+        }
+        
+        // 检测页面加载类型
+        const navigationType = (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)?.type;
+        
+        if (navigationType === 'reload') {
+            // 页面刷新，清空缓存
+            try {
+                sessionStorage.removeItem(storageKey);
+                sessionStorage.removeItem(scrollKey);
+            } catch (e) {
+                console.error('Failed to clear cache on refresh:', e);
+            }
+            return { tags: initTags, page: initPage };
+        }
+        
+        // 尝试从 sessionStorage 恢复状态
+        try {
+            const cached = sessionStorage.getItem(storageKey);
+            if (cached) {
+                const { tags, page, timestamp } = JSON.parse(cached);
+                // 缓存 5 分钟内有效
+                if (Date.now() - timestamp < 5 * 60 * 1000) {
+                    return { tags, page };
+                }
+            }
+        } catch (e) {
+            console.error('Failed to restore cache:', e);
+        }
+        
+        return { tags: initTags, page: initPage };
+    };
+    
+    const initialState = getInitialState();
+    const isPageRefresh = useRef(
+        typeof window !== 'undefined' && 
+        (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)?.type === 'reload'
+    );
+    
+    const [page, setPage] = useState(initialState.page);
+    const [tags, setTags] = useState<TagList>(initialState.tags);
     const [loading, setLoading] = useState(false);
-    const [hasMore, setHasMore] = useState(initTags.length < initTotal);
+    const [hasMore, setHasMore] = useState(initialState.tags.length < initTotal);
     const [error, setError] = useState<string | null>(null);
+    const [scrollRestored, setScrollRestored] = useState(false);
 
     // Intersection Observer ref
     const observerRef = useRef<HTMLDivElement>(null);
     const observerInstanceRef = useRef<IntersectionObserver | null>(null);
+    
+    // 保存状态到 sessionStorage
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        
+        try {
+            sessionStorage.setItem(storageKey, JSON.stringify({
+                tags,
+                page,
+                timestamp: Date.now()
+            }));
+        } catch (e) {
+            console.error('Failed to cache state:', e);
+        }
+    }, [tags, page, storageKey]);
+    
+    // 保存滚动位置
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        
+        const handleScroll = () => {
+            try {
+                sessionStorage.setItem(scrollKey, window.scrollY.toString());
+            } catch (e) {
+                console.error('Failed to save scroll position:', e);
+            }
+        };
+        
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [scrollKey]);
+    
+    // 恢复滚动位置
+    useEffect(() => {
+        if (typeof window === 'undefined' || scrollRestored || isPageRefresh.current) return;
+        
+        try {
+            const savedScroll = sessionStorage.getItem(scrollKey);
+            if (savedScroll) {
+                // 使用 requestAnimationFrame 确保 DOM 已渲染
+                requestAnimationFrame(() => {
+                    window.scrollTo(0, parseInt(savedScroll, 10));
+                    setScrollRestored(true);
+                });
+            } else {
+                setScrollRestored(true);
+            }
+        } catch (e) {
+            console.error('Failed to restore scroll position:', e);
+            setScrollRestored(true);
+        }
+    }, [scrollKey, scrollRestored]);
 
     // Load more tags function
     const loadMoreTags = useCallback(async () => {
@@ -126,7 +234,7 @@ export const TagListClient = ({
                             <span className="text-secondary text-sm">{t("loading")}</span>
                         </div>
                     ) : (
-                        <div className="text-foreground text-sm">{t("loadMore")}</div>
+                        <div className="text-secondary text-sm">{t("loadMore")}</div>
                     )}
                 </div>
             )}

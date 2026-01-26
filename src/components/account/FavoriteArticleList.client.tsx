@@ -21,6 +21,7 @@ export const FavoriteArticleList = (props: FavoriteArticleListClientProps) => {
             initTotal={props.initTotal}
             fetchArticles={articleControllerGetFavoritedArticles}
             fetchParams={{ path: { id: props.id } }}
+            cacheKey={`account-favorites-${props.id}`}
         />
     );
 };

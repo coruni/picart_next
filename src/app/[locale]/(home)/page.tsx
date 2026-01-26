@@ -6,7 +6,7 @@ export default async function HomePage() {
   const initialData = await articleControllerFindAll({
     query: {
       page: 1,
-      limit: 20,
+      limit: 10,
     },
   })
 

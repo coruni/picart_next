@@ -62,7 +62,15 @@ export function DropdownMenu({
   return (
     <div className={cn("relative", className)} ref={menuRef}>
       {/* 触发按钮 */}
-      <div onClick={() => setIsOpen(!isOpen)}>{trigger}</div>
+      <div 
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setIsOpen(!isOpen);
+        }}
+      >
+        {trigger}
+      </div>
 
       {/* 下拉菜单 */}
       {isOpen && (
@@ -72,6 +80,10 @@ export function DropdownMenu({
             position === "right" ? "right-0" : "left-0",
             menuClassName
           )}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
         >
           <div className="p-2">
             {/* 标题 */}

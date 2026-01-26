@@ -30,6 +30,6 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "rumtime.config.ts"
-  ],
+, "src/app/[locale]/channel/[[...id]]"  ],
   "exclude": ["node_modules"]
 }
