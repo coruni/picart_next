@@ -139,6 +139,29 @@
     "allLoaded": "已加载全部文章",
     "noArticles": "暂无文章"
   },
+  "tagList": {
+    "loading": "加载中...",
+    "loadMore": "滚动加载更多",
+    "loadFailed": "加载更多标签失败，请重试",
+    "retry": "重试",
+    "allLoaded": "已加载全部标签",
+    "noTags": "暂无标签"
+  },
+  "tagCard": {
+    "posts": "投稿数",
+    "members": "成员数"
+  },
+  "topicPage": {
+    "recommendedTopics": "推荐话题",
+    "metaTitle": "推荐话题",
+    "metaDescription": "浏览和关注感兴趣的话题，发现更多精彩内容"
+  },
+  "topic": {
+    "tabs": {
+      "hot": "热门",
+      "new": "最新"
+    }
+  },
   "commentList": {
     "loading": "加载中...",
     "loadMore": "滚动加载更多",
@@ -179,5 +202,19 @@
     "hoursAgo": "{count}小时前",
     "daysAgo": "{count}天前",
     "monthDay": "{month}月{day}日"
+  },
+  "error": {
+    "title": "出错了",
+    "description": "抱歉，页面加载时遇到了问题。请稍后重试。",
+    "errorDetails": "错误详情",
+    "tryAgain": "重试",
+    "backHome": "返回首页",
+    "helpText": "如果问题持续存在，请联系我们的支持团队"
+  },
+  "notFound": {
+    "title": "页面未找到",
+    "description": "抱歉，您访问的页面不存在或已被移除。",
+    "backHome": "返回首页",
+    "exploreTopic": "浏览话题"
   }
 }

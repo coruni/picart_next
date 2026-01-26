@@ -1,5 +1,5 @@
 import { configControllerGetPublicConfigs } from "@/api";
-import { ArticleDetail, UserDetail } from "@/types";
+import { ArticleDetail, TagDetail, UserDetail } from "@/types";
 import type { Metadata } from "next";
 
 /**
@@ -271,6 +271,101 @@ export async function generateAuthorMetadata(
       title: author.nickname || author.username,
       description: author.description || "",
       images: author.avatar ? [author.avatar] : undefined,
+    },
+  };
+}
+
+/**
+ * 生成话题页面 SEO 元数据
+ */
+export async function generateTopicMetadata(locale: string = "zh"): Promise<Metadata> {
+  const config = await getPublicConfig();
+  const siteName = config?.site_name || "PicArt";
+
+  const keywords = [
+    config?.site_keywords,
+    config?.seo_long_tail_keywords,
+  ]
+    .filter(Boolean)
+    .join(", ")
+    .split(",")
+    .map((k) => k.trim())
+    .filter(Boolean);
+
+  const title = locale === "zh" ? "推荐话题" : "Recommended Topics";
+  const description = locale === "zh"
+    ? "浏览和关注感兴趣的话题，发现更多精彩内容"
+    : "Browse and follow topics of interest, discover more exciting content";
+
+  return {
+    title: title,
+    description: description,
+    keywords: keywords.length > 0 ? keywords : undefined,
+    openGraph: {
+      type: "website",
+      locale: locale,
+      siteName: siteName,
+      title: title,
+      description: description,
+    },
+    twitter: {
+      card: "summary",
+      title: title,
+      description: description,
+    },
+  };
+}
+
+/**
+ * 生成话题详情页面 SEO 元数据
+ */
+export async function generateTagMetadata(
+  tag: TagDetail,
+  locale: string = "zh"
+): Promise<Metadata> {
+  const config = await getPublicConfig();
+  const siteName = config?.site_name || "PicArt";
+
+  const keywords = [
+    tag.name,
+    config?.site_keywords,
+    config?.seo_long_tail_keywords,
+  ]
+    .filter(Boolean)
+    .join(", ")
+    .split(",")
+    .map((k) => k.trim())
+    .filter(Boolean);
+
+  const title = `#${tag.name}`;
+  const description = tag.description || `${tag.articleCount || 0} 篇文章 · ${tag.followCount || 0} 人关注`;
+
+  return {
+    title: title,
+    description: description,
+    keywords: keywords.length > 0 ? keywords : undefined,
+    openGraph: {
+      type: "website",
+      locale: locale,
+      siteName: siteName,
+      title: title,
+      description: description,
+      images: tag.cover || tag.avatar
+        ? [
+          {
+            url: tag.cover || tag.avatar,
+            width: 1200,
+            height: 630,
+            alt: tag.name,
+          },
+        ]
+        : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: title,
+      description: description,
+      images: tag.cover || tag.avatar ? [tag.cover || tag.avatar] : undefined,
     },
   };
 }

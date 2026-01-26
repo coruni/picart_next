@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { routing } from "@/i18n/routing";
@@ -14,19 +13,9 @@ import NextTopLoader from 'nextjs-toploader';
 import { categoryControllerFindAll, configControllerGetPublicConfigs, userControllerGetProfile } from "@/api";
 import { initializeInterceptors } from "@/rumtime.config";
 import type { UserProfile } from "@/types";
-import "../globals.css";
+
 
 const TOKEN_COOKIE_NAME = "auth-token";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 // 动态生成元数据
 export async function generateMetadata({
@@ -78,25 +67,21 @@ export default async function LocaleLayout({
   const { data } = await configControllerGetPublicConfigs();
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <NextTopLoader color="#6680ff" showSpinner={false} />
-        <NextIntlClientProvider messages={messages}>
-          {/* 设备指纹初始化 */}
-          <DeviceFingerprintProvider />
+    <>
+      <NextTopLoader color="#6680ff" showSpinner={false} />
+      <NextIntlClientProvider messages={messages}>
+        {/* 设备指纹初始化 */}
+        <DeviceFingerprintProvider />
 
-          {/* 用户状态同步 */}
-          <UserStateProvider initialToken={initialToken} initialUser={initialUser} initialConfig={data?.data!}>
-            <Header categories={category.data?.data.data} />
-            <div className="flex flex-col flex-1 min-h-screen">
-              {children}
-            </div>
-            <NotificationContainer />
-          </UserStateProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+        {/* 用户状态同步 */}
+        <UserStateProvider initialToken={initialToken} initialUser={initialUser} initialConfig={data?.data!}>
+          <Header categories={category.data?.data.data} />
+          <div className="flex flex-col flex-1 min-h-screen">
+            {children}
+          </div>
+          <NotificationContainer />
+        </UserStateProvider>
+      </NextIntlClientProvider>
+    </>
   );
 }

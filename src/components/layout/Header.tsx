@@ -23,11 +23,11 @@ export function Header({ categories }: HeaderProps) {
   const siteConfig = useAppStore((state) => state.siteConfig);
   const pathname = usePathname();
 
-  // 判断是否在 account 页面
-  const isAccountPage = pathname.includes("/account/");
+  // 判断是否在需要透明背景的页面（account、article 详情等）
+  const isTransparentBgPage = ["/account/", "/topic/"].some(path => pathname.includes(path));
 
   // 使用自定义 hook 监听滚动
-  const scrolled = useScrollThreshold(240, isAccountPage);
+  const scrolled = useScrollThreshold(240, isTransparentBgPage);
 
   const handleSearch = (query: string, categoryId?: number) => {
     // TODO: 实现搜索逻辑
@@ -38,25 +38,25 @@ export function Header({ categories }: HeaderProps) {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 ",
-        isAccountPage && !scrolled ? "bg-transparent" : "bg-card"
+        isTransparentBgPage && !scrolled ? "bg-transparent" : "bg-card"
       )}
     >
       <div className="px-10 mx-auto">
         <div className="flex items-center justify-between gap-4 h-15">
           {/* Logo */}
           <div className="flex items-center gap-4">
-            <Link href="/" className={cn("text-primary text-3xl font-bold line-clamp-1 text-nowrap", isAccountPage && !scrolled && ("text-white"))}>
+            <Link href="/" className={cn("text-primary text-3xl font-bold line-clamp-1 text-nowrap", isTransparentBgPage && !scrolled && ("text-white"))}>
               {siteConfig?.site_name}
             </Link>
 
-            <HeaderTabs categories={categories!} labelClassName={isAccountPage && !scrolled ? "text-white" : undefined} />
+            <HeaderTabs categories={categories!} labelClassName={isTransparentBgPage && !scrolled ? "text-white" : undefined} />
 
           </div>
 
           {/* 搜索框 */}
           <SearchBox
             categories={categories}
-            isAccountPage={isAccountPage}
+            isAccountPage={isTransparentBgPage}
             scrolled={scrolled}
             onSearch={handleSearch}
           />

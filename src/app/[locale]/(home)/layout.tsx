@@ -12,7 +12,7 @@ export default function HomeLayout({ children }: HomeLayoutProps) {
       {/* 左侧内容区 */}
       <div className="left-container">
         {/* 头部tabs - 滚动时吸顶在 header 下方 (header 高度 60px) */}
-        <div className="px-6 h-14 flex items-center border-b rounded-t-xl border-border sticky top-[60px] bg-white dark:bg-gray-800 z-10">
+        <div className="px-8 h-14 flex items-center border-b rounded-t-xl border-border sticky top-[60px] bg-white dark:bg-gray-800 z-10">
           <FeedTabs />
         </div>
         {/* 内容区域 - 只有这里会根据路由变化 */}

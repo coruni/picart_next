@@ -1,12 +1,13 @@
 "use server";
 
 import { tagControllerFindAll } from "@/api"
+import { Link } from "@/i18n/routing";
 import { TagList } from "@/types"
 import { getTranslations } from "next-intl/server"
 
 export const RecommendTagWidget = async () => {
     const t = await getTranslations('sidebar');
-    
+
     let tags: TagList = [];
     try {
         const { data } = await tagControllerFindAll({
@@ -33,7 +34,7 @@ export const RecommendTagWidget = async () => {
 
     const tagCard = (tag: TagList[number]) => {
         return (
-            <div key={tag.id} className="py-2 px-3 rounded-lg cursor-pointer hover:bg-primary/15">
+            <Link href={`/topic/${tag.id}`} key={tag.id} className="py-2 px-3 rounded-lg cursor-pointer hover:bg-primary/15 block">
                 <div className="flex flex-col">
                     <div className="text-sm">
                         <span>#</span>
@@ -43,7 +44,7 @@ export const RecommendTagWidget = async () => {
                         <span>{tag.articleCount} {t('posts')} / {tag.followCount} {t('members')}</span>
                     </div>
                 </div>
-            </div>
+            </Link>
         )
     }
 
@@ -53,6 +54,9 @@ export const RecommendTagWidget = async () => {
                 <span>{t('hotTopics')}</span>
             </div>
             {tags.map((tag) => tagCard(tag))}
+            <div className="px-2 mt-2">
+                <Link href="/topic" className="text-sm text-primary hover:text-primary/80 cursor-pointer">{t('viewMore', { defaultValue: '查看更多' })}</Link>
+            </div>
         </section>
     )
 }

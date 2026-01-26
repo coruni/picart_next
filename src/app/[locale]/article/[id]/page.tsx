@@ -6,6 +6,7 @@ import { Dot } from "lucide-react";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
+import { notFound } from "next/navigation";
 
 type ArticleDetailPageProps = {
     params: Promise<{
@@ -42,6 +43,9 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
         path: { id }
     })
     const article = data?.data
+    if (!article) {
+        notFound();
+    }
     console.log('Article ID:', id);
     console.log('Locale:', locale);
     console.log('Comment ID:', commentId);
@@ -59,9 +63,9 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                         </span>
                     </div>
                     <div className="ml-4">
-                        <ArticleMenu 
-                            articleId={id} 
-                            authorId={article?.author?.id?.toString() || ''} 
+                        <ArticleMenu
+                            articleId={id}
+                            authorId={article?.author?.id?.toString() || ''}
                         />
                     </div>
                 </div>
@@ -111,7 +115,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                 </div>
             </div>
             <div className="right-container">
-                <Sidebar showAuthorInfo={true} showRecommendTag={false} showArticleCreate={false} author={article?.author}/>
+                <Sidebar showAuthorInfo={true} showRecommendTag={false} showArticleCreate={false} author={article?.author} />
             </div>
         </div>
     );
