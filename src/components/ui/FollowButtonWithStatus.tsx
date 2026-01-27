@@ -7,6 +7,7 @@ import { userControllerFollow, userControllerUnfollow } from "@/api";
 import { useUserStore } from "@/stores/useUserStore";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib";
+import { Check } from "lucide-react";
 
 type Author = ArticleList[number]['author'] | ArticleDetail['author'] | UserList[number];
 
@@ -29,15 +30,23 @@ export const FollowButtonWithStatus = ({
     const user = useUserStore((state) => state.user);
     const [isFollowed, setIsFollowed] = useState(author?.isFollowed || false);
     const [isLoading, setIsLoading] = useState(false);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const [isHiding, setIsHiding] = useState(false);
 
-    // Don't show follow button for own profile
-    if (!author || user?.id === author.id || isFollowed) {
+    // Don't show follow button for own profile or if already followed
+    if (!author || user?.id === author.id) {
+        return null;
+    }
+
+    // 如果已关注且不在动画中，不显示按钮
+    if (isFollowed && !isAnimating && !isHiding) {
         return null;
     }
 
     const handleFollowToggle = async () => {
-        if (isLoading) return;
+        if (isLoading || isAnimating) return;
         setIsLoading(true);
+        
         try {
             if (isFollowed) {
                 // Unfollow
@@ -46,19 +55,27 @@ export const FollowButtonWithStatus = ({
                 });
                 setIsFollowed(false);
                 onFollowChange?.(false);
-
             } else {
-                // Follow
+                // Follow - 开始动画
                 await userControllerFollow({
                     path: { id: author.id!.toString() }
                 });
                 setIsFollowed(true);
+                setIsAnimating(true);
                 onFollowChange?.(true);
 
+                // 动画序列: 收缩 -> 显示对勾 -> 隐藏
+                setTimeout(() => {
+                    setIsHiding(true);
+                }, 600); // 收缩并显示对勾的时间
+
+                setTimeout(() => {
+                    setIsAnimating(false);
+                    setIsHiding(false);
+                }, 1000); // 完全隐藏的时间
             }
         } catch (error) {
             console.error('Follow/unfollow failed:', error);
-
         } finally {
             setIsLoading(false);
         }
@@ -66,22 +83,42 @@ export const FollowButtonWithStatus = ({
 
     return (
         <Button
-            className={cn(`ml-2 rounded-full px-6`, className)}
+            className={cn(
+                "ml-2 rounded-full transition-all duration-500 ease-in-out overflow-hidden",
+                isAnimating && !isHiding && "px-3! w-10! h-10!",
+                isHiding && "opacity-0 scale-0 translate-x-8",
+                !isAnimating && !isHiding && "px-6",
+                className
+            )}
             onClick={handleFollowToggle}
-            disabled={isLoading}
+            disabled={isLoading || isAnimating}
             size={size}
         >
             {children ? children : (
-                <span className="text-xs">
-                    {isLoading
-                        ? '...'
-                        : isFollowed
-                            ? t('following')
-                            : t('follow')
-                    }
-                </span>
+                <div className="relative flex items-center justify-center w-full h-full">
+                    <span 
+                        className={cn(
+                            "text-xs transition-all duration-300 whitespace-nowrap",
+                            isAnimating && "opacity-0 scale-0"
+                        )}
+                    >
+                        {isLoading && !isAnimating
+                            ? '...'
+                            : isFollowed
+                                ? t('following')
+                                : t('follow')
+                        }
+                    </span>
+                    {isAnimating && (
+                        <Check 
+                            className={cn(
+                                "absolute size-4 transition-all duration-300",
+                                "animate-in fade-in-50 zoom-in-50"
+                            )} 
+                        />
+                    )}
+                </div>
             )}
-
         </Button>
     );
 };

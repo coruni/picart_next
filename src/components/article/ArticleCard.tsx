@@ -5,9 +5,10 @@ import { Avatar } from "@/components/ui/Avatar";
 import { formatRelativeTime } from "@/lib";
 import { useTranslations } from "next-intl";
 import { FollowButtonWithStatus } from "@/components/ui/FollowButtonWithStatus";
-import { EllipsisVertical, Eye, FileImage, GalleryHorizontalEnd, Hash, HeartCrack, MessageCircleMore, ThumbsUp } from "lucide-react";
+import { EllipsisVertical, Eye, FileImage, GalleryHorizontalEnd, Hash, HeartCrack, MessageCircleMore } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { DropdownMenu, MenuItem } from "@/components/shared";
+import { ReactionPanel } from "./ReactionPanel";
 
 type Article = ArticleList[number] | ArticleDetail;
 type ArticleCardProps = {
@@ -182,8 +183,8 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
             {article.tags?.length! > 0 && (
                 <div className="mt-2 flex items-center flex-wrap gap-2">
                     {article.tags?.map((tag) => (
-                        <Link href={`/topic/${tag.id}`} className="flex items-center text-sm text-primary hover:opacity-80 cursor-pointer" key={tag.id}>
-                            <Hash size={16} strokeWidth={2} />
+                        <Link href={`/topic/${tag.id}`} className="flex space-x-0.5 items-center text-sm text-primary hover:opacity-80 cursor-pointer" key={tag.id}>
+                            <Hash size={14} strokeWidth={2} />
                             <span>{tag.name}</span>
                         </Link>
                     ))
@@ -204,10 +205,11 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
                     </div>
                 </div>
                 <div className="ml-6 flex items-center justify-end">
-                    <div className="flex items-center">
-                        <ThumbsUp size={20} />
-                        <span className="ml-2 text-xs">{article.likes}</span>
-                    </div>
+                    <ReactionPanel
+                        articleId={article.id!}
+                        reactionStats={article.reactionStats!}
+                        userReaction={(article as any).userReaction}
+                    />
                 </div>
             </div>
         </article >

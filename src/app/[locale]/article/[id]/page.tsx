@@ -1,8 +1,9 @@
 import { articleControllerFindOne } from "@/api";
-import { ArticleAuthor, ImageGallery, ArticleMenu, ReactionStats } from "@/components/article";
+import { ArticleAuthor, ImageGallery, ArticleMenu, ReactionStats, ReactionPanel } from "@/components/article";
 import { Sidebar } from "@/components/sidebar/Sidebar";
+import { Link } from "@/i18n/routing";
 import { generateArticleMetadata } from "@/lib";
-import { Forward } from "lucide-react";
+import { ExternalLink, Forward, Hash, MessageCircleMore, Star, ThumbsUp } from "lucide-react";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
@@ -37,7 +38,7 @@ export async function generateMetadata({
 export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
     const { id, locale } = await props.params;
     const { commentId } = await props.searchParams;
-    
+
     // 请求文章详情
     const { data } = await articleControllerFindOne({
         path: { id }
@@ -109,14 +110,59 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                     <div className="text-secondary text-xs leading-4 ">
                         <span>{article?.category?.parent?.name} • {article?.category?.name}</span>
                     </div>
+
                     <div className="mt-2 flex items-center space-x-1 text-secondary text-xs leading-4">
                         <Forward size={16} />
                         <span>可转载</span>
                     </div>
-                    <ReactionStats 
-                        articleId={id} 
-                        initialStats={article?.reactionStats || {}} 
+                    {/* 标签 */}
+                    {article.tags?.length! > 0 && (
+                        <div className="mt-2 flex items-center flex-wrap gap-2">
+                            {article.tags?.map((tag) => (
+                                <Link href={`/topic/${tag.id}`} className="flex space-x-0.5 items-center text-sm text-primary hover:opacity-80 cursor-pointer" key={tag.id}>
+                                    <Hash size={14} strokeWidth={2} />
+                                    <span>{tag.name}</span>
+                                </Link>
+                            ))
+                            }
+                        </div>
+                    )}
+                    <ReactionStats
+                        articleId={id}
+                        initialStats={article?.reactionStats || {}}
                     />
+                    {/* 操作栏 */}
+                    <div className="mt-4  py-6 flex items-center justify-evenly">
+                        <div className="flex flex-col items-center justify-center group cursor-pointer">
+                            <div className="rounded-full group-hover:bg-primary/15 p-1">
+                                <MessageCircleMore />
+                            </div>
+                            <span className="text-secondary text-sm">{article.commentCount}</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center group cursor-pointer">
+                            <div className="rounded-full group-hover:bg-primary/15  p-1">
+                                <Star />
+                            </div>
+                            <span className="text-secondary text-sm">{0}</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center group cursor-pointer">
+                            <div className="rounded-full group-hover:bg-primary/15  p-1">
+                                <ReactionPanel
+                                    showCount={false}
+                                    articleId={article.id!}
+                                    reactionStats={article.reactionStats!}
+                                    userReaction={(article as any).userReaction}
+                                />
+                            </div>
+                            <span className="text-secondary text-sm">{article.likes}</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center group cursor-pointer">
+                            <div className="rounded-full group-hover:bg-primary/15  p-1">
+                                <ExternalLink />
+                            </div>
+                            <span className="text-secondary text-sm">{article.likes}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className="right-container">
