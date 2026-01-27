@@ -1,20 +1,20 @@
 # Product Overview
 
-This is a content platform application (PicArt) built with Next.js that supports article publishing, social interactions, and user engagement features.
+PicArt Next is a social content platform built with Next.js that enables users to share articles, images, and engage with content through reactions and comments.
 
 ## Core Features
 
-- Article creation, browsing, and management with like/favorite functionality
-- User authentication and profile management with wallet system
-- Social features: follow/unfollow users, comments with replies, emoji reactions
-- Gamification: points system, sign-in rewards, decorations/badges, invite system
-- Content organization: categories, tags, favorites, browse history
-- Monetization: membership orders, article purchases, payment integration (Alipay/WeChat)
-- Multi-language support (Chinese/English)
-- Banner management and trending topics
+- **Content Management**: Article creation, viewing, and organization by topics and channels
+- **Social Interactions**: User profiles, following system, favorites, comments, and reactions
+- **Internationalization**: Full bilingual support (Chinese/English)
+- **Media Handling**: Image galleries with viewer functionality
+- **User Authentication**: Token-based auth with persistent sessions
 
-## User Types
+## User Flows
 
-- Regular users: browse, interact, purchase content
-- Content creators: publish articles, earn commissions
-- Administrators: manage content, users, and system configuration
+- Browse articles by feed (home/follow/activity), channel, or topic
+- View user profiles with their articles, comments, and favorites
+- Create and publish articles with images
+- React to and comment on content
+- Follow users and topics
+- Switch between Chinese and English interfaces

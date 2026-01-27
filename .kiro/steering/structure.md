@@ -1,144 +1,124 @@
 # Project Structure
 
-## Root Configuration
+## Directory Organization
 
-- `.env` / `.env.example` - Environment variables
-- `openapi.json` - API specification
-- `openapi-ts.config.ts` - API client generation config
-- `components.json` - shadcn/ui configuration
-- `next.config.ts` - Next.js config with next-intl plugin
-- `tsconfig.json` - TypeScript config with `@/*` path alias
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── [locale]/          # Internationalized routes
+│   │   ├── (home)/        # Home feed routes (route group)
+│   │   ├── account/[id]/  # User profile pages
+│   │   ├── article/[id]/  # Article detail pages
+│   │   ├── channel/       # Channel pages
+│   │   └── topic/         # Topic pages
+│   ├── globals.css        # Global styles
+│   └── layout.tsx         # Root layout
+├── api/                   # Generated API client
+│   ├── client/           # API client code
+│   └── core/             # API utilities
+├── components/            # React components
+│   ├── account/          # Account-related components
+│   ├── article/          # Article components
+│   ├── channel/          # Channel components
+│   ├── comment/          # Comment components
+│   ├── home/             # Home feed components
+│   ├── layout/           # Layout components
+│   ├── providers/        # Context providers
+│   ├── shared/           # Shared/common components
+│   ├── sidebar/          # Sidebar widgets
+│   ├── topic/            # Topic components
+│   └── ui/               # Base UI components (Button, Input, etc.)
+├── constants/             # App constants
+├── hooks/                 # Custom React hooks
+├── i18n/                  # Internationalization config
+├── lib/                   # Utility functions
+├── stores/                # Zustand state stores
+├── types/                 # TypeScript type definitions
+└── middleware.ts          # Next.js middleware
 
-## Source Directory (`src/`)
+messages/                  # Translation files
+├── en.json               # English translations
+└── zh.json               # Chinese translations
+```
 
-### App Router (`src/app/`)
+## Architectural Patterns
 
-- `[locale]/` - Internationalized routes
-  - `layout.tsx` - Root locale layout with providers
-  - `page.tsx` - Home page
-- `globals.css` - Global styles and Tailwind directives
-- `layout.tsx` - Root HTML layout
-- `favicon.ico` - Site icon
+### Component Organization
 
-### API Layer (`src/api/`)
+- **Feature-based**: Components grouped by feature (article, account, topic)
+- **Shared components**: Reusable components in `shared/`
+- **Base UI**: Primitive components in `ui/` (Button, Input, Dialog, etc.)
+- **Client components**: Suffix with `.client.tsx` for client-side only components
 
-Auto-generated API client from OpenAPI spec. Do not manually edit files in this directory.
+### Naming Conventions
 
-- `sdk.gen.ts` - API functions (e.g., `userControllerLogin`)
-- `types.gen.ts` - TypeScript types for requests/responses
-- `client/` - HTTP client implementation
-- `core/` - Core utilities (auth, serialization, etc.)
+- **Files**: PascalCase for components (`ArticleCard.tsx`)
+- **Folders**: lowercase with hyphens for routes, camelCase for component folders
+- **Components**: PascalCase, match filename
+- **Hooks**: camelCase with `use` prefix (`useUserStore`)
+- **Utilities**: camelCase (`formatRelativeTime`)
 
-### Components (`src/components/`)
+### Route Structure
 
-- `ui/` - Base UI components (Button, Dialog, FloatingInput, Form, Input, Switch, Avatar, Tabs, FollowButtonWithStatus)
-- `layout/` - Layout components (Header, UserDropdown, UserLoginDialog, MessageDropdown)
-- `account/` - Account page components (AccountInfo)
-- `article/` - Article related components (ArticleCard, ArticleAuthor, ImageGallery, ImageViewer)
-- `home/` - Home page specific components (ArticleListClient, FeedTabs, HeaderTabs)
-- `sidebar/` - Sidebar widgets (Sidebar, ArticleCreateWidget, RecommendUserWidget, RecommentTagWidget, LoadingWidget)
-- `providers/` - React context providers (DeviceFingerprintProvider, UserStateProvider)
-- `shared/` - Shared utility components (LanguageSwitcher, ThemeSwitcher, NotificationContainer)
+- Use route groups `(name)` for layout organization without affecting URL
+- Dynamic segments: `[id]`, `[locale]`
+- Catch-all segments: `[[...slug]]`
+- Each route can have: `page.tsx`, `layout.tsx`, `error.tsx`, `not-found.tsx`
 
-### State Management (`src/stores/`)
+### Component Patterns
 
-Zustand stores with persist middleware:
+**UI Components** (in `ui/`):
+- Use `forwardRef` for ref forwarding
+- Accept `className` prop for style overrides
+- Use `cn()` utility to merge classes
+- Define variant types with `class-variance-authority`
+- Export both component and props interface
 
-- `useUserStore.ts` - User auth, profile, token (syncs to cookies)
-- `useAppStore.ts` - Global app state
-- `useModalStore.ts` - Modal/dialog state
-- `useNotificationStore.ts` - Toast notifications
-
-### Custom Hooks (`src/hooks/`)
-
-- `useForm.ts` - Form state and validation
-- `useClickOutside.ts` - Detect clicks outside element
-- `useCopyToClipboard.ts` - Clipboard operations
-- `useDebounce.ts` - Debounce values
-- `useLocalStorage.ts` - localStorage wrapper
-- `useMediaQuery.ts` - Responsive breakpoints
-- `useToggle.ts` - Boolean state toggle
-- `useWindowSize.ts` - Window dimensions
-
-### Utilities (`src/lib/`)
-
-- `utils.ts` - `cn()` for class merging
-- `cookies.ts` - Client-side cookie helpers
-- `server-cookies.ts` - Server-side cookie helpers
-- `fingerprint.ts` - Device fingerprinting
-- `modal-helpers.ts` - Modal utilities
-- `storage.ts` - localStorage/sessionStorage wrappers
-- `validation.ts` - Validation helpers
-- `seo.ts` - SEO metadata generation
-
-### Internationalization (`src/i18n/`)
-
-- `routing.ts` - Locale routing config and navigation helpers
-- `request.ts` - Server-side i18n request handler
-
-### Types (`src/types/`)
-
-- `index.ts` - Shared type definitions
-- `api.ts` - API-related types (e.g., `UserProfile`)
-- `theme.ts` - Theme-related types
-
-### Constants (`src/constants/`)
-
-- `index.ts` - App-wide constants
-
-### Examples (`src/examples/`)
-
-Component usage examples (for development reference):
-
-- `FloatingFormExample.tsx`
-- `DialogExample.tsx`
-- `FormExample.tsx`
-- etc.
-
-## Translation Files (`messages/`)
-
-- `zh.json` - Chinese translations
-- `en.json` - English translations
-
-## Documentation (`docs/`)
-
-- `FLOATING-LABEL-FORM.md` - Floating label form documentation
-
-## Public Assets (`public/`)
-
-- `placeholder/` - Placeholder images (empty.png, loginLogo.png)
-
-## Architecture Patterns
-
-### Component Conventions
-
-- Use `"use client"` directive for client components
-- Forward refs for input components
-- Use `cn()` utility for conditional classes
-- Props extend native HTML element props when applicable
+**Feature Components**:
+- Client components marked with `"use client"` directive
+- Server components by default (no directive)
+- Use `index.ts` for clean exports
+- Separate concerns: display vs. logic
 
 ### State Management
 
-- Use Zustand stores for global state
-- Persist auth state to both localStorage and cookies
-- Server components fetch initial data, pass to client providers
+- **Global state**: Zustand stores in `src/stores/`
+- **Local state**: React `useState` in components
+- **Server state**: React Server Components, no client state needed
+- **Persistent state**: Use Zustand persist middleware
+
+### Styling Conventions
+
+- Tailwind utility classes only
+- Use `cn()` to conditionally merge classes
+- Define variants in component props, not inline
+- Responsive: mobile-first approach
+- Dark mode: use Tailwind's dark mode classes
+
+### Import Patterns
+
+```typescript
+// Always use path aliases
+import { Button } from "@/components/ui/Button"
+import { useUserStore } from "@/stores/useUserStore"
+import { cn } from "@/lib/utils"
+
+// Group imports: external → internal → types
+import { useState } from "react"
+import { useTranslations } from "next-intl"
+import { Button } from "@/components/ui/Button"
+import type { UserProfile } from "@/types"
+```
+
+### File Exports
+
+- Use named exports for components: `export { Button }`
+- Use barrel exports (`index.ts`) for feature modules
+- Export types alongside components when needed
 
 ### API Integration
 
-- Import functions from `@/api` (e.g., `userControllerLogin`)
-- Types auto-generated, use for type safety
-- Interceptors handle auth headers and device-id automatically
-
-### Styling
-
-- Tailwind utility classes preferred
-- Dark mode support via `dark:` prefix
-- Component variants via `class-variance-authority`
-- CSS variables for theming in `globals.css`
-
-### Forms
-
-- Use `useForm` hook for validation and state
-- `FloatingInput` for floating label inputs
-- Validation rules defined per field
-- Real-time validation after field is touched
+- Generated API client in `src/api/`
+- Never modify generated files manually
+- Regenerate after OpenAPI spec changes
+- Use type-safe client methods throughout app
