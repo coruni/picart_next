@@ -1,11 +1,10 @@
 import { articleControllerFindOne } from "@/api";
-import { ArticleAuthor, ImageGallery, ArticleMenu, ReactionStats, ReactionPanel } from "@/components/article";
+import { ArticleAuthor, ImageGallery, ArticleMenu, ReactionStats, ArticleActions } from "@/components/article";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Link } from "@/i18n/routing";
 import { generateArticleMetadata } from "@/lib";
-import { ExternalLink, Forward, Hash, MessageCircleMore, Star, ThumbsUp } from "lucide-react";
+import { Forward, Hash } from "lucide-react";
 import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -36,8 +35,7 @@ export async function generateMetadata({
 }
 
 export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
-    const { id, locale } = await props.params;
-    const { commentId } = await props.searchParams;
+    const { id } = await props.params;
 
     // 请求文章详情
     const { data } = await articleControllerFindOne({
@@ -70,7 +68,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                 <section className="relative">
                     {/* 封面区域 */}
                     {article?.cover && (
-                        <div className="relative w-full h-[477px]">
+                        <div className="relative w-full h-80 md:h-120">
                             <Image
                                 src={article.cover}
                                 fill
@@ -129,40 +127,18 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                     )}
                     <ReactionStats
                         articleId={id}
+                        initialUserReaction={article.userReaction}
                         initialStats={article?.reactionStats || {}}
                     />
                     {/* 操作栏 */}
-                    <div className="mt-4  py-6 flex items-center justify-evenly">
-                        <div className="flex flex-col items-center justify-center group cursor-pointer">
-                            <div className="rounded-full group-hover:bg-primary/15 p-1">
-                                <MessageCircleMore />
-                            </div>
-                            <span className="text-secondary text-sm">{article.commentCount}</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center group cursor-pointer">
-                            <div className="rounded-full group-hover:bg-primary/15  p-1">
-                                <Star />
-                            </div>
-                            <span className="text-secondary text-sm">{0}</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center group cursor-pointer">
-                            <div className="rounded-full group-hover:bg-primary/15  p-1">
-                                <ReactionPanel
-                                    showCount={false}
-                                    articleId={article.id!}
-                                    reactionStats={article.reactionStats!}
-                                    userReaction={(article as any).userReaction}
-                                />
-                            </div>
-                            <span className="text-secondary text-sm">{article.likes}</span>
-                        </div>
-                        <div className="flex flex-col items-center justify-center group cursor-pointer">
-                            <div className="rounded-full group-hover:bg-primary/15  p-1">
-                                <ExternalLink />
-                            </div>
-                            <span className="text-secondary text-sm">{article.likes}</span>
-                        </div>
-                    </div>
+                    <ArticleActions
+                        articleId={article.id!}
+                        commentCount={article.commentCount!}
+                        favoriteCount={article.favoriteCount || 0}
+                        reactionStats={article.reactionStats!}
+                        userReaction={article.userReaction}
+                        likes={article.likes!}
+                    />
                 </div>
             </div>
             <div className="right-container">

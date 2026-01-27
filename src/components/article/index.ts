@@ -4,4 +4,5 @@ export { ImageGallery } from "./ImageGallery";
 export { ImageViewer } from "./ImageViewer";
 export { ArticleMenu } from "./ArticleMenu";
 export { ReactionStats } from "./ReactionStats.client";
-export { ReactionPanel } from "./ReactionPanel";
+export { ReactionPanel } from "./ReactionPanel.client";
+export { ArticleActions } from "./ArticleActions.client";

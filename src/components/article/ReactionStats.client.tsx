@@ -2,6 +2,7 @@
 
 import { articleControllerLike } from "@/api";
 import { useState } from "react";
+import { cn } from "@/lib";
 
 interface ReactionStatsProps {
     articleId: string;
@@ -74,40 +75,12 @@ export function ReactionStats({ articleId, initialStats, initialUserReaction }: 
                 });
 
                 // 更新用户反应状态：清除所有反应，然后设置新的（如果不是移除操作）
-                setUserReactions(prev => {
+                setUserReactions(() => {
                     const newSet = new Set<string>();
                     if (!wasReacted) {
                         newSet.add(emoji);
                     }
                     // 如果 wasReacted 为 true，则 newSet 保持为空，表示移除反应
-                    return newSet;
-                });
-            } else {
-                // 如果API没有返回数据，使用本地更新
-                setReactionStats(prev => {
-                    const newStats = { ...prev };
-                    
-                    if (wasReacted) {
-                        // 移除当前反应
-                        newStats[emoji] = Math.max(0, (newStats[emoji] || 0) - 1);
-                    } else {
-                        // 如果用户之前有其他反应，先减少那个反应的计数
-                        if (currentReaction && currentReaction !== emoji) {
-                            newStats[currentReaction] = Math.max(0, (newStats[currentReaction] || 0) - 1);
-                        }
-                        // 增加新反应的计数
-                        newStats[emoji] = (newStats[emoji] || 0) + 1;
-                    }
-                    
-                    return newStats;
-                });
-
-                // 更新用户反应状态
-                setUserReactions(prev => {
-                    const newSet = new Set<string>();
-                    if (!wasReacted) {
-                        newSet.add(emoji);
-                    }
                     return newSet;
                 });
             }
@@ -133,10 +106,12 @@ export function ReactionStats({ articleId, initialStats, initialUserReaction }: 
                     <button
                         key={emoji}
                         onClick={() => handleReactionClick(emoji)}
-                        className={`flex items-center h-6 px-1.5 py-0.5 rounded-lg cursor-pointer transition-colors disabled:opacity-50 ${isReacted
-                            ? "bg-primary/10 text-primary"
-                            : "bg-[#F5F7FA] dark:bg-gray-700 hover:bg-[#E8ECEF] dark:hover:bg-gray-600"
-                            }`}
+                        className={cn(
+                            "flex items-center h-6 px-1.5 py-0.5 rounded-lg cursor-pointer transition-colors disabled:opacity-50",
+                            isReacted
+                                ? "bg-primary/15 text-primary"
+                                : "bg-[#F5F7FA] dark:bg-gray-700 hover:bg-[#E8ECEF] dark:hover:bg-gray-600"
+                        )}
                     >
                         <span className="mr-1">{emoji}</span>
                         <span>{count}</span>

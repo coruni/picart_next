@@ -87,14 +87,26 @@ export const ReactionPanel = ({
     // Get total reactions
     const totalReactions = Object.values(stats).reduce((sum, count) => sum + count, 0);
 
+    // Get current reaction icon
+    const CurrentReactionIcon = currentReaction 
+        ? REACTIONS.find(r => r.type === currentReaction)?.icon 
+        : ThumbsUp;
+    
+    const currentReactionColor = currentReaction
+        ? REACTIONS.find(r => r.type === currentReaction)?.color
+        : undefined;
+
     return (
         <div className="relative" ref={panelRef}>
             {/* Trigger Button */}
             <div
-                className="flex items-center cursor-pointer hover:text-primary transition-colors"
+                className={cn(
+                    "flex items-center cursor-pointer hover:text-primary transition-colors",
+                    currentReaction && currentReactionColor
+                )}
                 onClick={() => setIsOpen(!isOpen)}
             >
-                <ThumbsUp />
+                {CurrentReactionIcon && <CurrentReactionIcon size={20} />}
                 {showCount && (
                     <span className="ml-2 text-xs">{totalReactions}</span>
                 )}
@@ -128,6 +140,7 @@ export const ReactionPanel = ({
                                             isActive ? reaction.color : "text-secondary"
                                         )}
                                     />
+                                    <span className="text-xs mt-1 text-secondary">{count}</span>
                                 </button>
                             );
                         })}

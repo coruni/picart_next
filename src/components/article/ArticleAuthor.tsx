@@ -7,6 +7,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { useTranslations } from "next-intl";
 import type { ArticleDetail } from "@/types";
 import { Link } from "@/i18n/routing";
+import { useUserStore } from "@/stores";
 
 type ArticleAuthorProps = {
     author: ArticleDetail['author']
@@ -19,7 +20,7 @@ export function ArticleAuthor({ author, createdAt, onFollow }: ArticleAuthorProp
     const [originalTop, setOriginalTop] = useState(0);
     const [isSticky, setIsSticky] = useState(false);
     const t = useTranslations();
-
+    const isSelf = (useUserStore((state)=>state.user)?.id === author.id )|| false;
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
@@ -85,7 +86,7 @@ export function ArticleAuthor({ author, createdAt, onFollow }: ArticleAuthorProp
                     <Avatar
                         size={isSticky ? 'sm' : 'lg'}
                         url={author?.avatar}
-                        avatarFrame={author?.equippedDecorations?.AVATAR_FRAME?.imageUrl || ''}
+                        avatarFrame={(author as any)?.equippedDecorations?.AVATAR_FRAME?.imageUrl || ''}
                     />
                 </Link>
                 {/* 用户名 */}
@@ -106,7 +107,7 @@ export function ArticleAuthor({ author, createdAt, onFollow }: ArticleAuthorProp
                 </div>
 
                 {/* 关注 */}
-                {!author?.isFollowed && (
+                {!author?.isFollowed && !isSelf && (
                     <div className="ml-3 flex items-center w-auto">
                         <Button
                             className="ml-2 rounded-full px-6 min-w-22"

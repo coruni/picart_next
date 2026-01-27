@@ -7539,6 +7539,9 @@
                               "likes": {
                                 "type": "integer"
                               },
+                              "favoriteCount": {
+                                "type": "integer"
+                              },
                               "commentCount": {
                                 "type": "integer"
                               },
@@ -7563,17 +7566,56 @@
                                   "nickname": {
                                     "type": "string"
                                   },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "banned": {
+                                    "type": "null"
+                                  },
+                                  "banReason": {
+                                    "type": "null"
+                                  },
                                   "avatar": {
+                                    "type": "string"
+                                  },
+                                  "description": {
                                     "type": "string"
                                   },
                                   "background": {
                                     "type": "null"
                                   },
+                                  "gender": {
+                                    "type": "string"
+                                  },
+                                  "birthDate": {
+                                    "type": "null"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followerCount": {
+                                    "type": "integer"
+                                  },
+                                  "followingCount": {
+                                    "type": "integer"
+                                  },
                                   "level": {
                                     "type": "integer"
                                   },
+                                  "experience": {
+                                    "type": "integer"
+                                  },
+                                  "score": {
+                                    "type": "integer"
+                                  },
+                                  "wallet": {
+                                    "type": "number"
+                                  },
                                   "membershipLevel": {
                                     "type": "integer"
+                                  },
+                                  "membershipLevelName": {
+                                    "type": "string"
                                   },
                                   "membershipStatus": {
                                     "type": "string"
@@ -7584,31 +7626,31 @@
                                   "membershipEndDate": {
                                     "type": "null"
                                   },
-                                  "status": {
+                                  "lastLoginAt": {
                                     "type": "string"
+                                  },
+                                  "lastActiveAt": {
+                                    "type": "null"
+                                  },
+                                  "inviterId": {
+                                    "type": "null"
+                                  },
+                                  "myInviteCode": {
+                                    "type": "null"
+                                  },
+                                  "inviteCode": {
+                                    "type": "null"
+                                  },
+                                  "inviteEarnings": {
+                                    "type": "string"
+                                  },
+                                  "inviteCount": {
+                                    "type": "integer"
                                   },
                                   "createdAt": {
                                     "type": "string"
                                   },
                                   "updatedAt": {
-                                    "type": "string"
-                                  },
-                                  "description": {
-                                    "type": "string"
-                                  },
-                                  "followerCount": {
-                                    "type": "integer"
-                                  },
-                                  "followingCount": {
-                                    "type": "integer"
-                                  },
-                                  "lastActiveAt": {
-                                    "type": "null"
-                                  },
-                                  "lastLoginAt": {
-                                    "type": "string"
-                                  },
-                                  "gender": {
                                     "type": "string"
                                   },
                                   "isMember": {
@@ -7622,22 +7664,35 @@
                                   "id",
                                   "username",
                                   "nickname",
+                                  "status",
+                                  "banned",
+                                  "banReason",
                                   "avatar",
+                                  "description",
                                   "background",
+                                  "gender",
+                                  "birthDate",
+                                  "articleCount",
+                                  "followerCount",
+                                  "followingCount",
                                   "level",
+                                  "experience",
+                                  "score",
+                                  "wallet",
                                   "membershipLevel",
+                                  "membershipLevelName",
                                   "membershipStatus",
                                   "membershipStartDate",
                                   "membershipEndDate",
-                                  "status",
+                                  "lastLoginAt",
+                                  "lastActiveAt",
+                                  "inviterId",
+                                  "myInviteCode",
+                                  "inviteCode",
+                                  "inviteEarnings",
+                                  "inviteCount",
                                   "createdAt",
                                   "updatedAt",
-                                  "description",
-                                  "followerCount",
-                                  "followingCount",
-                                  "lastActiveAt",
-                                  "lastLoginAt",
-                                  "gender",
                                   "isMember",
                                   "isFollowed"
                                 ]
@@ -7921,6 +7976,9 @@
                                   "angry",
                                   "dislike"
                                 ]
+                              },
+                              "userReaction": {
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -7936,9 +7994,9 @@
                               "content",
                               "images",
                               "sort",
-                              "summary",
                               "views",
                               "likes",
+                              "favoriteCount",
                               "commentCount",
                               "status",
                               "cover",
@@ -7953,7 +8011,8 @@
                               "isLiked",
                               "isPaid",
                               "imageCount",
-                              "reactionStats"
+                              "reactionStats",
+                              "summary"
                             ]
                           }
                         },
@@ -8609,6 +8668,9 @@
                         "likes": {
                           "type": "integer"
                         },
+                        "favoriteCount": {
+                          "type": "integer"
+                        },
                         "commentCount": {
                           "type": "integer"
                         },
@@ -8633,17 +8695,56 @@
                             "nickname": {
                               "type": "string"
                             },
+                            "status": {
+                              "type": "string"
+                            },
+                            "banned": {
+                              "type": "null"
+                            },
+                            "banReason": {
+                              "type": "null"
+                            },
                             "avatar": {
+                              "type": "string"
+                            },
+                            "description": {
                               "type": "string"
                             },
                             "background": {
                               "type": "null"
                             },
+                            "gender": {
+                              "type": "string"
+                            },
+                            "birthDate": {
+                              "type": "null"
+                            },
+                            "articleCount": {
+                              "type": "integer"
+                            },
+                            "followerCount": {
+                              "type": "integer"
+                            },
+                            "followingCount": {
+                              "type": "integer"
+                            },
                             "level": {
                               "type": "integer"
                             },
+                            "experience": {
+                              "type": "integer"
+                            },
+                            "score": {
+                              "type": "integer"
+                            },
+                            "wallet": {
+                              "type": "number"
+                            },
                             "membershipLevel": {
                               "type": "integer"
+                            },
+                            "membershipLevelName": {
+                              "type": "string"
                             },
                             "membershipStatus": {
                               "type": "string"
@@ -8654,31 +8755,31 @@
                             "membershipEndDate": {
                               "type": "null"
                             },
-                            "status": {
+                            "lastLoginAt": {
                               "type": "string"
+                            },
+                            "lastActiveAt": {
+                              "type": "null"
+                            },
+                            "inviterId": {
+                              "type": "null"
+                            },
+                            "myInviteCode": {
+                              "type": "null"
+                            },
+                            "inviteCode": {
+                              "type": "null"
+                            },
+                            "inviteEarnings": {
+                              "type": "string"
+                            },
+                            "inviteCount": {
+                              "type": "integer"
                             },
                             "createdAt": {
                               "type": "string"
                             },
                             "updatedAt": {
-                              "type": "string"
-                            },
-                            "description": {
-                              "type": "string"
-                            },
-                            "followerCount": {
-                              "type": "integer"
-                            },
-                            "followingCount": {
-                              "type": "integer"
-                            },
-                            "lastActiveAt": {
-                              "type": "null"
-                            },
-                            "lastLoginAt": {
-                              "type": "string"
-                            },
-                            "gender": {
                               "type": "string"
                             },
                             "isMember": {
@@ -8692,22 +8793,35 @@
                             "id",
                             "username",
                             "nickname",
+                            "status",
+                            "banned",
+                            "banReason",
                             "avatar",
+                            "description",
                             "background",
+                            "gender",
+                            "birthDate",
+                            "articleCount",
+                            "followerCount",
+                            "followingCount",
                             "level",
+                            "experience",
+                            "score",
+                            "wallet",
                             "membershipLevel",
+                            "membershipLevelName",
                             "membershipStatus",
                             "membershipStartDate",
                             "membershipEndDate",
-                            "status",
+                            "lastLoginAt",
+                            "lastActiveAt",
+                            "inviterId",
+                            "myInviteCode",
+                            "inviteCode",
+                            "inviteEarnings",
+                            "inviteCount",
                             "createdAt",
                             "updatedAt",
-                            "description",
-                            "followerCount",
-                            "followingCount",
-                            "lastActiveAt",
-                            "lastLoginAt",
-                            "gender",
                             "isMember",
                             "isFollowed"
                           ]
@@ -8980,6 +9094,9 @@
                             "angry",
                             "dislike"
                           ]
+                        },
+                        "userReaction": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -8995,9 +9112,9 @@
                         "content",
                         "images",
                         "sort",
-                        "summary",
                         "views",
                         "likes",
+                        "favoriteCount",
                         "commentCount",
                         "status",
                         "cover",
@@ -9012,7 +9129,8 @@
                         "isLiked",
                         "isPaid",
                         "imageCount",
-                        "reactionStats"
+                        "reactionStats",
+                        "userReaction"
                       ]
                     }
                   },

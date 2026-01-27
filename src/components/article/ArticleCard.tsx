@@ -8,7 +8,7 @@ import { FollowButtonWithStatus } from "@/components/ui/FollowButtonWithStatus";
 import { EllipsisVertical, Eye, FileImage, GalleryHorizontalEnd, Hash, HeartCrack, MessageCircleMore } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { DropdownMenu, MenuItem } from "@/components/shared";
-import { ReactionPanel } from "./ReactionPanel";
+import { ReactionPanel } from "./ReactionPanel.client";
 
 type Article = ArticleList[number] | ArticleDetail;
 type ArticleCardProps = {
@@ -183,9 +183,9 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
             {article.tags?.length! > 0 && (
                 <div className="mt-2 flex items-center flex-wrap gap-2">
                     {article.tags?.map((tag) => (
-                        <Link href={`/topic/${tag.id}`} className="flex space-x-0.5 items-center text-sm text-primary hover:opacity-80 cursor-pointer" key={tag.id}>
+                        <Link href={`/topic/${tag?.id}`} className="flex space-x-0.5 items-center text-sm text-primary hover:opacity-80 cursor-pointer" key={tag.id}>
                             <Hash size={14} strokeWidth={2} />
-                            <span>{tag.name}</span>
+                            <span>{tag?.name}</span>
                         </Link>
                     ))
                     }
@@ -208,7 +208,7 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
                     <ReactionPanel
                         articleId={article.id!}
                         reactionStats={article.reactionStats!}
-                        userReaction={(article as any).userReaction}
+                        userReaction={article.userReaction}
                     />
                 </div>
             </div>
