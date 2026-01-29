@@ -24,7 +24,11 @@ export function ImageViewer({
     const containerRef = useRef<HTMLDivElement>(null);
     const viewerRef = useRef<Viewer | null>(null);
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
-
+    const customToolbar = () => {
+        // 上一张按钮
+        const prevButtonLi = document.createElement('li');
+        const prevButton = document.createElement('button');
+    }
     useEffect(() => {
         if (!containerRef.current) return;
 
@@ -37,18 +41,15 @@ export function ImageViewer({
             toolbar: {
                 zoomIn: true,
                 zoomOut: true,
-                oneToOne: true,
-                reset: true,
+                reset: false,
                 prev: true,
-                play: {
-                    show: true,
-                    size: "large"
-                },
+                play: 0,
                 next: true,
+                oneToOne:true,
                 rotateLeft: true,
-                rotateRight: true,
-                flipHorizontal: true,
-                flipVertical: true
+                rotateRight: 0,
+                flipHorizontal: 0,
+                flipVertical: 0
             },
             tooltip: true,
             movable: true,
@@ -61,17 +62,18 @@ export function ImageViewer({
             loop: true,
             url: "data-src",
             viewed() {
+                console.log(viewerRef)
                 // 图片加载完成后，补偿 right-30 的偏移量
                 if (viewerRef.current) {
-                   const viewer = viewerRef.current;
-                        if (viewer) {
-                            // right-30 = 120px，需要将图片向左移动 60px 来居中
-                            const offsetX = -120; // 向左偏移 60px (120px / 2)
-                            const offsetY = 0;   // 垂直方向不需要偏移
-                            
-                            // 移动图片来补偿 right-30 的影响
-                            viewer.move(offsetX,offsetY);
-                        }
+                    const viewer = viewerRef.current;
+                    if (viewer) {
+                        // right-30 = 120px，需要将图片向左移动 60px 来居中
+                        const offsetX = -120; // 向左偏移 60px (120px / 2)
+                        const offsetY = 0;   // 垂直方向不需要偏移
+
+                        // 移动图片来补偿 right-30 的影响
+                        viewer.move(offsetX, offsetY);
+                    }
                 }
             },
             ready() {
@@ -84,8 +86,8 @@ export function ImageViewer({
                 // Viewer 显示完成后，添加自定义关闭按钮
                 if (viewerRef.current) {
                     const viewer = viewerRef.current;
-                    const viewerContainer = viewer.viewer;
-                    
+                    const viewerContainer = viewer?.viewer;
+
                     // 检查是否已经添加了自定义关闭按钮
                     if (!viewerContainer.querySelector('.custom-close-btn')) {
                         // 创建自定义关闭按钮
@@ -97,7 +99,7 @@ export function ImageViewer({
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
                             </svg>
                         `;
-                        
+
                         // 设置按钮样式
                         Object.assign(closeButton.style, {
                             position: 'absolute',
@@ -116,21 +118,21 @@ export function ImageViewer({
                             zIndex: '9999',
                             transition: 'background-color 0.2s'
                         });
-                        
+
                         // 添加悬停效果
                         closeButton.addEventListener('mouseenter', () => {
                             closeButton.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
                         });
-                        
+
                         closeButton.addEventListener('mouseleave', () => {
                             closeButton.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
                         });
-                        
+
                         // 添加点击事件
                         closeButton.addEventListener('click', () => {
                             viewer.hide();
                         });
-                        
+
                         // 将按钮添加到 viewer 容器
                         viewerContainer.appendChild(closeButton);
                     }
@@ -144,12 +146,13 @@ export function ImageViewer({
                 // Viewer 隐藏完成，清理自定义关闭按钮
                 if (viewerRef.current) {
                     const viewer = viewerRef.current;
-                    const viewerContainer = viewer.viewer;
+                    const viewerContainer = viewer?.viewer;
                     const customCloseBtn = viewerContainer?.querySelector('.custom-close-btn');
                     if (customCloseBtn) {
                         customCloseBtn.remove();
                     }
                 }
+                viewerRef.current?.destroy();
             },
             view(event) {
                 // 切换图片时

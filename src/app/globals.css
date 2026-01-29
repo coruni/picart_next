@@ -105,3 +105,30 @@ body {
 .viewer-canvas{
   @apply left-4! right-4! md:left-30! md:right-30!
 }
+
+.viewer-toolbar ul{
+  @apply mb-5! bg-[#000000d9] rounded-xl px-3 py-2  gap-2 inline-flex!
+}
+
+.viewer-backdrop{
+  @apply bg-black/85! backdrop-blur-lg
+}
+
+.viewer-prev {
+  order:1
+}
+.viewer-next{
+  order:3
+}
+.viewer-zoom-in{
+  order:4
+}
+.viewer-zoom-out{
+  order:6
+}
+.viewer-rotate-left{
+  order:7
+}
+.viewer-one-to-one{
+  order:8
+}
