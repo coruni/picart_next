@@ -61,7 +61,7 @@ export function UserDropdown() {
         </div>
 
         {/* Hover 面板 */}
-        <div className="absolute right-0 mt-2 min-w-90 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+        <div className="absolute right-0 mt-2 min-w-90 bg-card rounded-xl shadow-lg border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
           {/* 我的信息 - 仅登录后显示 */}
           {isAuthenticated && (
             <>

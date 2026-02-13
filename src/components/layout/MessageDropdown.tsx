@@ -67,7 +67,7 @@ export function MessageDropdown() {
             </div>
 
             {/* Hover 面板 */}
-            <div className="absolute right-0 mt-2 min-w-lg w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+            <div className="absolute right-0 mt-2 min-w-lg w-full bg-card rounded-xl shadow-lg border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <div className="p-4">
                     <h3 className="font-semibold text-foreground">{tHeader("messages")}</h3>
                 </div>

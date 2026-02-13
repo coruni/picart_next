@@ -58,9 +58,12 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #0c0f1d;
     --foreground: #ededed;
-    --color-card: #1f2937;
+    --color-card: #1b1d2a;
+    --color-secondary: #ffffffa6;
+    --color-border:#0c0f1d;
+
   }
 }
 
@@ -75,7 +78,7 @@ body {
 }
 
 .left-container {
-  @apply bg-white dark:bg-gray-800 rounded-xl flex-1 max-w-full;
+  @apply bg-card  rounded-xl flex-1 max-w-full;
 }
 
 .right-container {

@@ -108,7 +108,7 @@ export function SearchBox({
           "focus-within:ring-1 focus-within:ring-primary",
           // 普通页面样式
           (!isAccountPage || scrolled) && [
-            "bg-[#f1f4f9] border border-border",
+            "bg-[#f1f4f9] border border-border dark:bg-[#343746]",
             "hover:bg-card hover:border-primary hover:ring-1 hover:ring-primary",
             "focus-within:bg-card",
           ],

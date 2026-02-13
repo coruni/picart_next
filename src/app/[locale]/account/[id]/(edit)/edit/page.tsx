@@ -16,8 +16,8 @@ export default async function AccountEditPage({
 
   return (
     <div className="page-container">
-      <div className="flex-1 max-w-4xl mx-auto  mt-4 bg-card rounded-t-xl">
-        <div className="px-4 h-14 flex items-center border-b border-border   ">
+      <div className="flex-1 max-w-4xl mx-auto  mt-4 bg-card rounded-xl">
+        <div className="px-4 h-14 flex items-center border-b border-border ">
           <div className="h-full flex-1 flex items-center">
             <span className="font-bold text-base pr-6">编辑个人资料</span>
           </div>
