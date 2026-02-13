@@ -4,79 +4,30 @@ export type ClientOptions = {
     baseUrl: string;
 };
 
-export type UpdateConfigDto = {
+export type CreatePermissionDto = {
+    /**
+     * 权限名称
+     */
+    name: string;
+    /**
+     * 权限描述
+     */
+    description: string;
+};
+
+export type Permission = {
     [key: string]: unknown;
 };
 
-export type CreateUploadDto = {
-    [key: string]: unknown;
-};
-
-export type UpdateUploadDto = {
-    [key: string]: unknown;
-};
-
-export type BaseResponseDto = {
+export type UpdatePermissionDto = {
     /**
-     * 业务状态码
+     * 权限名称
      */
-    code: number;
+    name?: string;
     /**
-     * 提示信息
+     * 权限描述
      */
-    message: string;
-    /**
-     * 数据体
-     */
-    data?: {
-        [key: string]: unknown;
-    };
-    /**
-     * 时间戳
-     */
-    timestamp: number;
-    /**
-     * 路径
-     */
-    path: string;
-};
-
-export type PaginatedResponseDto = {
-    /**
-     * 业务状态码
-     */
-    code: number;
-    /**
-     * 提示信息
-     */
-    message: string;
-    /**
-     * 数据列表
-     */
-    data: {
-        [key: string]: unknown;
-    };
-};
-
-export type ListResponseDto = {
-    /**
-     * 业务状态码
-     */
-    code: number;
-    /**
-     * 提示信息
-     */
-    message: string;
-    /**
-     * 数据列表
-     */
-    data: Array<{
-        [key: string]: unknown;
-    }>;
-    /**
-     * 时间戳
-     */
-    timestamp: number;
+    description?: string;
 };
 
 export type CreateRoleDto = {
@@ -106,6 +57,10 @@ export type CreateRoleDto = {
     isSystem?: boolean;
 };
 
+export type Role = {
+    [key: string]: unknown;
+};
+
 export type UpdateRoleDto = {
     /**
      * 角色名称
@@ -133,13 +88,20 @@ export type UpdateRoleDto = {
     isSystem?: boolean;
 };
 
+export type AssignPermissionsDto = {
+    /**
+     * 权限ID列表
+     */
+    permissionIds: Array<number>;
+};
+
 export type CreateConfigDto = {
     [key: string]: unknown;
 };
 
 export type LoginDto = {
     /**
-     * 用户名
+     * 用户名或邮箱
      */
     account: string | string;
     /**
@@ -282,348 +244,6 @@ export type UpdateUserDto = {
     banReason?: string;
 };
 
-export type CreateArticleDto = {
-    /**
-     * 文章标题
-     */
-    title: string;
-    /**
-     * 文章内容
-     */
-    content: string;
-    /**
-     * 文章摘要
-     */
-    summary?: string;
-    /**
-     * 文章图片
-     */
-    images?: string;
-    /**
-     * 封面图片
-     */
-    cover?: string;
-    /**
-     * 排序
-     */
-    sort: number;
-    /**
-     * 分类ID
-     */
-    categoryId: number;
-    /**
-     * 标签名称数组（不存在的标签会自动创建）
-     */
-    tagNames?: Array<string>;
-    /**
-     * 标签ID数组（与tagNames二选一）
-     */
-    tagIds?: Array<string>;
-    /**
-     * 文章状态
-     */
-    status?: 'DRAFT' | 'PUBLISHED';
-    /**
-     * 是否需要登录后才能查看
-     */
-    requireLogin: boolean;
-    /**
-     * 是否仅关注后可查看
-     */
-    requireFollow: boolean;
-    /**
-     * 是否需要支付后才能查看
-     */
-    requirePayment: boolean;
-    /**
-     * 是否需要会员
-     */
-    requireMembership: boolean;
-    /**
-     * 是否未登录显示
-     */
-    listRequireLogin: boolean;
-    /**
-     * 查看所需支付金额
-     */
-    viewPrice: number;
-    /**
-     * 文章类型
-     */
-    type: 'image' | 'mixed';
-    /**
-     * 下载资源列表
-     */
-    downloads?: Array<DownloadDto>;
-};
-
-export type UpdateArticleDto = {
-    /**
-     * 文章标题
-     */
-    title?: string;
-    /**
-     * 文章内容
-     */
-    content?: string;
-    /**
-     * 文章摘要
-     */
-    summary?: string;
-    /**
-     * 文章图片
-     */
-    images?: string;
-    /**
-     * 封面图片
-     */
-    cover?: string;
-    /**
-     * 排序
-     */
-    sort?: number;
-    /**
-     * 分类ID
-     */
-    categoryId?: number;
-    /**
-     * 标签名称数组（不存在的标签会自动创建）
-     */
-    tagNames?: Array<string>;
-    /**
-     * 标签ID数组（与tagNames二选一）
-     */
-    tagIds?: Array<string>;
-    /**
-     * 文章状态
-     */
-    status?: 'DRAFT' | 'PUBLISHED';
-    /**
-     * 是否需要登录后才能查看
-     */
-    requireLogin?: boolean;
-    /**
-     * 是否仅关注后可查看
-     */
-    requireFollow?: boolean;
-    /**
-     * 是否需要支付后才能查看
-     */
-    requirePayment?: boolean;
-    /**
-     * 是否需要会员才能查看
-     */
-    requireMembership?: boolean;
-    /**
-     * 是否未登录显示
-     */
-    listRequireLogin?: boolean;
-    /**
-     * 查看所需支付金额
-     */
-    viewPrice?: number;
-    /**
-     * 文章类型
-     */
-    type?: 'image' | 'mixed';
-    /**
-     * 下载资源列表
-     */
-    downloads?: Array<DownloadDto>;
-};
-
-export type CreateCommentDto = {
-    /**
-     * 评论内容
-     */
-    content: string;
-    /**
-     * 文章ID
-     */
-    articleId: number;
-    /**
-     * 父评论ID
-     */
-    parentId?: number;
-    /**
-     * 评论图片列表（最多9张）
-     */
-    images?: Array<string>;
-};
-
-export type UpdateCommentDto = {
-    /**
-     * 评论内容
-     */
-    content?: string;
-    /**
-     * 评论图片列表（最多9张）
-     */
-    images?: Array<string>;
-};
-
-export type CreateTagDto = {
-    /**
-     * 标签名称
-     */
-    name: string;
-    /**
-     * 标签描述
-     */
-    description?: string;
-    /**
-     * 标签头像
-     */
-    avatar: string;
-    /**
-     * 标签背景
-     */
-    background: string;
-    /**
-     * 标签封面
-     */
-    cover: string;
-    /**
-     * 排序
-     */
-    sort: number;
-};
-
-export type UpdateTagDto = {
-    /**
-     * 标签名称
-     */
-    name?: string;
-    /**
-     * 标签描述
-     */
-    description?: string;
-    /**
-     * 标签头像
-     */
-    avatar?: string;
-    /**
-     * 标签背景
-     */
-    background?: string;
-    /**
-     * 标签封面
-     */
-    cover?: string;
-    /**
-     * 排序
-     */
-    sort?: number;
-};
-
-export type CreateCategoryDto = {
-    /**
-     * 分类名称
-     */
-    name: string;
-    /**
-     * 分类描述
-     */
-    description?: string;
-    /**
-     * 排序
-     */
-    sort: number;
-    /**
-     * 父分类ID
-     */
-    parentId?: number;
-    /**
-     * 链接
-     */
-    link?: string;
-    /**
-     * 分类头像
-     */
-    avatar?: string;
-    /**
-     * 分类背景
-     */
-    background?: string;
-    /**
-     * 分类封面
-     */
-    cover?: string;
-    /**
-     * 分类状态
-     */
-    status: string;
-};
-
-export type UpdateCategoryDto = {
-    /**
-     * 分类名称
-     */
-    name?: string;
-    /**
-     * 分类描述
-     */
-    description?: string;
-    /**
-     * 排序
-     */
-    sort?: number;
-    /**
-     * 父分类ID
-     */
-    parentId?: number;
-    /**
-     * 自定义链接
-     */
-    link?: string;
-    /**
-     * 分类头像
-     */
-    avatar?: string;
-    /**
-     * 分类背景
-     */
-    background?: string;
-    /**
-     * 分类封面
-     */
-    cover?: string;
-    /**
-     * 分类状态
-     */
-    status?: string;
-};
-
-export type CreatePermissionDto = {
-    /**
-     * 权限名称
-     */
-    name: string;
-    /**
-     * 权限描述
-     */
-    description: string;
-};
-
-export type Permission = {
-    [key: string]: unknown;
-};
-
-export type UpdatePermissionDto = {
-    /**
-     * 权限名称
-     */
-    name?: string;
-    /**
-     * 权限描述
-     */
-    description?: string;
-};
-
-export type Role = {
-    [key: string]: unknown;
-};
-
 export type UserCommissionConfigDto = {
     /**
      * 文章抽成比例（0-1之间）
@@ -662,248 +282,15 @@ export type CalculateCommissionDto = {
     type: 'article' | 'membership' | 'product' | 'service';
 };
 
-export type ArticleLikeDto = {
-    /**
-     * 表情类型
-     */
-    reactionType: 'like' | 'love' | 'haha' | 'wow' | 'sad' | 'angry' | 'dislike';
-};
-
-export type CreateInviteDto = {
-    /**
-     * 邀请类型
-     */
-    type: 'GENERAL' | 'VIP';
-    /**
-     * 邀请分成比例（0-1之间）
-     */
-    commissionRate?: number;
-    /**
-     * 过期时间
-     */
-    expiredAt?: string;
-    /**
-     * 备注
-     */
-    remark?: string;
-};
-
-export type UseInviteDto = {
-    /**
-     * 邀请码
-     */
-    inviteCode: string;
-};
-
-export type Upload = {
-    [key: string]: unknown;
-};
-
 export type SendMailDto = {
     /**
      * 邮箱
      */
     email: string;
     /**
-     * 类型
+     * 验证码类型
      */
     type?: string;
-};
-
-export type CreateMessageDto = {
-    /**
-     * 发送者ID
-     */
-    senderId?: {
-        [key: string]: unknown;
-    };
-    /**
-     * 接收者ID（单发）
-     */
-    receiverId?: number;
-    /**
-     * 接收者ID列表（批量）
-     */
-    receiverIds?: Array<string>;
-    /**
-     * 消息内容
-     */
-    content: string;
-    /**
-     * 消息标题
-     */
-    title?: string;
-    /**
-     * 消息类型
-     */
-    type: 'private' | 'system' | 'notification';
-    /**
-     * 是否为广播消息
-     */
-    isBroadcast: boolean;
-    /**
-     * 消息元数据
-     */
-    metadata?: {
-        [key: string]: unknown;
-    };
-};
-
-export type UpdateMessageDto = {
-    /**
-     * 消息内容
-     */
-    content?: string;
-    /**
-     * 消息标题
-     */
-    title?: string;
-    /**
-     * 是否已读
-     */
-    isRead?: boolean;
-    /**
-     * 消息类型
-     */
-    type?: 'private' | 'system' | 'notification';
-    /**
-     * 是否为广播消息
-     */
-    isBroadcast?: boolean;
-    /**
-     * 消息元数据
-     */
-    metadata?: {
-        [key: string]: unknown;
-    };
-};
-
-export type CreateArticleOrderDto = {
-    /**
-     * 文章ID
-     */
-    articleId: number;
-    /**
-     * 备注
-     */
-    remark?: string;
-};
-
-export type CreateMembershipOrderDto = {
-    /**
-     * 套餐：1m/3m/6m/12m/lifetime（可选）
-     */
-    plan?: string;
-    /**
-     * 充值时长（月）
-     */
-    duration?: number;
-    /**
-     * 备注
-     */
-    remark?: string;
-};
-
-export type CreatePaymentDto = {
-    /**
-     * 订单ID
-     */
-    orderId: number;
-    /**
-     * 支付方式
-     */
-    paymentMethod: 'ALIPAY' | 'WECHAT' | 'BALANCE' | 'EPAY';
-    /**
-     * 支付完成后的跳转地址
-     */
-    returnUrl?: string;
-    /**
-     * payment方式为EPAY时这里填alipay，wxpay，qqpay 中的一个
-     */
-    type?: 'wxpay' | 'alipay' | 'usdt';
-};
-
-export type AlipayNotifyDto = {
-    /**
-     * 支付宝交易号
-     */
-    trade_no: string;
-    /**
-     * 商户订单号
-     */
-    out_trade_no: string;
-    /**
-     * 交易状态
-     */
-    trade_status: string;
-    /**
-     * 交易金额
-     */
-    total_amount: string;
-    /**
-     * 买家支付宝用户号
-     */
-    buyer_id: string;
-    /**
-     * 签名
-     */
-    sign: string;
-    /**
-     * 签名类型
-     */
-    sign_type: string;
-};
-
-export type WechatNotifyDto = {
-    /**
-     * 微信支付订单号
-     */
-    transaction_id: string;
-    /**
-     * 商户订单号
-     */
-    out_trade_no: string;
-    /**
-     * 交易状态
-     */
-    trade_state: string;
-    /**
-     * 交易金额
-     */
-    amount: string;
-    /**
-     * 用户标识
-     */
-    openid: string;
-    /**
-     * 签名
-     */
-    sign: string;
-};
-
-export type CreateBannerDto = {
-    title: string;
-    description: string;
-    imageUrl: string;
-    linkUrl: string;
-    sortOrder?: number;
-    status: 'active' | 'inactive';
-};
-
-export type UpdateBannerDto = {
-    title?: string;
-    description?: string;
-    imageUrl?: string;
-    linkUrl?: string;
-    sortOrder?: number;
-    status?: 'active' | 'inactive';
-};
-
-export type AssignPermissionsDto = {
-    /**
-     * 权限ID列表
-     */
-    permissionIds: Array<number>;
 };
 
 export type ChangePasswordDto = {
@@ -1054,6 +441,322 @@ export type DownloadDto = {
     extractionCode?: string;
 };
 
+export type CreateArticleDto = {
+    /**
+     * 文章标题
+     */
+    title: string;
+    /**
+     * 文章内容
+     */
+    content: string;
+    /**
+     * 文章摘要
+     */
+    summary?: string;
+    /**
+     * 文章图片
+     */
+    images?: string;
+    /**
+     * 封面图片
+     */
+    cover?: string;
+    /**
+     * 排序
+     */
+    sort: number;
+    /**
+     * 分类ID
+     */
+    categoryId: number;
+    /**
+     * 标签名称数组（不存在的标签会自动创建）
+     */
+    tagNames?: Array<string>;
+    /**
+     * 标签ID数组（与tagNames二选一）
+     */
+    tagIds?: Array<string>;
+    /**
+     * 文章状态
+     */
+    status?: 'DRAFT' | 'PUBLISHED';
+    /**
+     * 是否需要登录后才能查看
+     */
+    requireLogin: boolean;
+    /**
+     * 是否仅关注后可查看
+     */
+    requireFollow: boolean;
+    /**
+     * 是否需要支付后才能查看
+     */
+    requirePayment: boolean;
+    /**
+     * 是否需要会员才能查看
+     */
+    requireMembership: boolean;
+    /**
+     * 仅登录后才在列表显示
+     */
+    listRequireLogin: boolean;
+    /**
+     * 查看所需支付金额
+     */
+    viewPrice: number;
+    /**
+     * 文章类型
+     */
+    type: 'image' | 'mixed';
+    /**
+     * 下载资源列表
+     */
+    downloads?: Array<DownloadDto>;
+};
+
+export type UpdateArticleDto = {
+    /**
+     * 文章标题
+     */
+    title?: string;
+    /**
+     * 文章内容
+     */
+    content?: string;
+    /**
+     * 文章摘要
+     */
+    summary?: string;
+    /**
+     * 文章图片
+     */
+    images?: string;
+    /**
+     * 封面图片
+     */
+    cover?: string;
+    /**
+     * 排序
+     */
+    sort?: number;
+    /**
+     * 分类ID
+     */
+    categoryId?: number;
+    /**
+     * 标签名称数组（不存在的标签会自动创建）
+     */
+    tagNames?: Array<string>;
+    /**
+     * 标签ID数组（与tagNames二选一）
+     */
+    tagIds?: Array<string>;
+    /**
+     * 文章状态
+     */
+    status?: 'DRAFT' | 'PUBLISHED';
+    /**
+     * 是否需要登录后才能查看
+     */
+    requireLogin?: boolean;
+    /**
+     * 是否仅关注后可查看
+     */
+    requireFollow?: boolean;
+    /**
+     * 是否需要支付后才能查看
+     */
+    requirePayment?: boolean;
+    /**
+     * 是否需要会员才能查看
+     */
+    requireMembership?: boolean;
+    /**
+     * 仅登录后才在列表显示
+     */
+    listRequireLogin?: boolean;
+    /**
+     * 查看所需支付金额
+     */
+    viewPrice?: number;
+    /**
+     * 文章类型
+     */
+    type?: 'image' | 'mixed';
+    /**
+     * 下载资源列表
+     */
+    downloads?: Array<DownloadDto>;
+};
+
+export type ArticleLikeDto = {
+    /**
+     * 表情类型
+     */
+    reactionType: 'like' | 'love' | 'haha' | 'wow' | 'sad' | 'angry' | 'dislike';
+};
+
+export type RecordBrowseHistoryDto = {
+    /**
+     * 浏览进度（百分比）
+     */
+    progress?: number;
+    /**
+     * 停留时长（秒）
+     */
+    duration?: number;
+};
+
+export type CreateTagDto = {
+    /**
+     * 标签名称
+     */
+    name: string;
+    /**
+     * 标签描述
+     */
+    description?: string;
+    /**
+     * 标签头像
+     */
+    avatar: string;
+    /**
+     * 标签背景
+     */
+    background: string;
+    /**
+     * 标签封面
+     */
+    cover: string;
+    /**
+     * 排序
+     */
+    sort: number;
+};
+
+export type UpdateTagDto = {
+    /**
+     * 标签名称
+     */
+    name?: string;
+    /**
+     * 标签描述
+     */
+    description?: string;
+    /**
+     * 标签头像
+     */
+    avatar?: string;
+    /**
+     * 标签背景
+     */
+    background?: string;
+    /**
+     * 标签封面
+     */
+    cover?: string;
+    /**
+     * 排序
+     */
+    sort?: number;
+};
+
+export type CreateArticleOrderDto = {
+    /**
+     * 文章ID
+     */
+    articleId: number;
+    /**
+     * 备注
+     */
+    remark?: string;
+};
+
+export type CreateMembershipOrderDto = {
+    /**
+     * 套餐：1m/3m/6m/12m/lifetime（可选）
+     */
+    plan?: string;
+    /**
+     * 充值时长（月）（当未选择套餐时必填）
+     */
+    duration?: number;
+    /**
+     * 备注
+     */
+    remark?: string;
+};
+
+export type CreateMessageDto = {
+    /**
+     * 发送者ID
+     */
+    senderId?: {
+        [key: string]: unknown;
+    };
+    /**
+     * 接收者ID（单发）
+     */
+    receiverId?: number;
+    /**
+     * 接收者ID列表（批量）
+     */
+    receiverIds?: Array<string>;
+    /**
+     * 消息内容
+     */
+    content: string;
+    /**
+     * 消息标题
+     */
+    title?: string;
+    /**
+     * 消息类型
+     */
+    type: 'private' | 'system' | 'notification';
+    /**
+     * 是否为广播消息
+     */
+    isBroadcast: boolean;
+    /**
+     * 消息元数据
+     */
+    metadata?: {
+        [key: string]: unknown;
+    };
+};
+
+export type UpdateMessageDto = {
+    /**
+     * 消息内容
+     */
+    content?: string;
+    /**
+     * 消息标题
+     */
+    title?: string;
+    /**
+     * 是否已读
+     */
+    isRead?: boolean;
+    /**
+     * 消息类型
+     */
+    type?: 'private' | 'system' | 'notification';
+    /**
+     * 是否为广播消息
+     */
+    isBroadcast?: boolean;
+    /**
+     * 消息元数据
+     */
+    metadata?: {
+        [key: string]: unknown;
+    };
+};
+
 export type MarkAllReadDto = {
     /**
      * 消息类型
@@ -1074,6 +777,477 @@ export type BatchMessageDto = {
      * 操作类型
      */
     action: 'read' | 'delete';
+};
+
+export type CreateFavoriteDto = {
+    /**
+     * 收藏夹名称
+     */
+    name: string;
+    /**
+     * 收藏夹描述
+     */
+    description?: string;
+    /**
+     * 封面图片
+     */
+    cover?: string;
+    /**
+     * 是否公开
+     */
+    isPublic?: boolean;
+    /**
+     * 排序
+     */
+    sort?: number;
+};
+
+export type UpdateFavoriteDto = {
+    /**
+     * 收藏夹名称
+     */
+    name?: string;
+    /**
+     * 收藏夹描述
+     */
+    description?: string;
+    /**
+     * 封面图片
+     */
+    cover?: string;
+    /**
+     * 是否公开
+     */
+    isPublic?: boolean;
+    /**
+     * 排序
+     */
+    sort?: number;
+};
+
+export type AddToFavoriteDto = {
+    /**
+     * 收藏夹ID
+     */
+    favoriteId: number;
+    /**
+     * 文章ID
+     */
+    articleId: number;
+    /**
+     * 备注
+     */
+    note?: string;
+};
+
+export type AddPointsDto = {
+    /**
+     * 积分数量
+     */
+    amount: number;
+    /**
+     * 积分来源
+     */
+    source: string;
+    /**
+     * 描述
+     */
+    description?: string;
+    /**
+     * 关联业务类型
+     */
+    relatedType?: string;
+    /**
+     * 关联业务ID
+     */
+    relatedId?: number;
+    /**
+     * 有效天数（0为永久）
+     */
+    validDays?: number;
+};
+
+export type SpendPointsDto = {
+    /**
+     * 积分数量
+     */
+    amount: number;
+    /**
+     * 用途
+     */
+    source: string;
+    /**
+     * 描述
+     */
+    description?: string;
+    /**
+     * 关联业务类型
+     */
+    relatedType?: string;
+    /**
+     * 关联业务ID
+     */
+    relatedId?: number;
+};
+
+export type CreatePointsActivityDto = {
+    /**
+     * 活动代码
+     */
+    code: string;
+    /**
+     * 活动名称
+     */
+    name: string;
+    /**
+     * 活动描述
+     */
+    description?: string;
+    /**
+     * 活动类型
+     */
+    type: 'INSTANT' | 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'ONCE';
+    /**
+     * 奖励积分
+     */
+    rewardPoints: number;
+    /**
+     * 目标数量
+     */
+    targetCount?: number;
+    /**
+     * 每日限制次数（0为不限制）
+     */
+    dailyLimit?: number;
+    /**
+     * 总限制次数（0为不限制）
+     */
+    totalLimit?: number;
+    /**
+     * 积分有效期（天数，0为永久）
+     */
+    validDays?: number;
+    /**
+     * 活动图标
+     */
+    icon?: string;
+    /**
+     * 跳转链接
+     */
+    link?: string;
+    /**
+     * 是否启用
+     */
+    isActive?: boolean;
+    /**
+     * 排序
+     */
+    sort?: number;
+};
+
+export type UpdatePointsActivityDto = {
+    /**
+     * 活动代码
+     */
+    code?: string;
+    /**
+     * 活动名称
+     */
+    name?: string;
+    /**
+     * 活动描述
+     */
+    description?: string;
+    /**
+     * 活动类型
+     */
+    type?: 'INSTANT' | 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'ONCE';
+    /**
+     * 奖励积分
+     */
+    rewardPoints?: number;
+    /**
+     * 目标数量
+     */
+    targetCount?: number;
+    /**
+     * 每日限制次数（0为不限制）
+     */
+    dailyLimit?: number;
+    /**
+     * 总限制次数（0为不限制）
+     */
+    totalLimit?: number;
+    /**
+     * 积分有效期（天数，0为永久）
+     */
+    validDays?: number;
+    /**
+     * 活动图标
+     */
+    icon?: string;
+    /**
+     * 跳转链接
+     */
+    link?: string;
+    /**
+     * 是否启用
+     */
+    isActive?: boolean;
+    /**
+     * 排序
+     */
+    sort?: number;
+};
+
+export type CreateCommentDto = {
+    /**
+     * 评论内容
+     */
+    content: string;
+    /**
+     * 文章ID
+     */
+    articleId: number;
+    /**
+     * 父评论ID
+     */
+    parentId?: number;
+    /**
+     * 评论图片列表（最多9张）
+     */
+    images?: Array<string>;
+};
+
+export type UpdateCommentDto = {
+    /**
+     * 评论内容
+     */
+    content?: string;
+    /**
+     * 评论图片列表（最多9张）
+     */
+    images?: Array<string>;
+};
+
+export type CreateCategoryDto = {
+    /**
+     * 分类名称
+     */
+    name: string;
+    /**
+     * 分类描述
+     */
+    description?: string;
+    /**
+     * 排序
+     */
+    sort: number;
+    /**
+     * 父分类ID
+     */
+    parentId?: number;
+    /**
+     * 自定义链接
+     */
+    link?: string;
+    /**
+     * 分类头像
+     */
+    avatar?: string;
+    /**
+     * 分类背景
+     */
+    background?: string;
+    /**
+     * 分类封面
+     */
+    cover?: string;
+    /**
+     * 分类状态
+     */
+    status: string;
+};
+
+export type UpdateCategoryDto = {
+    /**
+     * 分类名称
+     */
+    name?: string;
+    /**
+     * 分类描述
+     */
+    description?: string;
+    /**
+     * 排序
+     */
+    sort?: number;
+    /**
+     * 父分类ID
+     */
+    parentId?: number;
+    /**
+     * 自定义链接
+     */
+    link?: string;
+    /**
+     * 分类头像
+     */
+    avatar?: string;
+    /**
+     * 分类背景
+     */
+    background?: string;
+    /**
+     * 分类封面
+     */
+    cover?: string;
+    /**
+     * 分类状态
+     */
+    status?: string;
+};
+
+export type CreateInviteDto = {
+    /**
+     * 邀请类型
+     */
+    type: 'GENERAL' | 'VIP';
+    /**
+     * 邀请分成比例（0-1之间）
+     */
+    commissionRate?: number;
+    /**
+     * 过期时间
+     */
+    expiredAt?: string;
+    /**
+     * 备注
+     */
+    remark?: string;
+};
+
+export type UseInviteDto = {
+    /**
+     * 邀请码
+     */
+    inviteCode: string;
+};
+
+export type CreatePaymentDto = {
+    /**
+     * 订单ID
+     */
+    orderId: number;
+    /**
+     * 支付方式
+     */
+    paymentMethod: 'ALIPAY' | 'WECHAT' | 'BALANCE' | 'EPAY';
+    /**
+     * 支付完成后的跳转地址
+     */
+    returnUrl?: string;
+    /**
+     * 支付类型（EPAY支付方式时必传）
+     */
+    type?: 'wxpay' | 'alipay' | 'usdt';
+};
+
+export type AlipayNotifyDto = {
+    /**
+     * 支付宝交易号
+     */
+    trade_no: string;
+    /**
+     * 商户订单号
+     */
+    out_trade_no: string;
+    /**
+     * 交易状态
+     */
+    trade_status: string;
+    /**
+     * 交易金额
+     */
+    total_amount: string;
+    /**
+     * 买家支付宝用户号
+     */
+    buyer_id: string;
+    /**
+     * 签名
+     */
+    sign: string;
+    /**
+     * 签名类型
+     */
+    sign_type: string;
+};
+
+export type WechatNotifyDto = {
+    /**
+     * 微信支付订单号
+     */
+    transaction_id: string;
+    /**
+     * 商户订单号
+     */
+    out_trade_no: string;
+    /**
+     * 交易状态
+     */
+    trade_state: string;
+    /**
+     * 交易金额
+     */
+    amount: string;
+    /**
+     * 用户标识
+     */
+    openid: string;
+    /**
+     * 签名
+     */
+    sign: string;
+};
+
+export type Upload = {
+    [key: string]: unknown;
+};
+
+export type CreateBannerDto = {
+    /**
+     * 轮播标题
+     */
+    title: string;
+    /**
+     * 轮播描述
+     */
+    description?: string;
+    /**
+     * 轮播图片URL
+     */
+    imageUrl: string;
+    /**
+     * 跳转链接URL
+     */
+    linkUrl?: string;
+    /**
+     * 排序顺序（数字越大越靠前）
+     */
+    sortOrder: number;
+    /**
+     * 轮播状态
+     */
+    status?: 'active' | 'inactive';
+};
+
+export type Banner = {
+    [key: string]: unknown;
+};
+
+export type UpdateBannerDto = {
+    [key: string]: unknown;
 };
 
 export type CreateReportDto = {
@@ -1262,292 +1436,6 @@ export type GiftDecorationDto = {
     message?: string;
 };
 
-export type RecordBrowseHistoryDto = {
-    /**
-     * 浏览进度（百分比）
-     */
-    progress?: number;
-    /**
-     * 停留时长（秒）
-     */
-    duration?: number;
-};
-
-export type CreateFavoriteDto = {
-    /**
-     * 收藏夹名称
-     */
-    name: string;
-    /**
-     * 收藏夹描述
-     */
-    description?: string;
-    /**
-     * 封面图片
-     */
-    cover?: string;
-    /**
-     * 是否公开
-     */
-    isPublic?: boolean;
-    /**
-     * 排序
-     */
-    sort?: number;
-};
-
-export type UpdateFavoriteDto = {
-    /**
-     * 收藏夹名称
-     */
-    name?: string;
-    /**
-     * 收藏夹描述
-     */
-    description?: string;
-    /**
-     * 封面图片
-     */
-    cover?: string;
-    /**
-     * 是否公开
-     */
-    isPublic?: boolean;
-    /**
-     * 排序
-     */
-    sort?: number;
-};
-
-export type AddToFavoriteDto = {
-    /**
-     * 收藏夹ID
-     */
-    favoriteId: number;
-    /**
-     * 文章ID
-     */
-    articleId: number;
-    /**
-     * 备注
-     */
-    note?: string;
-};
-
-export type AddPointsDto = {
-    /**
-     * 积分数量
-     */
-    amount: number;
-    /**
-     * 积分来源
-     */
-    source: string;
-    /**
-     * 描述
-     */
-    description?: string;
-    /**
-     * 关联业务类型
-     */
-    relatedType?: string;
-    /**
-     * 关联业务ID
-     */
-    relatedId?: number;
-    /**
-     * 有效天数（0为永久）
-     */
-    validDays?: number;
-};
-
-export type SpendPointsDto = {
-    /**
-     * 积分数量
-     */
-    amount: number;
-    /**
-     * 用途
-     */
-    source: string;
-    /**
-     * 描述
-     */
-    description?: string;
-    /**
-     * 关联业务类型
-     */
-    relatedType?: string;
-    /**
-     * 关联业务ID
-     */
-    relatedId?: number;
-};
-
-export type CreatePointsRuleDto = {
-    /**
-     * 规则代码
-     */
-    code: string;
-    /**
-     * 规则名称
-     */
-    name: string;
-    /**
-     * 规则描述
-     */
-    description?: string;
-    /**
-     * 积分数量
-     */
-    points: number;
-    /**
-     * 每日限制次数
-     */
-    dailyLimit?: number;
-    /**
-     * 总限制次数
-     */
-    totalLimit?: number;
-    /**
-     * 积分有效期（天数）
-     */
-    validDays?: number;
-    /**
-     * 是否启用
-     */
-    isActive?: boolean;
-    /**
-     * 排序
-     */
-    sort?: number;
-};
-
-export type UpdatePointsRuleDto = {
-    /**
-     * 规则代码
-     */
-    code?: string;
-    /**
-     * 规则名称
-     */
-    name?: string;
-    /**
-     * 规则描述
-     */
-    description?: string;
-    /**
-     * 积分数量
-     */
-    points?: number;
-    /**
-     * 每日限制次数
-     */
-    dailyLimit?: number;
-    /**
-     * 总限制次数
-     */
-    totalLimit?: number;
-    /**
-     * 积分有效期（天数）
-     */
-    validDays?: number;
-    /**
-     * 是否启用
-     */
-    isActive?: boolean;
-    /**
-     * 排序
-     */
-    sort?: number;
-};
-
-export type CreatePointsTaskDto = {
-    /**
-     * 任务代码
-     */
-    code: string;
-    /**
-     * 任务名称
-     */
-    name: string;
-    /**
-     * 任务描述
-     */
-    description?: string;
-    /**
-     * 任务类型
-     */
-    type: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'ONCE';
-    /**
-     * 奖励积分
-     */
-    rewardPoints: number;
-    /**
-     * 目标数量
-     */
-    targetCount?: number;
-    /**
-     * 任务图标
-     */
-    icon?: string;
-    /**
-     * 跳转链接
-     */
-    link?: string;
-    /**
-     * 是否启用
-     */
-    isActive?: boolean;
-    /**
-     * 排序
-     */
-    sort?: number;
-};
-
-export type UpdatePointsTaskDto = {
-    /**
-     * 任务代码
-     */
-    code?: string;
-    /**
-     * 任务名称
-     */
-    name?: string;
-    /**
-     * 任务描述
-     */
-    description?: string;
-    /**
-     * 任务类型
-     */
-    type?: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'ONCE';
-    /**
-     * 奖励积分
-     */
-    rewardPoints?: number;
-    /**
-     * 目标数量
-     */
-    targetCount?: number;
-    /**
-     * 任务图标
-     */
-    icon?: string;
-    /**
-     * 跳转链接
-     */
-    link?: string;
-    /**
-     * 是否启用
-     */
-    isActive?: boolean;
-    /**
-     * 排序
-     */
-    sort?: number;
-};
-
 export type CreateEmojiDto = {
     /**
      * 表情名称
@@ -1669,6 +1557,120 @@ export type UpdateEmojiDto = {
     status?: 'active' | 'inactive' | 'deleted';
 };
 
+export type CreateAchievementDto = {
+    /**
+     * 成就代码（唯一标识）
+     */
+    code: string;
+    /**
+     * 成就名称
+     */
+    name: string;
+    /**
+     * 成就描述
+     */
+    description: string;
+    /**
+     * 成就图标URL
+     */
+    icon?: string;
+    /**
+     * 成就类型
+     */
+    type: 'ARTICLE' | 'COMMENT' | 'SOCIAL' | 'LEVEL' | 'SPECIAL';
+    /**
+     * 稀有度
+     */
+    rarity: 'COMMON' | 'RARE' | 'EPIC' | 'LEGENDARY';
+    /**
+     * 完成条件
+     */
+    condition: {
+        [key: string]: unknown;
+    };
+    /**
+     * 奖励积分
+     */
+    rewardPoints: number;
+    /**
+     * 奖励经验
+     */
+    rewardExp: number;
+    /**
+     * 奖励装饰品ID
+     */
+    rewardDecorationId?: number;
+    /**
+     * 是否隐藏
+     */
+    hidden: boolean;
+    /**
+     * 排序
+     */
+    sort: number;
+    /**
+     * 是否启用
+     */
+    enabled: boolean;
+};
+
+export type UpdateAchievementDto = {
+    /**
+     * 成就代码（唯一标识）
+     */
+    code?: string;
+    /**
+     * 成就名称
+     */
+    name?: string;
+    /**
+     * 成就描述
+     */
+    description?: string;
+    /**
+     * 成就图标URL
+     */
+    icon?: string;
+    /**
+     * 成就类型
+     */
+    type?: 'ARTICLE' | 'COMMENT' | 'SOCIAL' | 'LEVEL' | 'SPECIAL';
+    /**
+     * 稀有度
+     */
+    rarity?: 'COMMON' | 'RARE' | 'EPIC' | 'LEGENDARY';
+    /**
+     * 完成条件
+     */
+    condition?: {
+        [key: string]: unknown;
+    };
+    /**
+     * 奖励积分
+     */
+    rewardPoints?: number;
+    /**
+     * 奖励经验
+     */
+    rewardExp?: number;
+    /**
+     * 奖励装饰品ID
+     */
+    rewardDecorationId?: number;
+    /**
+     * 是否隐藏
+     */
+    hidden?: boolean;
+    /**
+     * 排序
+     */
+    sort?: number;
+    /**
+     * 是否启用
+     */
+    enabled?: boolean;
+};
+
 export type AppControllerGetHelloData = {
     body?: never;
     headers?: {
@@ -1729,7 +1731,7 @@ export type RoleControllerFindAllResponses = {
 export type RoleControllerFindAllResponse = RoleControllerFindAllResponses[keyof RoleControllerFindAllResponses];
 
 export type RoleControllerCreateData = {
-    body: CreateRoleDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -1745,10 +1747,8 @@ export type RoleControllerCreateResponses = {
     /**
      * 创建成功
      */
-    201: Role;
+    201: unknown;
 };
-
-export type RoleControllerCreateResponse = RoleControllerCreateResponses[keyof RoleControllerCreateResponses];
 
 export type RoleControllerRemoveData = {
     body?: never;
@@ -1815,7 +1815,7 @@ export type RoleControllerFindOneResponses = {
 export type RoleControllerFindOneResponse = RoleControllerFindOneResponses[keyof RoleControllerFindOneResponses];
 
 export type RoleControllerUpdateData = {
-    body: UpdateRoleDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -1833,10 +1833,8 @@ export type RoleControllerUpdateResponses = {
     /**
      * 更新成功
      */
-    200: Role;
+    200: unknown;
 };
-
-export type RoleControllerUpdateResponse = RoleControllerUpdateResponses[keyof RoleControllerUpdateResponses];
 
 export type RoleControllerFindWithPaginationData = {
     body?: never;
@@ -1940,7 +1938,7 @@ export type RoleControllerGetActiveRolesResponses = {
 export type RoleControllerGetActiveRolesResponse = RoleControllerGetActiveRolesResponses[keyof RoleControllerGetActiveRolesResponses];
 
 export type RoleControllerAssignPermissionsData = {
-    body: AssignPermissionsDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -2090,7 +2088,7 @@ export type ConfigControllerUpdateAllResponses = {
 };
 
 export type ConfigControllerCreateData = {
-    body: CreateConfigDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -2468,7 +2466,7 @@ export type ConfigControllerRemoveResponses = {
 };
 
 export type ConfigControllerUpdateData = {
-    body?: UpdateConfigDto;
+    body?: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -2607,7 +2605,7 @@ export type UserControllerFindAllResponses = {
 export type UserControllerFindAllResponse = UserControllerFindAllResponses[keyof UserControllerFindAllResponses];
 
 export type UserControllerCreateData = {
-    body: CreateUserDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -2765,7 +2763,7 @@ export type UserControllerFindOneResponses = {
 export type UserControllerFindOneResponse = UserControllerFindOneResponses[keyof UserControllerFindOneResponses];
 
 export type UserControllerUpdateData = {
-    body: UpdateUserDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3111,7 +3109,7 @@ export type UserControllerGetUserCommissionConfigResponses = {
 export type UserControllerGetUserCommissionConfigResponse = UserControllerGetUserCommissionConfigResponses[keyof UserControllerGetUserCommissionConfigResponses];
 
 export type UserControllerSetUserCommissionConfigData = {
-    body: UserCommissionConfigDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3202,7 +3200,7 @@ export type UserControllerGetUserConfigResponses = {
 export type UserControllerGetUserConfigResponse = UserControllerGetUserConfigResponses[keyof UserControllerGetUserConfigResponses];
 
 export type UserControllerUpdateUserConfigData = {
-    body: UpdateUserConfigDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3237,7 +3235,10 @@ export type UserControllerUpdateUserConfigResponses = {
 };
 
 export type UserControllerLoginData = {
-    body: LoginDto;
+    body: {
+        account: string;
+        password: string;
+    };
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3348,7 +3349,7 @@ export type UserControllerLoginResponses = {
 export type UserControllerLoginResponse = UserControllerLoginResponses[keyof UserControllerLoginResponses];
 
 export type UserControllerRegisterUserData = {
-    body: CreateUserDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3541,7 +3542,7 @@ export type UserControllerUnfollowResponses = {
 };
 
 export type UserControllerCalculateCommissionData = {
-    body: CalculateCommissionDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3634,7 +3635,7 @@ export type UserControllerWithdrawWalletResponses = {
 };
 
 export type UserControllerSendVerificationCodeData = {
-    body: SendMailDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3739,7 +3740,7 @@ export type UserControllerBatchCheckMembershipStatusResponses = {
 };
 
 export type UserControllerChangePasswordData = {
-    body: ChangePasswordDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3801,7 +3802,7 @@ export type UserControllerSignInResponses = {
 };
 
 export type UserControllerUpdateNotificationSettingsData = {
-    body: UpdateUserNoticeDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -4202,7 +4203,7 @@ export type ArticleControllerFindAllResponses = {
 export type ArticleControllerFindAllResponse = ArticleControllerFindAllResponses[keyof ArticleControllerFindAllResponses];
 
 export type ArticleControllerCreateData = {
-    body: CreateArticleDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -4525,7 +4526,7 @@ export type ArticleControllerFindOneResponses = {
 export type ArticleControllerFindOneResponse = ArticleControllerFindOneResponses[keyof ArticleControllerFindOneResponses];
 
 export type ArticleControllerUpdateData = {
-    body: UpdateArticleDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -5793,7 +5794,7 @@ export type ArticleControllerGetFavoritedArticlesResponses = {
 export type ArticleControllerGetFavoritedArticlesResponse = ArticleControllerGetFavoritedArticlesResponses[keyof ArticleControllerGetFavoritedArticlesResponses];
 
 export type ArticleControllerUpdateBrowseProgressData = {
-    body: RecordBrowseHistoryDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -5812,7 +5813,7 @@ export type ArticleControllerUpdateBrowseProgressResponses = {
 };
 
 export type ArticleControllerLikeData = {
-    body: ArticleLikeDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -6432,7 +6433,7 @@ export type CommentControllerFindOneResponses = {
 export type CommentControllerFindOneResponse = CommentControllerFindOneResponses[keyof CommentControllerFindOneResponses];
 
 export type CommentControllerUpdateData = {
-    body: UpdateCommentDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -6505,7 +6506,7 @@ export type CommentControllerFindAllCommentsResponses = {
 };
 
 export type CommentControllerCreateData = {
-    body: CreateCommentDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -6577,10 +6578,8 @@ export type CommentControllerGetRepliesResponses = {
     /**
      * 获取成功
      */
-    200: PaginatedResponseDto;
+    200: unknown;
 };
-
-export type CommentControllerGetRepliesResponse = CommentControllerGetRepliesResponses[keyof CommentControllerGetRepliesResponses];
 
 export type CommentControllerGetUserCommentsData = {
     body?: never;
@@ -6871,7 +6870,7 @@ export type TagControllerFindAllResponses = {
 export type TagControllerFindAllResponse = TagControllerFindAllResponses[keyof TagControllerFindAllResponses];
 
 export type TagControllerCreateData = {
-    body: CreateTagDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -7012,7 +7011,7 @@ export type TagControllerFindOneResponses = {
 export type TagControllerFindOneResponse = TagControllerFindOneResponses[keyof TagControllerFindOneResponses];
 
 export type TagControllerUpdateData = {
-    body: UpdateTagDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -7196,7 +7195,7 @@ export type CategoryControllerFindAllResponses = {
 export type CategoryControllerFindAllResponse = CategoryControllerFindAllResponses[keyof CategoryControllerFindAllResponses];
 
 export type CategoryControllerCreateData = {
-    body: CreateCategoryDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -7360,7 +7359,7 @@ export type CategoryControllerFindOneResponses = {
 export type CategoryControllerFindOneResponse = CategoryControllerFindOneResponses[keyof CategoryControllerFindOneResponses];
 
 export type CategoryControllerUpdateData = {
-    body: UpdateCategoryDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -7485,13 +7484,13 @@ export type PermissionControllerFindAllResponses = {
     /**
      * 获取成功
      */
-    200: Array<Permission>;
+    200: Array<unknown>;
 };
 
 export type PermissionControllerFindAllResponse = PermissionControllerFindAllResponses[keyof PermissionControllerFindAllResponses];
 
 export type PermissionControllerCreateData = {
-    body: CreatePermissionDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -7522,10 +7521,8 @@ export type PermissionControllerCreateResponses = {
     /**
      * 创建成功
      */
-    201: Permission;
+    201: unknown;
 };
-
-export type PermissionControllerCreateResponse = PermissionControllerCreateResponses[keyof PermissionControllerCreateResponses];
 
 export type PermissionControllerRemoveData = {
     body?: never;
@@ -7598,13 +7595,11 @@ export type PermissionControllerFindOneResponses = {
     /**
      * 获取成功
      */
-    200: Permission;
+    200: unknown;
 };
 
-export type PermissionControllerFindOneResponse = PermissionControllerFindOneResponses[keyof PermissionControllerFindOneResponses];
-
 export type PermissionControllerUpdateData = {
-    body: UpdatePermissionDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -7641,10 +7636,8 @@ export type PermissionControllerUpdateResponses = {
     /**
      * 更新成功
      */
-    200: Permission;
+    200: unknown;
 };
-
-export type PermissionControllerUpdateResponse = PermissionControllerUpdateResponses[keyof PermissionControllerUpdateResponses];
 
 export type OrderControllerGetAllOrdersData = {
     body?: never;
@@ -7904,7 +7897,7 @@ export type OrderControllerRequestRefundResponses = {
 };
 
 export type OrderControllerCreateArticleOrderData = {
-    body: CreateArticleOrderDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -7935,7 +7928,7 @@ export type OrderControllerCreateArticleOrderResponses = {
 };
 
 export type OrderControllerCreateMembershipOrderData = {
-    body: CreateMembershipOrderDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8098,7 +8091,7 @@ export type InviteControllerGetInviteDetailResponses = {
 };
 
 export type InviteControllerUseInviteData = {
-    body: UseInviteDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8137,7 +8130,7 @@ export type InviteControllerUseInviteResponses = {
 };
 
 export type InviteControllerCreateInviteData = {
-    body: CreateInviteDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8196,10 +8189,8 @@ export type UploadControllerGetFileInfoResponses = {
     /**
      * 获取文件信息成功
      */
-    200: Upload;
+    200: unknown;
 };
-
-export type UploadControllerGetFileInfoResponse = UploadControllerGetFileInfoResponses[keyof UploadControllerGetFileInfoResponses];
 
 export type UploadControllerFindAllData = {
     body?: never;
@@ -8227,13 +8218,15 @@ export type UploadControllerFindAllResponses = {
     /**
      * 获取所有上传文件成功
      */
-    200: Array<Upload>;
+    200: Array<unknown>;
 };
 
 export type UploadControllerFindAllResponse = UploadControllerFindAllResponses[keyof UploadControllerFindAllResponses];
 
 export type UploadControllerUploadFileData = {
-    body: Array<string>;
+    body: {
+        file?: Blob | File;
+    };
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8264,7 +8257,24 @@ export type UploadControllerUploadFileResponses = {
     /**
      * 上传文件成功
      */
-    200: Array<Upload>;
+    201: {
+        code: number;
+        message: string;
+        data: Array<{
+            id?: number;
+            hash?: string;
+            originalName?: string;
+            storage?: string;
+            filename?: string;
+            path?: string;
+            url?: string;
+            size?: number;
+            mimeType?: string;
+            referenceCount?: number;
+            createdAt?: string;
+            updatedAt?: string;
+        }>;
+    };
 };
 
 export type UploadControllerUploadFileResponse = UploadControllerUploadFileResponses[keyof UploadControllerUploadFileResponses];
@@ -8404,7 +8414,7 @@ export type MessageControllerFindAllResponses = {
 export type MessageControllerFindAllResponse = MessageControllerFindAllResponses[keyof MessageControllerFindAllResponses];
 
 export type MessageControllerCreateData = {
-    body: CreateMessageDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8655,7 +8665,7 @@ export type MessageControllerFindOneResponses = {
 export type MessageControllerFindOneResponse = MessageControllerFindOneResponses[keyof MessageControllerFindOneResponses];
 
 export type MessageControllerUpdateData = {
-    body: UpdateMessageDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8735,7 +8745,7 @@ export type MessageControllerMarkAsReadResponses = {
 export type MessageControllerMarkAsReadResponse = MessageControllerMarkAsReadResponses[keyof MessageControllerMarkAsReadResponses];
 
 export type MessageControllerMarkAllAsReadData = {
-    body: MarkAllReadDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8752,7 +8762,7 @@ export type MessageControllerMarkAllAsReadResponses = {
 };
 
 export type MessageControllerBatchOperationData = {
-    body: BatchMessageDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8819,7 +8829,7 @@ export type BannerControllerFindAllResponses = {
 export type BannerControllerFindAllResponse = BannerControllerFindAllResponses[keyof BannerControllerFindAllResponses];
 
 export type BannerControllerCreateData = {
-    body?: CreateBannerDto;
+    body?: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8943,7 +8953,7 @@ export type BannerControllerFindOneResponses = {
 export type BannerControllerFindOneResponse = BannerControllerFindOneResponses[keyof BannerControllerFindOneResponses];
 
 export type BannerControllerUpdateData = {
-    body?: UpdateBannerDto;
+    body?: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8962,7 +8972,7 @@ export type BannerControllerUpdateResponses = {
 };
 
 export type PaymentControllerCreatePaymentData = {
-    body: CreatePaymentDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8982,7 +8992,7 @@ export type PaymentControllerCreatePaymentResponses = {
 };
 
 export type PaymentControllerAlipayNotifyData = {
-    body: AlipayNotifyDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9002,7 +9012,7 @@ export type PaymentControllerAlipayNotifyResponses = {
 };
 
 export type PaymentControllerWechatNotifyData = {
-    body: WechatNotifyDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9305,7 +9315,7 @@ export type ReportControllerFindAllResponses = {
 export type ReportControllerFindAllResponse = ReportControllerFindAllResponses[keyof ReportControllerFindAllResponses];
 
 export type ReportControllerCreateData = {
-    body: CreateReportDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9520,7 +9530,7 @@ export type ReportControllerFindOneResponses = {
 export type ReportControllerFindOneResponse = ReportControllerFindOneResponses[keyof ReportControllerFindOneResponses];
 
 export type ReportControllerUpdateData = {
-    body: UpdateReportDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9614,7 +9624,7 @@ export type DecorationControllerFindAllResponses = {
 export type DecorationControllerFindAllResponse = DecorationControllerFindAllResponses[keyof DecorationControllerFindAllResponses];
 
 export type DecorationControllerCreateData = {
-    body: CreateDecorationDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9732,7 +9742,7 @@ export type DecorationControllerFindOneResponses = {
 export type DecorationControllerFindOneResponse = DecorationControllerFindOneResponses[keyof DecorationControllerFindOneResponses];
 
 export type DecorationControllerUpdateData = {
-    body: UpdateDecorationDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10023,7 +10033,7 @@ export type DecorationControllerGetCurrentDecorationsResponses = {
 export type DecorationControllerGetCurrentDecorationsResponse = DecorationControllerGetCurrentDecorationsResponses[keyof DecorationControllerGetCurrentDecorationsResponses];
 
 export type DecorationControllerPurchaseData = {
-    body: PurchaseDecorationDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10051,7 +10061,7 @@ export type DecorationControllerPurchaseErrors = {
 export type DecorationControllerPurchaseError = DecorationControllerPurchaseErrors[keyof DecorationControllerPurchaseErrors];
 
 export type DecorationControllerGiftData = {
-    body: GiftDecorationDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10284,7 +10294,7 @@ export type FavoriteControllerFindAllResponses = {
 export type FavoriteControllerFindAllResponse = FavoriteControllerFindAllResponses[keyof FavoriteControllerFindAllResponses];
 
 export type FavoriteControllerCreateData = {
-    body: CreateFavoriteDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10415,7 +10425,7 @@ export type FavoriteControllerFindOneResponses = {
 export type FavoriteControllerFindOneResponse = FavoriteControllerFindOneResponses[keyof FavoriteControllerFindOneResponses];
 
 export type FavoriteControllerUpdateData = {
-    body: UpdateFavoriteDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10512,7 +10522,7 @@ export type FavoriteControllerCheckArticleInFavoritesResponses = {
 };
 
 export type FavoriteControllerAddToFavoriteData = {
-    body: AddToFavoriteDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10554,6 +10564,300 @@ export type FavoriteControllerRemoveFromFavoriteResponses = {
     200: unknown;
 };
 
+export type PointsControllerGetBalanceData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/points/balance';
+};
+
+export type PointsControllerGetBalanceErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+};
+
+export type PointsControllerGetBalanceResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};
+
+export type PointsControllerFindAllActivitiesData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query: {
+        type: string;
+    };
+    url: '/points/activities';
+};
+
+export type PointsControllerFindAllActivitiesResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};
+
+export type PointsControllerCreateActivityData = {
+    body: CreatePointsActivityDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/points/activities';
+};
+
+export type PointsControllerCreateActivityErrors = {
+    /**
+     * 活动代码已存在或请求参数错误
+     */
+    400: unknown;
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 权限不足
+     */
+    403: unknown;
+};
+
+export type PointsControllerCreateActivityResponses = {
+    /**
+     * 活动创建成功
+     */
+    201: unknown;
+};
+
+export type PointsControllerRemoveActivityData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/points/activities/{id}';
+};
+
+export type PointsControllerRemoveActivityErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 权限不足
+     */
+    403: unknown;
+    /**
+     * 活动不存在
+     */
+    404: unknown;
+};
+
+export type PointsControllerRemoveActivityResponses = {
+    /**
+     * 活动删除成功
+     */
+    200: unknown;
+};
+
+export type PointsControllerFindOneActivityData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/points/activities/{id}';
+};
+
+export type PointsControllerFindOneActivityErrors = {
+    /**
+     * 活动不存在
+     */
+    404: unknown;
+};
+
+export type PointsControllerFindOneActivityResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};
+
+export type PointsControllerUpdateActivityData = {
+    body: UpdatePointsActivityDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/points/activities/{id}';
+};
+
+export type PointsControllerUpdateActivityErrors = {
+    /**
+     * 活动代码已存在或请求参数错误
+     */
+    400: unknown;
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 权限不足
+     */
+    403: unknown;
+    /**
+     * 活动不存在
+     */
+    404: unknown;
+};
+
+export type PointsControllerUpdateActivityResponses = {
+    /**
+     * 活动更新成功
+     */
+    200: unknown;
+};
+
+export type PointsControllerAddPointsData = {
+    body: AddPointsDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/points/add';
+};
+
+export type PointsControllerAddPointsErrors = {
+    /**
+     * 请求参数错误
+     */
+    400: unknown;
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 权限不足
+     */
+    403: unknown;
+};
+
+export type PointsControllerAddPointsResponses = {
+    /**
+     * 积分增加成功
+     */
+    201: unknown;
+};
+
+export type PointsControllerClaimTaskRewardData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/points/activities/{id}/claim';
+};
+
+export type PointsControllerClaimTaskRewardErrors = {
+    /**
+     * 任务未完成或已领取
+     */
+    400: unknown;
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 任务记录不存在
+     */
+    404: unknown;
+};
+
+export type PointsControllerClaimTaskRewardResponses = {
+    /**
+     * 奖励领取成功
+     */
+    201: unknown;
+};
+
+export type PointsControllerSpendPointsData = {
+    body: SpendPointsDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/points/spend';
+};
+
+export type PointsControllerSpendPointsErrors = {
+    /**
+     * 积分不足或请求参数错误
+     */
+    400: unknown;
+    /**
+     * 未授权
+     */
+    401: unknown;
+};
+
+export type PointsControllerSpendPointsResponses = {
+    /**
+     * 积分消费成功
+     */
+    201: unknown;
+};
+
 export type PointsControllerGetTransactionsData = {
     body?: never;
     headers?: {
@@ -10589,10 +10893,6 @@ export type PointsControllerGetTransactionsErrors = {
      * 未授权
      */
     401: unknown;
-    /**
-     * 权限不足
-     */
-    403: unknown;
 };
 
 export type PointsControllerGetTransactionsResponses = {
@@ -10602,7 +10902,7 @@ export type PointsControllerGetTransactionsResponses = {
     200: unknown;
 };
 
-export type PointsControllerGetStatsData = {
+export type PointsControllerGetMyTasksData = {
     body?: never;
     headers?: {
         Authorization?: string;
@@ -10612,28 +10912,24 @@ export type PointsControllerGetStatsData = {
     };
     path?: never;
     query?: never;
-    url: '/points/stats';
+    url: '/points/tasks/my';
 };
 
-export type PointsControllerGetStatsErrors = {
+export type PointsControllerGetMyTasksErrors = {
     /**
      * 未授权
      */
     401: unknown;
-    /**
-     * 权限不足
-     */
-    403: unknown;
 };
 
-export type PointsControllerGetStatsResponses = {
+export type PointsControllerGetMyTasksResponses = {
     /**
      * 获取成功
      */
     200: unknown;
 };
 
-export type PointsControllerFindAllRulesData = {
+export type PointsControllerGetMyTaskProgressData = {
     body?: never;
     headers?: {
         Authorization?: string;
@@ -10641,20 +10937,33 @@ export type PointsControllerFindAllRulesData = {
         'Device-Name'?: string;
         'Device-Type'?: string;
     };
-    path?: never;
+    path: {
+        activityId: string;
+    };
     query?: never;
-    url: '/points/rules';
+    url: '/points/tasks/my/{activityId}';
 };
 
-export type PointsControllerFindAllRulesResponses = {
+export type PointsControllerGetMyTaskProgressErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 任务记录不存在
+     */
+    404: unknown;
+};
+
+export type PointsControllerGetMyTaskProgressResponses = {
     /**
      * 获取成功
      */
     200: unknown;
 };
 
-export type PointsControllerCreateRuleData = {
-    body: CreatePointsRuleDto;
+export type PointsControllerGetAllTransactionsData = {
+    body?: never;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10662,15 +10971,28 @@ export type PointsControllerCreateRuleData = {
         'Device-Type'?: string;
     };
     path?: never;
-    query?: never;
-    url: '/points/rules';
+    query?: {
+        /**
+         * 页码
+         */
+        page?: number;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+        /**
+         * 交易类型
+         */
+        type?: 'EARN' | 'SPEND' | 'ADMIN_ADJUST' | 'EXPIRE' | 'REFUND';
+        /**
+         * 积分来源/用途
+         */
+        source?: string;
+    };
+    url: '/points/transactions/all';
 };
 
-export type PointsControllerCreateRuleErrors = {
-    /**
-     * 请求参数错误
-     */
-    400: unknown;
+export type PointsControllerGetAllTransactionsErrors = {
     /**
      * 未授权
      */
@@ -10681,121 +11003,14 @@ export type PointsControllerCreateRuleErrors = {
     403: unknown;
 };
 
-export type PointsControllerCreateRuleResponses = {
-    /**
-     * 创建成功
-     */
-    201: unknown;
-};
-
-export type PointsControllerRemoveRuleData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/points/rules/{id}';
-};
-
-export type PointsControllerRemoveRuleErrors = {
-    /**
-     * 未授权
-     */
-    401: unknown;
-    /**
-     * 权限不足
-     */
-    403: unknown;
-    /**
-     * 规则不存在
-     */
-    404: unknown;
-};
-
-export type PointsControllerRemoveRuleResponses = {
-    /**
-     * 删除成功
-     */
-    200: unknown;
-};
-
-export type PointsControllerFindOneRuleData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/points/rules/{id}';
-};
-
-export type PointsControllerFindOneRuleErrors = {
-    /**
-     * 规则不存在
-     */
-    404: unknown;
-};
-
-export type PointsControllerFindOneRuleResponses = {
+export type PointsControllerGetAllTransactionsResponses = {
     /**
      * 获取成功
      */
     200: unknown;
 };
 
-export type PointsControllerUpdateRuleData = {
-    body: UpdatePointsRuleDto;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/points/rules/{id}';
-};
-
-export type PointsControllerUpdateRuleErrors = {
-    /**
-     * 请求参数错误
-     */
-    400: unknown;
-    /**
-     * 未授权
-     */
-    401: unknown;
-    /**
-     * 权限不足
-     */
-    403: unknown;
-    /**
-     * 规则不存在
-     */
-    404: unknown;
-};
-
-export type PointsControllerUpdateRuleResponses = {
-    /**
-     * 更新成功
-     */
-    200: unknown;
-};
-
-export type PointsControllerFindAllTasksData = {
+export type PointsControllerGetStatisticsData = {
     body?: never;
     headers?: {
         Authorization?: string;
@@ -10805,34 +11020,60 @@ export type PointsControllerFindAllTasksData = {
     };
     path?: never;
     query?: never;
-    url: '/points/tasks';
+    url: '/points/statistics';
 };
 
-export type PointsControllerFindAllTasksResponses = {
+export type PointsControllerGetStatisticsErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 权限不足
+     */
+    403: unknown;
+};
+
+export type PointsControllerGetStatisticsResponses = {
     /**
      * 获取成功
      */
     200: unknown;
 };
 
-export type PointsControllerCreateTaskData = {
-    body: CreatePointsTaskDto;
+export type PointsControllerGetUserTransactionsData = {
+    body?: never;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
         'Device-Name'?: string;
         'Device-Type'?: string;
     };
-    path?: never;
-    query?: never;
-    url: '/points/tasks';
+    path: {
+        userId: string;
+    };
+    query?: {
+        /**
+         * 页码
+         */
+        page?: number;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+        /**
+         * 交易类型
+         */
+        type?: 'EARN' | 'SPEND' | 'ADMIN_ADJUST' | 'EXPIRE' | 'REFUND';
+        /**
+         * 积分来源/用途
+         */
+        source?: string;
+    };
+    url: '/points/users/{userId}/transactions';
 };
 
-export type PointsControllerCreateTaskErrors = {
-    /**
-     * 请求参数错误
-     */
-    400: unknown;
+export type PointsControllerGetUserTransactionsErrors = {
     /**
      * 未授权
      */
@@ -10843,187 +11084,14 @@ export type PointsControllerCreateTaskErrors = {
     403: unknown;
 };
 
-export type PointsControllerCreateTaskResponses = {
-    /**
-     * 创建成功
-     */
-    201: unknown;
-};
-
-export type PointsControllerRemoveTaskData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/points/tasks/{id}';
-};
-
-export type PointsControllerRemoveTaskErrors = {
-    /**
-     * 未授权
-     */
-    401: unknown;
-    /**
-     * 权限不足
-     */
-    403: unknown;
-    /**
-     * 任务不存在
-     */
-    404: unknown;
-};
-
-export type PointsControllerRemoveTaskResponses = {
-    /**
-     * 删除成功
-     */
-    200: unknown;
-};
-
-export type PointsControllerFindOneTaskData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/points/tasks/{id}';
-};
-
-export type PointsControllerFindOneTaskErrors = {
-    /**
-     * 任务不存在
-     */
-    404: unknown;
-};
-
-export type PointsControllerFindOneTaskResponses = {
+export type PointsControllerGetUserTransactionsResponses = {
     /**
      * 获取成功
      */
     200: unknown;
 };
 
-export type PointsControllerUpdateTaskData = {
-    body: UpdatePointsTaskDto;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/points/tasks/{id}';
-};
-
-export type PointsControllerUpdateTaskErrors = {
-    /**
-     * 请求参数错误
-     */
-    400: unknown;
-    /**
-     * 未授权
-     */
-    401: unknown;
-    /**
-     * 权限不足
-     */
-    403: unknown;
-    /**
-     * 任务不存在
-     */
-    404: unknown;
-};
-
-export type PointsControllerUpdateTaskResponses = {
-    /**
-     * 更新成功
-     */
-    200: unknown;
-};
-
-export type PointsControllerAddPointsData = {
-    body: AddPointsDto;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/points/add';
-};
-
-export type PointsControllerAddPointsErrors = {
-    /**
-     * 未授权
-     */
-    401: unknown;
-    /**
-     * 权限不足
-     */
-    403: unknown;
-};
-
-export type PointsControllerAddPointsResponses = {
-    /**
-     * 增加成功
-     */
-    200: unknown;
-};
-
-export type PointsControllerSpendPointsData = {
-    body: SpendPointsDto;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/points/spend';
-};
-
-export type PointsControllerSpendPointsErrors = {
-    /**
-     * 积分不足
-     */
-    400: unknown;
-    /**
-     * 未授权
-     */
-    401: unknown;
-    /**
-     * 权限不足
-     */
-    403: unknown;
-};
-
-export type PointsControllerSpendPointsResponses = {
-    /**
-     * 消费成功
-     */
-    200: unknown;
-};
-
-export type PointsControllerClaimTaskRewardData = {
+export type PointsControllerGetUserBalanceData = {
     body?: never;
     headers?: {
         Authorization?: string;
@@ -11032,17 +11100,13 @@ export type PointsControllerClaimTaskRewardData = {
         'Device-Type'?: string;
     };
     path: {
-        id: string;
+        userId: string;
     };
     query?: never;
-    url: '/points/tasks/{id}/claim';
+    url: '/points/users/{userId}/balance';
 };
 
-export type PointsControllerClaimTaskRewardErrors = {
-    /**
-     * 任务未完成或已领取
-     */
-    400: unknown;
+export type PointsControllerGetUserBalanceErrors = {
     /**
      * 未授权
      */
@@ -11051,15 +11115,11 @@ export type PointsControllerClaimTaskRewardErrors = {
      * 权限不足
      */
     403: unknown;
-    /**
-     * 任务不存在
-     */
-    404: unknown;
 };
 
-export type PointsControllerClaimTaskRewardResponses = {
+export type PointsControllerGetUserBalanceResponses = {
     /**
-     * 领取成功
+     * 获取成功
      */
     200: unknown;
 };
@@ -11119,7 +11179,7 @@ export type EmojiControllerFindAllResponses = {
 };
 
 export type EmojiControllerCreateData = {
-    body: CreateEmojiDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -11180,7 +11240,7 @@ export type EmojiControllerFindOneResponses = {
 };
 
 export type EmojiControllerUpdateData = {
-    body: UpdateEmojiDto;
+    body: unknown;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;

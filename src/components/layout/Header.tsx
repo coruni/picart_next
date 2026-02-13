@@ -24,7 +24,7 @@ export function Header({ categories }: HeaderProps) {
   const pathname = usePathname();
 
   // 判断是否在需要透明背景的页面（account、article 详情等）
-  const isTransparentBgPage = ["/account/", "/topic/"].some(path => pathname.includes(path));
+  const isTransparentBgPage = ["/account/", "/topic/"].some(path => pathname.includes(path)) && !pathname.includes("/edit");
 
   // 使用自定义 hook 监听滚动
   const scrolled = useScrollThreshold(240, isTransparentBgPage);

@@ -13,7 +13,24 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const t = useTranslations("error");
+  // 尝试使用翻译，如果失败则使用硬编码文本
+  let t: any;
+  try {
+    t = useTranslations("error");
+  } catch {
+    // 降级方案：硬编码文本
+    t = (key: string) => {
+      const fallback: Record<string, string> = {
+        title: "出错了",
+        description: "抱歉，页面加载时遇到了问题。请稍后重试。",
+        errorDetails: "错误详情",
+        tryAgain: "重试",
+        backHome: "返回首页",
+        helpText: "如果问题持续存在，请联系我们的支持团队"
+      };
+      return fallback[key] || key;
+    };
+  }
 
   useEffect(() => {
     // 记录错误到错误报告服务

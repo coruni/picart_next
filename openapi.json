@@ -339,9 +339,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateRoleDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -351,9 +349,7 @@
             "description": "创建成功",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Role"
-                }
+                "schema": {}
               }
             },
             "headers": {}
@@ -650,9 +646,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateRoleDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -662,9 +656,7 @@
             "description": "更新成功",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Role"
-                }
+                "schema": {}
               }
             },
             "headers": {}
@@ -1114,9 +1106,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AssignPermissionsDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -1472,9 +1462,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateConfigDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -2556,9 +2544,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateConfigDto"
-              }
+              "schema": {}
             }
           }
         },
@@ -3036,9 +3022,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateUserDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -3512,9 +3496,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUserDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -4697,9 +4679,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UserCommissionConfigDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -4960,9 +4940,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUserConfigDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -5045,7 +5023,19 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginDto"
+                "type": "object",
+                "properties": {
+                  "account": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "account",
+                  "password"
+                ]
               }
             }
           },
@@ -5450,9 +5440,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateUserDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -6167,9 +6155,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CalculateCommissionDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -6387,9 +6373,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SendMailDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -6641,9 +6625,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangePasswordDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -6795,9 +6777,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUserNoticeDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -8114,9 +8094,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateArticleDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -9298,9 +9276,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateArticleDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -13984,9 +13960,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RecordBrowseHistoryDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -14066,9 +14040,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ArticleLikeDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -16251,9 +16223,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCommentDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -16531,9 +16501,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCommentDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -16650,9 +16618,7 @@
             "description": "获取成功",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PaginatedResponseDto"
-                }
+                "schema": {}
               }
             },
             "headers": {}
@@ -17768,9 +17734,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateTagDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -18094,9 +18058,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateTagDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -18719,9 +18681,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCategoryDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -19141,9 +19101,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCategoryDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -19529,9 +19487,7 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Permission"
-                  }
+                  "items": {}
                 }
               }
             },
@@ -19603,9 +19559,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePermissionDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -19615,9 +19569,7 @@
             "description": "创建成功",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Permission"
-                }
+                "schema": {}
               }
             },
             "headers": {}
@@ -19706,9 +19658,7 @@
             "description": "获取成功",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Permission"
-                }
+                "schema": {}
               }
             },
             "headers": {}
@@ -19793,9 +19743,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdatePermissionDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -19805,9 +19753,7 @@
             "description": "更新成功",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Permission"
-                }
+                "schema": {}
               }
             },
             "headers": {}
@@ -20657,9 +20603,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateArticleOrderDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -20737,9 +20681,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateMembershipOrderDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -21141,9 +21083,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UseInviteDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -21229,9 +21169,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateInviteDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -21321,9 +21259,7 @@
             "description": "获取文件信息成功",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Upload"
-                }
+                "schema": {}
               }
             },
             "headers": {}
@@ -21419,9 +21355,7 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Upload"
-                  }
+                  "items": {}
                 }
               }
             },
@@ -21486,27 +21420,86 @@
         ],
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "type": "array",
-                "items": {
-                  "type": "string"
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "format": "binary",
+                    "type": "string",
+                    "example": "file://F:\\Downloads\\7z25.01-zstd-x64.exe"
+                  }
                 }
-              }
+              },
+              "examples": {}
             }
           },
           "required": true
         },
         "responses": {
-          "200": {
+          "201": {
             "description": "上传文件成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Upload"
-                  }
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "hash": {
+                            "type": "string"
+                          },
+                          "originalName": {
+                            "type": "string"
+                          },
+                          "storage": {
+                            "type": "string"
+                          },
+                          "filename": {
+                            "type": "string"
+                          },
+                          "path": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string"
+                          },
+                          "size": {
+                            "type": "integer"
+                          },
+                          "mimeType": {
+                            "type": "string"
+                          },
+                          "referenceCount": {
+                            "type": "integer"
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
                 }
               }
             },
@@ -22011,9 +22004,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateMessageDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -22861,9 +22852,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateMessageDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -23211,9 +23200,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MarkAllReadDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -23283,9 +23270,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BatchMessageDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -23525,9 +23510,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateBannerDto"
-              },
+              "schema": {},
               "examples": {}
             }
           }
@@ -24006,9 +23989,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateBannerDto"
-              },
+              "schema": {},
               "examples": {}
             }
           }
@@ -24078,9 +24059,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePaymentDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -24150,9 +24129,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AlipayNotifyDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -24222,9 +24199,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/WechatNotifyDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -25212,9 +25187,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateReportDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -25945,9 +25918,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateReportDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -26348,9 +26319,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateDecorationDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -26714,9 +26683,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateDecorationDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -27806,9 +27773,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PurchaseDecorationDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -27909,9 +27874,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GiftDecorationDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -28723,9 +28686,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateFavoriteDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -29153,9 +29114,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateFavoriteDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -29534,9 +29493,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddToFavoriteDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -29630,6 +29587,755 @@
           }
         },
         "security": []
+      }
+    },
+    "/points/balance": {
+      "get": {
+        "summary": "获取积分余额",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_getBalance",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/points/activities": {
+      "post": {
+        "summary": "创建积分活动",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_createActivity",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePointsActivityDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "活动创建成功",
+            "headers": {}
+          },
+          "400": {
+            "description": "活动代码已存在或请求参数错误",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          },
+          "403": {
+            "description": "权限不足",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "summary": "获取积分活动列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_findAllActivities",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/points/activities/{id}": {
+      "get": {
+        "summary": "获取积分活动详情",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_findOneActivity",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          },
+          "404": {
+            "description": "活动不存在",
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "patch": {
+        "summary": "更新积分活动",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_updateActivity",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePointsActivityDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "活动更新成功",
+            "headers": {}
+          },
+          "400": {
+            "description": "活动代码已存在或请求参数错误",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          },
+          "403": {
+            "description": "权限不足",
+            "headers": {}
+          },
+          "404": {
+            "description": "活动不存在",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "删除积分活动",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_removeActivity",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "活动删除成功",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          },
+          "403": {
+            "description": "权限不足",
+            "headers": {}
+          },
+          "404": {
+            "description": "活动不存在",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/points/add": {
+      "post": {
+        "summary": "增加积分",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_addPoints",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPointsDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "积分增加成功",
+            "headers": {}
+          },
+          "400": {
+            "description": "请求参数错误",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          },
+          "403": {
+            "description": "权限不足",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/points/activities/{id}/claim": {
+      "post": {
+        "summary": "领取任务奖励",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_claimTaskReward",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "奖励领取成功",
+            "headers": {}
+          },
+          "400": {
+            "description": "任务未完成或已领取",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          },
+          "404": {
+            "description": "任务记录不存在",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/points/spend": {
+      "post": {
+        "summary": "消费积分",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_spendPoints",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpendPointsDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "积分消费成功",
+            "headers": {}
+          },
+          "400": {
+            "description": "积分不足或请求参数错误",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/points/transactions": {
@@ -29738,21 +30444,294 @@
           "401": {
             "description": "未授权",
             "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/points/tasks/my": {
+      "get": {
+        "summary": "获取我的任务记录",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_getMyTasks",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/points/tasks/my/{activityId}": {
+      "get": {
+        "summary": "获取指定活动的任务进度",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_getMyTaskProgress",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "activityId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          },
+          "404": {
+            "description": "任务记录不存在",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/points/transactions/all": {
+      "get": {
+        "summary": "获取所有用户的积分交易记录（管理员）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_getAllTransactions",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "交易类型",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "EARN",
+                "SPEND",
+                "ADMIN_ADJUST",
+                "EXPIRE",
+                "REFUND"
+              ]
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "description": "积分来源/用途",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
           },
           "403": {
             "description": "权限不足",
             "headers": {}
           }
         },
-        "security": []
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
-    "/points/stats": {
+    "/points/statistics": {
       "get": {
-        "summary": "获取积分统计信息",
+        "summary": "获取积分系统统计数据（管理员）",
         "deprecated": false,
         "description": "",
-        "operationId": "PointsController_getStats",
+        "operationId": "PointsController_getStatistics",
         "tags": [
           "积分管理"
         ],
@@ -29814,19 +30793,78 @@
             "headers": {}
           }
         },
-        "security": []
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
-    "/points/rules": {
+    "/points/users/{userId}/transactions": {
       "get": {
-        "summary": "获取所有积分规则",
+        "summary": "获取指定用户的积分交易记录（管理员）",
         "deprecated": false,
         "description": "",
-        "operationId": "PointsController_findAllRules",
+        "operationId": "PointsController_getUserTransactions",
         "tags": [
           "积分管理"
         ],
         "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "交易类型",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "EARN",
+                "SPEND",
+                "ADMIN_ADJUST",
+                "EXPIRE",
+                "REFUND"
+              ]
+            }
+          },
+          {
+            "name": "source",
+            "in": "query",
+            "description": "积分来源/用途",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "Authorization",
             "in": "header",
@@ -29874,80 +30912,6 @@
           "200": {
             "description": "获取成功",
             "headers": {}
-          }
-        },
-        "security": []
-      },
-      "post": {
-        "summary": "创建积分规则",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_createRule",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePointsRuleDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "创建成功",
-            "headers": {}
-          },
-          "400": {
-            "description": "请求参数错误",
-            "headers": {}
           },
           "401": {
             "description": "未授权",
@@ -29958,21 +30922,25 @@
             "headers": {}
           }
         },
-        "security": []
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
-    "/points/rules/{id}": {
+    "/points/users/{userId}/balance": {
       "get": {
-        "summary": "获取积分规则详情",
+        "summary": "获取指定用户的积分余额（管理员）",
         "deprecated": false,
         "description": "",
-        "operationId": "PointsController_findOneRule",
+        "operationId": "PointsController_getUserBalance",
         "tags": [
           "积分管理"
         ],
         "parameters": [
           {
-            "name": "id",
+            "name": "userId",
             "in": "path",
             "description": "",
             "required": true,
@@ -30029,324 +30997,6 @@
             "description": "获取成功",
             "headers": {}
           },
-          "404": {
-            "description": "规则不存在",
-            "headers": {}
-          }
-        },
-        "security": []
-      },
-      "patch": {
-        "summary": "更新积分规则",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_updateRule",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "example": "",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdatePointsRuleDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "更新成功",
-            "headers": {}
-          },
-          "400": {
-            "description": "请求参数错误",
-            "headers": {}
-          },
-          "401": {
-            "description": "未授权",
-            "headers": {}
-          },
-          "403": {
-            "description": "权限不足",
-            "headers": {}
-          },
-          "404": {
-            "description": "规则不存在",
-            "headers": {}
-          }
-        },
-        "security": []
-      },
-      "delete": {
-        "summary": "删除积分规则",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_removeRule",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "example": "",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "删除成功",
-            "headers": {}
-          },
-          "401": {
-            "description": "未授权",
-            "headers": {}
-          },
-          "403": {
-            "description": "权限不足",
-            "headers": {}
-          },
-          "404": {
-            "description": "规则不存在",
-            "headers": {}
-          }
-        },
-        "security": []
-      }
-    },
-    "/points/tasks": {
-      "get": {
-        "summary": "获取所有积分任务",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_findAllTasks",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "获取成功",
-            "headers": {}
-          }
-        },
-        "security": []
-      },
-      "post": {
-        "summary": "创建积分任务",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_createTask",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePointsTaskDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "创建成功",
-            "headers": {}
-          },
-          "400": {
-            "description": "请求参数错误",
-            "headers": {}
-          },
           "401": {
             "description": "未授权",
             "headers": {}
@@ -30356,513 +31006,11 @@
             "headers": {}
           }
         },
-        "security": []
-      }
-    },
-    "/points/tasks/{id}": {
-      "get": {
-        "summary": "获取积分任务详情",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_findOneTask",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
+        "security": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "example": "",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
+            "bearer": []
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "获取成功",
-            "headers": {}
-          },
-          "404": {
-            "description": "任务不存在",
-            "headers": {}
-          }
-        },
-        "security": []
-      },
-      "patch": {
-        "summary": "更新积分任务",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_updateTask",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "example": "",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdatePointsTaskDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "更新成功",
-            "headers": {}
-          },
-          "400": {
-            "description": "请求参数错误",
-            "headers": {}
-          },
-          "401": {
-            "description": "未授权",
-            "headers": {}
-          },
-          "403": {
-            "description": "权限不足",
-            "headers": {}
-          },
-          "404": {
-            "description": "任务不存在",
-            "headers": {}
-          }
-        },
-        "security": []
-      },
-      "delete": {
-        "summary": "删除积分任务",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_removeTask",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "example": "",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "删除成功",
-            "headers": {}
-          },
-          "401": {
-            "description": "未授权",
-            "headers": {}
-          },
-          "403": {
-            "description": "权限不足",
-            "headers": {}
-          },
-          "404": {
-            "description": "任务不存在",
-            "headers": {}
-          }
-        },
-        "security": []
-      }
-    },
-    "/points/add": {
-      "post": {
-        "summary": "增加积分（管理员）",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_addPoints",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddPointsDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "增加成功",
-            "headers": {}
-          },
-          "401": {
-            "description": "未授权",
-            "headers": {}
-          },
-          "403": {
-            "description": "权限不足",
-            "headers": {}
-          }
-        },
-        "security": []
-      }
-    },
-    "/points/spend": {
-      "post": {
-        "summary": "消费积分（管理员）",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_spendPoints",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SpendPointsDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "消费成功",
-            "headers": {}
-          },
-          "400": {
-            "description": "积分不足",
-            "headers": {}
-          },
-          "401": {
-            "description": "未授权",
-            "headers": {}
-          },
-          "403": {
-            "description": "权限不足",
-            "headers": {}
-          }
-        },
-        "security": []
-      }
-    },
-    "/points/tasks/{id}/claim": {
-      "post": {
-        "summary": "领取任务奖励",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_claimTaskReward",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "example": "",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "领取成功",
-            "headers": {}
-          },
-          "400": {
-            "description": "任务未完成或已领取",
-            "headers": {}
-          },
-          "401": {
-            "description": "未授权",
-            "headers": {}
-          },
-          "403": {
-            "description": "权限不足",
-            "headers": {}
-          },
-          "404": {
-            "description": "任务不存在",
-            "headers": {}
-          }
-        },
-        "security": []
+        ]
       }
     },
     "/emoji": {
@@ -31076,9 +31224,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateEmojiDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -31228,9 +31374,7 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateEmojiDto"
-              }
+              "schema": {}
             }
           },
           "required": true
@@ -31748,112 +31892,43 @@
   },
   "components": {
     "schemas": {
-      "UpdateConfigDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "CreateUploadDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "UpdateUploadDto": {
-        "type": "object",
-        "properties": {}
-      },
-      "BaseResponseDto": {
+      "CreatePermissionDto": {
         "type": "object",
         "properties": {
-          "code": {
-            "type": "number",
-            "description": "业务状态码",
-            "example": 0
-          },
-          "message": {
+          "name": {
             "type": "string",
-            "description": "提示信息",
-            "example": "操作成功"
+            "description": "权限名称",
+            "example": "user:create"
           },
-          "data": {
-            "type": "object",
-            "description": "数据体",
-            "properties": {}
-          },
-          "timestamp": {
-            "type": "number",
-            "description": "时间戳",
-            "example": 1620000000000
-          },
-          "path": {
+          "description": {
             "type": "string",
-            "description": "路径",
-            "example": "/api/v1/article"
+            "description": "权限描述",
+            "example": "创建用户"
           }
         },
         "required": [
-          "code",
-          "message",
-          "timestamp",
-          "path"
+          "name",
+          "description"
         ]
       },
-      "PaginatedResponseDto": {
+      "Permission": {
         "type": "object",
-        "properties": {
-          "code": {
-            "type": "number",
-            "description": "业务状态码",
-            "example": 0
-          },
-          "message": {
-            "type": "string",
-            "description": "提示信息",
-            "example": "操作成功"
-          },
-          "data": {
-            "type": "object",
-            "description": "数据列表",
-            "properties": {}
-          }
-        },
-        "required": [
-          "code",
-          "message",
-          "data"
-        ]
+        "properties": {}
       },
-      "ListResponseDto": {
+      "UpdatePermissionDto": {
         "type": "object",
         "properties": {
-          "code": {
-            "type": "number",
-            "description": "业务状态码",
-            "example": 0
-          },
-          "message": {
+          "name": {
             "type": "string",
-            "description": "提示信息",
-            "example": "操作成功"
+            "description": "权限名称",
+            "example": "user:create"
           },
-          "data": {
-            "description": "数据列表",
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          "timestamp": {
-            "type": "number",
-            "description": "时间戳",
-            "example": 1620000000000
+          "description": {
+            "type": "string",
+            "description": "权限描述",
+            "example": "创建用户"
           }
-        },
-        "required": [
-          "code",
-          "message",
-          "data",
-          "timestamp"
-        ]
+        }
       },
       "CreateRoleDto": {
         "type": "object",
@@ -31903,6 +31978,10 @@
           "description"
         ]
       },
+      "Role": {
+        "type": "object",
+        "properties": {}
+      },
       "UpdateRoleDto": {
         "type": "object",
         "properties": {
@@ -31935,6 +32014,26 @@
           }
         }
       },
+      "AssignPermissionsDto": {
+        "type": "object",
+        "properties": {
+          "permissionIds": {
+            "description": "权限ID列表",
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "example": [
+              1,
+              2,
+              3
+            ]
+          }
+        },
+        "required": [
+          "permissionIds"
+        ]
+      },
       "CreateConfigDto": {
         "type": "object",
         "properties": {}
@@ -31943,7 +32042,7 @@
         "type": "object",
         "properties": {
           "account": {
-            "description": "用户名",
+            "description": "用户名或邮箱",
             "oneOf": [
               {
                 "type": "string",
@@ -32171,547 +32270,6 @@
           }
         }
       },
-      "CreateArticleDto": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "文章标题",
-            "example": "这是一篇文章"
-          },
-          "content": {
-            "type": "string",
-            "description": "文章内容",
-            "example": "这是文章的内容..."
-          },
-          "summary": {
-            "type": "string",
-            "description": "文章摘要",
-            "example": "这是文章的摘要..."
-          },
-          "images": {
-            "type": "string",
-            "description": "文章图片",
-            "example": "https://example.com/image.jpg"
-          },
-          "cover": {
-            "type": "string",
-            "description": "封面图片",
-            "example": "https://example.com/image.jpg"
-          },
-          "sort": {
-            "type": "number",
-            "description": "排序",
-            "default": 0,
-            "example": 0
-          },
-          "categoryId": {
-            "type": "number",
-            "description": "分类ID",
-            "example": 1
-          },
-          "tagNames": {
-            "description": "标签名称数组（不存在的标签会自动创建）",
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "example": [
-              "JavaScript",
-              "Vue.js",
-              "前端开发"
-            ]
-          },
-          "tagIds": {
-            "description": "标签ID数组（与tagNames二选一）",
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "example": [
-              1,
-              2,
-              3
-            ]
-          },
-          "status": {
-            "type": "string",
-            "description": "文章状态",
-            "enum": [
-              "DRAFT",
-              "PUBLISHED"
-            ],
-            "default": "DRAFT",
-            "example": "DRAFT"
-          },
-          "requireLogin": {
-            "type": "boolean",
-            "description": "是否需要登录后才能查看",
-            "default": false
-          },
-          "requireFollow": {
-            "type": "boolean",
-            "description": "是否仅关注后可查看",
-            "default": false
-          },
-          "requirePayment": {
-            "type": "boolean",
-            "description": "是否需要支付后才能查看",
-            "default": false
-          },
-          "requireMembership": {
-            "type": "boolean",
-            "description": "是否需要会员",
-            "default": false
-          },
-          "listRequireLogin": {
-            "type": "boolean",
-            "description": "是否未登录显示",
-            "default": false
-          },
-          "viewPrice": {
-            "type": "number",
-            "description": "查看所需支付金额",
-            "default": 0
-          },
-          "type": {
-            "type": "string",
-            "description": "文章类型",
-            "enum": [
-              "image",
-              "mixed"
-            ],
-            "default": "mixed"
-          },
-          "downloads": {
-            "description": "下载资源列表",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DownloadDto"
-            }
-          }
-        },
-        "required": [
-          "title",
-          "content",
-          "sort",
-          "categoryId",
-          "requireLogin",
-          "requireFollow",
-          "requirePayment",
-          "requireMembership",
-          "listRequireLogin",
-          "viewPrice",
-          "type"
-        ]
-      },
-      "UpdateArticleDto": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "文章标题",
-            "example": "这是一篇文章"
-          },
-          "content": {
-            "type": "string",
-            "description": "文章内容",
-            "example": "这是文章的内容..."
-          },
-          "summary": {
-            "type": "string",
-            "description": "文章摘要",
-            "example": "这是文章的摘要..."
-          },
-          "images": {
-            "type": "string",
-            "description": "文章图片",
-            "example": "https://example.com/image.jpg"
-          },
-          "cover": {
-            "type": "string",
-            "description": "封面图片",
-            "example": "https://example.com/image.jpg"
-          },
-          "sort": {
-            "type": "number",
-            "description": "排序",
-            "default": 0,
-            "example": 0
-          },
-          "categoryId": {
-            "type": "number",
-            "description": "分类ID",
-            "example": 1
-          },
-          "tagNames": {
-            "description": "标签名称数组（不存在的标签会自动创建）",
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "example": [
-              "JavaScript",
-              "Vue.js",
-              "前端开发"
-            ]
-          },
-          "tagIds": {
-            "description": "标签ID数组（与tagNames二选一）",
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "example": [
-              1,
-              2,
-              3
-            ]
-          },
-          "status": {
-            "type": "string",
-            "description": "文章状态",
-            "enum": [
-              "DRAFT",
-              "PUBLISHED"
-            ],
-            "default": "DRAFT",
-            "example": "DRAFT"
-          },
-          "requireLogin": {
-            "type": "boolean",
-            "description": "是否需要登录后才能查看",
-            "default": false
-          },
-          "requireFollow": {
-            "type": "boolean",
-            "description": "是否仅关注后可查看",
-            "default": false
-          },
-          "requirePayment": {
-            "type": "boolean",
-            "description": "是否需要支付后才能查看",
-            "default": false
-          },
-          "requireMembership": {
-            "type": "boolean",
-            "description": "是否需要会员才能查看",
-            "default": false
-          },
-          "listRequireLogin": {
-            "type": "boolean",
-            "description": "是否未登录显示",
-            "default": false
-          },
-          "viewPrice": {
-            "type": "number",
-            "description": "查看所需支付金额",
-            "default": 0
-          },
-          "type": {
-            "type": "string",
-            "description": "文章类型",
-            "enum": [
-              "image",
-              "mixed"
-            ],
-            "default": "mixed"
-          },
-          "downloads": {
-            "description": "下载资源列表",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DownloadDto"
-            }
-          }
-        }
-      },
-      "CreateCommentDto": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "description": "评论内容",
-            "example": "这是一条评论"
-          },
-          "articleId": {
-            "type": "number",
-            "description": "文章ID",
-            "example": 1
-          },
-          "parentId": {
-            "type": "number",
-            "description": "父评论ID",
-            "example": 1
-          },
-          "images": {
-            "description": "评论图片列表（最多9张）",
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "example": [
-              "https://example.com/image1.jpg",
-              "https://example.com/image2.jpg"
-            ]
-          }
-        },
-        "required": [
-          "content",
-          "articleId"
-        ]
-      },
-      "UpdateCommentDto": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "description": "评论内容",
-            "example": "这是一条更新的评论"
-          },
-          "images": {
-            "description": "评论图片列表（最多9张）",
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "example": [
-              "https://example.com/image1.jpg",
-              "https://example.com/image2.jpg"
-            ]
-          }
-        }
-      },
-      "CreateTagDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "标签名称",
-            "example": "JavaScript"
-          },
-          "description": {
-            "type": "string",
-            "description": "标签描述",
-            "example": "JavaScript相关文章"
-          },
-          "avatar": {
-            "type": "string",
-            "description": "标签头像",
-            "example": "https://example.com/avatar.jpg"
-          },
-          "background": {
-            "type": "string",
-            "description": "标签背景",
-            "example": "https://example.com/background.jpg"
-          },
-          "cover": {
-            "type": "string",
-            "description": "标签封面",
-            "example": "https://example.com/cover.jpg"
-          },
-          "sort": {
-            "type": "number",
-            "description": "排序",
-            "default": 0,
-            "example": 0
-          }
-        },
-        "required": [
-          "name",
-          "avatar",
-          "background",
-          "cover",
-          "sort"
-        ]
-      },
-      "UpdateTagDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "标签名称",
-            "example": "JavaScript"
-          },
-          "description": {
-            "type": "string",
-            "description": "标签描述",
-            "example": "JavaScript相关文章"
-          },
-          "avatar": {
-            "type": "string",
-            "description": "标签头像",
-            "example": "https://example.com/avatar.jpg"
-          },
-          "background": {
-            "type": "string",
-            "description": "标签背景",
-            "example": "https://example.com/background.jpg"
-          },
-          "cover": {
-            "type": "string",
-            "description": "标签封面",
-            "example": "https://example.com/cover.jpg"
-          },
-          "sort": {
-            "type": "number",
-            "description": "排序",
-            "default": 0,
-            "example": 0
-          }
-        }
-      },
-      "CreateCategoryDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "分类名称",
-            "example": "技术"
-          },
-          "description": {
-            "type": "string",
-            "description": "分类描述",
-            "example": "技术相关文章"
-          },
-          "sort": {
-            "type": "number",
-            "description": "排序",
-            "default": 0,
-            "example": 0
-          },
-          "parentId": {
-            "type": "number",
-            "description": "父分类ID",
-            "example": 1
-          },
-          "link": {
-            "type": "string",
-            "description": "链接",
-            "example": "https://example.com"
-          },
-          "avatar": {
-            "type": "string",
-            "description": "分类头像",
-            "example": "https://example.com/avatar.jpg"
-          },
-          "background": {
-            "type": "string",
-            "description": "分类背景",
-            "example": "https://example.com/background.jpg"
-          },
-          "cover": {
-            "type": "string",
-            "description": "分类封面",
-            "example": "https://example.com/cover.jpg"
-          },
-          "status": {
-            "type": "string",
-            "description": "分类状态",
-            "default": "ENABLED",
-            "example": "ENABLED"
-          }
-        },
-        "required": [
-          "name",
-          "sort",
-          "status"
-        ]
-      },
-      "UpdateCategoryDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "分类名称",
-            "example": "技术"
-          },
-          "description": {
-            "type": "string",
-            "description": "分类描述",
-            "example": "技术相关文章"
-          },
-          "sort": {
-            "type": "number",
-            "description": "排序",
-            "default": 0,
-            "example": 0
-          },
-          "parentId": {
-            "type": "number",
-            "description": "父分类ID",
-            "example": 1
-          },
-          "link": {
-            "type": "string",
-            "description": "自定义链接",
-            "example": "https://example.com"
-          },
-          "avatar": {
-            "type": "string",
-            "description": "分类头像",
-            "example": "https://example.com/avatar.jpg"
-          },
-          "background": {
-            "type": "string",
-            "description": "分类背景",
-            "example": "https://example.com/background.jpg"
-          },
-          "cover": {
-            "type": "string",
-            "description": "分类封面",
-            "example": "https://example.com/cover.jpg"
-          },
-          "status": {
-            "type": "string",
-            "description": "分类状态",
-            "default": "ENABLED",
-            "example": "ENABLED"
-          }
-        }
-      },
-      "CreatePermissionDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "权限名称",
-            "example": "user:create"
-          },
-          "description": {
-            "type": "string",
-            "description": "权限描述",
-            "example": "创建用户"
-          }
-        },
-        "required": [
-          "name",
-          "description"
-        ]
-      },
-      "Permission": {
-        "type": "object",
-        "properties": {}
-      },
-      "UpdatePermissionDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "权限名称",
-            "example": "user:create"
-          },
-          "description": {
-            "type": "string",
-            "description": "权限描述",
-            "example": "创建用户"
-          }
-        }
-      },
-      "Role": {
-        "type": "object",
-        "properties": {}
-      },
       "UserCommissionConfigDto": {
         "type": "object",
         "properties": {
@@ -32779,76 +32337,6 @@
           "type"
         ]
       },
-      "ArticleLikeDto": {
-        "type": "object",
-        "properties": {
-          "reactionType": {
-            "type": "string",
-            "description": "表情类型",
-            "enum": [
-              "like",
-              "love",
-              "haha",
-              "wow",
-              "sad",
-              "angry",
-              "dislike"
-            ],
-            "default": "like",
-            "example": "like"
-          }
-        },
-        "required": [
-          "reactionType"
-        ]
-      },
-      "CreateInviteDto": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "description": "邀请类型",
-            "enum": [
-              "GENERAL",
-              "VIP"
-            ],
-            "default": "GENERAL"
-          },
-          "commissionRate": {
-            "type": "number",
-            "description": "邀请分成比例（0-1之间）",
-            "example": 0.05
-          },
-          "expiredAt": {
-            "type": "string",
-            "description": "过期时间"
-          },
-          "remark": {
-            "type": "string",
-            "description": "备注"
-          }
-        },
-        "required": [
-          "type"
-        ]
-      },
-      "UseInviteDto": {
-        "type": "object",
-        "properties": {
-          "inviteCode": {
-            "type": "string",
-            "description": "邀请码",
-            "example": "INV123456"
-          }
-        },
-        "required": [
-          "inviteCode"
-        ]
-      },
-      "Upload": {
-        "type": "object",
-        "properties": {}
-      },
       "SendMailDto": {
         "type": "object",
         "properties": {
@@ -32859,342 +32347,13 @@
           },
           "type": {
             "type": "string",
-            "description": "类型",
+            "description": "验证码类型",
             "default": "verification",
             "example": "verification"
           }
         },
         "required": [
           "email"
-        ]
-      },
-      "CreateMessageDto": {
-        "type": "object",
-        "properties": {
-          "senderId": {
-            "type": "object",
-            "description": "发送者ID",
-            "properties": {},
-            "example": 1
-          },
-          "receiverId": {
-            "type": "number",
-            "description": "接收者ID（单发）",
-            "example": 2
-          },
-          "receiverIds": {
-            "description": "接收者ID列表（批量）",
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "example": [
-              2,
-              3,
-              4
-            ]
-          },
-          "content": {
-            "type": "string",
-            "description": "消息内容",
-            "example": "这是一条消息"
-          },
-          "title": {
-            "type": "string",
-            "description": "消息标题",
-            "example": "消息标题"
-          },
-          "type": {
-            "type": "string",
-            "description": "消息类型",
-            "enum": [
-              "private",
-              "system",
-              "notification"
-            ],
-            "default": "private"
-          },
-          "isBroadcast": {
-            "type": "boolean",
-            "description": "是否为广播消息",
-            "default": false
-          },
-          "metadata": {
-            "type": "object",
-            "description": "消息元数据",
-            "properties": {}
-          }
-        },
-        "required": [
-          "content",
-          "type",
-          "isBroadcast"
-        ]
-      },
-      "UpdateMessageDto": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "description": "消息内容",
-            "example": "更新的消息内容"
-          },
-          "title": {
-            "type": "string",
-            "description": "消息标题",
-            "example": "更新的消息标题"
-          },
-          "isRead": {
-            "type": "boolean",
-            "description": "是否已读"
-          },
-          "type": {
-            "type": "string",
-            "description": "消息类型",
-            "enum": [
-              "private",
-              "system",
-              "notification"
-            ]
-          },
-          "isBroadcast": {
-            "type": "boolean",
-            "description": "是否为广播消息"
-          },
-          "metadata": {
-            "type": "object",
-            "description": "消息元数据",
-            "properties": {}
-          }
-        }
-      },
-      "CreateArticleOrderDto": {
-        "type": "object",
-        "properties": {
-          "articleId": {
-            "type": "number",
-            "description": "文章ID"
-          },
-          "remark": {
-            "type": "string",
-            "description": "备注"
-          }
-        },
-        "required": [
-          "articleId"
-        ]
-      },
-      "CreateMembershipOrderDto": {
-        "type": "object",
-        "properties": {
-          "plan": {
-            "type": "string",
-            "description": "套餐：1m/3m/6m/12m/lifetime（可选）"
-          },
-          "duration": {
-            "type": "number",
-            "description": "充值时长（月）"
-          },
-          "remark": {
-            "type": "string",
-            "description": "备注"
-          }
-        }
-      },
-      "CreatePaymentDto": {
-        "type": "object",
-        "properties": {
-          "orderId": {
-            "type": "number",
-            "description": "订单ID"
-          },
-          "paymentMethod": {
-            "type": "string",
-            "description": "支付方式",
-            "enum": [
-              "ALIPAY",
-              "WECHAT",
-              "BALANCE",
-              "EPAY"
-            ]
-          },
-          "returnUrl": {
-            "type": "string",
-            "description": "支付完成后的跳转地址"
-          },
-          "type": {
-            "type": "string",
-            "description": "payment方式为EPAY时这里填alipay，wxpay，qqpay 中的一个",
-            "enum": [
-              "wxpay",
-              "alipay",
-              "usdt"
-            ]
-          }
-        },
-        "required": [
-          "orderId",
-          "paymentMethod"
-        ]
-      },
-      "AlipayNotifyDto": {
-        "type": "object",
-        "properties": {
-          "trade_no": {
-            "type": "string",
-            "description": "支付宝交易号"
-          },
-          "out_trade_no": {
-            "type": "string",
-            "description": "商户订单号"
-          },
-          "trade_status": {
-            "type": "string",
-            "description": "交易状态"
-          },
-          "total_amount": {
-            "type": "string",
-            "description": "交易金额"
-          },
-          "buyer_id": {
-            "type": "string",
-            "description": "买家支付宝用户号"
-          },
-          "sign": {
-            "type": "string",
-            "description": "签名"
-          },
-          "sign_type": {
-            "type": "string",
-            "description": "签名类型"
-          }
-        },
-        "required": [
-          "trade_no",
-          "out_trade_no",
-          "trade_status",
-          "total_amount",
-          "buyer_id",
-          "sign",
-          "sign_type"
-        ]
-      },
-      "WechatNotifyDto": {
-        "type": "object",
-        "properties": {
-          "transaction_id": {
-            "type": "string",
-            "description": "微信支付订单号"
-          },
-          "out_trade_no": {
-            "type": "string",
-            "description": "商户订单号"
-          },
-          "trade_state": {
-            "type": "string",
-            "description": "交易状态"
-          },
-          "amount": {
-            "type": "string",
-            "description": "交易金额"
-          },
-          "openid": {
-            "type": "string",
-            "description": "用户标识"
-          },
-          "sign": {
-            "type": "string",
-            "description": "签名"
-          }
-        },
-        "required": [
-          "transaction_id",
-          "out_trade_no",
-          "trade_state",
-          "amount",
-          "openid",
-          "sign"
-        ]
-      },
-      "CreateBannerDto": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "imageUrl": {
-            "type": "string"
-          },
-          "linkUrl": {
-            "type": "string"
-          },
-          "sortOrder": {
-            "type": "integer"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "active",
-              "inactive"
-            ]
-          }
-        },
-        "required": [
-          "title",
-          "description",
-          "imageUrl",
-          "linkUrl",
-          "status"
-        ]
-      },
-      "UpdateBannerDto": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "imageUrl": {
-            "type": "string"
-          },
-          "linkUrl": {
-            "type": "string"
-          },
-          "sortOrder": {
-            "type": "integer"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "active",
-              "inactive"
-            ]
-          }
-        }
-      },
-      "AssignPermissionsDto": {
-        "type": "object",
-        "properties": {
-          "permissionIds": {
-            "description": "权限ID列表",
-            "type": "array",
-            "items": {
-              "type": "number"
-            },
-            "example": [
-              1,
-              2,
-              3
-            ]
-          }
-        },
-        "required": [
-          "permissionIds"
         ]
       },
       "ChangePasswordDto": {
@@ -33379,6 +32538,511 @@
           "url"
         ]
       },
+      "CreateArticleDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "文章标题",
+            "example": "这是一篇文章"
+          },
+          "content": {
+            "type": "string",
+            "description": "文章内容",
+            "example": "这是文章的内容..."
+          },
+          "summary": {
+            "type": "string",
+            "description": "文章摘要",
+            "example": "这是文章的摘要..."
+          },
+          "images": {
+            "type": "string",
+            "description": "文章图片",
+            "example": "https://example.com/image.jpg"
+          },
+          "cover": {
+            "type": "string",
+            "description": "封面图片",
+            "example": "https://example.com/image.jpg"
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序",
+            "default": 0,
+            "example": 0
+          },
+          "categoryId": {
+            "type": "number",
+            "description": "分类ID",
+            "example": 1
+          },
+          "tagNames": {
+            "description": "标签名称数组（不存在的标签会自动创建）",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "JavaScript",
+              "Vue.js",
+              "前端开发"
+            ]
+          },
+          "tagIds": {
+            "description": "标签ID数组（与tagNames二选一）",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              1,
+              2,
+              3
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "文章状态",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED"
+            ],
+            "default": "DRAFT",
+            "example": "DRAFT"
+          },
+          "requireLogin": {
+            "type": "boolean",
+            "description": "是否需要登录后才能查看",
+            "default": false
+          },
+          "requireFollow": {
+            "type": "boolean",
+            "description": "是否仅关注后可查看",
+            "default": false
+          },
+          "requirePayment": {
+            "type": "boolean",
+            "description": "是否需要支付后才能查看",
+            "default": false
+          },
+          "requireMembership": {
+            "type": "boolean",
+            "description": "是否需要会员才能查看",
+            "default": false
+          },
+          "listRequireLogin": {
+            "type": "boolean",
+            "description": "仅登录后才在列表显示",
+            "default": false
+          },
+          "viewPrice": {
+            "type": "number",
+            "description": "查看所需支付金额",
+            "default": 0
+          },
+          "type": {
+            "type": "string",
+            "description": "文章类型",
+            "enum": [
+              "image",
+              "mixed"
+            ],
+            "default": "mixed"
+          },
+          "downloads": {
+            "description": "下载资源列表",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DownloadDto"
+            }
+          }
+        },
+        "required": [
+          "title",
+          "content",
+          "sort",
+          "categoryId",
+          "requireLogin",
+          "requireFollow",
+          "requirePayment",
+          "requireMembership",
+          "listRequireLogin",
+          "viewPrice",
+          "type"
+        ]
+      },
+      "UpdateArticleDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "文章标题",
+            "example": "这是一篇文章"
+          },
+          "content": {
+            "type": "string",
+            "description": "文章内容",
+            "example": "这是文章的内容..."
+          },
+          "summary": {
+            "type": "string",
+            "description": "文章摘要",
+            "example": "这是文章的摘要..."
+          },
+          "images": {
+            "type": "string",
+            "description": "文章图片",
+            "example": "https://example.com/image.jpg"
+          },
+          "cover": {
+            "type": "string",
+            "description": "封面图片",
+            "example": "https://example.com/image.jpg"
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序",
+            "default": 0,
+            "example": 0
+          },
+          "categoryId": {
+            "type": "number",
+            "description": "分类ID",
+            "example": 1
+          },
+          "tagNames": {
+            "description": "标签名称数组（不存在的标签会自动创建）",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "JavaScript",
+              "Vue.js",
+              "前端开发"
+            ]
+          },
+          "tagIds": {
+            "description": "标签ID数组（与tagNames二选一）",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              1,
+              2,
+              3
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "文章状态",
+            "enum": [
+              "DRAFT",
+              "PUBLISHED"
+            ],
+            "default": "DRAFT",
+            "example": "DRAFT"
+          },
+          "requireLogin": {
+            "type": "boolean",
+            "description": "是否需要登录后才能查看",
+            "default": false
+          },
+          "requireFollow": {
+            "type": "boolean",
+            "description": "是否仅关注后可查看",
+            "default": false
+          },
+          "requirePayment": {
+            "type": "boolean",
+            "description": "是否需要支付后才能查看",
+            "default": false
+          },
+          "requireMembership": {
+            "type": "boolean",
+            "description": "是否需要会员才能查看",
+            "default": false
+          },
+          "listRequireLogin": {
+            "type": "boolean",
+            "description": "仅登录后才在列表显示",
+            "default": false
+          },
+          "viewPrice": {
+            "type": "number",
+            "description": "查看所需支付金额",
+            "default": 0
+          },
+          "type": {
+            "type": "string",
+            "description": "文章类型",
+            "enum": [
+              "image",
+              "mixed"
+            ],
+            "default": "mixed"
+          },
+          "downloads": {
+            "description": "下载资源列表",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DownloadDto"
+            }
+          }
+        }
+      },
+      "ArticleLikeDto": {
+        "type": "object",
+        "properties": {
+          "reactionType": {
+            "type": "string",
+            "description": "表情类型",
+            "enum": [
+              "like",
+              "love",
+              "haha",
+              "wow",
+              "sad",
+              "angry",
+              "dislike"
+            ],
+            "default": "like",
+            "example": "like"
+          }
+        },
+        "required": [
+          "reactionType"
+        ]
+      },
+      "RecordBrowseHistoryDto": {
+        "type": "object",
+        "properties": {
+          "progress": {
+            "type": "number",
+            "description": "浏览进度（百分比）",
+            "example": 50
+          },
+          "duration": {
+            "type": "number",
+            "description": "停留时长（秒）",
+            "example": 120
+          }
+        }
+      },
+      "CreateTagDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "标签名称",
+            "example": "JavaScript"
+          },
+          "description": {
+            "type": "string",
+            "description": "标签描述",
+            "example": "JavaScript相关文章"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "标签头像",
+            "example": "https://example.com/avatar.jpg"
+          },
+          "background": {
+            "type": "string",
+            "description": "标签背景",
+            "example": "https://example.com/background.jpg"
+          },
+          "cover": {
+            "type": "string",
+            "description": "标签封面",
+            "example": "https://example.com/cover.jpg"
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序",
+            "default": 0,
+            "example": 0
+          }
+        },
+        "required": [
+          "name",
+          "avatar",
+          "background",
+          "cover",
+          "sort"
+        ]
+      },
+      "UpdateTagDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "标签名称",
+            "example": "JavaScript"
+          },
+          "description": {
+            "type": "string",
+            "description": "标签描述",
+            "example": "JavaScript相关文章"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "标签头像",
+            "example": "https://example.com/avatar.jpg"
+          },
+          "background": {
+            "type": "string",
+            "description": "标签背景",
+            "example": "https://example.com/background.jpg"
+          },
+          "cover": {
+            "type": "string",
+            "description": "标签封面",
+            "example": "https://example.com/cover.jpg"
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序",
+            "default": 0,
+            "example": 0
+          }
+        }
+      },
+      "CreateArticleOrderDto": {
+        "type": "object",
+        "properties": {
+          "articleId": {
+            "type": "number",
+            "description": "文章ID"
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注"
+          }
+        },
+        "required": [
+          "articleId"
+        ]
+      },
+      "CreateMembershipOrderDto": {
+        "type": "object",
+        "properties": {
+          "plan": {
+            "type": "string",
+            "description": "套餐：1m/3m/6m/12m/lifetime（可选）"
+          },
+          "duration": {
+            "type": "number",
+            "description": "充值时长（月）（当未选择套餐时必填）"
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注"
+          }
+        }
+      },
+      "CreateMessageDto": {
+        "type": "object",
+        "properties": {
+          "senderId": {
+            "type": "object",
+            "description": "发送者ID",
+            "properties": {},
+            "example": 1
+          },
+          "receiverId": {
+            "type": "number",
+            "description": "接收者ID（单发）",
+            "example": 2
+          },
+          "receiverIds": {
+            "description": "接收者ID列表（批量）",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              2,
+              3,
+              4
+            ]
+          },
+          "content": {
+            "type": "string",
+            "description": "消息内容",
+            "example": "这是一条消息"
+          },
+          "title": {
+            "type": "string",
+            "description": "消息标题",
+            "example": "消息标题"
+          },
+          "type": {
+            "type": "string",
+            "description": "消息类型",
+            "enum": [
+              "private",
+              "system",
+              "notification"
+            ],
+            "default": "private"
+          },
+          "isBroadcast": {
+            "type": "boolean",
+            "description": "是否为广播消息",
+            "default": false
+          },
+          "metadata": {
+            "type": "object",
+            "description": "消息元数据",
+            "properties": {}
+          }
+        },
+        "required": [
+          "content",
+          "type",
+          "isBroadcast"
+        ]
+      },
+      "UpdateMessageDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "消息内容",
+            "example": "更新的消息内容"
+          },
+          "title": {
+            "type": "string",
+            "description": "消息标题",
+            "example": "更新的消息标题"
+          },
+          "isRead": {
+            "type": "boolean",
+            "description": "是否已读"
+          },
+          "type": {
+            "type": "string",
+            "description": "消息类型",
+            "enum": [
+              "private",
+              "system",
+              "notification"
+            ]
+          },
+          "isBroadcast": {
+            "type": "boolean",
+            "description": "是否为广播消息"
+          },
+          "metadata": {
+            "type": "object",
+            "description": "消息元数据",
+            "properties": {}
+          }
+        }
+      },
       "MarkAllReadDto": {
         "type": "object",
         "properties": {
@@ -33426,6 +33090,678 @@
           "messageIds",
           "action"
         ]
+      },
+      "CreateFavoriteDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "收藏夹名称",
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "description": "收藏夹描述"
+          },
+          "cover": {
+            "type": "string",
+            "description": "封面图片"
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "是否公开",
+            "default": false
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序",
+            "default": 0
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateFavoriteDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "收藏夹名称",
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "description": "收藏夹描述"
+          },
+          "cover": {
+            "type": "string",
+            "description": "封面图片"
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "是否公开",
+            "default": false
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序",
+            "default": 0
+          }
+        }
+      },
+      "AddToFavoriteDto": {
+        "type": "object",
+        "properties": {
+          "favoriteId": {
+            "type": "number",
+            "description": "收藏夹ID"
+          },
+          "articleId": {
+            "type": "number",
+            "description": "文章ID"
+          },
+          "note": {
+            "type": "string",
+            "description": "备注"
+          }
+        },
+        "required": [
+          "favoriteId",
+          "articleId"
+        ]
+      },
+      "AddPointsDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "积分数量"
+          },
+          "source": {
+            "type": "string",
+            "description": "积分来源"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述"
+          },
+          "relatedType": {
+            "type": "string",
+            "description": "关联业务类型"
+          },
+          "relatedId": {
+            "type": "number",
+            "description": "关联业务ID"
+          },
+          "validDays": {
+            "type": "number",
+            "description": "有效天数（0为永久）",
+            "default": 0
+          }
+        },
+        "required": [
+          "amount",
+          "source"
+        ]
+      },
+      "SpendPointsDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "积分数量"
+          },
+          "source": {
+            "type": "string",
+            "description": "用途"
+          },
+          "description": {
+            "type": "string",
+            "description": "描述"
+          },
+          "relatedType": {
+            "type": "string",
+            "description": "关联业务类型"
+          },
+          "relatedId": {
+            "type": "number",
+            "description": "关联业务ID"
+          }
+        },
+        "required": [
+          "amount",
+          "source"
+        ]
+      },
+      "CreatePointsActivityDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "活动代码"
+          },
+          "name": {
+            "type": "string",
+            "description": "活动名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "活动描述"
+          },
+          "type": {
+            "type": "string",
+            "description": "活动类型",
+            "enum": [
+              "INSTANT",
+              "DAILY",
+              "WEEKLY",
+              "MONTHLY",
+              "ONCE"
+            ],
+            "example": "INSTANT"
+          },
+          "rewardPoints": {
+            "type": "number",
+            "description": "奖励积分"
+          },
+          "targetCount": {
+            "type": "number",
+            "description": "目标数量",
+            "default": 1
+          },
+          "dailyLimit": {
+            "type": "number",
+            "description": "每日限制次数（0为不限制）",
+            "default": 0
+          },
+          "totalLimit": {
+            "type": "number",
+            "description": "总限制次数（0为不限制）",
+            "default": 0
+          },
+          "validDays": {
+            "type": "number",
+            "description": "积分有效期（天数，0为永久）",
+            "default": 0
+          },
+          "icon": {
+            "type": "string",
+            "description": "活动图标"
+          },
+          "link": {
+            "type": "string",
+            "description": "跳转链接"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "是否启用",
+            "default": true
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序",
+            "default": 0
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "type",
+          "rewardPoints"
+        ]
+      },
+      "UpdatePointsActivityDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "活动代码"
+          },
+          "name": {
+            "type": "string",
+            "description": "活动名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "活动描述"
+          },
+          "type": {
+            "type": "string",
+            "description": "活动类型",
+            "enum": [
+              "INSTANT",
+              "DAILY",
+              "WEEKLY",
+              "MONTHLY",
+              "ONCE"
+            ],
+            "example": "INSTANT"
+          },
+          "rewardPoints": {
+            "type": "number",
+            "description": "奖励积分"
+          },
+          "targetCount": {
+            "type": "number",
+            "description": "目标数量",
+            "default": 1
+          },
+          "dailyLimit": {
+            "type": "number",
+            "description": "每日限制次数（0为不限制）",
+            "default": 0
+          },
+          "totalLimit": {
+            "type": "number",
+            "description": "总限制次数（0为不限制）",
+            "default": 0
+          },
+          "validDays": {
+            "type": "number",
+            "description": "积分有效期（天数，0为永久）",
+            "default": 0
+          },
+          "icon": {
+            "type": "string",
+            "description": "活动图标"
+          },
+          "link": {
+            "type": "string",
+            "description": "跳转链接"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "是否启用",
+            "default": true
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序",
+            "default": 0
+          }
+        }
+      },
+      "CreateCommentDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "评论内容",
+            "example": "这是一条评论"
+          },
+          "articleId": {
+            "type": "number",
+            "description": "文章ID",
+            "example": 1
+          },
+          "parentId": {
+            "type": "number",
+            "description": "父评论ID",
+            "example": 1
+          },
+          "images": {
+            "description": "评论图片列表（最多9张）",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "https://example.com/image1.jpg",
+              "https://example.com/image2.jpg"
+            ]
+          }
+        },
+        "required": [
+          "content",
+          "articleId"
+        ]
+      },
+      "UpdateCommentDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "评论内容",
+            "example": "这是一条更新的评论"
+          },
+          "images": {
+            "description": "评论图片列表（最多9张）",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "https://example.com/image1.jpg",
+              "https://example.com/image2.jpg"
+            ]
+          }
+        }
+      },
+      "CreateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "分类名称",
+            "example": "技术"
+          },
+          "description": {
+            "type": "string",
+            "description": "分类描述",
+            "example": "技术相关文章"
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序",
+            "default": 0,
+            "example": 0
+          },
+          "parentId": {
+            "type": "number",
+            "description": "父分类ID",
+            "example": 1
+          },
+          "link": {
+            "type": "string",
+            "description": "自定义链接",
+            "example": "https://example.com"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "分类头像",
+            "example": "https://example.com/avatar.jpg"
+          },
+          "background": {
+            "type": "string",
+            "description": "分类背景",
+            "example": "https://example.com/background.jpg"
+          },
+          "cover": {
+            "type": "string",
+            "description": "分类封面",
+            "example": "https://example.com/cover.jpg"
+          },
+          "status": {
+            "type": "string",
+            "description": "分类状态",
+            "default": "ENABLED",
+            "example": "ENABLED"
+          }
+        },
+        "required": [
+          "name",
+          "sort",
+          "status"
+        ]
+      },
+      "UpdateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "分类名称",
+            "example": "技术"
+          },
+          "description": {
+            "type": "string",
+            "description": "分类描述",
+            "example": "技术相关文章"
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序",
+            "default": 0,
+            "example": 0
+          },
+          "parentId": {
+            "type": "number",
+            "description": "父分类ID",
+            "example": 1
+          },
+          "link": {
+            "type": "string",
+            "description": "自定义链接",
+            "example": "https://example.com"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "分类头像",
+            "example": "https://example.com/avatar.jpg"
+          },
+          "background": {
+            "type": "string",
+            "description": "分类背景",
+            "example": "https://example.com/background.jpg"
+          },
+          "cover": {
+            "type": "string",
+            "description": "分类封面",
+            "example": "https://example.com/cover.jpg"
+          },
+          "status": {
+            "type": "string",
+            "description": "分类状态",
+            "default": "ENABLED",
+            "example": "ENABLED"
+          }
+        }
+      },
+      "CreateInviteDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "邀请类型",
+            "enum": [
+              "GENERAL",
+              "VIP"
+            ],
+            "default": "GENERAL"
+          },
+          "commissionRate": {
+            "type": "number",
+            "description": "邀请分成比例（0-1之间）",
+            "example": 0.05
+          },
+          "expiredAt": {
+            "type": "string",
+            "description": "过期时间"
+          },
+          "remark": {
+            "type": "string",
+            "description": "备注"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "UseInviteDto": {
+        "type": "object",
+        "properties": {
+          "inviteCode": {
+            "type": "string",
+            "description": "邀请码",
+            "example": "INV123456"
+          }
+        },
+        "required": [
+          "inviteCode"
+        ]
+      },
+      "CreatePaymentDto": {
+        "type": "object",
+        "properties": {
+          "orderId": {
+            "type": "number",
+            "description": "订单ID"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "description": "支付方式",
+            "enum": [
+              "ALIPAY",
+              "WECHAT",
+              "BALANCE",
+              "EPAY"
+            ]
+          },
+          "returnUrl": {
+            "type": "string",
+            "description": "支付完成后的跳转地址"
+          },
+          "type": {
+            "type": "string",
+            "description": "支付类型（EPAY支付方式时必传）",
+            "enum": [
+              "wxpay",
+              "alipay",
+              "usdt"
+            ]
+          }
+        },
+        "required": [
+          "orderId",
+          "paymentMethod"
+        ]
+      },
+      "AlipayNotifyDto": {
+        "type": "object",
+        "properties": {
+          "trade_no": {
+            "type": "string",
+            "description": "支付宝交易号"
+          },
+          "out_trade_no": {
+            "type": "string",
+            "description": "商户订单号"
+          },
+          "trade_status": {
+            "type": "string",
+            "description": "交易状态"
+          },
+          "total_amount": {
+            "type": "string",
+            "description": "交易金额"
+          },
+          "buyer_id": {
+            "type": "string",
+            "description": "买家支付宝用户号"
+          },
+          "sign": {
+            "type": "string",
+            "description": "签名"
+          },
+          "sign_type": {
+            "type": "string",
+            "description": "签名类型"
+          }
+        },
+        "required": [
+          "trade_no",
+          "out_trade_no",
+          "trade_status",
+          "total_amount",
+          "buyer_id",
+          "sign",
+          "sign_type"
+        ]
+      },
+      "WechatNotifyDto": {
+        "type": "object",
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "description": "微信支付订单号"
+          },
+          "out_trade_no": {
+            "type": "string",
+            "description": "商户订单号"
+          },
+          "trade_state": {
+            "type": "string",
+            "description": "交易状态"
+          },
+          "amount": {
+            "type": "string",
+            "description": "交易金额"
+          },
+          "openid": {
+            "type": "string",
+            "description": "用户标识"
+          },
+          "sign": {
+            "type": "string",
+            "description": "签名"
+          }
+        },
+        "required": [
+          "transaction_id",
+          "out_trade_no",
+          "trade_state",
+          "amount",
+          "openid",
+          "sign"
+        ]
+      },
+      "Upload": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateBannerDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "轮播标题",
+            "example": "新年促销活动"
+          },
+          "description": {
+            "type": "string",
+            "description": "轮播描述",
+            "example": "全场商品8折优惠"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "轮播图片URL",
+            "example": "https://example.com/banner.jpg"
+          },
+          "linkUrl": {
+            "type": "string",
+            "description": "跳转链接URL",
+            "example": "https://example.com/promotion"
+          },
+          "sortOrder": {
+            "type": "number",
+            "description": "排序顺序（数字越大越靠前）",
+            "minimum": 0,
+            "example": 1
+          },
+          "status": {
+            "type": "string",
+            "description": "轮播状态",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "default": "active",
+            "example": "active"
+          }
+        },
+        "required": [
+          "title",
+          "imageUrl",
+          "sortOrder"
+        ]
+      },
+      "Banner": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateBannerDto": {
+        "type": "object",
+        "properties": {}
       },
       "CreateReportDto": {
         "type": "object",
@@ -33702,375 +34038,6 @@
           "decorationId"
         ]
       },
-      "RecordBrowseHistoryDto": {
-        "type": "object",
-        "properties": {
-          "progress": {
-            "type": "number",
-            "description": "浏览进度（百分比）",
-            "example": 50
-          },
-          "duration": {
-            "type": "number",
-            "description": "停留时长（秒）",
-            "example": 120
-          }
-        }
-      },
-      "CreateFavoriteDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "收藏夹名称",
-            "maxLength": 100
-          },
-          "description": {
-            "type": "string",
-            "description": "收藏夹描述"
-          },
-          "cover": {
-            "type": "string",
-            "description": "封面图片"
-          },
-          "isPublic": {
-            "type": "boolean",
-            "description": "是否公开",
-            "default": false
-          },
-          "sort": {
-            "type": "number",
-            "description": "排序",
-            "default": 0
-          }
-        },
-        "required": [
-          "name"
-        ]
-      },
-      "UpdateFavoriteDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "收藏夹名称",
-            "maxLength": 100
-          },
-          "description": {
-            "type": "string",
-            "description": "收藏夹描述"
-          },
-          "cover": {
-            "type": "string",
-            "description": "封面图片"
-          },
-          "isPublic": {
-            "type": "boolean",
-            "description": "是否公开",
-            "default": false
-          },
-          "sort": {
-            "type": "number",
-            "description": "排序",
-            "default": 0
-          }
-        }
-      },
-      "AddToFavoriteDto": {
-        "type": "object",
-        "properties": {
-          "favoriteId": {
-            "type": "number",
-            "description": "收藏夹ID"
-          },
-          "articleId": {
-            "type": "number",
-            "description": "文章ID"
-          },
-          "note": {
-            "type": "string",
-            "description": "备注"
-          }
-        },
-        "required": [
-          "favoriteId",
-          "articleId"
-        ]
-      },
-      "AddPointsDto": {
-        "type": "object",
-        "properties": {
-          "amount": {
-            "type": "number",
-            "description": "积分数量"
-          },
-          "source": {
-            "type": "string",
-            "description": "积分来源"
-          },
-          "description": {
-            "type": "string",
-            "description": "描述"
-          },
-          "relatedType": {
-            "type": "string",
-            "description": "关联业务类型"
-          },
-          "relatedId": {
-            "type": "number",
-            "description": "关联业务ID"
-          },
-          "validDays": {
-            "type": "number",
-            "description": "有效天数（0为永久）",
-            "default": 0
-          }
-        },
-        "required": [
-          "amount",
-          "source"
-        ]
-      },
-      "SpendPointsDto": {
-        "type": "object",
-        "properties": {
-          "amount": {
-            "type": "number",
-            "description": "积分数量"
-          },
-          "source": {
-            "type": "string",
-            "description": "用途"
-          },
-          "description": {
-            "type": "string",
-            "description": "描述"
-          },
-          "relatedType": {
-            "type": "string",
-            "description": "关联业务类型"
-          },
-          "relatedId": {
-            "type": "number",
-            "description": "关联业务ID"
-          }
-        },
-        "required": [
-          "amount",
-          "source"
-        ]
-      },
-      "CreatePointsRuleDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "description": "规则代码"
-          },
-          "name": {
-            "type": "string",
-            "description": "规则名称"
-          },
-          "description": {
-            "type": "string",
-            "description": "规则描述"
-          },
-          "points": {
-            "type": "number",
-            "description": "积分数量"
-          },
-          "dailyLimit": {
-            "type": "number",
-            "description": "每日限制次数",
-            "default": 0
-          },
-          "totalLimit": {
-            "type": "number",
-            "description": "总限制次数",
-            "default": 0
-          },
-          "validDays": {
-            "type": "number",
-            "description": "积分有效期（天数）",
-            "default": 0
-          },
-          "isActive": {
-            "type": "boolean",
-            "description": "是否启用",
-            "default": true
-          },
-          "sort": {
-            "type": "number",
-            "description": "排序",
-            "default": 0
-          }
-        },
-        "required": [
-          "code",
-          "name",
-          "points"
-        ]
-      },
-      "UpdatePointsRuleDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "description": "规则代码"
-          },
-          "name": {
-            "type": "string",
-            "description": "规则名称"
-          },
-          "description": {
-            "type": "string",
-            "description": "规则描述"
-          },
-          "points": {
-            "type": "number",
-            "description": "积分数量"
-          },
-          "dailyLimit": {
-            "type": "number",
-            "description": "每日限制次数",
-            "default": 0
-          },
-          "totalLimit": {
-            "type": "number",
-            "description": "总限制次数",
-            "default": 0
-          },
-          "validDays": {
-            "type": "number",
-            "description": "积分有效期（天数）",
-            "default": 0
-          },
-          "isActive": {
-            "type": "boolean",
-            "description": "是否启用",
-            "default": true
-          },
-          "sort": {
-            "type": "number",
-            "description": "排序",
-            "default": 0
-          }
-        }
-      },
-      "CreatePointsTaskDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "description": "任务代码"
-          },
-          "name": {
-            "type": "string",
-            "description": "任务名称"
-          },
-          "description": {
-            "type": "string",
-            "description": "任务描述"
-          },
-          "type": {
-            "type": "string",
-            "description": "任务类型",
-            "enum": [
-              "DAILY",
-              "WEEKLY",
-              "MONTHLY",
-              "ONCE"
-            ]
-          },
-          "rewardPoints": {
-            "type": "number",
-            "description": "奖励积分"
-          },
-          "targetCount": {
-            "type": "number",
-            "description": "目标数量",
-            "default": 1
-          },
-          "icon": {
-            "type": "string",
-            "description": "任务图标"
-          },
-          "link": {
-            "type": "string",
-            "description": "跳转链接"
-          },
-          "isActive": {
-            "type": "boolean",
-            "description": "是否启用",
-            "default": true
-          },
-          "sort": {
-            "type": "number",
-            "description": "排序",
-            "default": 0
-          }
-        },
-        "required": [
-          "code",
-          "name",
-          "type",
-          "rewardPoints"
-        ]
-      },
-      "UpdatePointsTaskDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string",
-            "description": "任务代码"
-          },
-          "name": {
-            "type": "string",
-            "description": "任务名称"
-          },
-          "description": {
-            "type": "string",
-            "description": "任务描述"
-          },
-          "type": {
-            "type": "string",
-            "description": "任务类型",
-            "enum": [
-              "DAILY",
-              "WEEKLY",
-              "MONTHLY",
-              "ONCE"
-            ]
-          },
-          "rewardPoints": {
-            "type": "number",
-            "description": "奖励积分"
-          },
-          "targetCount": {
-            "type": "number",
-            "description": "目标数量",
-            "default": 1
-          },
-          "icon": {
-            "type": "string",
-            "description": "任务图标"
-          },
-          "link": {
-            "type": "string",
-            "description": "跳转链接"
-          },
-          "isActive": {
-            "type": "boolean",
-            "description": "是否启用",
-            "default": true
-          },
-          "sort": {
-            "type": "number",
-            "description": "排序",
-            "default": 0
-          }
-        }
-      },
       "CreateEmojiDto": {
         "type": "object",
         "properties": {
@@ -34235,6 +34202,189 @@
               "inactive",
               "deleted"
             ]
+          }
+        }
+      },
+      "CreateAchievementDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "成就代码（唯一标识）",
+            "example": "FIRST_ARTICLE"
+          },
+          "name": {
+            "type": "string",
+            "description": "成就名称",
+            "example": "初出茅庐"
+          },
+          "description": {
+            "type": "string",
+            "description": "成就描述",
+            "example": "发布第一篇文章"
+          },
+          "icon": {
+            "type": "string",
+            "description": "成就图标URL"
+          },
+          "type": {
+            "type": "string",
+            "description": "成就类型",
+            "enum": [
+              "ARTICLE",
+              "COMMENT",
+              "SOCIAL",
+              "LEVEL",
+              "SPECIAL"
+            ]
+          },
+          "rarity": {
+            "type": "string",
+            "description": "稀有度",
+            "enum": [
+              "COMMON",
+              "RARE",
+              "EPIC",
+              "LEGENDARY"
+            ],
+            "default": "COMMON"
+          },
+          "condition": {
+            "type": "object",
+            "description": "完成条件",
+            "properties": {},
+            "example": {
+              "type": "count",
+              "target": 1,
+              "event": "article.created"
+            }
+          },
+          "rewardPoints": {
+            "type": "number",
+            "description": "奖励积分",
+            "default": 0
+          },
+          "rewardExp": {
+            "type": "number",
+            "description": "奖励经验",
+            "default": 0
+          },
+          "rewardDecorationId": {
+            "type": "number",
+            "description": "奖励装饰品ID"
+          },
+          "hidden": {
+            "type": "boolean",
+            "description": "是否隐藏",
+            "default": false
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序",
+            "default": 0
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "是否启用",
+            "default": true
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "description",
+          "type",
+          "rarity",
+          "condition",
+          "rewardPoints",
+          "rewardExp",
+          "hidden",
+          "sort",
+          "enabled"
+        ]
+      },
+      "UpdateAchievementDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "成就代码（唯一标识）",
+            "example": "FIRST_ARTICLE"
+          },
+          "name": {
+            "type": "string",
+            "description": "成就名称",
+            "example": "初出茅庐"
+          },
+          "description": {
+            "type": "string",
+            "description": "成就描述",
+            "example": "发布第一篇文章"
+          },
+          "icon": {
+            "type": "string",
+            "description": "成就图标URL"
+          },
+          "type": {
+            "type": "string",
+            "description": "成就类型",
+            "enum": [
+              "ARTICLE",
+              "COMMENT",
+              "SOCIAL",
+              "LEVEL",
+              "SPECIAL"
+            ]
+          },
+          "rarity": {
+            "type": "string",
+            "description": "稀有度",
+            "enum": [
+              "COMMON",
+              "RARE",
+              "EPIC",
+              "LEGENDARY"
+            ],
+            "default": "COMMON"
+          },
+          "condition": {
+            "type": "object",
+            "description": "完成条件",
+            "properties": {},
+            "example": {
+              "type": "count",
+              "target": 1,
+              "event": "article.created"
+            }
+          },
+          "rewardPoints": {
+            "type": "number",
+            "description": "奖励积分",
+            "default": 0
+          },
+          "rewardExp": {
+            "type": "number",
+            "description": "奖励经验",
+            "default": 0
+          },
+          "rewardDecorationId": {
+            "type": "number",
+            "description": "奖励装饰品ID"
+          },
+          "hidden": {
+            "type": "boolean",
+            "description": "是否隐藏",
+            "default": false
+          },
+          "sort": {
+            "type": "number",
+            "description": "排序",
+            "default": 0
+          },
+          "enabled": {
+            "type": "boolean",
+            "description": "是否启用",
+            "default": true
           }
         }
       }

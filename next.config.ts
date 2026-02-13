@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "testapi.picart.cc",
+      },
+      {
+        protocol: "https",
         hostname: "**",
       },
       {
@@ -18,6 +22,9 @@ const nextConfig: NextConfig = {
       },
     ],
     qualities: [75, 95],
+    minimumCacheTTL: 60,
+    formats: ['image/webp', 'image/avif'],
+    unoptimized:true
   },
 };
 
