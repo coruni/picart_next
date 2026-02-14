@@ -5,6 +5,15 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * 对话框组件属性接口
+ * @interface DialogProps
+ * 
+ * @property {boolean} open - 对话框是否打开
+ * @property {(open: boolean) => void} onOpenChange - 对话框打开状态变化回调
+ * @property {ReactNode} children - 对话框内容
+ * @property {boolean} [unmountOnClose=true] - 关闭时是否卸载组件
+ */
 export interface DialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -12,32 +21,92 @@ export interface DialogProps {
   unmountOnClose?: boolean; // 关闭时是否卸载组件，默认 true
 }
 
+/**
+ * 对话框内容组件属性接口
+ * @interface DialogContentProps
+ * 
+ * @property {string} [className] - 自定义样式类名
+ * @property {ReactNode} children - 内容
+ * @property {boolean} [showClose] - 是否显示关闭按钮
+ */
 export interface DialogContentProps {
   className?: string;
   children: ReactNode;
   showClose?: boolean;
 }
 
+/**
+ * 对话框头部组件属性接口
+ * @interface DialogHeaderProps
+ * 
+ * @property {string} [className] - 自定义样式类名
+ * @property {ReactNode} children - 头部内容
+ */
 export interface DialogHeaderProps {
   className?: string;
   children: ReactNode;
 }
 
+/**
+ * 对话框底部组件属性接口
+ * @interface DialogFooterProps
+ * 
+ * @property {string} [className] - 自定义样式类名
+ * @property {ReactNode} children - 底部内容
+ */
 export interface DialogFooterProps {
   className?: string;
   children: ReactNode;
 }
 
+/**
+ * 对话框标题组件属性接口
+ * @interface DialogTitleProps
+ * 
+ * @property {string} [className] - 自定义样式类名
+ * @property {ReactNode} children - 标题内容
+ */
 export interface DialogTitleProps {
   className?: string;
   children: ReactNode;
 }
 
+/**
+ * 对话框描述组件属性接口
+ * @interface DialogDescriptionProps
+ * 
+ * @property {string} [className] - 自定义样式类名
+ * @property {ReactNode} children - 描述内容
+ */
 export interface DialogDescriptionProps {
   className?: string;
   children: ReactNode;
 }
 
+/**
+ * 对话框组件
+ * @component
+ * 
+ * 模态对话框组件，支持遮罩层、ESC 键关闭、点击外部关闭等功能
+ * 
+ * @example
+ * ```tsx
+ * const [open, setOpen] = useState(false);
+ * 
+ * <Dialog open={open} onOpenChange={setOpen}>
+ *   <DialogContent>
+ *     <DialogHeader>
+ *       <DialogTitle>标题</DialogTitle>
+ *       <DialogDescription>描述文本</DialogDescription>
+ *     </DialogHeader>
+ *     <div>对话框内容</div>
+ *     <DialogFooter>
+ *       <Button onClick={() => setOpen(false)}>关闭</Button>
+ *     </DialogFooter>
+ *   </DialogContent>
+ * </Dialog>
+ * ```
+ */
 export function Dialog({ open, onOpenChange, children, unmountOnClose = true }: DialogProps) {
   const dialogIdRef = useRef(`dialog-${Math.random().toString(36).substr(2, 9)}`);
 
@@ -97,6 +166,12 @@ export function Dialog({ open, onOpenChange, children, unmountOnClose = true }: 
   return createPortal(children, document.body);
 }
 
+/**
+ * 对话框遮罩层组件
+ * @component
+ * 
+ * 显示半透明黑色遮罩层，点击时可关闭对话框
+ */
 export function DialogOverlay({ 
   className, 
   onClick 
@@ -117,6 +192,12 @@ export function DialogOverlay({
   );
 }
 
+/**
+ * 对话框内容容器组件
+ * @component
+ * 
+ * 对话框的主要内容区域，包含白色背景、圆角、阴影等样式
+ */
 export function DialogContent({ 
   className, 
   children, 
@@ -153,6 +234,12 @@ export function DialogContent({
   );
 }
 
+/**
+ * 对话框关闭按钮组件
+ * @component
+ * 
+ * 显示在对话框右上角的 X 关闭按钮
+ */
 export function DialogClose({ className }: { className?: string }) {
   const handleClick = () => {
     const event = new CustomEvent("dialog-close");
@@ -179,6 +266,12 @@ export function DialogClose({ className }: { className?: string }) {
   );
 }
 
+/**
+ * 对话框头部组件
+ * @component
+ * 
+ * 用于包裹对话框标题和描述
+ */
 export function DialogHeader({ className, children }: DialogHeaderProps) {
   return (
     <div
@@ -192,6 +285,12 @@ export function DialogHeader({ className, children }: DialogHeaderProps) {
   );
 }
 
+/**
+ * 对话框底部组件
+ * @component
+ * 
+ * 用于包裹对话框底部的操作按钮
+ */
 export function DialogFooter({ className, children }: DialogFooterProps) {
   return (
     <div
@@ -205,6 +304,12 @@ export function DialogFooter({ className, children }: DialogFooterProps) {
   );
 }
 
+/**
+ * 对话框标题组件
+ * @component
+ * 
+ * 显示对话框的标题文本
+ */
 export function DialogTitle({ className, children }: DialogTitleProps) {
   return (
     <h2
@@ -219,6 +324,12 @@ export function DialogTitle({ className, children }: DialogTitleProps) {
   );
 }
 
+/**
+ * 对话框描述组件
+ * @component
+ * 
+ * 显示对话框的描述文本
+ */
 export function DialogDescription({ className, children }: DialogDescriptionProps) {
   return (
     <p

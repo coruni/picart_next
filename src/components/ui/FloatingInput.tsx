@@ -3,12 +3,39 @@
 import { forwardRef, useState, type InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * 浮动标签输入框组件属性接口
+ * @interface FloatingInputProps
+ * @extends {InputHTMLAttributes<HTMLInputElement>}
+ * 
+ * @property {string} label - 标签文本
+ * @property {boolean} [error] - 是否显示错误状态
+ * @property {boolean} [fullWidth] - 是否占满容器宽度
+ */
 export interface FloatingInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: boolean;
   fullWidth?: boolean;
 }
 
+/**
+ * 浮动标签输入框组件
+ * @component
+ * 
+ * 带有浮动标签动画的输入框，聚焦或有值时标签会浮动到顶部
+ * 
+ * @example
+ * ```tsx
+ * // 基础用法
+ * <FloatingInput label="用户名" />
+ * 
+ * // 错误状态
+ * <FloatingInput label="邮箱" error />
+ * 
+ * // 全宽
+ * <FloatingInput label="地址" fullWidth />
+ * ```
+ */
 const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
   ({ className, label, error, fullWidth, value, onFocus, onBlur, ...props }, ref) => {
     const [isFocused, setIsFocused] = useState(false);

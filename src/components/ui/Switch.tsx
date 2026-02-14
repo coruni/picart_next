@@ -3,11 +3,35 @@
 import { forwardRef, InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * 开关组件属性接口
+ * @interface SwitchProps
+ * @extends {Omit<InputHTMLAttributes<HTMLInputElement>, "type">}
+ * 
+ * @property {boolean} [checked] - 是否选中
+ * @property {(checked: boolean) => void} [onCheckedChange] - 选中状态变化回调
+ */
 export interface SwitchProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type"> {
     checked?: boolean;
     onCheckedChange?: (checked: boolean) => void;
 }
 
+/**
+ * 开关组件
+ * @component
+ * 
+ * 带有可爱眼睛动画的开关组件，支持选中和未选中状态
+ * 
+ * @example
+ * ```tsx
+ * const [checked, setChecked] = useState(false);
+ * 
+ * <Switch 
+ *   checked={checked} 
+ *   onCheckedChange={setChecked}
+ * />
+ * ```
+ */
 const Switch = forwardRef<HTMLInputElement, SwitchProps>(
     ({ className, checked, onCheckedChange, disabled, ...props }, ref) => {
         return (

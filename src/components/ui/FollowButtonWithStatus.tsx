@@ -9,8 +9,21 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib";
 import { Check } from "lucide-react";
 
+/**
+ * 作者类型定义
+ */
 type Author = ArticleList[number]['author'] | ArticleDetail['author'] | UserList[number];
 
+/**
+ * 关注按钮组件属性接口
+ * @interface FollowButtonWithStatusProps
+ * 
+ * @property {Author} author - 作者信息
+ * @property {('sm' | 'md' | 'lg')} [size] - 按钮尺寸
+ * @property {string} [className] - 自定义样式类名
+ * @property {React.ReactNode} [children] - 自定义按钮内容
+ * @property {(isFollowed: boolean) => void} [onFollowChange] - 关注状态变化回调
+ */
 type FollowButtonWithStatusProps = {
     author: Author;
     size?: 'sm' | 'md' | 'lg';
@@ -19,6 +32,21 @@ type FollowButtonWithStatusProps = {
     onFollowChange?: (isFollowed: boolean) => void;
 };
 
+/**
+ * 带状态的关注按钮组件
+ * @component
+ * 
+ * 关注/取消关注按钮，点击关注后会显示对勾动画并自动隐藏
+ * 已关注的用户不显示按钮，自己的个人资料页也不显示
+ * 
+ * @example
+ * ```tsx
+ * <FollowButtonWithStatus 
+ *   author={user}
+ *   onFollowChange={(isFollowed) => console.log(isFollowed)}
+ * />
+ * ```
+ */
 export const FollowButtonWithStatus = ({
     author,
     size = "md",

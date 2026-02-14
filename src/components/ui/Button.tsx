@@ -2,6 +2,16 @@ import { ButtonHTMLAttributes, forwardRef } from "react";
 import { cn } from "@/lib/utils";
 import { LoaderCircle } from "lucide-react";
 
+/**
+ * 按钮组件属性接口
+ * @interface ButtonProps
+ * @extends {ButtonHTMLAttributes<HTMLButtonElement>}
+ * 
+ * @property {("default" | "primary" | "secondary" | "outline" | "ghost" | "danger")} [variant] - 按钮样式变体
+ * @property {("sm" | "md" | "lg")} [size] - 按钮尺寸
+ * @property {boolean} [fullWidth] - 是否占满容器宽度
+ * @property {boolean} [loading] - 是否显示加载状态
+ */
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: "default" | "primary" | "secondary" | "outline" | "ghost" | "danger";
     size?: "sm" | "md" | "lg";
@@ -9,6 +19,27 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     loading?: boolean;
 }
 
+/**
+ * 按钮组件
+ * @component
+ * 
+ * 提供多种样式变体和尺寸的按钮组件，支持加载状态和禁用状态
+ * 
+ * @example
+ * ```tsx
+ * // 基础用法
+ * <Button>点击我</Button>
+ * 
+ * // 主要按钮
+ * <Button variant="primary">提交</Button>
+ * 
+ * // 加载状态
+ * <Button loading>加载中...</Button>
+ * 
+ * // 全宽按钮
+ * <Button fullWidth>全宽按钮</Button>
+ * ```
+ */
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     (
         {

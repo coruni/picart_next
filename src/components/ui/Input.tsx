@@ -3,11 +3,40 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * 输入框组件属性接口
+ * @interface InputProps
+ * @extends {InputHTMLAttributes<HTMLInputElement>}
+ * 
+ * @property {boolean} [error] - 是否显示错误状态
+ * @property {boolean} [fullWidth] - 是否占满容器宽度
+ */
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: boolean;
   fullWidth?: boolean;
 }
 
+/**
+ * 输入框组件
+ * @component
+ * 
+ * 基础输入框组件，支持错误状态和全宽显示
+ * 
+ * @example
+ * ```tsx
+ * // 基础用法
+ * <Input placeholder="请输入内容" />
+ * 
+ * // 错误状态
+ * <Input error placeholder="输入有误" />
+ * 
+ * // 全宽
+ * <Input fullWidth placeholder="全宽输入框" />
+ * 
+ * // 密码输入
+ * <Input type="password" placeholder="请输入密码" />
+ * ```
+ */
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, error, fullWidth, type = "text", ...props }, ref) => {
     return (

@@ -4,11 +4,29 @@ import { useState, useRef, useEffect } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * 下拉选项接口
+ * @interface SelectOption
+ * 
+ * @property {string} value - 选项值
+ * @property {string} label - 选项显示文本
+ */
 export type SelectOption = {
   value: string;
   label: string;
 };
 
+/**
+ * 下拉选择组件属性接口
+ * @interface SelectProps
+ * 
+ * @property {string} value - 当前选中的值
+ * @property {(value: string) => void} onChange - 值变化回调
+ * @property {SelectOption[]} options - 选项列表
+ * @property {string} [placeholder] - 占位文本
+ * @property {string} [className] - 自定义样式类名
+ * @property {boolean} [disabled] - 是否禁用
+ */
 type SelectProps = {
   value: string;
   onChange: (value: string) => void;
@@ -18,6 +36,27 @@ type SelectProps = {
   disabled?: boolean;
 };
 
+/**
+ * 下拉选择组件
+ * @component
+ * 
+ * 自定义下拉选择组件，支持键盘导航和点击外部关闭
+ * 
+ * @example
+ * ```tsx
+ * const [value, setValue] = useState('');
+ * 
+ * <Select
+ *   value={value}
+ *   onChange={setValue}
+ *   options={[
+ *     { value: '1', label: '选项一' },
+ *     { value: '2', label: '选项二' }
+ *   ]}
+ *   placeholder="请选择"
+ * />
+ * ```
+ */
 export const Select = ({
   value,
   onChange,
