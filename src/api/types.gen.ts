@@ -2722,8 +2722,8 @@ export type UserControllerFindOneResponses = {
             followingCount: number;
             level: number;
             experience: number;
-            score: number;
             wallet: number;
+            points: number;
             membershipLevel: number;
             membershipLevelName: string;
             membershipStatus: string;
@@ -2731,8 +2731,7 @@ export type UserControllerFindOneResponses = {
             membershipEndDate: string;
             lastLoginAt: string;
             lastActiveAt: string;
-            refreshToken: string;
-            inviterId: number;
+            inviterId: string;
             myInviteCode: string;
             inviteCode: string;
             inviteEarnings: string;
@@ -2740,7 +2739,7 @@ export type UserControllerFindOneResponses = {
             roles: Array<{
                 id?: number;
                 name?: string;
-                displayName?: unknown;
+                displayName?: string;
                 description?: string;
                 isActive?: boolean;
                 isSystem?: boolean;
@@ -2754,6 +2753,15 @@ export type UserControllerFindOneResponses = {
             }>;
             createdAt: string;
             updatedAt: string;
+            equippedDecorations: {
+                AVATAR_FRAME: {
+                    id: number;
+                    name: string;
+                    type: string;
+                    imageUrl: string;
+                    rarity: string;
+                };
+            };
             isFollowed: boolean;
             isMember: boolean;
         };
@@ -2829,36 +2837,35 @@ export type UserControllerGetProfileResponses = {
         data: {
             id: number;
             username: string;
-            nickname: unknown;
+            nickname: string;
             email: string;
-            phone: unknown;
+            phone: string;
             status: string;
-            banned: unknown;
-            banReason: unknown;
-            avatar: unknown;
-            description: unknown;
-            background: unknown;
-            address: unknown;
+            banned: string;
+            banReason: string;
+            avatar: string;
+            description: string;
+            background: string;
+            address: string;
             gender: string;
-            birthDate: unknown;
+            birthDate: string;
             articleCount: number;
             followerCount: number;
             followingCount: number;
             level: number;
             experience: number;
-            score: number;
             wallet: number;
+            points: number;
             membershipLevel: number;
             membershipLevelName: string;
             membershipStatus: string;
-            membershipStartDate: unknown;
-            membershipEndDate: unknown;
-            lastLoginAt: unknown;
-            lastActiveAt: unknown;
-            refreshToken: unknown;
-            inviterId: unknown;
+            membershipStartDate: string;
+            membershipEndDate: string;
+            lastLoginAt: string;
+            lastActiveAt: string;
+            inviterId: string;
             myInviteCode: string;
-            inviteCode: unknown;
+            inviteCode: string;
             inviteEarnings: string;
             inviteCount: number;
             roles: Array<{
@@ -4063,62 +4070,71 @@ export type ArticleControllerFindAllResponses = {
         data: {
             data: Array<{
                 id: number;
-                title: string;
-                requireLogin: boolean;
-                requireFollow: boolean;
-                requirePayment: boolean;
-                requireMembership: boolean;
-                listRequireLogin: boolean;
-                viewPrice: string;
-                type: string;
-                content: string | null;
-                images: Array<string>;
-                sort: number;
-                summary: string;
-                views: number;
-                likes: number;
-                favoriteCount: number;
-                commentCount: number;
-                status: string;
-                cover: string;
-                authorId: number;
+                title?: string;
+                requireLogin?: boolean;
+                requireFollow?: boolean;
+                requirePayment?: boolean;
+                requireMembership?: boolean;
+                listRequireLogin?: boolean;
+                viewPrice?: string;
+                type?: string;
+                content?: string;
+                images?: Array<string>;
+                sort?: number;
+                summary?: string;
+                views?: number;
+                likes?: number;
+                favoriteCount?: number;
+                commentCount?: number;
+                status?: string;
+                cover?: string;
+                authorId?: number;
                 author: {
                     id: number;
                     username: string;
                     nickname: string;
                     status: string;
-                    banned: unknown;
-                    banReason: unknown;
+                    banned: string;
+                    banReason: string;
                     avatar: string;
                     description: string;
-                    background: unknown;
+                    background: string;
                     gender: string;
-                    birthDate: unknown;
+                    birthDate: string;
                     articleCount: number;
                     followerCount: number;
                     followingCount: number;
                     level: number;
                     experience: number;
-                    score: number;
                     wallet: number;
+                    points: number;
                     membershipLevel: number;
                     membershipLevelName: string;
                     membershipStatus: string;
                     membershipStartDate: string;
-                    membershipEndDate: unknown;
+                    membershipEndDate: string;
                     lastLoginAt: string;
-                    lastActiveAt: unknown;
-                    inviterId: unknown;
-                    myInviteCode: unknown;
-                    inviteCode: unknown;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
                     inviteEarnings: string;
                     inviteCount: number;
                     createdAt: string;
                     updatedAt: string;
+                    equippedDecorations: {
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
                     isMember: boolean;
                     isFollowed: boolean;
                 };
-                category: {
+                category?: {
                     id: number;
                     name: string;
                     description: string;
@@ -4128,7 +4144,7 @@ export type ArticleControllerFindAllResponses = {
                         id: number;
                         name: string;
                         description: string;
-                        parentId: unknown;
+                        parentId: string;
                         link: string;
                         avatar: string;
                         background: string;
@@ -4141,7 +4157,7 @@ export type ArticleControllerFindAllResponses = {
                         updatedAt: string;
                     };
                     avatar: string;
-                    background: string | null;
+                    background: string;
                     cover: string;
                     sort: number;
                     status: string;
@@ -4150,20 +4166,20 @@ export type ArticleControllerFindAllResponses = {
                     createdAt: string;
                     updatedAt: string;
                 };
-                tags: Array<{
+                tags?: Array<{
                     id: number;
                     name: string;
-                    description: string | null;
+                    description: string;
                     avatar: string;
-                    background: string | null;
-                    cover: string | null;
+                    background: string;
+                    cover: string;
                     sort: number;
                     articleCount: number;
                     followCount: number;
                     createdAt: string;
                     updatedAt: string;
                 }>;
-                downloads: Array<{
+                downloads?: Array<{
                     id: number;
                     type: string;
                     url: string;
@@ -4173,13 +4189,13 @@ export type ArticleControllerFindAllResponses = {
                     createdAt: string;
                     updatedAt: string;
                 }>;
-                downloadCount: number;
-                createdAt: string;
-                updatedAt: string;
-                isLiked: boolean;
-                isPaid: boolean;
-                imageCount: number;
-                reactionStats: {
+                downloadCount?: number;
+                createdAt?: string;
+                updatedAt?: string;
+                isLiked?: boolean;
+                isPaid?: boolean;
+                imageCount?: number;
+                reactionStats?: {
                     like: number;
                     love: number;
                     haha: number;
@@ -4188,7 +4204,6 @@ export type ArticleControllerFindAllResponses = {
                     angry: number;
                     dislike: number;
                 };
-                userReaction?: string;
             }>;
             meta: {
                 total: number;
@@ -4203,7 +4218,7 @@ export type ArticleControllerFindAllResponses = {
 export type ArticleControllerFindAllResponse = ArticleControllerFindAllResponses[keyof ArticleControllerFindAllResponses];
 
 export type ArticleControllerCreateData = {
-    body: unknown;
+    body: CreateArticleDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -4241,6 +4256,7 @@ export type ArticleControllerCreateResponses = {
                 summary: string;
                 views: number;
                 likes: number;
+                favoriteCount: number;
                 commentCount: number;
                 status: string;
                 cover: string;
@@ -4248,38 +4264,42 @@ export type ArticleControllerCreateResponses = {
                 author: {
                     id: number;
                     username: string;
-                    nickname: unknown;
-                    avatar: unknown;
+                    nickname: string;
+                    status: string;
+                    banned: unknown;
+                    banReason: unknown;
+                    avatar: string;
+                    description: string;
                     background: unknown;
+                    gender: string;
+                    birthDate: unknown;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
                     level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
                     membershipLevel: number;
+                    membershipLevelName: string;
                     membershipStatus: string;
                     membershipStartDate: unknown;
                     membershipEndDate: unknown;
-                    status: string;
+                    lastLoginAt: string;
+                    lastActiveAt: unknown;
+                    inviterId: unknown;
+                    myInviteCode: string;
+                    inviteCode: unknown;
+                    inviteEarnings: string;
+                    inviteCount: number;
                     createdAt: string;
                     updatedAt: string;
-                    description: unknown;
-                    followerCount: number;
-                    followingCount: number;
-                    lastActiveAt: unknown;
-                    lastLoginAt: unknown;
-                    gender: string;
-                    equippedDecorations: {
-                        AVATAR_FRAME: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
-                    };
                 };
                 category: {
                     id: number;
                     name: string;
                     description: string;
-                    parentId: number;
+                    parentId: unknown;
                     link: string;
                     avatar: string;
                     background: string;
@@ -4305,14 +4325,14 @@ export type ArticleControllerCreateResponses = {
                     updatedAt: string;
                 }>;
                 downloads: Array<{
-                    id?: number;
-                    type?: string;
-                    url?: string;
-                    password?: string;
-                    extractionCode?: string;
-                    articleId?: number;
-                    createdAt?: string;
-                    updatedAt?: string;
+                    id: number;
+                    type: string;
+                    url: string;
+                    password: string;
+                    extractionCode: string;
+                    articleId: number;
+                    createdAt: string;
+                    updatedAt: string;
                 }>;
                 downloadCount: number;
                 createdAt: string;
@@ -4417,34 +4437,43 @@ export type ArticleControllerFindOneResponses = {
                 username: string;
                 nickname: string;
                 status: string;
-                banned: unknown;
-                banReason: unknown;
+                banned: string;
+                banReason: string;
                 avatar: string;
                 description: string;
-                background: unknown;
+                background: string;
                 gender: string;
-                birthDate: unknown;
+                birthDate: string;
                 articleCount: number;
                 followerCount: number;
                 followingCount: number;
                 level: number;
                 experience: number;
-                score: number;
                 wallet: number;
+                points: number;
                 membershipLevel: number;
                 membershipLevelName: string;
                 membershipStatus: string;
                 membershipStartDate: string;
-                membershipEndDate: unknown;
+                membershipEndDate: string;
                 lastLoginAt: string;
-                lastActiveAt: unknown;
-                inviterId: unknown;
-                myInviteCode: unknown;
-                inviteCode: unknown;
+                lastActiveAt: string;
+                inviterId: string;
+                myInviteCode: string;
+                inviteCode: string;
                 inviteEarnings: string;
                 inviteCount: number;
                 createdAt: string;
                 updatedAt: string;
+                equippedDecorations: {
+                    AVATAR_FRAME: {
+                        id: number;
+                        name: string;
+                        type: string;
+                        imageUrl: string;
+                        rarity: string;
+                    };
+                };
                 isMember: boolean;
                 isFollowed: boolean;
             };
@@ -4526,7 +4555,7 @@ export type ArticleControllerFindOneResponses = {
 export type ArticleControllerFindOneResponse = ArticleControllerFindOneResponses[keyof ArticleControllerFindOneResponses];
 
 export type ArticleControllerUpdateData = {
-    body: unknown;
+    body: UpdateArticleDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9624,7 +9653,7 @@ export type DecorationControllerFindAllResponses = {
 export type DecorationControllerFindAllResponse = DecorationControllerFindAllResponses[keyof DecorationControllerFindAllResponses];
 
 export type DecorationControllerCreateData = {
-    body: unknown;
+    body: CreateDecorationDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;

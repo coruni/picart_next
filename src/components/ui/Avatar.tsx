@@ -1,80 +1,68 @@
-import { cn } from "@/lib";
 import Image from "next/image";
-import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib";
 
-const avatarVariants = cva("relative inline-block", {
-  variants: {
-    size: {
-      xs: "w-6 h-6",
-      sm: "w-8 h-8",
-      md: "w-10 h-10",
-      lg: "w-12 h-12",
-      xl: "w-16 h-16",
-      "2xl": "w-20 h-20",
-    },
-  },
-  defaultVariants: {
-    size: "md",
-  },
-});
+type AvatarProps = {
+  url?: string;
+  frameUrl?: string;
 
-const avatarFrameVariants = cva("absolute z-10 pointer-events-none", {
-  variants: {
-    size: {
-      xs: "w-8 h-8 -left-1 -top-1",
-      sm: "w-11 h-11 -left-1.5 -top-1.5",
-      md: "w-14 h-14 -left-2 -top-2",
-      lg: "w-16 h-16 -left-2 -top-2",
-      xl: "w-22 h-22 -left-3 -top-3",
-      "2xl": "w-28 h-28 -left-4 -top-4",
-    },
-  },
-  defaultVariants: {
-    size: "md",
-  },
-});
-
-type AvatarProps = VariantProps<typeof avatarVariants> & {
-  url: string | any | unknown;
+  /** 外层：决定头像本体大小 */
   className?: string;
-  avatarFrame?: string;
+
+  /** 头像图片样式 */
+  avatarClassName?: string;
+
+  /** 头像框样式 */
+  frameClassName?: string;
+
   bordered?: boolean;
 };
 
-export const Avatar = ({
+export function Avatar({
   url,
-  size,
+  frameUrl,
   className,
-  avatarFrame,
+  avatarClassName,
+  frameClassName,
   bordered,
-}: AvatarProps) => {
+}: AvatarProps) {
   return (
-    <div className={cn("relative inline-flex justify-center items-center transition-all shrink-0", className)}>
-      {/* Avatar container */}
-      <div className={cn(avatarVariants({ size }), "relative shrink-0")}>
+    <div
+      className={cn("relative inline-flex items-center justify-center transition-all duration-300", className)}
+    >
+      {/* Avatar frame - OUTSIDE and larger */}
+      {frameUrl && (
+        <div
+          className={cn(
+            "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-11",
+            frameClassName,
+          )}
+          style={{
+            width: "calc((100% - 2px) * 1.3)",
+            height: "calc((100% - 2px) * 1.3)",
+          }}
+        >
+          <Image
+            src={frameUrl}
+            alt="avatar frame"
+            fill
+            className="object-contain"
+          />
+        </div>
+      )}
+
+      {/* Avatar image - REAL content */}
+      <div className="relative z-10 h-full w-full">
         <Image
           src={url || "/placeholder/avatar_placeholder.png"}
           alt="avatar"
           fill
-          sizes="(max-width: 768px) 64px, 80px"
           className={cn(
-            "rounded-full object-cover shrink-0",
+            "h-full w-full rounded-full object-cover",
             bordered && "border border-border",
+            avatarClassName,
           )}
         />
       </div>
-      
-      {/* Avatar frame overlay - larger than avatar, positioned outside */}
-      {avatarFrame && (
-        <div className={cn(avatarFrameVariants({ size }))}>
-          <Image
-            src={avatarFrame}
-            alt="avatar frame"
-            fill
-            className="object-contain shrink-0"
-          />
-        </div>
-      )}
     </div>
   );
-};
+}

@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/Dialog";
 import { userControllerUpdate, uploadControllerUploadFile } from "@/api";
 import type { UserDetail } from "@/types";
-import Image from "next/image";
 import { Avatar } from "../ui/Avatar";
 type BackgroundEditorProps = {
   user: UserDetail;
@@ -156,8 +155,8 @@ export const BackgroundEditor = ({
                 {/* 使用 flex 对齐 */}
                 <Avatar
                   url={user?.avatar}
-                  size="2xl"
-                  className="absolute bottom-0 "
+                  
+                  className="absolute bottom-0 size-40"
                 />
               </div>
             </div>

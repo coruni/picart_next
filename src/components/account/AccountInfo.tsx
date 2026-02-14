@@ -7,7 +7,6 @@ import { cn } from "@/lib";
 import {
   AudioLines,
   ChevronDown,
-  Diamond,
   MoreHorizontal,
   Sparkle,
 } from "lucide-react";
@@ -32,23 +31,15 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
       <div className="px-10 z-10 sticky top-15 bg-card border-t-border border-t box-border">
         <div className="flex items-center h-14 space-x-4">
           {/* 头像 */}
-          <div
+          <Avatar
+            bordered
+            url={user?.avatar}
+            frameUrl={user?.equippedDecorations?.AVATAR_FRAME?.imageUrl}
             className={cn(
-              "relative transition-all duration-300",
-              !scrolled ? "h-full leading-14" : "flex items-center",
+              !scrolled ? "size-12 md:size-24 lg:size-29.5 -top-20" : "size-8",
             )}
-          >
-            <Avatar
-              bordered
-              url={user?.avatar || "/placeholder/avatar_placeholder.png"}
-              className={cn(
-                "transition-all duration-300 ",
-                !scrolled
-                  ? "size-8 md:size-24 lg:size-29.5 -top-20"
-                  : "size-8",
-              )}
-            />
-          </div>
+           
+          />
 
           {/* 信息 */}
           <div className="flex-1 h-full relative min-w-0">
@@ -112,7 +103,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
             ) : (
               <>
                 <Link
-                href="/decoration"
+                  href="/decoration"
                   className={cn(
                     "size-9 flex items-center text-white hover:text-primary cursor-pointer justify-center rounded-full",
                     !scrolled

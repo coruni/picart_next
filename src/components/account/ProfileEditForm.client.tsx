@@ -10,8 +10,6 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
 import { userControllerUpdate, uploadControllerUploadFile } from "@/api";
-import { useNotificationStore } from "@/stores/useNotificationStore";
-import { ZoomIn, ZoomOut } from "lucide-react";
 import type { UserDetail } from "@/types";
 
 type ProfileEditFormProps = {

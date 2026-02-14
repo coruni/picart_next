@@ -39,7 +39,7 @@ export const RecommendUserWidget = async () => {
         return (
             <Link href={`/account/${user.id}`} className="px-2 cursor-pointer block hover:bg-primary/15 rounded-xl pb-5" key={user.id}>
                 <div className="py-2 my-1 flex items-center">
-                    <Avatar url={user.avatar} size="sm" className="bg-card rounded-full" />
+                    <Avatar url={user.avatar}  className=" size-8" />
                     <div className="ml-3 flex-1">
                         <span className="font-bold text-base leading-5 hover:text-primary">{user?.nickname || user?.username}</span>
                     </div>

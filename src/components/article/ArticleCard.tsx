@@ -2,7 +2,7 @@
 import type { ArticleDetail, ArticleList } from "@/types"
 import Image from "next/image";
 import { Avatar } from "@/components/ui/Avatar";
-import { formatRelativeTime } from "@/lib";
+import { cn, formatRelativeTime } from "@/lib";
 import { useTranslations } from "next-intl";
 import { FollowButtonWithStatus } from "@/components/ui/FollowButtonWithStatus";
 import { EllipsisVertical, Eye, FileImage, GalleryHorizontalEnd, Hash, HeartCrack, MessageCircleMore } from "lucide-react";
@@ -130,16 +130,16 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
             <div className="flex items-center">
                 <div className="flex items-center flex-1 cursor-pointer">
                     {/* 头像 */}
-                    <Link href={`/account/${article.author.id}`} className="shrink-0">
+                    <Link href={`/account/${article?.author?.id}`} className="shrink-0">
                         <Avatar
-                            size="lg"
+                            className={cn("size-12")}
                             url={article.author?.avatar}
-                            avatarFrame={(article.author as any)?.equippedDecorations?.AVATAR_FRAME?.imageUrl || ''}
+                            frameUrl={article.author?.equippedDecorations?.AVATAR_FRAME?.imageUrl}
                         />
                     </Link>
                     {/* 用户名 */}
                     <div className="ml-3 flex flex-col flex-1">
-                        <Link href={`/account/${article.author.id}`} className=" flex items-center leading-5">
+                        <Link href={`/account/${article?.author?.id}`} className=" flex items-center leading-5">
                             <span className="font-bold hover:text-primary">{(article?.author?.nickname || article?.author?.username) as string}</span>
                         </Link>
                         <div className="mt-1 leading-4">
