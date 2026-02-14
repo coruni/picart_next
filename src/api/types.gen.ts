@@ -9592,6 +9592,14 @@ export type DecorationControllerFindAllData = {
     query: {
         type: string;
         status: string;
+        /**
+         * 分页
+         */
+        page?: number;
+        /**
+         * 限制
+         */
+        limit?: number;
     };
     url: '/decoration';
 };

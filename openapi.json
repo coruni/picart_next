@@ -26131,6 +26131,24 @@
             }
           },
           {
+            "name": "page",
+            "in": "query",
+            "description": "分页",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "限制",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "description": "",

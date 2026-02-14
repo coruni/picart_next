@@ -7,13 +7,14 @@ import { cn } from "@/lib";
 import {
   AudioLines,
   ChevronDown,
+  Dessert,
   MoreHorizontal,
   Sparkle,
 } from "lucide-react";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { useUserStore } from "@/stores";
-import { Link } from "@/i18n/routing";
+import { Link, useRouter } from "@/i18n/routing";
 import { BackgroundEditor } from "./BackgroundEditor.client";
 
 type AccountInfoProps = {
@@ -21,11 +22,16 @@ type AccountInfoProps = {
 };
 
 export const AccountInfo = ({ user }: AccountInfoProps) => {
+  const router = useRouter();
   const scrolled = useScrollThreshold(240, true);
   const localUserId = useUserStore((state) => state.user)?.id;
   const isSelf = user.id === localUserId;
   const [showBackgroundEditor, setShowBackgroundEditor] = useState(false);
-
+  const handleToDecoration = () => {
+    router.push({
+      pathname: `/account/${user.id}/decoration`,
+    });
+  };
   return (
     <>
       <div className="px-10 z-10 sticky top-15 bg-card border-t-border border-t box-border">
@@ -38,7 +44,6 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
             className={cn(
               !scrolled ? "size-12 md:size-24 lg:size-29.5 -top-20" : "size-8",
             )}
-           
           />
 
           {/* 信息 */}
@@ -102,8 +107,8 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
               </>
             ) : (
               <>
-                <Link
-                  href="/decoration"
+                <button
+                  onClick={handleToDecoration}
                   className={cn(
                     "size-9 flex items-center text-white hover:text-primary cursor-pointer justify-center rounded-full",
                     !scrolled
@@ -111,8 +116,8 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                       : "bg-gray-50 text-foreground dark:bg-[#242734]",
                   )}
                 >
-                  <Sparkle size={20} />
-                </Link>
+                  <Dessert size={20} />
+                </button>
                 <div className="relative group/edit">
                   <div
                     className={cn(
