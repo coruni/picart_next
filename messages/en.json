@@ -234,8 +234,16 @@
       "descriptionPlaceholder": "Tell us about yourself",
       "save": "Save",
       "saving": "Saving...",
+      "cancel":"Cancel",
+      "confirm":"Confirm",
       "updateSuccess": "Profile updated successfully",
-      "updateFailed": "Failed to update profile"
+      "updateFailed": "Failed to update profile",
+      "cropAvatar": "Crop Avatar",
+      "avatarEditorHint": "Drag to reposition, scroll to zoom",
+      "cropBackground": "Crop Background",
+      "backgroundPreview": "Background Preview",
+      "backgroundEditorHint": "Drag to reposition, scroll to zoom",
+      "selectImage": "Select Image"
     }
   }
 }

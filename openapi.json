@@ -17734,7 +17734,10 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {}
+              "schema": {
+                "$ref": "#/components/schemas/CreateTagDto"
+              },
+              "examples": {}
             }
           },
           "required": true
@@ -18681,7 +18684,10 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {}
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryDto"
+              },
+              "examples": {}
             }
           },
           "required": true
@@ -19101,7 +19107,10 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {}
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryDto"
+              },
+              "examples": {}
             }
           },
           "required": true
@@ -23197,14 +23206,6 @@
             }
           }
         ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {}
-            }
-          },
-          "required": true
-        },
         "responses": {
           "201": {
             "description": "",

@@ -1,13 +1,23 @@
-
 import { useState } from "react";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
-import { Globe, Moon, ChevronRight, LogIn, Power, User, MessageCircle, Lock, UserRoundX } from "lucide-react";
+import {
+  Globe,
+  Moon,
+  ChevronRight,
+  LogIn,
+  Power,
+  User,
+  MessageCircle,
+  Lock,
+  UserRoundX,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useUserStore, useModalStore } from "@/stores";
 import { Switch } from "@/components/ui/Switch";
 import { MODAL_IDS, openLoginDialog } from "@/lib/modal-helpers";
 import { UserLoginDialog } from "./UserLoginDialog";
+import { Avatar } from "../ui/Avatar";
 
 export function UserDropdown() {
   const t = useTranslations("common");
@@ -23,41 +33,24 @@ export function UserDropdown() {
   const handleLogout = async () => {
     logout();
     // 强制刷新页面，确保服务端重新渲染
-    window.location.reload()
+    window.location.reload();
   };
 
   const handleLoginDialogOpen = () => {
     modalStore.openModal(MODAL_IDS.LOGIN);
   };
 
-
-
   return (
     <>
       <div className="relative group">
         <div className="flex items-center justify-center shrink-0 rounded-full cursor-pointer bg-primary/20 hover:ring-2 hover:ring-primary transition-all">
-          <Image
-            src={typeof user?.avatar === 'string' && user.avatar ? user.avatar : '/placeholder/avatar_placeholder.png'}
-            alt={user?.username || "用户"}
-            width={40}
-            quality={95}
-            height={40}
-            className="rounded-full object-cover w-10 h-10 "
-          />
-
-          {/* {user?.avatar && typeof user.avatar === "string" ? (
-            <Image
-              src={user.avatar}
-              alt={user.username || "用户"}
-              width={40}
-              height={40}
-              className="rounded-full object-cover"
-            />
-          ) : (
-            <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white font-bold" onClick={handleLoginDialogOpen}>
-              <span className="text-sm">{user?.username?.[0]?.toUpperCase() || "U"}</span>
-            </div>
-          )} */}
+         
+          <Avatar
+            size="md"
+            bordered
+            url={user?.avatar}
+            avatarFrame={user?.equippedDecorations?.AVATAR_FRAME?.imageUrl}
+          ></Avatar>
         </div>
 
         {/* Hover 面板 */}
@@ -78,7 +71,9 @@ export function UserDropdown() {
                     <div className="flex items-center justify-center shrink-0">
                       <User className="size-5" />
                     </div>
-                    <span className="text-sm font-medium">{tHeader("personalPage")}</span>
+                    <span className="text-sm font-medium">
+                      {tHeader("personalPage")}
+                    </span>
                   </div>
                   <ChevronRight className="size-4" />
                 </Link>
@@ -94,7 +89,9 @@ export function UserDropdown() {
                     <div className="flex items-center justify-center shrink-0">
                       <MessageCircle className="size-5" />
                     </div>
-                    <span className="text-sm font-medium">{tHeader("messageManagement")}</span>
+                    <span className="text-sm font-medium">
+                      {tHeader("messageManagement")}
+                    </span>
                   </div>
                   <ChevronRight className="size-4" />
                 </Link>
@@ -110,7 +107,9 @@ export function UserDropdown() {
                     <div className="flex items-center justify-center shrink-0">
                       <Lock className="size-5" />
                     </div>
-                    <span className="text-sm font-medium">{tHeader("privacySettings")}</span>
+                    <span className="text-sm font-medium">
+                      {tHeader("privacySettings")}
+                    </span>
                   </div>
                   <ChevronRight className="size-4" />
                 </Link>
@@ -126,7 +125,9 @@ export function UserDropdown() {
                     <div className="flex items-center justify-center shrink-0">
                       <UserRoundX className="size-5" />
                     </div>
-                    <span className="text-sm font-medium">{tHeader("blockedUsers")}</span>
+                    <span className="text-sm font-medium">
+                      {tHeader("blockedUsers")}
+                    </span>
                   </div>
                   <ChevronRight className="size-4" />
                 </Link>
@@ -148,7 +149,9 @@ export function UserDropdown() {
                 <div className="flex items-center justify-center shrink-0">
                   <Globe className="size-5" />
                 </div>
-                <span className="text-sm font-medium">{tHeader("switchLanguage")}</span>
+                <span className="text-sm font-medium">
+                  {tHeader("switchLanguage")}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">简体中文</span>
@@ -167,7 +170,9 @@ export function UserDropdown() {
                 <div className="rounded-full flex items-center justify-center shrink-0">
                   <Moon className="size-5" />
                 </div>
-                <span className="text-sm font-medium">{tHeader("appearanceSettings")}</span>
+                <span className="text-sm font-medium">
+                  {tHeader("appearanceSettings")}
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm">{tHeader("followSystem")}</span>
@@ -181,7 +186,12 @@ export function UserDropdown() {
             <div className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1">
               <div className="flex items-center gap-3">
                 <div className="rounded-full flex items-center justify-center shrink-0">
-                  <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="size-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -190,9 +200,14 @@ export function UserDropdown() {
                     />
                   </svg>
                 </div>
-                <span className="text-sm font-medium">{tHeader("autoTranslate")}</span>
+                <span className="text-sm font-medium">
+                  {tHeader("autoTranslate")}
+                </span>
               </div>
-              <Switch checked={autoTranslate} onCheckedChange={setAutoTranslate} />
+              <Switch
+                checked={autoTranslate}
+                onCheckedChange={setAutoTranslate}
+              />
             </div>
           </div>
 
@@ -221,8 +236,7 @@ export function UserDropdown() {
           </div>
           <UserLoginDialog />
         </div>
-      </div >
-
+      </div>
     </>
   );
 }

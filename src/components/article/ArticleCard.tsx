@@ -173,7 +173,7 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
                 <Link href={`/article/${article.id}`}>
                     <h3 className="mt-2 font-bold hover:text-primary">{article?.title}</h3>
                     {article.summary && typeof article.summary === 'string' && (
-                        <p className="leading-5 text-secondary">{article.summary}</p>
+                        <p className="leading-5 text-secondary text-sm line-clamp-4 text-ellipsis">{article.summary}</p>
                     )}
                     <MediaElement />
                 </Link>

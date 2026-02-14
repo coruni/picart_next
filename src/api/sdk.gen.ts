@@ -984,14 +984,7 @@ export const messageControllerMarkAsRead = <ThrowOnError extends boolean = false
 /**
  * 标记所有消息为已读
  */
-export const messageControllerMarkAllAsRead = <ThrowOnError extends boolean = false>(options: Options<MessageControllerMarkAllAsReadData, ThrowOnError>) => (options.client ?? client).post<MessageControllerMarkAllAsReadResponses, unknown, ThrowOnError>({
-    url: '/message/read-all',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
+export const messageControllerMarkAllAsRead = <ThrowOnError extends boolean = false>(options?: Options<MessageControllerMarkAllAsReadData, ThrowOnError>) => (options?.client ?? client).post<MessageControllerMarkAllAsReadResponses, unknown, ThrowOnError>({ url: '/message/read-all', ...options });
 
 /**
  * 批量操作消息（标记已读/删除）

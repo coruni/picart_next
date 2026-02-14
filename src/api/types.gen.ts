@@ -6870,7 +6870,7 @@ export type TagControllerFindAllResponses = {
 export type TagControllerFindAllResponse = TagControllerFindAllResponses[keyof TagControllerFindAllResponses];
 
 export type TagControllerCreateData = {
-    body: unknown;
+    body: CreateTagDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -7195,7 +7195,7 @@ export type CategoryControllerFindAllResponses = {
 export type CategoryControllerFindAllResponse = CategoryControllerFindAllResponses[keyof CategoryControllerFindAllResponses];
 
 export type CategoryControllerCreateData = {
-    body: unknown;
+    body: CreateCategoryDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -7359,7 +7359,7 @@ export type CategoryControllerFindOneResponses = {
 export type CategoryControllerFindOneResponse = CategoryControllerFindOneResponses[keyof CategoryControllerFindOneResponses];
 
 export type CategoryControllerUpdateData = {
-    body: unknown;
+    body: UpdateCategoryDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8745,7 +8745,7 @@ export type MessageControllerMarkAsReadResponses = {
 export type MessageControllerMarkAsReadResponse = MessageControllerMarkAsReadResponses[keyof MessageControllerMarkAsReadResponses];
 
 export type MessageControllerMarkAllAsReadData = {
-    body: unknown;
+    body?: never;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;

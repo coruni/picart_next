@@ -6,6 +6,7 @@ import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus"
 import { Plus } from "lucide-react"
 import Image from "next/image"
 import { getTranslations } from "next-intl/server"
+import { Link } from "@/i18n/routing"
 
 export const RecommendUserWidget = async () => {
     const t = await getTranslations('sidebar');
@@ -36,7 +37,7 @@ export const RecommendUserWidget = async () => {
 
     const userCard = (user: UserList[number]) => {
         return (
-            <div className="px-2 cursor-pointer hover:bg-primary/15 rounded-xl pb-5" key={user.id}>
+            <Link href={`/account/${user.id}`} className="px-2 cursor-pointer block hover:bg-primary/15 rounded-xl pb-5" key={user.id}>
                 <div className="py-2 my-1 flex items-center">
                     <Avatar url={user.avatar} size="sm" className="bg-card rounded-full" />
                     <div className="ml-3 flex-1">
@@ -62,7 +63,7 @@ export const RecommendUserWidget = async () => {
                 <div className="px-4 flex items-center justify-center h-12 w-full bg-no-repeat" style={{ backgroundImage: `url(/sidebar/recommend/recommend_user_left.png),url(/sidebar/recommend/recommend_user_right.png)`, backgroundSize: '24px 20px, 24px 20px', backgroundPosition: 'left top, right bottom' }}>
                     <span className="text-sm line-clamp-1 wrap-break-word text-black/65 flex-1 text-center">不知道写什么 先放着吧</span>
                 </div>
-            </div>
+            </Link>
         )
     }
     return (

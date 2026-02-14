@@ -234,8 +234,16 @@
       "descriptionPlaceholder": "介绍一下自己吧",
       "save": "保存",
       "saving": "保存中...",
+      "cancel":"取消",
+      "confirm":"确认",
       "updateSuccess": "资料更新成功",
-      "updateFailed": "资料更新失败"
+      "updateFailed": "资料更新失败",
+      "cropAvatar": "裁剪头像",
+      "avatarEditorHint": "拖动调整位置，滚动缩放大小",
+      "cropBackground": "裁剪背景图",
+      "backgroundPreview": "背景预览",
+      "backgroundEditorHint": "拖动调整位置，滚动缩放大小",
+      "selectImage": "选择图片"
     }
   }
 }

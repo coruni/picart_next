@@ -39,13 +39,15 @@ export default async function AccountLayout({
       {/* 背景 */}
       <div className="fixed h-75 w-full z-0 box-border">
         <div className="absolute top-0 left-0 w-full z-2 bg-linear-to-b from-[#00000066] to-transparent h-20" />
-        {user.background && (
+        {user.background &&(
           <Image
             quality={95}
-            src={user.background || ""}
+            src={user.background}
             fill
+            loading="eager"
+            preload
             alt={`${user.nickname || user.username} background image`}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-bottom align-bottom"
           />
         )}
 
@@ -53,7 +55,7 @@ export default async function AccountLayout({
       </div>
 
       {/* 页面内容 */}
-      <div className="mt-75 w-full z-10 relative bg-border dark:bg-gray-800">
+      <div className="mt-75 w-full z-10 relative bg-background ">
         {/* 用户信息 */}
         <AccountInfo user={user} />
         {/* 子页面内容 */}

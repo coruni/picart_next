@@ -114,7 +114,7 @@ body {
 }
 
 .viewer-backdrop{
-  @apply bg-black/85! backdrop-blur-lg
+  @apply bg-black/60! backdrop-blur-lg
 }
 
 .viewer-prev {
