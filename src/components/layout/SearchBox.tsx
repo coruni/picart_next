@@ -24,18 +24,23 @@ export function SearchBox({
   scrolled = false,
   onSearch,
   placeholder,
-  className
+  className,
 }: SearchBoxProps) {
   const t = useTranslations("common");
-  const [selectedCategory, setSelectedCategory] = useState<CategoryList[0] | undefined>(undefined);
+  const [selectedCategory, setSelectedCategory] = useState<
+    CategoryList[0] | undefined
+  >(undefined);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchPanelOpen, setIsSearchPanelOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchHistory, setSearchHistory] = useLocalStorage<string[]>("searchHistory", []);
-  
+  const [searchHistory, setSearchHistory] = useLocalStorage<string[]>(
+    "searchHistory",
+    [],
+  );
+
   const searchBoxRef = useRef<HTMLDivElement>(null!);
   const inputRef = useRef<HTMLInputElement>(null);
-  
+
   // Mock hot searches data - in real app this would come from API
   const hotSearches = ["签到", "原神", "崩坏", "星穹铁道", "绝区零"];
 
@@ -52,14 +57,17 @@ export function SearchBox({
     id: 0,
     name: t("all"),
     avatar: "/placeholder/menu.png",
-    description: t("searchAll")
+    description: t("searchAll"),
   };
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (query.trim()) {
       // Add to search history
-      const newHistory = [query.trim(), ...searchHistory.filter(item => item !== query.trim())].slice(0, 10);
+      const newHistory = [
+        query.trim(),
+        ...searchHistory.filter((item) => item !== query.trim()),
+      ].slice(0, 10);
       setSearchHistory(newHistory);
       setIsSearchPanelOpen(false);
       onSearch?.(query, selectedCategory?.id);
@@ -81,7 +89,7 @@ export function SearchBox({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && searchQuery.trim()) {
+    if (e.key === "Enter" && searchQuery.trim()) {
       handleSearch(searchQuery);
     }
   };
@@ -100,8 +108,13 @@ export function SearchBox({
   };
 
   return (
-    <div className={cn("flex-1 items-center justify-center hidden md:flex", className)}>
-      <div 
+    <div
+      className={cn(
+        "flex-1 items-center justify-center hidden md:flex",
+        className,
+      )}
+    >
+      <div
         ref={searchBoxRef}
         className={cn(
           "relative group max-w-md h-9 w-full p-1 rounded-full transition-all flex items-center",
@@ -113,11 +126,12 @@ export function SearchBox({
             "focus-within:bg-card",
           ],
           // Account 页面未滚动时的透明样式
-          isAccountPage && !scrolled && [
-            "bg-[#00000066] border border-[#ffffff66]",
-            "hover:border-white hover:ring-1 hover:ring-white/50",
-            "focus-within:border-white focus-within:ring-white/50",
-          ]
+          isAccountPage &&
+            !scrolled && [
+              "bg-[#00000066] border border-[#ffffff66]",
+              "hover:border-white hover:ring-1 hover:ring-white/50",
+              "focus-within:border-white focus-within:ring-white/50",
+            ],
         )}
       >
         {/* 选择菜单 */}
@@ -132,12 +146,12 @@ export function SearchBox({
             <div
               className="size-7 rounded-full bg-cover bg-center flex items-center justify-center text-lg"
               style={{
-                backgroundImage: currentCategory.avatar?.startsWith('http')
+                backgroundImage: currentCategory.avatar?.startsWith("http")
                   ? `url(${currentCategory.avatar})`
-                  : undefined
+                  : undefined,
               }}
             >
-              {currentCategory.avatar?.startsWith('/') && (
+              {currentCategory.avatar?.startsWith("/") && (
                 <Image
                   src={currentCategory.avatar}
                   width={28}
@@ -146,24 +160,27 @@ export function SearchBox({
                   className="rounded-full"
                 />
               )}
-              {!currentCategory.avatar?.startsWith('http') && !currentCategory.avatar?.startsWith('/') && (
-                currentCategory.avatar
-              )}
+              {!currentCategory.avatar?.startsWith("http") &&
+                !currentCategory.avatar?.startsWith("/") &&
+                currentCategory.avatar}
             </div>
             <div className="flex items-center justify-center size-5 ml-1">
               <ChevronDown
                 size={16}
                 className={cn(
                   "transition-transform duration-200",
-                  isDropdownOpen && "rotate-180"
+                  isDropdownOpen && "rotate-180",
+                  isAccountPage && !scrolled && ["text-white/70"],
                 )}
               />
             </div>
           </button>
-          <span className={cn(
-            "ml-2 w-px h-4",
-            (!isAccountPage || scrolled) ? "bg-[#c1ccd9]" : "bg-white/30"
-          )}></span>
+          <span
+            className={cn(
+              "ml-2 w-px h-4",
+              !isAccountPage || scrolled ? "bg-[#c1ccd9]" : "bg-white/30",
+            )}
+          ></span>
         </div>
 
         {/* 搜索输入框 */}
@@ -180,9 +197,7 @@ export function SearchBox({
             "placeholder:text-secondary placeholder:text-sm",
             "focus:outline-none",
             // Account 页面未滚动时的透明样式
-            isAccountPage && !scrolled && [
-              "placeholder:text-white/70"
-            ]
+            isAccountPage && !scrolled && ["placeholder:text-white/70"],
           )}
         />
 
@@ -192,7 +207,9 @@ export function SearchBox({
           className={cn(
             "flex items-center justify-center size-7 rounded-full transition-colors",
             "hover:bg-primary/10",
-            (!isAccountPage || scrolled) ? "text-secondary hover:text-primary" : "text-white/70 hover:text-white"
+            !isAccountPage || scrolled
+              ? "text-secondary hover:text-primary"
+              : "text-white/70 hover:text-white",
           )}
         >
           <Search size={16} />
@@ -206,7 +223,9 @@ export function SearchBox({
               {searchHistory.length > 0 && (
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-medium text-foreground">{t("searchHistory")}</h3>
+                    <h3 className="text-sm font-medium text-foreground">
+                      {t("searchHistory")}
+                    </h3>
                     <button
                       onClick={clearSearchHistory}
                       className="text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -230,7 +249,9 @@ export function SearchBox({
 
               {/* 热门搜索 */}
               <div>
-                <h3 className="text-sm font-medium text-foreground mb-3">{t("hotSearches")}</h3>
+                <h3 className="text-sm font-medium text-foreground mb-3">
+                  {t("hotSearches")}
+                </h3>
                 <div className="flex flex-wrap gap-2">
                   {hotSearches.map((item, index) => (
                     <button
@@ -247,7 +268,9 @@ export function SearchBox({
               {/* 无搜索历史时的提示 */}
               {searchHistory.length === 0 && (
                 <div className="text-center py-8">
-                  <p className="text-sm text-muted-foreground">{t("noSearchHistory")}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t("noSearchHistory")}
+                  </p>
                 </div>
               )}
             </div>
@@ -271,7 +294,7 @@ export function SearchBox({
                   onClick={() => handleCategorySelect(undefined)}
                   className={cn(
                     "w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left cursor-pointer hover:bg-primary/15",
-                    !selectedCategory && ("text-primary")
+                    !selectedCategory && "text-primary",
                   )}
                 >
                   <div className="size-8 rounded-full bg-primary/15 flex items-center justify-center">
@@ -295,7 +318,7 @@ export function SearchBox({
                     onClick={() => handleCategorySelect(category)}
                     className={cn(
                       "w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left cursor-pointer hover:bg-primary/15 hover:text-primary",
-                      selectedCategory?.id === category.id && ("text-primary")
+                      selectedCategory?.id === category.id && "text-primary",
                     )}
                   >
                     <div className="size-8 rounded-full bg-primary/15 flex items-center justify-center relative">

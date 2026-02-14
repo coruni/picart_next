@@ -111,7 +111,7 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
                                                     <Link
                                                         key={channel.id}
                                                         href={channelHref}
-                                                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-primary/15 hover:text-primary  dark:hover:bg-gray-700 transition-colors"
+                                                        className="flex items-center gap-3 p-1 px-2 rounded-lg hover:bg-primary/15 hover:text-primary  dark:hover:bg-gray-700 transition-colors h-10"
                                                     >
                                                         <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
                                                             {channel.avatar ? (

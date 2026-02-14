@@ -44,7 +44,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
               className={cn(
                 "transition-all duration-300 ",
                 !scrolled
-                  ? "size-12 md:size-24 lg:size-29.5 -top-20"
+                  ? "size-8 md:size-24 lg:size-29.5 -top-20"
                   : "size-8",
               )}
             />
@@ -111,7 +111,8 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
               </>
             ) : (
               <>
-                <div
+                <Link
+                href="/decoration"
                   className={cn(
                     "size-9 flex items-center text-white hover:text-primary cursor-pointer justify-center rounded-full",
                     !scrolled
@@ -120,11 +121,11 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                   )}
                 >
                   <Sparkle size={20} />
-                </div>
+                </Link>
                 <div className="relative group/edit">
                   <div
                     className={cn(
-                      "h-9 px-4 flex gap-2 items-center text-white hover:text-primary cursor-pointer justify-center rounded-full",
+                      "h-9 px-4 flex gap-2 text-sm items-center text-white hover:text-primary cursor-pointer justify-center rounded-full",
                       !scrolled
                         ? "bg-[#000000a6] dark:bg-[#242734]"
                         : "bg-gray-50 text-foreground dark:bg-[#242734]",

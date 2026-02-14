@@ -22,35 +22,48 @@ export function Header({ categories }: HeaderProps) {
   const tHeader = useTranslations("header");
   const siteConfig = useAppStore((state) => state.siteConfig);
   const pathname = usePathname();
-
+  const allowedPages = ["/account/", "/topic/"];
+  const deniedPages = ["/edit", "/decoration"];
   // 判断是否在需要透明背景的页面（account、article 详情等）
-  const isTransparentBgPage = ["/account/", "/topic/"].some(path => pathname.includes(path)) && !pathname.includes("/edit");
+  const isTransparentBgPage =
+    allowedPages.some((path) => pathname.includes(path)) &&
+    !deniedPages.some((path) => pathname.includes(path));
 
   // 使用自定义 hook 监听滚动
   const scrolled = useScrollThreshold(240, isTransparentBgPage);
 
   const handleSearch = (query: string, categoryId?: number) => {
     // TODO: 实现搜索逻辑
-    console.log('Search:', { query, categoryId });
+    console.log("Search:", { query, categoryId });
   };
 
   return (
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 ",
-        isTransparentBgPage && !scrolled ? "bg-transparent" : "bg-card"
+        isTransparentBgPage && !scrolled ? "bg-transparent" : "bg-card",
       )}
     >
       <div className="px-10 mx-auto">
         <div className="flex items-center justify-between gap-4 h-15">
           {/* Logo */}
           <div className="flex items-center gap-4">
-            <Link href="/" className={cn("text-primary text-3xl font-bold line-clamp-1 text-nowrap", isTransparentBgPage && !scrolled && ("text-white"))}>
+            <Link
+              href="/"
+              className={cn(
+                "text-primary text-3xl font-bold line-clamp-1 text-nowrap",
+                isTransparentBgPage && !scrolled && "text-white",
+              )}
+            >
               {siteConfig?.site_name}
             </Link>
 
-            <HeaderTabs categories={categories!} labelClassName={isTransparentBgPage && !scrolled ? "text-white" : undefined} />
-
+            <HeaderTabs
+              categories={categories!}
+              labelClassName={
+                isTransparentBgPage && !scrolled ? "text-white" : undefined
+              }
+            />
           </div>
 
           {/* 搜索框 */}
@@ -80,7 +93,9 @@ export function Header({ categories }: HeaderProps) {
                       <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center shrink-0">
                         <PenIcon className="size-5 text-green-600 dark:text-green-300" />
                       </div>
-                      <span className="text-sm font-medium flex-1">{tHeader("create.article")}</span>
+                      <span className="text-sm font-medium flex-1">
+                        {tHeader("create.article")}
+                      </span>
                       <ChevronRight className="size-4 transition-colors" />
                     </Link>
                     <Link
@@ -88,11 +103,23 @@ export function Header({ categories }: HeaderProps) {
                       className="flex items-center gap-3 px-4 py-2 bg-[#F6F9FB] dark:bg-[#242734] hover:bg-primary/15 hover:text-primary rounded-lg transition-colors group/item whitespace-nowrap"
                     >
                       <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900 flex items-center justify-center shrink-0">
-                        <svg className="size-5 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <svg
+                          className="size-5 text-blue-600 dark:text-blue-300"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
                         </svg>
                       </div>
-                      <span className="text-sm font-medium text-foreground flex-1">{tHeader("create.image")}</span>
+                      <span className="text-sm font-medium text-foreground flex-1">
+                        {tHeader("create.image")}
+                      </span>
                       <ChevronRight className="size-4 transition-colors" />
                     </Link>
                     <Link
@@ -100,11 +127,23 @@ export function Header({ categories }: HeaderProps) {
                       className="flex items-center gap-3 px-4 py-2 bg-[#F6F9FB] dark:bg-[#242734] hover:bg-primary/15 hover:text-primary rounded-lg transition-colors group/item whitespace-nowrap"
                     >
                       <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900 flex items-center justify-center shrink-0">
-                        <svg className="size-5 text-orange-600 dark:text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        <svg
+                          className="size-5 text-orange-600 dark:text-orange-300"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                          />
                         </svg>
                       </div>
-                      <span className="text-sm font-medium text-foreground flex-1">{tHeader("create.video")}</span>
+                      <span className="text-sm font-medium text-foreground flex-1">
+                        {tHeader("create.video")}
+                      </span>
                       <ChevronRight className="size-4 transition-colors" />
                     </Link>
                   </div>
