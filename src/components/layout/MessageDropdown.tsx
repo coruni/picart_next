@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
 import { EmptyState } from "@/components/shared";
-import Image from "next/image";
 import { BrushCleaning, MessageCircle, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useUserStore } from "@/stores";
@@ -13,7 +12,14 @@ import {
 } from "@/api";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { Link } from "@/i18n/routing";
-export function MessageDropdown() {
+import { cn } from "@/lib";
+export function MessageDropdown({
+  isTransparentBgPage,
+  scrolled,
+}: {
+  isTransparentBgPage?: boolean;
+  scrolled?: boolean;
+}) {
   const tHeader = useTranslations("header");
   const [isHydrated, setIsHydrated] = useState(false);
   const [messages, setMessages] = useState<MessageList>([]);
@@ -66,7 +72,14 @@ export function MessageDropdown() {
 
   return (
     <div className="relative group" onMouseEnter={handleMouseEnter}>
-      <div className="flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full p-2 cursor-pointer text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+      <div
+        className={cn(
+          "flex items-center justify-center hover:bg-gray-100",
+          "dark:hover:bg-gray-800 rounded-full p-2 cursor-pointer",
+          "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors",
+          isTransparentBgPage && !scrolled && "text-white",
+        )}
+      >
         <MessageCircle className="size-5" />
         {/* 未读消息徽章 */}
         {unreadCount > 0 && (
@@ -82,7 +95,11 @@ export function MessageDropdown() {
           </h3>
           {isAuthenticated && (
             <div className="flex items-center gap-6 text-secondary">
-              <button className="cursor-pointer" onClick={handleCleanMessage} title="清空消息">
+              <button
+                className="cursor-pointer"
+                onClick={handleCleanMessage}
+                title="清空消息"
+              >
                 <BrushCleaning size={18} />
               </button>
               <Link href="/setting/notification" title="通知设置">

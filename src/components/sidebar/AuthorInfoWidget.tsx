@@ -13,7 +13,7 @@ export const AuthorInfoWidget = ({ author }: AuthorInfoWidgetProps) => {
                 <span>作者信息</span>
             </div>
             <div className="flex items-center  space-x-3">
-                <Avatar url={author?.avatar} size="lg" />
+                <Avatar url={author?.avatar} className="size-12" />
                 <div className="flex-1">
                     <span className="font-medium">{author?.nickname || author?.username}</span>
                 </div>

@@ -1,12 +1,68 @@
-import { categoryControllerFindAll } from "@/api";
+import { categoryControllerFindAll, configControllerGetPublicConfigs } from "@/api";
 import { ReactNode } from "react";
 import Image from "next/image";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { ChannelTabs } from "@/components/channel/ChannelTabs";
+import { generateSiteMetadata } from "@/lib/seo";
 
 interface ChannelLayoutProps {
     children: ReactNode;
     params: Promise<{ slug?: string[]; locale: string }>;
+}
+
+export async function generateMetadata({ params }: ChannelLayoutProps) {
+    const { slug, locale } = await params;
+    
+    // 如果没有 slug 或者 slug 为空，返回默认 SEO
+    if (!slug || slug.length === 0) {
+        return generateSiteMetadata(locale);
+    }
+    
+    const pid = slug[0];
+    
+    // 获取分类列表
+    const { data } = await categoryControllerFindAll({ query: { page: 1, limit: 100 } });
+    const currentChannel = data?.data.data.find((item) => item.id === Number(pid));
+    
+    if (!currentChannel) {
+        return generateSiteMetadata(locale);
+    }
+    
+    // 获取公共配置
+    const config = await configControllerGetPublicConfigs();
+    const siteName = config?.data?.data.site_name || "PicArt";
+    
+    // 返回主分类的 SEO
+    const title = currentChannel.name;
+    const description = currentChannel.description || `${currentChannel.articleCount || 0} 篇文章 · ${currentChannel.followCount || 0} 人关注`;
+    
+    return {
+        title: title,
+        description: description,
+        openGraph: {
+            type: "website",
+            locale: locale,
+            siteName: siteName,
+            title: title,
+            description: description,
+            images: currentChannel.cover || currentChannel.avatar
+                ? [
+                    {
+                        url: currentChannel.cover || currentChannel.avatar,
+                        width: 1200,
+                        height: 630,
+                        alt: currentChannel.name,
+                    },
+                ]
+                : undefined,
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: title,
+            description: description,
+            images: currentChannel.cover || currentChannel.avatar ? [currentChannel.cover || currentChannel.avatar] : undefined,
+        },
+    };
 }
 
 export default async function ChannelLayout({ children, params }: ChannelLayoutProps) {

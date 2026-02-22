@@ -80,7 +80,14 @@ export function Header({ categories }: HeaderProps) {
             <div className="flex items-center gap-4">
               {/* 创作按钮 */}
               <div className="relative group">
-                <div className="flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full p-2 cursor-pointer text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <div
+                  className={cn(
+                    "flex items-center justify-center hover:bg-gray-100",
+                    "dark:hover:bg-gray-800 rounded-full p-2 cursor-pointer",
+                    "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors",
+                    isTransparentBgPage && !scrolled && "text-white",
+                  )}
+                >
                   <PenIcon className="size-5" />
                 </div>
                 {/* Hover 面板 */}
@@ -151,7 +158,10 @@ export function Header({ categories }: HeaderProps) {
               </div>
 
               {/* 消息按钮 */}
-              <MessageDropdown />
+              <MessageDropdown
+                isTransparentBgPage={isTransparentBgPage}
+                scrolled={scrolled}
+              />
 
               {/* 用户头像 */}
               <UserDropdown />

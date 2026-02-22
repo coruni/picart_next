@@ -3,8 +3,11 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { ChevronRight } from "lucide-react";
-import { decorationControllerFindAll, decorationControllerGetMyDecorations } from "@/api";
+import { CheckCircle2Icon, ChevronRight, Clock } from "lucide-react";
+import {
+  decorationControllerFindAll,
+  decorationControllerGetMyDecorations,
+} from "@/api";
 
 type DecorationType = "AVATAR_FRAME" | "EMOJI" | "COMMENT";
 
@@ -33,7 +36,7 @@ export default function AccountDecorationPage() {
         const response = await decorationControllerFindAll({
           query: {
             type: activeType,
-            status:'ACTIVE'
+            status: "ACTIVE",
           },
         });
 
@@ -199,83 +202,31 @@ export default function AccountDecorationPage() {
                   ) : decorations.length > 0 ? (
                     <div className="grid grid-cols-2 gap-4">
                       {decorations.map((decoration) => (
-                        <div
-                          key={decoration.id}
-                          className={cn(
-                            "relative rounded-xl p-4 cursor-pointer transition-all",
-                            decoration.isUsing
-                              ? "bg-primary/10"
-                              : "bg-muted hover:bg-muted/80",
-                          )}
-                        >
-                          {/* 使用中标记 */}
-                          {decoration.isUsing && (
-                            <div className="absolute top-3 left-3 size-6 bg-primary rounded-full flex items-center justify-center">
-                              <svg
-                                className="size-4 text-white"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={3}
-                                  d="M5 13l4 4L19 7"
-                                />
-                              </svg>
-                            </div>
-                          )}
-
-                          <div className="flex items-start gap-4">
-                            {/* 头像框预览 */}
-                            <div className="relative size-24 flex-shrink-0">
-                              <img
-                                src={decoration.imageUrl}
-                                alt={decoration.name}
-                                className="w-full h-full object-contain"
-                              />
-                            </div>
-
-                            {/* 装饰品信息 */}
-                            <div className="flex-1 min-w-0">
-                              <div className="font-medium text-base mb-1 truncate">
-                                {decoration.name}
+                        <div className="flex h-31 items-stretch cursor-pointer gap-2 group">
+                          <div className="flex items-center justify-center aspect-square rounded-xl bg-background relative shrink-0 relative">
+                            <Image
+                              fill
+                              src={decoration.imageUrl}
+                              alt={decoration.name}
+                              className="object-cover p-4"
+                            ></Image>
+                            {decoration.isUsing && (
+                              <div className=" absolute top-2 right-2">
+                                <CheckCircle2Icon size={16} className="text-primary"/>
                               </div>
-                              <div className="text-xs text-secondary mb-2">
-                                {decoration.rarity === "COMMON" && "普通"}
-                                {decoration.rarity === "RARE" && "稀有"}
-                                {decoration.rarity === "EPIC" && "史诗"}
-                                {decoration.rarity === "LEGENDARY" && "传说"}
-                                系列
-                              </div>
-                              <div className="flex items-center gap-1 text-xs text-secondary">
-                                <svg
-                                  className="size-3.5"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                  />
-                                </svg>
-                                {decoration.isPermanent ? (
-                                  <span>永久</span>
-                                ) : decoration.expiresAt ? (
-                                  <span>
-                                    {new Date(
-                                      decoration.expiresAt,
-                                    ).toLocaleDateString()}
-                                    到期
-                                  </span>
-                                ) : (
-                                  <span>永久</span>
-                                )}
-                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 p-2 relative flex flex-col">
+                            <h3 className="text-sm group-hover:text-primary">
+                              {decoration.name}
+                            </h3>
+                            <div className="flex items-center mt-auto text-secondary  text-xs gap-1">
+                              <Clock size={12} />
+                              <span>
+                                {decoration.expiresAt
+                                  ? decoration.expiresAt
+                                  : "永久"}
+                              </span>
                             </div>
                           </div>
                         </div>
