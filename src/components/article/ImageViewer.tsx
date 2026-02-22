@@ -22,7 +22,7 @@ export function ImageViewer({
     alt = "Image"
 }: ImageViewerProps) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const viewerRef = useRef<Viewer | null>(null);
+    const viewerRef = useRef<Viewer | null|any>(null);
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const customToolbar = () => {
         // 上一张按钮

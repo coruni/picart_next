@@ -208,7 +208,7 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
                     <ReactionPanel
                         articleId={article.id!}
                         reactionStats={article.reactionStats!}
-                        userReaction={article.userReaction}
+                        userReaction={(article as any).userReaction}
                     />
                 </div>
             </div>

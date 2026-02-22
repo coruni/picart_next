@@ -7,11 +7,7 @@
 export * from "./api";
 
 // 从生成的 API 类型中导出常用基础类型
-export type {
-  BaseResponseDto as ApiResponse,
-  PaginatedResponseDto,
-  ListResponseDto,
-} from "@/api/types.gen";
+
 
 // 导入响应类型用于提取数据类型
 import type {
@@ -49,7 +45,6 @@ import type {
   ConfigControllerGetPublicConfigsResponse,
   ConfigControllerGetAdvertisementConfigResponse,
   UploadControllerFindAllResponse,
-  UploadControllerGetFileInfoResponse,
   UploadControllerUploadFileResponse,
   BannerControllerFindAllResponse,
   BannerControllerFindOneResponse,
@@ -119,7 +114,6 @@ export type AdvertisementConfig = NonNullable<ConfigControllerGetAdvertisementCo
 
 // 上传相关数据类型
 export type UploadList = UploadControllerFindAllResponse;
-export type FileInfo = UploadControllerGetFileInfoResponse;
 export type UploadResultData = UploadControllerUploadFileResponse;
 
 // Banner 相关数据类型

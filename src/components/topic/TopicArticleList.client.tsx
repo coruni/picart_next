@@ -1,11 +1,11 @@
 "use client";
 
-import { ArticleUserList } from "@/types";
+import { ArticleList } from "@/types";
 import { ArticleListClient as SharedArticleListClient } from "@/components/shared";
 import { articleControllerFindAll } from "@/api";
 
 type TopicArticleListClientProps = {
-    initArticles: ArticleUserList;
+    initArticles: ArticleList;
     initPage: number;
     initTotal: number;
     id: string;

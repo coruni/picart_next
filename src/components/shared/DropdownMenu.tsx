@@ -48,7 +48,7 @@ export function DropdownMenu({
   menuClassName,
 }: DropdownMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement | any>(null);
 
   // 点击外部关闭菜单
   useClickOutside(menuRef, () => setIsOpen(false));

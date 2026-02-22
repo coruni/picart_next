@@ -3,35 +3,39 @@ import { TopicArticleListClient } from "@/components/topic/TopicArticleList.clie
 import { generateTopicMetadata } from "@/lib/seo";
 import { Metadata } from "next";
 type TopicDetailNewPageProps = {
-    params: Promise<{
-        id: string;
-        locale: string;
-    }>;
-    searchParams: Promise<{
-        commentId?: string;
-    }>;
+  params: Promise<{
+    id: string;
+    locale: string;
+  }>;
+  searchParams: Promise<{
+    commentId?: string;
+  }>;
 };
 
-export default async function TopicDetailNewPage(props: TopicDetailNewPageProps) {
-    const { locale, id } = await props.params
-    // 请求首次数据
-    const { data } = await articleControllerFindAll({
+export default async function TopicDetailNewPage(
+  props: TopicDetailNewPageProps,
+) {
+  const { locale, id } = await props.params;
+  // 请求首次数据
+  const { data } = await articleControllerFindAll({
+    query: {
+      page: 1,
+      limit: 10,
+      tagId: Number(id),
+    },
+  });
+  return (
+    <TopicArticleListClient
+      initArticles={data?.data.data || []}
+      initPage={2}
+      initTotal={data?.data.meta.total!}
+      id={id}
+      fetchParams={{
         query: {
-            page: 1,
-            limit: 10,
-            tagId: Number(id)
-        }
-    })
-    return (
-        <TopicArticleListClient
-            initArticles={data?.data.data || []}
-            initPage={2}
-            initTotal={data?.data.meta.total!} id={id}
-            fetchParams={{
-                query: {
-                    tagId: id,
-                    type: "latest"
-                }
-            }} />
-    );
+          tagId: id,
+          type: "latest",
+        },
+      }}
+    />
+  );
 }

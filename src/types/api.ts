@@ -4,11 +4,6 @@
  */
 
 // ==================== 基础响应类型 ====================
-export type {
-  BaseResponseDto,
-  PaginatedResponseDto,
-  ListResponseDto,
-} from "@/api/types.gen";
 
 // ==================== 用户相关 ====================
 // 请求类型
@@ -53,14 +48,9 @@ export type {
 export type {
   RoleControllerFindAllResponse,
   RoleControllerFindOneResponse,
-  RoleControllerCreateResponse,
-  RoleControllerUpdateResponse,
   RoleControllerFindWithPaginationResponse,
   RoleControllerGetActiveRolesResponse,
   PermissionControllerFindAllResponse,
-  PermissionControllerFindOneResponse,
-  PermissionControllerCreateResponse,
-  PermissionControllerUpdateResponse,
 } from "@/api/types.gen";
 
 // ==================== 文章相关 ====================
@@ -94,10 +84,7 @@ export type {
   UpdateCommentDto,
 } from "@/api/types.gen";
 
-// 响应类型
-export type {
-  CommentControllerGetRepliesResponse,
-} from "@/api/types.gen";
+
 
 // ==================== 分类和标签 ====================
 // 请求类型
@@ -147,10 +134,7 @@ export type {
 // ==================== 积分相关 ====================
 // 请求类型
 export type {
-  CreatePointsRuleDto,
-  UpdatePointsRuleDto,
-  CreatePointsTaskDto,
-  UpdatePointsTaskDto,
+
   AddPointsDto,
   SpendPointsDto,
 } from "@/api/types.gen";
@@ -206,7 +190,6 @@ export type {
 // 请求类型
 export type {
   CreateConfigDto,
-  UpdateConfigDto,
 } from "@/api/types.gen";
 
 // 响应类型
@@ -221,8 +204,6 @@ export type {
 // 请求类型
 export type {
   Upload,
-  CreateUploadDto,
-  UpdateUploadDto,
   UploadEmojiDto,
   DownloadDto,
 } from "@/api/types.gen";
@@ -230,7 +211,6 @@ export type {
 // 响应类型
 export type {
   UploadControllerFindAllResponse,
-  UploadControllerGetFileInfoResponse,
   UploadControllerUploadFileResponse,
 } from "@/api/types.gen";
 

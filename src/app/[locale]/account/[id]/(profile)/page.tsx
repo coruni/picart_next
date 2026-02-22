@@ -1,5 +1,6 @@
 import { articleControllerFindByAuthor } from "@/api";
 import { ArticleListClient } from "@/components/account/ArticleList.client";
+import { ArticleList } from "@/types";
 
 export default async function AccountHomePage({
   params,
@@ -14,7 +15,7 @@ export default async function AccountHomePage({
   })
   return (
     <ArticleListClient
-      initArticles={data?.data.data! || []}
+      initArticles={data?.data.data as ArticleList || []}
       initPage={2}
       initTotal={data?.data.meta.total!}
       showFollow={false}

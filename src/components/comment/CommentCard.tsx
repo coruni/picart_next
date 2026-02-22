@@ -69,7 +69,7 @@ export function CommentCard({
       <div className="px-4 mt-4">
         <div className="flex items-center ">
           {/* 头像 */}
-          <Avatar size="lg" url={comment.author.avatar}></Avatar>
+          <Avatar className="size-8" url={comment.author.avatar}></Avatar>
           {/* 信息 */}
           <div className="ml-3 flex flex-col flex-1 self-stretch justify-start">
             <span className="leading-5 font-semibold hover:text-primary">{comment.author.nickname || comment.author.username}</span>

@@ -4,13 +4,13 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { CommentCard } from "@/components/comment";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {  UserCommentList } from "@/types";
+import {  CommentList, UserCommentList } from "@/types";
 import { commentControllerGetUserComments } from "@/api";
 
 type CommentListClientProps = {
   initPage: number;
   initTotal: number;
-  initComments: UserCommentList;
+  initComments: UserCommentList|CommentList;
   id: string;
 
   /**
