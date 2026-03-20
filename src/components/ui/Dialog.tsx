@@ -108,7 +108,7 @@ export interface DialogDescriptionProps {
  * ```
  */
 export function Dialog({ open, onOpenChange, children, unmountOnClose = true }: DialogProps) {
-  const dialogIdRef = useRef(`dialog-${Math.random().toString(36).substr(2, 9)}`);
+  const dialogIdRef = useRef(`dialog-${Math.random().toString(36).substring(2, 9)}`);
 
   useEffect(() => {
     if (open) {

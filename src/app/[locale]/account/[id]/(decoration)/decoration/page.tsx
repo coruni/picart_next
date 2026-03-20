@@ -57,7 +57,7 @@ export default function AccountDecorationPage() {
   return (
     <div className="page-container">
       <div className="flex-1 max-w-4xl mx-auto bg-card rounded-xl flex flex-col">
-        <div className="px-4 h-14 flex items-center border-b border-border ">
+        <div className="px-6 h-14 flex items-center border-b border-border ">
           <div className="h-full flex-1 flex items-center">
             <span className="font-bold text-base pr-6">我的装饰品</span>
           </div>
@@ -77,9 +77,10 @@ export default function AccountDecorationPage() {
               )}
             >
               <div className="relative size-16">
-                <img
+                <Image
                   src="/account/decoration/avatar_frame.svg"
                   alt="avatar_frame"
+                  fill
                   className={cn(
                     "absolute w-full h-full top-50% left-50%",
                     activeType === "AVATAR_FRAME"
@@ -87,9 +88,10 @@ export default function AccountDecorationPage() {
                       : "group-hover:hidden",
                   )}
                 />
-                <img
+                <Image
                   src="/account/decoration/avatar_frame_active.svg"
                   alt="avatar_frame"
+                  fill
                   className={cn(
                     "h-full w-full",
                     activeType === "AVATAR_FRAME"
@@ -111,17 +113,19 @@ export default function AccountDecorationPage() {
               )}
             >
               <div className="relative size-16">
-                <img
+                <Image
                   src="/account/decoration/emoji.svg"
                   alt="emoji"
+                  fill
                   className={cn(
                     "absolute w-full h-full top-50% left-50%",
                     activeType === "EMOJI" ? "hidden" : "group-hover:hidden",
                   )}
                 />
-                <img
+                <Image
                   src="/account/decoration/emoji_active.svg"
                   alt="emoji"
+                  fill
                   className={cn(
                     "h-full w-full",
                     activeType === "EMOJI"
@@ -143,7 +147,8 @@ export default function AccountDecorationPage() {
               )}
             >
               <div className="relative size-16">
-                <img
+                <Image
+                  fill
                   src="/account/decoration/comment.svg"
                   alt="comment"
                   className={cn(
@@ -151,7 +156,8 @@ export default function AccountDecorationPage() {
                     activeType === "COMMENT" ? "hidden" : "group-hover:hidden",
                   )}
                 />
-                <img
+                <Image
+                  fill
                   src="/account/decoration/comment_active.svg"
                   alt="comment"
                   className={cn(
@@ -202,7 +208,10 @@ export default function AccountDecorationPage() {
                   ) : decorations.length > 0 ? (
                     <div className="grid grid-cols-2 gap-4">
                       {decorations.map((decoration) => (
-                        <div className="flex h-31 items-stretch cursor-pointer gap-2 group">
+                        <div
+                          className="flex h-31 items-stretch cursor-pointer gap-2 group"
+                          key={decoration.id}
+                        >
                           <div className="flex items-center justify-center aspect-square rounded-xl bg-background relative shrink-0 relative">
                             <Image
                               fill
@@ -212,7 +221,10 @@ export default function AccountDecorationPage() {
                             ></Image>
                             {decoration.isUsing && (
                               <div className=" absolute top-2 right-2">
-                                <CheckCircle2Icon size={16} className="text-primary"/>
+                                <CheckCircle2Icon
+                                  size={16}
+                                  className="text-primary"
+                                />
                               </div>
                             )}
                           </div>
@@ -251,9 +263,24 @@ export default function AccountDecorationPage() {
             {activeType === "EMOJI" && (
               <div className="flex flex-col h-full">
                 <div className="mb-4">
-                  <div className="text-lg font-bold mb-2">表情包</div>
-                  <div className="text-sm text-secondary">
-                    已拥有 {decorations.length} 个表情包
+                  <div
+                    className="h-20 w-full bg-center bg-cover rounded-xl bg-no-repeat flex items-center px-4 justify-between  cursor-pointer gap-4"
+                    style={{
+                      backgroundImage: `url(/account/decoration/avatar_frame_banner.png)`,
+                    }}
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-xl text-[#3db8f5] font-bold">
+                        头像框
+                      </span>
+                      <span className="text-xs text-secondary">
+                        已拥有10个，去了解更多
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-[#3db8f566] text-white">
+                      <ChevronRight size={16} />
+                    </div>
                   </div>
                 </div>
                 <div
@@ -296,7 +323,8 @@ export default function AccountDecorationPage() {
 
                           <div className="flex items-start gap-4">
                             <div className="relative size-20 flex-shrink-0">
-                              <img
+                              <Image
+                                fill
                                 src={decoration.imageUrl}
                                 alt={decoration.name}
                                 className="w-full h-full object-contain"
@@ -358,9 +386,24 @@ export default function AccountDecorationPage() {
             {activeType === "COMMENT" && (
               <div className="flex flex-col h-full">
                 <div className="mb-4">
-                  <div className="text-lg font-bold mb-2">评论装扮</div>
-                  <div className="text-sm text-secondary">
-                    已拥有 {decorations.length} 个评论装扮
+                  <div
+                    className="h-20 w-full bg-center bg-cover rounded-xl bg-no-repeat flex items-center px-4 justify-between  cursor-pointer gap-4"
+                    style={{
+                      backgroundImage: `url(/account/decoration/avatar_frame_banner.png)`,
+                    }}
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-xl text-[#3db8f5] font-bold">
+                        头像框
+                      </span>
+                      <span className="text-xs text-secondary">
+                        已拥有10个，去了解更多
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-[#3db8f566] text-white">
+                      <ChevronRight size={16} />
+                    </div>
                   </div>
                 </div>
                 <div

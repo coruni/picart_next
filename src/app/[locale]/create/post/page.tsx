@@ -5,6 +5,7 @@ import { useForm } from "@/hooks/useForm";
 import AvatarEditor from "react-avatar-editor";
 import { Form, FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
+import { Editor } from "@/components/ui/Editor";
 import { Button } from "@/components/ui/Button";
 import {
   Dialog,
@@ -211,7 +212,14 @@ export default function CreatePostPage(props: CreatePostPageProps) {
                 />
               </FormField>
               <FormField name="content" label="内容">
-                <div></div>
+                <Editor
+                  value={values.content}
+                  onChange={(value: string) => {
+                    setFieldValues({ content: value });
+                  }}
+                  placeholder="请输入帖子内容"
+                  className="min-h-75"
+                />
               </FormField>
 
               {/* <div className="pt-4">

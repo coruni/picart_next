@@ -369,3 +369,46 @@ export async function generateTagMetadata(
     },
   };
 }
+
+
+/**
+ * 生成发布帖子页面 SEO 元数据
+ */
+
+export async function generateCreatePostMetadata(locale: string = "zh"): Promise<Metadata> {
+  const config = await getPublicConfig();
+  const siteName = config?.site_name || "PicArt";
+
+  const keywords = [
+    config?.site_keywords,
+    config?.seo_long_tail_keywords,
+  ]
+    .filter(Boolean)
+    .join(", ")
+    .split(",")
+    .map((k) => k.trim())
+    .filter(Boolean);
+
+  const title = locale === "zh" ? "发布帖子" : "Create Post";
+  const description = locale === "zh"
+    ? "发布你自己的帖子，与他人分享你的创作"
+    : "Create your own post, share your creativity with others";
+
+  return {
+    title: title,
+    description: description,
+    keywords: keywords.length > 0 ? keywords : undefined,
+    openGraph: {
+      type: "website",
+      locale: locale,
+      siteName: siteName,
+      title: title,
+      description: description,
+    },
+    twitter: {
+      card: "summary",
+      title: title,
+      description: description,
+    },
+  };
+}

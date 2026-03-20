@@ -9,11 +9,14 @@ import { generateSiteMetadata } from "@/lib/seo";
 import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
 import { UserStateProvider } from "@/components/providers/UserStateProvider";
 import { getServerCookie } from "@/lib/server-cookies";
-import NextTopLoader from 'nextjs-toploader';
-import { categoryControllerFindAll, configControllerGetPublicConfigs, userControllerGetProfile } from "@/api";
+import NextTopLoader from "nextjs-toploader";
+import {
+  categoryControllerFindAll,
+  configControllerGetPublicConfigs,
+  userControllerGetProfile,
+} from "@/api";
 import { initializeInterceptors } from "@/rumtime.config";
 import type { UserProfile } from "@/types";
-
 
 const TOKEN_COOKIE_NAME = "auth-token";
 
@@ -40,7 +43,7 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
 
-  if (!routing.locales.includes(locale as any)) {
+  if (!routing.locales.includes(locale as "zh" | "en")) {
     notFound();
   }
 
@@ -48,8 +51,8 @@ export default async function LocaleLayout({
 
   // 获取服务端的 token，用于初始化客户端状态
   const initialToken = await getServerCookie(TOKEN_COOKIE_NAME);
-  // 获取分类 
-  const category = await categoryControllerFindAll({ query: { limit: 100 } })
+  // 获取分类
+  const category = await categoryControllerFindAll({ query: { limit: 100 } });
   // 如果有 token，在服务端获取用户资料
   let initialUser: UserProfile | null = null;
   await initializeInterceptors();
@@ -58,14 +61,14 @@ export default async function LocaleLayout({
       // 初始化拦截器，让它自动处理 Authorization 和 Device-Id
       const response = await userControllerGetProfile();
       initialUser = response?.data?.data || null;
-    } catch (error) {
+    } catch {
       // 如果获取失败，客户端会处理（可能是 token 过期）
     }
   }
 
   // 获取网站配置
   const { data } = await configControllerGetPublicConfigs();
-
+  const config = data?.data!;
   return (
     <>
       <NextTopLoader color="#6680ff" showSpinner={false} />
@@ -74,11 +77,13 @@ export default async function LocaleLayout({
         <DeviceFingerprintProvider />
 
         {/* 用户状态同步 */}
-        <UserStateProvider initialToken={initialToken} initialUser={initialUser} initialConfig={data?.data!}>
+        <UserStateProvider
+          initialToken={initialToken}
+          initialUser={initialUser}
+          initialConfig={config}
+        >
           <Header categories={category.data?.data.data} />
-          <div className="flex flex-col flex-1 min-h-screen">
-            {children}
-          </div>
+          <div className="flex flex-col flex-1 min-h-screen">{children}</div>
           <NotificationContainer />
         </UserStateProvider>
       </NextIntlClientProvider>

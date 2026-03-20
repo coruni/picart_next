@@ -102,12 +102,12 @@ export const configControllerFindAll = <ThrowOnError extends boolean = false>(op
 /**
  * 更新所有配置
  */
-export const configControllerUpdateAll = <ThrowOnError extends boolean = false>(options: Options<ConfigControllerUpdateAllData, ThrowOnError>) => (options.client ?? client).patch<ConfigControllerUpdateAllResponses, ConfigControllerUpdateAllErrors, ThrowOnError>({
+export const configControllerUpdateAll = <ThrowOnError extends boolean = false>(options?: Options<ConfigControllerUpdateAllData, ThrowOnError>) => (options?.client ?? client).patch<ConfigControllerUpdateAllResponses, ConfigControllerUpdateAllErrors, ThrowOnError>({
     url: '/config',
     ...options,
     headers: {
         'Content-Type': 'application/json',
-        ...options.headers
+        ...options?.headers
     }
 });
 
@@ -630,7 +630,7 @@ export const commentControllerUpdate = <ThrowOnError extends boolean = false>(op
 /**
  * 获取全部评论
  */
-export const commentControllerFindAllComments = <ThrowOnError extends boolean = false>(options: Options<CommentControllerFindAllCommentsData, ThrowOnError>) => (options.client ?? client).get<CommentControllerFindAllCommentsResponses, unknown, ThrowOnError>({ url: '/comment', ...options });
+export const commentControllerFindAllComments = <ThrowOnError extends boolean = false>(options?: Options<CommentControllerFindAllCommentsData, ThrowOnError>) => (options?.client ?? client).get<CommentControllerFindAllCommentsResponses, unknown, ThrowOnError>({ url: '/comment', ...options });
 
 /**
  * 创建评论
@@ -1150,7 +1150,7 @@ export const reportControllerUpdate = <ThrowOnError extends boolean = false>(opt
 /**
  * 获取装饰品列表
  */
-export const decorationControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<DecorationControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<DecorationControllerFindAllResponses, unknown, ThrowOnError>({ url: '/decoration', ...options });
+export const decorationControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<DecorationControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<DecorationControllerFindAllResponses, unknown, ThrowOnError>({ url: '/decoration', ...options });
 
 /**
  * 创建装饰品

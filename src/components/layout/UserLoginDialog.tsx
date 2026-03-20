@@ -71,7 +71,7 @@ export function UserLoginDialog() {
                 const { data } = await userControllerLogin({
                     body: loginForm.values
                 })
-                setToken(data?.data.token!)
+                setToken(data?.data.token || "");
                 setUser(Object.assign({}, data?.data, { token: undefined, refreshToken: undefined }));
                 window.location.reload();
             } catch (error) {
@@ -138,7 +138,7 @@ export function UserLoginDialog() {
                     }
                 });
 
-                setToken(data?.data.token!);
+                setToken(data?.data.token || "");
                 setUser(Object.assign({}, data?.data, { token: undefined, refreshToken: undefined }));
                 window.location.reload();
             } catch (error) {

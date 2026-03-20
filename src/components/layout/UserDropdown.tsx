@@ -45,7 +45,7 @@ export function UserDropdown() {
         <div className="flex items-center justify-center shrink-0 rounded-full cursor-pointer bg-primary/20 hover:ring-2 hover:ring-primary transition-all">
           <Avatar
             bordered
-            url={user?.avatar!}
+            url={user?.avatar}
             frameUrl={user?.equippedDecorations?.AVATAR_FRAME?.imageUrl}
             className="size-10"
           ></Avatar>

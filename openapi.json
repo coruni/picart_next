@@ -212,7 +212,7 @@
                                 "type": "string"
                               },
                               "displayName": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "description": {
                                 "type": "string"
@@ -445,7 +445,7 @@
                           "type": "string"
                         },
                         "displayName": {
-                          "type": "null"
+                          "type": "string"
                         },
                         "description": {
                           "type": "string"
@@ -646,7 +646,10 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {}
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRoleDto"
+              },
+              "examples": {}
             }
           },
           "required": true
@@ -788,7 +791,7 @@
                                 "type": "string"
                               },
                               "displayName": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "description": {
                                 "type": "string"
@@ -967,7 +970,7 @@
                                 "type": "string"
                               },
                               "displayName": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "description": {
                                 "type": "string"
@@ -1545,12 +1548,1059 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "key": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "group": {
+                      "type": "string"
+                    },
+                    "public": {
+                      "type": "boolean"
+                    },
+                    "createdAt": {
+                      "type": "string"
+                    },
+                    "updatedAt": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "key",
+                    "value"
+                  ]
                 }
-              }
+              },
+              "example": [
+                {
+                  "id": 59,
+                  "key": "ad_article_bottom_content",
+                  "value": "",
+                  "description": "文章底部广告内容（支持HTML）",
+                  "type": "string",
+                  "group": "advertisement",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.799Z",
+                  "updatedAt": "2026-03-05T14:55:30.799Z"
+                },
+                {
+                  "id": 58,
+                  "key": "ad_article_bottom_enabled",
+                  "value": "false",
+                  "description": "是否启用文章底部广告",
+                  "type": "boolean",
+                  "group": "advertisement",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.793Z",
+                  "updatedAt": "2026-03-05T14:55:30.793Z"
+                },
+                {
+                  "id": 57,
+                  "key": "ad_article_top_content",
+                  "value": "",
+                  "description": "文章顶部广告内容（支持HTML）",
+                  "type": "string",
+                  "group": "advertisement",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.785Z",
+                  "updatedAt": "2026-03-05T14:55:30.785Z"
+                },
+                {
+                  "id": 56,
+                  "key": "ad_article_top_enabled",
+                  "value": "false",
+                  "description": "是否启用文章顶部广告",
+                  "type": "boolean",
+                  "group": "advertisement",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.778Z",
+                  "updatedAt": "2026-03-05T14:55:30.778Z"
+                },
+                {
+                  "id": 61,
+                  "key": "ad_global_content",
+                  "value": "",
+                  "description": "全局广告内容（支持HTML）",
+                  "type": "string",
+                  "group": "advertisement",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.814Z",
+                  "updatedAt": "2026-03-05T14:55:30.814Z"
+                },
+                {
+                  "id": 60,
+                  "key": "ad_global_enabled",
+                  "value": "false",
+                  "description": "是否启用全局广告",
+                  "type": "boolean",
+                  "group": "advertisement",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.807Z",
+                  "updatedAt": "2026-03-05T14:55:30.807Z"
+                },
+                {
+                  "id": 62,
+                  "key": "ad_global_position",
+                  "value": "fixed-bottom",
+                  "description": "全局广告位置（fixed-top/fixed-bottom/floating）",
+                  "type": "string",
+                  "group": "advertisement",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.821Z",
+                  "updatedAt": "2026-03-05T14:55:30.821Z"
+                },
+                {
+                  "id": 63,
+                  "key": "ad_global_style",
+                  "value": "background: #f8f9fa; padding: 10px; text-align: center;",
+                  "description": "全局广告样式（CSS）",
+                  "type": "string",
+                  "group": "advertisement",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.827Z",
+                  "updatedAt": "2026-03-05T14:55:30.827Z"
+                },
+                {
+                  "id": 54,
+                  "key": "ad_homepage_content",
+                  "value": "",
+                  "description": "首页广告内容（支持HTML）",
+                  "type": "string",
+                  "group": "advertisement",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.766Z",
+                  "updatedAt": "2026-03-05T14:55:30.766Z"
+                },
+                {
+                  "id": 53,
+                  "key": "ad_homepage_enabled",
+                  "value": "false",
+                  "description": "是否启用首页广告",
+                  "type": "boolean",
+                  "group": "advertisement",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.752Z",
+                  "updatedAt": "2026-03-05T14:55:30.752Z"
+                },
+                {
+                  "id": 55,
+                  "key": "ad_homepage_position",
+                  "value": "top",
+                  "description": "首页广告位置（top/bottom/sidebar）",
+                  "type": "string",
+                  "group": "advertisement",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.772Z",
+                  "updatedAt": "2026-03-05T14:55:30.772Z"
+                },
+                {
+                  "id": 73,
+                  "key": "app_android_download_url",
+                  "value": "",
+                  "description": "Android APP下载地址",
+                  "type": "string",
+                  "group": "app",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.906Z",
+                  "updatedAt": "2026-03-05T14:55:30.906Z"
+                },
+                {
+                  "id": 76,
+                  "key": "app_android_force_update_version",
+                  "value": "",
+                  "description": "Android强制更新版本号",
+                  "type": "string",
+                  "group": "app",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.927Z",
+                  "updatedAt": "2026-03-05T14:55:30.927Z"
+                },
+                {
+                  "id": 71,
+                  "key": "app_android_version",
+                  "value": "1.0.0",
+                  "description": "Android APP最新版本",
+                  "type": "string",
+                  "group": "app",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.887Z",
+                  "updatedAt": "2026-03-05T14:55:30.887Z"
+                },
+                {
+                  "id": 74,
+                  "key": "app_force_update",
+                  "value": "false",
+                  "description": "是否强制更新",
+                  "type": "boolean",
+                  "group": "app",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.913Z",
+                  "updatedAt": "2026-03-05T14:55:30.913Z"
+                },
+                {
+                  "id": 72,
+                  "key": "app_ios_download_url",
+                  "value": "",
+                  "description": "iOS APP下载地址",
+                  "type": "string",
+                  "group": "app",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.895Z",
+                  "updatedAt": "2026-03-05T14:55:30.895Z"
+                },
+                {
+                  "id": 75,
+                  "key": "app_ios_force_update_version",
+                  "value": "",
+                  "description": "iOS强制更新版本号",
+                  "type": "string",
+                  "group": "app",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.920Z",
+                  "updatedAt": "2026-03-05T14:55:30.920Z"
+                },
+                {
+                  "id": 70,
+                  "key": "app_ios_version",
+                  "value": "1.0.0",
+                  "description": "iOS APP最新版本",
+                  "type": "string",
+                  "group": "app",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.881Z",
+                  "updatedAt": "2026-03-05T14:55:30.881Z"
+                },
+                {
+                  "id": 78,
+                  "key": "app_maintenance",
+                  "value": "false",
+                  "description": "APP维护模式",
+                  "type": "boolean",
+                  "group": "app",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.940Z",
+                  "updatedAt": "2026-03-05T14:55:30.940Z"
+                },
+                {
+                  "id": 79,
+                  "key": "app_maintenance_message",
+                  "value": "APP维护中，请稍后再试",
+                  "description": "APP维护提示消息",
+                  "type": "string",
+                  "group": "app",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.947Z",
+                  "updatedAt": "2026-03-05T14:55:30.947Z"
+                },
+                {
+                  "id": 68,
+                  "key": "app_name",
+                  "value": "PicArt",
+                  "description": "APP名称",
+                  "type": "string",
+                  "group": "app",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.869Z",
+                  "updatedAt": "2026-03-05T14:55:30.869Z"
+                },
+                {
+                  "id": 77,
+                  "key": "app_update_message",
+                  "value": "发现新版本，请更新",
+                  "description": "更新提示消息",
+                  "type": "string",
+                  "group": "app",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.933Z",
+                  "updatedAt": "2026-03-05T14:55:30.933Z"
+                },
+                {
+                  "id": 69,
+                  "key": "app_version",
+                  "value": "1.0.0",
+                  "description": "APP版本号",
+                  "type": "string",
+                  "group": "app",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.875Z",
+                  "updatedAt": "2026-03-05T14:55:30.875Z"
+                },
+                {
+                  "id": 44,
+                  "key": "commission_author_rate",
+                  "value": "0.85",
+                  "description": "作者分成比例",
+                  "type": "number",
+                  "group": "commission",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.665Z",
+                  "updatedAt": "2026-03-05T14:55:30.665Z"
+                },
+                {
+                  "id": 42,
+                  "key": "commission_inviter_rate",
+                  "value": "0.05",
+                  "description": "邀请者分成比例",
+                  "type": "number",
+                  "group": "commission",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.638Z",
+                  "updatedAt": "2026-03-05T14:55:30.638Z"
+                },
+                {
+                  "id": 43,
+                  "key": "commission_platform_rate",
+                  "value": "0.1",
+                  "description": "平台分成比例",
+                  "type": "number",
+                  "group": "commission",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.659Z",
+                  "updatedAt": "2026-03-05T14:55:30.659Z"
+                },
+                {
+                  "id": 12,
+                  "key": "article_approval_required",
+                  "value": "false",
+                  "description": "文章是否需要审核",
+                  "type": "boolean",
+                  "group": "content",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.023Z",
+                  "updatedAt": "2026-03-05T14:55:30.023Z"
+                },
+                {
+                  "id": 13,
+                  "key": "article_free_images_count",
+                  "value": "3",
+                  "description": "需要权限的文章默认展示的免费图片数量",
+                  "type": "number",
+                  "group": "content",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.042Z",
+                  "updatedAt": "2026-03-05T14:55:30.042Z"
+                },
+                {
+                  "id": 11,
+                  "key": "comment_approval_required",
+                  "value": "false",
+                  "description": "评论是否需要审核",
+                  "type": "boolean",
+                  "group": "content",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:29.998Z",
+                  "updatedAt": "2026-03-05T14:55:29.998Z"
+                },
+                {
+                  "id": 81,
+                  "key": "favorite_create_cost",
+                  "value": "10",
+                  "description": "创建收藏夹所需积分（超出免费数量后）",
+                  "type": "number",
+                  "group": "favorite",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.964Z",
+                  "updatedAt": "2026-03-05T14:55:30.964Z"
+                },
+                {
+                  "id": 80,
+                  "key": "favorite_max_free_count",
+                  "value": "6",
+                  "description": "免费收藏夹最大数量",
+                  "type": "number",
+                  "group": "favorite",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.956Z",
+                  "updatedAt": "2026-03-05T14:55:30.956Z"
+                },
+                {
+                  "id": 17,
+                  "key": "invite_code_enabled",
+                  "value": "true",
+                  "description": "是否启用邀请码功能",
+                  "type": "boolean",
+                  "group": "invite",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.120Z",
+                  "updatedAt": "2026-03-05T14:55:30.120Z"
+                },
+                {
+                  "id": 19,
+                  "key": "invite_code_expire_days",
+                  "value": "30",
+                  "description": "邀请码默认过期天数（0表示永不过期）",
+                  "type": "number",
+                  "group": "invite",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.147Z",
+                  "updatedAt": "2026-03-05T14:55:30.147Z"
+                },
+                {
+                  "id": 16,
+                  "key": "invite_code_required",
+                  "value": "false",
+                  "description": "注册时是否必须填写邀请码",
+                  "type": "boolean",
+                  "group": "invite",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.101Z",
+                  "updatedAt": "2026-03-05T14:55:30.101Z"
+                },
+                {
+                  "id": 18,
+                  "key": "invite_default_commission_rate",
+                  "value": "0.05",
+                  "description": "默认邀请分成比例",
+                  "type": "number",
+                  "group": "invite",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.135Z",
+                  "updatedAt": "2026-03-05T14:55:30.135Z"
+                },
+                {
+                  "id": 52,
+                  "key": "membership_enabled",
+                  "value": "true",
+                  "description": "是否启用会员功能",
+                  "type": "boolean",
+                  "group": "membership",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.743Z",
+                  "updatedAt": "2026-03-05T14:55:30.743Z"
+                },
+                {
+                  "id": 51,
+                  "key": "membership_name",
+                  "value": "VIP会员",
+                  "description": "会员名称",
+                  "type": "string",
+                  "group": "membership",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.736Z",
+                  "updatedAt": "2026-03-05T14:55:30.736Z"
+                },
+                {
+                  "id": 45,
+                  "key": "membership_price",
+                  "value": "19.9",
+                  "description": "会员月价格（元）",
+                  "type": "number",
+                  "group": "membership",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.672Z",
+                  "updatedAt": "2026-03-05T14:55:30.672Z"
+                },
+                {
+                  "id": 49,
+                  "key": "membership_price_12m",
+                  "value": "238.8",
+                  "description": "会员-年（12个月）价格（元）",
+                  "type": "number",
+                  "group": "membership",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.717Z",
+                  "updatedAt": "2026-03-05T14:55:30.717Z"
+                },
+                {
+                  "id": 46,
+                  "key": "membership_price_1m",
+                  "value": "19.9",
+                  "description": "会员-1个月价格（元）",
+                  "type": "number",
+                  "group": "membership",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.683Z",
+                  "updatedAt": "2026-03-05T14:55:30.683Z"
+                },
+                {
+                  "id": 47,
+                  "key": "membership_price_3m",
+                  "value": "59.7",
+                  "description": "会员-季度（3个月）价格（元）",
+                  "type": "number",
+                  "group": "membership",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.697Z",
+                  "updatedAt": "2026-03-05T14:55:30.697Z"
+                },
+                {
+                  "id": 48,
+                  "key": "membership_price_6m",
+                  "value": "119.4",
+                  "description": "会员-半年（6个月）价格（元）",
+                  "type": "number",
+                  "group": "membership",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.705Z",
+                  "updatedAt": "2026-03-05T14:55:30.705Z"
+                },
+                {
+                  "id": 50,
+                  "key": "membership_price_lifetime",
+                  "value": "999",
+                  "description": "会员-永久价格（元）",
+                  "type": "number",
+                  "group": "membership",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.729Z",
+                  "updatedAt": "2026-03-05T14:55:30.729Z"
+                },
+                {
+                  "id": 22,
+                  "key": "payment_alipay_app_id",
+                  "value": "",
+                  "description": "支付宝应用ID",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.193Z",
+                  "updatedAt": "2026-03-05T14:55:30.193Z"
+                },
+                {
+                  "id": 20,
+                  "key": "payment_alipay_enabled",
+                  "value": "true",
+                  "description": "是否启用支付宝支付",
+                  "type": "boolean",
+                  "group": "payment",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.159Z",
+                  "updatedAt": "2026-03-05T14:55:30.159Z"
+                },
+                {
+                  "id": 25,
+                  "key": "payment_alipay_gateway",
+                  "value": "https://openapi.alipay.com/gateway.do",
+                  "description": "支付宝网关地址",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.250Z",
+                  "updatedAt": "2026-03-05T14:55:30.250Z"
+                },
+                {
+                  "id": 23,
+                  "key": "payment_alipay_private_key",
+                  "value": "",
+                  "description": "支付宝私钥",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.214Z",
+                  "updatedAt": "2026-03-05T14:55:30.214Z"
+                },
+                {
+                  "id": 24,
+                  "key": "payment_alipay_public_key",
+                  "value": "",
+                  "description": "支付宝公钥",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.235Z",
+                  "updatedAt": "2026-03-05T14:55:30.235Z"
+                },
+                {
+                  "id": 38,
+                  "key": "payment_epay_alipay_enabled",
+                  "value": "false",
+                  "description": "是否启用易支付支付宝",
+                  "type": "boolean",
+                  "group": "payment",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.602Z",
+                  "updatedAt": "2026-03-05T14:55:30.602Z"
+                },
+                {
+                  "id": 33,
+                  "key": "payment_epay_app_id",
+                  "value": "",
+                  "description": "易支付应用ID",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.431Z",
+                  "updatedAt": "2026-03-05T14:55:30.431Z"
+                },
+                {
+                  "id": 34,
+                  "key": "payment_epay_app_key",
+                  "value": "",
+                  "description": "易支付应用密钥",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.452Z",
+                  "updatedAt": "2026-03-05T14:55:30.452Z"
+                },
+                {
+                  "id": 32,
+                  "key": "payment_epay_enabled",
+                  "value": "false",
+                  "description": "是否启用易支付",
+                  "type": "boolean",
+                  "group": "payment",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.408Z",
+                  "updatedAt": "2026-03-05T14:55:30.408Z"
+                },
+                {
+                  "id": 35,
+                  "key": "payment_epay_gateway",
+                  "value": "https://pay.example.com",
+                  "description": "易支付网关地址",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.463Z",
+                  "updatedAt": "2026-03-05T14:55:30.463Z"
+                },
+                {
+                  "id": 36,
+                  "key": "payment_epay_notify_url",
+                  "value": "",
+                  "description": "易支付回调通知地址",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.558Z",
+                  "updatedAt": "2026-03-05T14:55:30.558Z"
+                },
+                {
+                  "id": 39,
+                  "key": "payment_epay_usdt_enabled",
+                  "value": "false",
+                  "description": "是否启用易支付USDT",
+                  "type": "boolean",
+                  "group": "payment",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.613Z",
+                  "updatedAt": "2026-03-05T14:55:30.613Z"
+                },
+                {
+                  "id": 37,
+                  "key": "payment_epay_wxpay_enabled",
+                  "value": "false",
+                  "description": "是否启用易支付微信支付",
+                  "type": "boolean",
+                  "group": "payment",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.578Z",
+                  "updatedAt": "2026-03-05T14:55:30.578Z"
+                },
+                {
+                  "id": 40,
+                  "key": "payment_notify_url",
+                  "value": "https://your-domain.com/api/payment/notify",
+                  "description": "支付回调通知地址",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.620Z",
+                  "updatedAt": "2026-03-05T14:55:30.620Z"
+                },
+                {
+                  "id": 41,
+                  "key": "payment_return_url",
+                  "value": "https://your-domain.com/payment/result",
+                  "description": "支付完成返回地址",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.629Z",
+                  "updatedAt": "2026-03-05T14:55:30.629Z"
+                },
+                {
+                  "id": 28,
+                  "key": "payment_wechat_api_key",
+                  "value": "",
+                  "description": "微信支付API密钥",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.313Z",
+                  "updatedAt": "2026-03-05T14:55:30.313Z"
+                },
+                {
+                  "id": 26,
+                  "key": "payment_wechat_app_id",
+                  "value": "",
+                  "description": "微信支付应用ID",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.270Z",
+                  "updatedAt": "2026-03-05T14:55:30.270Z"
+                },
+                {
+                  "id": 21,
+                  "key": "payment_wechat_enabled",
+                  "value": "true",
+                  "description": "是否启用微信支付",
+                  "type": "boolean",
+                  "group": "payment",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.173Z",
+                  "updatedAt": "2026-03-05T14:55:30.173Z"
+                },
+                {
+                  "id": 27,
+                  "key": "payment_wechat_mch_id",
+                  "value": "",
+                  "description": "微信支付商户号",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.288Z",
+                  "updatedAt": "2026-03-05T14:55:30.288Z"
+                },
+                {
+                  "id": 29,
+                  "key": "payment_wechat_private_key",
+                  "value": "",
+                  "description": "微信支付私钥",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.327Z",
+                  "updatedAt": "2026-03-05T14:55:30.327Z"
+                },
+                {
+                  "id": 31,
+                  "key": "payment_wechat_public_key",
+                  "value": "",
+                  "description": "微信支付公钥",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.363Z",
+                  "updatedAt": "2026-03-05T14:55:30.363Z"
+                },
+                {
+                  "id": 30,
+                  "key": "payment_wechat_serial_no",
+                  "value": "",
+                  "description": "微信支付证书序列号",
+                  "type": "string",
+                  "group": "payment",
+                  "public": false,
+                  "createdAt": "2026-03-05T14:55:30.347Z",
+                  "updatedAt": "2026-03-05T14:55:30.347Z"
+                },
+                {
+                  "id": 67,
+                  "key": "seo_article_page_keywords",
+                  "value": "摄影教程,设计文章,创作心得,图片故事,技巧分享",
+                  "description": "文章页面关键词",
+                  "type": "string",
+                  "group": "seo",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.862Z",
+                  "updatedAt": "2026-03-05T14:55:30.862Z"
+                },
+                {
+                  "id": 66,
+                  "key": "seo_author_page_keywords",
+                  "value": "摄影师,设计师,艺术家,创作者,作品展示",
+                  "description": "作者页面关键词",
+                  "type": "string",
+                  "group": "seo",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.848Z",
+                  "updatedAt": "2026-03-05T14:55:30.848Z"
+                },
+                {
+                  "id": 65,
+                  "key": "seo_home_keywords",
+                  "value": "图片社区,摄影作品,设计灵感,高清图片,创意分享",
+                  "description": "首页专属关键词",
+                  "type": "string",
+                  "group": "seo",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.841Z",
+                  "updatedAt": "2026-03-05T14:55:30.841Z"
+                },
+                {
+                  "id": 64,
+                  "key": "seo_long_tail_keywords",
+                  "value": "高清图片下载,免费图片素材,摄影技巧分享,创意设计灵感,图片社交平台,唯美图片欣赏",
+                  "description": "SEO长尾关键词（逗号分隔）",
+                  "type": "string",
+                  "group": "seo",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.834Z",
+                  "updatedAt": "2026-03-05T14:55:30.834Z"
+                },
+                {
+                  "id": 3,
+                  "key": "site_description",
+                  "value": "一个分享图片和创意的社区平台",
+                  "description": "网站描述",
+                  "type": "string",
+                  "group": "site",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:29.580Z",
+                  "updatedAt": "2026-03-05T14:55:29.580Z"
+                },
+                {
+                  "id": 6,
+                  "key": "site_favicon",
+                  "value": "/images/favicon.ico",
+                  "description": "网站图标",
+                  "type": "string",
+                  "group": "site",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:29.760Z",
+                  "updatedAt": "2026-03-05T14:55:29.760Z"
+                },
+                {
+                  "id": 4,
+                  "key": "site_keywords",
+                  "value": "图片,社区,创意,分享",
+                  "description": "网站关键词",
+                  "type": "string",
+                  "group": "site",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:29.609Z",
+                  "updatedAt": "2026-03-05T14:55:29.609Z"
+                },
+                {
+                  "id": 7,
+                  "key": "site_layout",
+                  "value": "grid",
+                  "description": "网站布局样式",
+                  "type": "string",
+                  "group": "site",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:29.837Z",
+                  "updatedAt": "2026-03-05T14:55:29.837Z"
+                },
+                {
+                  "id": 5,
+                  "key": "site_logo",
+                  "value": "/images/logo.png",
+                  "description": "网站Logo",
+                  "type": "string",
+                  "group": "site",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:29.667Z",
+                  "updatedAt": "2026-03-05T14:55:29.667Z"
+                },
+                {
+                  "id": 8,
+                  "key": "site_mail",
+                  "value": "contact@example.com",
+                  "description": "网站隐私邮箱",
+                  "type": "string",
+                  "group": "site",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:29.912Z",
+                  "updatedAt": "2026-03-05T14:55:29.912Z"
+                },
+                {
+                  "id": 1,
+                  "key": "site_name",
+                  "value": "PICART",
+                  "description": "网站名称",
+                  "type": "string",
+                  "group": "site",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:29.530Z",
+                  "updatedAt": "2026-03-05T15:18:19.000Z"
+                },
+                {
+                  "id": 2,
+                  "key": "site_subtitle",
+                  "value": "PicArt 图片社区",
+                  "description": "网站副标题",
+                  "type": "string",
+                  "group": "site",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:29.553Z",
+                  "updatedAt": "2026-03-05T14:55:29.553Z"
+                },
+                {
+                  "id": 15,
+                  "key": "maintenance_message",
+                  "value": "系统维护中，请稍后再试",
+                  "description": "维护模式消息",
+                  "type": "string",
+                  "group": "system",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.085Z",
+                  "updatedAt": "2026-03-05T14:55:30.085Z"
+                },
+                {
+                  "id": 14,
+                  "key": "maintenance_mode",
+                  "value": "false",
+                  "description": "维护模式",
+                  "type": "boolean",
+                  "group": "system",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:30.063Z",
+                  "updatedAt": "2026-03-05T14:55:30.063Z"
+                },
+                {
+                  "id": 89,
+                  "key": "telegram_api_hash",
+                  "value": "4f0d7bc4a966ea5fee51dc1ac89206ef",
+                  "description": "Telegram API Hash（用于 MTProto 用户会话，从 my.telegram.org 获取）",
+                  "type": "string",
+                  "group": "telegram",
+                  "public": false,
+                  "createdAt": "2026-03-11T17:51:17.917Z",
+                  "updatedAt": "2026-03-11T17:51:55.000Z"
+                },
+                {
+                  "id": 88,
+                  "key": "telegram_api_id",
+                  "value": "29619173",
+                  "description": "Telegram API ID（用于 MTProto 用户会话，从 my.telegram.org 获取）",
+                  "type": "string",
+                  "group": "telegram",
+                  "public": false,
+                  "createdAt": "2026-03-11T17:51:17.873Z",
+                  "updatedAt": "2026-03-11T17:51:50.000Z"
+                },
+                {
+                  "id": 82,
+                  "key": "telegram_bot_token",
+                  "value": "7024104115:AAGP1KriAllDtVqDHB_xOYsbQ_PWPI92gVQ",
+                  "description": "Telegram Bot Token",
+                  "type": "string",
+                  "group": "telegram",
+                  "public": false,
+                  "createdAt": "2026-03-11T08:48:48.649Z",
+                  "updatedAt": "2026-03-11T15:20:40.000Z"
+                },
+                {
+                  "id": 95,
+                  "key": "telegram_download_enabled",
+                  "value": "true",
+                  "description": "是否启用 Telegram 下载功能",
+                  "type": "boolean",
+                  "group": "telegram",
+                  "public": true,
+                  "createdAt": "2026-03-11T17:51:17.997Z",
+                  "updatedAt": "2026-03-11T17:53:23.000Z"
+                },
+                {
+                  "id": 86,
+                  "key": "telegram_forward_chat_id",
+                  "value": "-1003724873592",
+                  "description": "Telegram 转发频道ID（用于处理消息链接，Bot需有管理员权限）",
+                  "type": "string",
+                  "group": "telegram",
+                  "public": false,
+                  "createdAt": "2026-03-11T08:48:48.721Z",
+                  "updatedAt": "2026-03-11T17:04:19.000Z"
+                },
+                {
+                  "id": 97,
+                  "key": "telegram_max_requests_per_minute",
+                  "value": "20",
+                  "description": "Telegram 每分钟最大请求数（用于频率限制）",
+                  "type": "number",
+                  "group": "telegram",
+                  "public": true,
+                  "createdAt": "2026-03-11T17:51:18.015Z",
+                  "updatedAt": "2026-03-11T17:51:18.015Z"
+                },
+                {
+                  "id": 92,
+                  "key": "telegram_mtproto_proxy_enabled",
+                  "value": "false",
+                  "description": "是否启用 MTProto 代理",
+                  "type": "boolean",
+                  "group": "telegram",
+                  "public": true,
+                  "createdAt": "2026-03-11T17:51:17.954Z",
+                  "updatedAt": "2026-03-11T17:51:17.954Z"
+                },
+                {
+                  "id": 94,
+                  "key": "telegram_mtproto_proxy_url",
+                  "value": "",
+                  "description": "MTProto 代理地址（如 socks5://127.0.0.1:1080 或 https://tproxy.example.com）",
+                  "type": "string",
+                  "group": "telegram",
+                  "public": true,
+                  "createdAt": "2026-03-11T17:51:17.975Z",
+                  "updatedAt": "2026-03-11T17:51:17.975Z"
+                },
+                {
+                  "id": 83,
+                  "key": "telegram_proxy_enabled",
+                  "value": "false",
+                  "description": "是否启用 Telegram 反代",
+                  "type": "boolean",
+                  "group": "telegram",
+                  "public": true,
+                  "createdAt": "2026-03-11T08:48:48.691Z",
+                  "updatedAt": "2026-03-11T08:48:48.691Z"
+                },
+                {
+                  "id": 84,
+                  "key": "telegram_proxy_url",
+                  "value": "",
+                  "description": "Telegram API 反代地址（如 https://api.example.com）",
+                  "type": "string",
+                  "group": "telegram",
+                  "public": true,
+                  "createdAt": "2026-03-11T08:48:48.707Z",
+                  "updatedAt": "2026-03-11T08:48:48.707Z"
+                },
+                {
+                  "id": 90,
+                  "key": "telegram_session_string",
+                  "value": "1BVtsOIQBu7pqpwmguyiOAVqm79IOS9ZP8shijb6CyNP1thbnWsh9_8D5cuppYcCumYKGC3j4qCiWi4Sbl9fWavl7h97ZxsshGQWeTeTQ6naLJ-8aeQoLuWOAfq4VJjIzmAsQJKYZ7spEVVg8fgoQF1PBiyf439I3FH6BBWNx5yeh_h5uHCtdXD4Oftr2ku_4JQZ7eXxkHALkrjUv2pIK2jVYwY_fFKaXj_iaoQIoUCn5A6UNKKz3UYR2ecqg3TB5QLKLxQyL2NBh2BdTh3sHkkUMZ2ceSECTzftKizNsSDK4dxkcBwWc-UCzmVVwta0Vn7oFqKMwBDm3AjCRHAVAGiOu9y9_Uuc=",
+                  "description": "Telegram 会话字符串（MTProto 用户会话，通过 telegram-session-generator 生成）",
+                  "type": "string",
+                  "group": "telegram",
+                  "public": false,
+                  "createdAt": "2026-03-11T17:51:17.939Z",
+                  "updatedAt": "2026-03-11T17:53:09.000Z"
+                },
+                {
+                  "id": 10,
+                  "key": "user_email_verification",
+                  "value": "false",
+                  "description": "是否需要邮箱验证",
+                  "type": "boolean",
+                  "group": "user",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:29.989Z",
+                  "updatedAt": "2026-03-05T14:55:29.989Z"
+                },
+                {
+                  "id": 9,
+                  "key": "user_registration_enabled",
+                  "value": "true",
+                  "description": "是否允许用户注册",
+                  "type": "boolean",
+                  "group": "user",
+                  "public": true,
+                  "createdAt": "2026-03-05T14:55:29.974Z",
+                  "updatedAt": "2026-03-05T14:55:29.974Z"
+                }
+              ]
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -4968,7 +6018,10 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {}
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserConfigDto"
+              },
+              "examples": {}
             }
           },
           "required": true
@@ -7431,6 +8484,15 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "状态",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           },
           {
@@ -10860,7 +11922,531 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "requireLogin": {
+                                "type": "boolean"
+                              },
+                              "requireFollow": {
+                                "type": "boolean"
+                              },
+                              "requirePayment": {
+                                "type": "boolean"
+                              },
+                              "requireMembership": {
+                                "type": "boolean"
+                              },
+                              "listRequireLogin": {
+                                "type": "boolean"
+                              },
+                              "viewPrice": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string"
+                              },
+                              "content": {
+                                "type": "string"
+                              },
+                              "images": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "sort": {
+                                "type": "integer"
+                              },
+                              "summary": {
+                                "type": "string"
+                              },
+                              "views": {
+                                "type": "integer"
+                              },
+                              "likes": {
+                                "type": "integer"
+                              },
+                              "favoriteCount": {
+                                "type": "integer"
+                              },
+                              "commentCount": {
+                                "type": "integer"
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "cover": {
+                                "type": "string"
+                              },
+                              "authorId": {
+                                "type": "integer"
+                              },
+                              "author": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "username": {
+                                    "type": "string"
+                                  },
+                                  "nickname": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "banned": {
+                                    "type": "string"
+                                  },
+                                  "banReason": {
+                                    "type": "string"
+                                  },
+                                  "avatar": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "background": {
+                                    "type": "string"
+                                  },
+                                  "gender": {
+                                    "type": "string"
+                                  },
+                                  "birthDate": {
+                                    "type": "string"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followerCount": {
+                                    "type": "integer"
+                                  },
+                                  "followingCount": {
+                                    "type": "integer"
+                                  },
+                                  "level": {
+                                    "type": "integer"
+                                  },
+                                  "experience": {
+                                    "type": "integer"
+                                  },
+                                  "wallet": {
+                                    "type": "integer"
+                                  },
+                                  "points": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevel": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevelName": {
+                                    "type": "string"
+                                  },
+                                  "membershipStatus": {
+                                    "type": "string"
+                                  },
+                                  "membershipStartDate": {
+                                    "type": "string"
+                                  },
+                                  "membershipEndDate": {
+                                    "type": "string"
+                                  },
+                                  "lastLoginAt": {
+                                    "type": "string"
+                                  },
+                                  "lastActiveAt": {
+                                    "type": "string"
+                                  },
+                                  "inviterId": {
+                                    "type": "string"
+                                  },
+                                  "myInviteCode": {
+                                    "type": "string"
+                                  },
+                                  "inviteCode": {
+                                    "type": "string"
+                                  },
+                                  "inviteEarnings": {
+                                    "type": "string"
+                                  },
+                                  "inviteCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  },
+                                  "equippedDecorations": {
+                                    "type": "object",
+                                    "properties": {
+                                      "AVATAR_FRAME": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "integer"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "type": {
+                                            "type": "string"
+                                          },
+                                          "imageUrl": {
+                                            "type": "string"
+                                          },
+                                          "rarity": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name",
+                                          "type",
+                                          "imageUrl",
+                                          "rarity"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "AVATAR_FRAME"
+                                    ]
+                                  },
+                                  "isMember": {
+                                    "type": "boolean"
+                                  },
+                                  "isFollowed": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "username",
+                                  "nickname",
+                                  "status",
+                                  "banned",
+                                  "banReason",
+                                  "avatar",
+                                  "description",
+                                  "background",
+                                  "gender",
+                                  "birthDate",
+                                  "articleCount",
+                                  "followerCount",
+                                  "followingCount",
+                                  "level",
+                                  "experience",
+                                  "wallet",
+                                  "points",
+                                  "membershipLevel",
+                                  "membershipLevelName",
+                                  "membershipStatus",
+                                  "membershipStartDate",
+                                  "membershipEndDate",
+                                  "lastLoginAt",
+                                  "lastActiveAt",
+                                  "inviterId",
+                                  "myInviteCode",
+                                  "inviteCode",
+                                  "inviteEarnings",
+                                  "inviteCount",
+                                  "createdAt",
+                                  "updatedAt",
+                                  "equippedDecorations",
+                                  "isMember",
+                                  "isFollowed"
+                                ]
+                              },
+                              "category": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "parentId": {
+                                    "type": "integer"
+                                  },
+                                  "link": {
+                                    "type": "string"
+                                  },
+                                  "parent": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "parentId": {
+                                        "type": "string"
+                                      },
+                                      "link": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "link",
+                                      "avatar",
+                                      "background",
+                                      "cover",
+                                      "sort",
+                                      "status",
+                                      "articleCount",
+                                      "followCount",
+                                      "createdAt",
+                                      "updatedAt",
+                                      "parentId"
+                                    ]
+                                  },
+                                  "avatar": {
+                                    "type": "string"
+                                  },
+                                  "background": {
+                                    "type": "string"
+                                  },
+                                  "cover": {
+                                    "type": "string"
+                                  },
+                                  "sort": {
+                                    "type": "integer"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "description",
+                                  "parentId",
+                                  "link",
+                                  "parent",
+                                  "avatar",
+                                  "background",
+                                  "cover",
+                                  "sort",
+                                  "status",
+                                  "articleCount",
+                                  "followCount",
+                                  "createdAt",
+                                  "updatedAt"
+                                ]
+                              },
+                              "tags": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer"
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "description": {
+                                      "type": "string"
+                                    },
+                                    "avatar": {
+                                      "type": "string"
+                                    },
+                                    "background": {
+                                      "type": "string"
+                                    },
+                                    "cover": {
+                                      "type": "string"
+                                    },
+                                    "sort": {
+                                      "type": "integer"
+                                    },
+                                    "articleCount": {
+                                      "type": "integer"
+                                    },
+                                    "followCount": {
+                                      "type": "integer"
+                                    },
+                                    "createdAt": {
+                                      "type": "string"
+                                    },
+                                    "updatedAt": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "description",
+                                    "avatar",
+                                    "background",
+                                    "cover",
+                                    "sort",
+                                    "articleCount",
+                                    "followCount",
+                                    "createdAt",
+                                    "updatedAt"
+                                  ]
+                                }
+                              },
+                              "downloads": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer"
+                                    },
+                                    "type": {
+                                      "type": "string"
+                                    },
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "password": {
+                                      "type": "string"
+                                    },
+                                    "extractionCode": {
+                                      "type": "string"
+                                    },
+                                    "articleId": {
+                                      "type": "integer"
+                                    },
+                                    "createdAt": {
+                                      "type": "string"
+                                    },
+                                    "updatedAt": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "type",
+                                    "url",
+                                    "password",
+                                    "extractionCode",
+                                    "articleId",
+                                    "createdAt",
+                                    "updatedAt"
+                                  ]
+                                }
+                              },
+                              "downloadCount": {
+                                "type": "integer"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              },
+                              "isLiked": {
+                                "type": "boolean"
+                              },
+                              "isPaid": {
+                                "type": "boolean"
+                              },
+                              "imageCount": {
+                                "type": "integer"
+                              },
+                              "reactionStats": {
+                                "type": "object",
+                                "properties": {
+                                  "like": {
+                                    "type": "integer"
+                                  },
+                                  "love": {
+                                    "type": "integer"
+                                  },
+                                  "haha": {
+                                    "type": "integer"
+                                  },
+                                  "wow": {
+                                    "type": "integer"
+                                  },
+                                  "sad": {
+                                    "type": "integer"
+                                  },
+                                  "angry": {
+                                    "type": "integer"
+                                  },
+                                  "dislike": {
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "like",
+                                  "love",
+                                  "haha",
+                                  "wow",
+                                  "sad",
+                                  "angry",
+                                  "dislike"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "author",
+                              "id"
+                            ]
                           }
                         },
                         "meta": {
@@ -12347,7 +13933,365 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "viewCount": {
+                                "type": "integer"
+                              },
+                              "progress": {
+                                "type": "integer"
+                              },
+                              "duration": {
+                                "type": "integer"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              },
+                              "article": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "cover": {
+                                    "type": "string"
+                                  },
+                                  "summary": {
+                                    "type": "string"
+                                  },
+                                  "views": {
+                                    "type": "integer"
+                                  },
+                                  "likes": {
+                                    "type": "integer"
+                                  },
+                                  "commentCount": {
+                                    "type": "integer"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  },
+                                  "author": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "username": {
+                                        "type": "string"
+                                      },
+                                      "nickname": {
+                                        "type": "string"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "banned": {
+                                        "type": "null"
+                                      },
+                                      "banReason": {
+                                        "type": "null"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "gender": {
+                                        "type": "string"
+                                      },
+                                      "birthDate": {
+                                        "type": "null"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followerCount": {
+                                        "type": "integer"
+                                      },
+                                      "followingCount": {
+                                        "type": "integer"
+                                      },
+                                      "level": {
+                                        "type": "integer"
+                                      },
+                                      "experience": {
+                                        "type": "integer"
+                                      },
+                                      "wallet": {
+                                        "type": "integer"
+                                      },
+                                      "points": {
+                                        "type": "integer"
+                                      },
+                                      "membershipLevel": {
+                                        "type": "integer"
+                                      },
+                                      "membershipLevelName": {
+                                        "type": "string"
+                                      },
+                                      "membershipStatus": {
+                                        "type": "string"
+                                      },
+                                      "membershipStartDate": {
+                                        "type": "null"
+                                      },
+                                      "membershipEndDate": {
+                                        "type": "null"
+                                      },
+                                      "lastLoginAt": {
+                                        "type": "string"
+                                      },
+                                      "lastActiveAt": {
+                                        "type": "null"
+                                      },
+                                      "inviterId": {
+                                        "type": "null"
+                                      },
+                                      "myInviteCode": {
+                                        "type": "string"
+                                      },
+                                      "inviteCode": {
+                                        "type": "null"
+                                      },
+                                      "inviteEarnings": {
+                                        "type": "string"
+                                      },
+                                      "inviteCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      },
+                                      "equippedDecorations": {
+                                        "type": "object",
+                                        "properties": {
+                                          "AVATAR_FRAME": {
+                                            "type": "object",
+                                            "properties": {
+                                              "id": {
+                                                "type": "integer"
+                                              },
+                                              "name": {
+                                                "type": "string"
+                                              },
+                                              "type": {
+                                                "type": "string"
+                                              },
+                                              "imageUrl": {
+                                                "type": "string"
+                                              },
+                                              "rarity": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": [
+                                              "id",
+                                              "name",
+                                              "type",
+                                              "imageUrl",
+                                              "rarity"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "AVATAR_FRAME"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "username",
+                                      "nickname",
+                                      "status",
+                                      "banned",
+                                      "banReason",
+                                      "avatar",
+                                      "description",
+                                      "background",
+                                      "gender",
+                                      "birthDate",
+                                      "articleCount",
+                                      "followerCount",
+                                      "followingCount",
+                                      "level",
+                                      "experience",
+                                      "wallet",
+                                      "points",
+                                      "membershipLevel",
+                                      "membershipLevelName",
+                                      "membershipStatus",
+                                      "membershipStartDate",
+                                      "membershipEndDate",
+                                      "lastLoginAt",
+                                      "lastActiveAt",
+                                      "inviterId",
+                                      "myInviteCode",
+                                      "inviteCode",
+                                      "inviteEarnings",
+                                      "inviteCount",
+                                      "createdAt",
+                                      "updatedAt",
+                                      "equippedDecorations"
+                                    ]
+                                  },
+                                  "category": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "parentId": {
+                                        "type": "integer"
+                                      },
+                                      "link": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "parentId",
+                                      "link",
+                                      "avatar",
+                                      "background",
+                                      "cover",
+                                      "sort",
+                                      "status",
+                                      "articleCount",
+                                      "followCount",
+                                      "createdAt",
+                                      "updatedAt"
+                                    ]
+                                  },
+                                  "tags": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "integer"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "description": {
+                                          "type": "string"
+                                        },
+                                        "avatar": {
+                                          "type": "string"
+                                        },
+                                        "background": {
+                                          "type": "string"
+                                        },
+                                        "cover": {
+                                          "type": "string"
+                                        },
+                                        "sort": {
+                                          "type": "integer"
+                                        },
+                                        "articleCount": {
+                                          "type": "integer"
+                                        },
+                                        "followCount": {
+                                          "type": "integer"
+                                        },
+                                        "createdAt": {
+                                          "type": "string"
+                                        },
+                                        "updatedAt": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "description",
+                                        "avatar",
+                                        "background",
+                                        "cover",
+                                        "sort",
+                                        "articleCount",
+                                        "followCount",
+                                        "createdAt",
+                                        "updatedAt"
+                                      ]
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "title",
+                                  "cover",
+                                  "summary",
+                                  "views",
+                                  "likes",
+                                  "commentCount",
+                                  "status",
+                                  "createdAt",
+                                  "updatedAt",
+                                  "author",
+                                  "category",
+                                  "tags"
+                                ]
+                              }
+                            }
                           }
                         },
                         "meta": {
@@ -14139,7 +16083,10 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {}
+              "schema": {
+                "$ref": "#/components/schemas/ArticleLikeDto"
+              },
+              "examples": {}
             }
           },
           "required": true
@@ -16471,7 +18418,7 @@
             "name": "articleId",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -16480,7 +18427,7 @@
             "name": "userId",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -16489,7 +18436,7 @@
             "name": "keyword",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -16540,6 +18487,64 @@
         "responses": {
           "200": {
             "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "page": {
+                              "type": "integer"
+                            },
+                            "limit": {
+                              "type": "integer"
+                            },
+                            "totalPages": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "total",
+                            "page",
+                            "limit",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "data",
+                        "meta"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           }
         },
@@ -17622,6 +19627,28 @@
             }
           },
           {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
+            }
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "description": "",
@@ -18488,6 +20515,28 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
             }
           },
           {
@@ -19594,8 +21643,50 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {}
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "description"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
                 }
               }
             },
@@ -19766,7 +21857,41 @@
             "description": "获取成功",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "description"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
               }
             },
             "headers": {}
@@ -20086,6 +22211,168 @@
         "responses": {
           "200": {
             "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "userId": {
+                                "type": "integer"
+                              },
+                              "authorId": {
+                                "type": "integer"
+                              },
+                              "articleId": {
+                                "type": "null"
+                              },
+                              "orderNo": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "amount": {
+                                "type": "string"
+                              },
+                              "paymentMethod": {
+                                "type": "null"
+                              },
+                              "paymentOrderNo": {
+                                "type": "null"
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "paidAt": {
+                                "type": "null"
+                              },
+                              "details": {
+                                "type": "object",
+                                "properties": {
+                                  "plan": {
+                                    "type": "string"
+                                  },
+                                  "duration": {
+                                    "type": "integer"
+                                  },
+                                  "basePrice": {
+                                    "type": "integer"
+                                  },
+                                  "isLifetime": {
+                                    "type": "boolean"
+                                  },
+                                  "totalAmount": {
+                                    "type": "integer"
+                                  },
+                                  "membershipName": {
+                                    "type": "string"
+                                  },
+                                  "membershipLevel": {
+                                    "type": "integer"
+                                  },
+                                  "remark": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "plan",
+                                  "duration",
+                                  "basePrice",
+                                  "isLifetime",
+                                  "totalAmount",
+                                  "membershipName",
+                                  "membershipLevel"
+                                ]
+                              },
+                              "remark": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "userId",
+                              "authorId",
+                              "articleId",
+                              "orderNo",
+                              "type",
+                              "title",
+                              "amount",
+                              "paymentMethod",
+                              "paymentOrderNo",
+                              "status",
+                              "paidAt",
+                              "details",
+                              "remark",
+                              "createdAt",
+                              "updatedAt"
+                            ]
+                          }
+                        },
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "page": {
+                              "type": "integer"
+                            },
+                            "limit": {
+                              "type": "integer"
+                            },
+                            "totalPages": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "total",
+                            "page",
+                            "limit",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "data",
+                        "meta"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           }
         },
@@ -20711,7 +22998,10 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {}
+              "schema": {
+                "$ref": "#/components/schemas/CreateArticleOrderDto"
+              },
+              "examples": {}
             }
           },
           "required": true
@@ -20789,7 +23079,10 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {}
+              "schema": {
+                "$ref": "#/components/schemas/CreateMembershipOrderDto"
+              },
+              "examples": {}
             }
           },
           "required": true
@@ -20797,6 +23090,149 @@
         "responses": {
           "201": {
             "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "userId": {
+                              "type": "integer"
+                            },
+                            "authorId": {
+                              "type": "integer"
+                            },
+                            "articleId": {
+                              "type": "null"
+                            },
+                            "orderNo": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "amount": {
+                              "type": "integer"
+                            },
+                            "paymentMethod": {
+                              "type": "null"
+                            },
+                            "paymentOrderNo": {
+                              "type": "null"
+                            },
+                            "status": {
+                              "type": "string"
+                            },
+                            "paidAt": {
+                              "type": "null"
+                            },
+                            "details": {
+                              "type": "object",
+                              "properties": {
+                                "membershipLevel": {
+                                  "type": "integer"
+                                },
+                                "membershipName": {
+                                  "type": "string"
+                                },
+                                "duration": {
+                                  "type": "integer"
+                                },
+                                "isLifetime": {
+                                  "type": "boolean"
+                                },
+                                "plan": {
+                                  "type": "string"
+                                },
+                                "basePrice": {
+                                  "type": "integer"
+                                },
+                                "totalAmount": {
+                                  "type": "integer"
+                                },
+                                "remark": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "membershipLevel",
+                                "membershipName",
+                                "duration",
+                                "isLifetime",
+                                "plan",
+                                "basePrice",
+                                "totalAmount",
+                                "remark"
+                              ]
+                            },
+                            "remark": {
+                              "type": "string"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "userId",
+                            "authorId",
+                            "articleId",
+                            "orderNo",
+                            "type",
+                            "title",
+                            "amount",
+                            "paymentMethod",
+                            "paymentOrderNo",
+                            "status",
+                            "paidAt",
+                            "details",
+                            "remark",
+                            "createdAt",
+                            "updatedAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "success",
+                        "message",
+                        "data"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           },
           "400": {
@@ -21411,6 +23847,28 @@
               "maximum": 100,
               "default": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
             }
           },
           {
@@ -23418,6 +25876,28 @@
             }
           },
           {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
+            }
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "description": "",
@@ -24159,7 +26639,10 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {}
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentDto"
+              },
+              "examples": {}
             }
           },
           "required": true
@@ -24167,6 +26650,61 @@
         "responses": {
           "201": {
             "description": "支付创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "paymentId": {
+                              "type": "integer"
+                            },
+                            "paymentUrl": {
+                              "type": "string"
+                            },
+                            "paymentMethod": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "paymentId",
+                            "paymentUrl",
+                            "paymentMethod"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "success",
+                        "message",
+                        "data"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           }
         },
@@ -24824,6 +27362,28 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
             }
           },
           {
@@ -26116,7 +28676,7 @@
             "name": "type",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -26125,7 +28685,7 @@
             "name": "status",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -26146,6 +28706,28 @@
             "required": false,
             "schema": {
               "type": "integer"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
             }
           },
           {
@@ -28487,6 +31069,28 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
             }
           },
           {
@@ -31240,6 +33844,28 @@
             }
           },
           {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
+            }
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "description": "",
@@ -32652,6 +35278,9 @@
             "type": "string",
             "description": "提取码",
             "example": "1234"
+          },
+          "visibleWithoutPermission": {
+            "type": "boolean"
           }
         },
         "required": [
@@ -32782,14 +35411,7 @@
         "required": [
           "title",
           "content",
-          "sort",
           "categoryId",
-          "requireLogin",
-          "requireFollow",
-          "requirePayment",
-          "requireMembership",
-          "listRequireLogin",
-          "viewPrice",
           "type"
         ]
       },
@@ -32988,11 +35610,7 @@
           }
         },
         "required": [
-          "name",
-          "avatar",
-          "background",
-          "cover",
-          "sort"
+          "name"
         ]
       },
       "UpdateTagDto": {
