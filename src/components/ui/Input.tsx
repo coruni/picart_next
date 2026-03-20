@@ -7,13 +7,15 @@ import { cn } from "@/lib/utils";
  * 输入框组件属性接口
  * @interface InputProps
  * @extends {InputHTMLAttributes<HTMLInputElement>}
- * 
+ *
  * @property {boolean} [error] - 是否显示错误状态
  * @property {boolean} [fullWidth] - 是否占满容器宽度
+ * @property {boolean} [showMaxLength] - 是否显示字符计数
  */
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: boolean;
   fullWidth?: boolean;
+  showMaxLength?: boolean;
 }
 
 /**
@@ -38,25 +40,38 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
  * ```
  */
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, error, fullWidth, type = "text", ...props }, ref) => {
+  ({ className, error, fullWidth, showMaxLength, value, maxLength, type = "text", ...props }, ref) => {
+    const inputValue = value ?? "";
+    const currentLength = typeof inputValue === "string" ? inputValue.length : 0;
+
     return (
-      <input
-        type={type}
-        className={cn(
-          "flex h-10 rounded-lg border bg-card px-3 py-2 text-sm",
-          "placeholder:text-gray-400 dark:placeholder:text-gray-500",
-          "focus:ring-offset-0 outline-none focus:outline-none",
-          "disabled:cursor-not-allowed disabled:opacity-50",
-          "transition-colors duration-200",
-          error
-            ? "border-red-500 focus:ring-red-500 dark:border-red-400"
-            : "border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary hover:border-primary",
-          fullWidth && "w-full",
-          className,
+      <div className={cn("relative", fullWidth && "w-full")}>
+        <input
+          type={type}
+          className={cn(
+            "flex h-10 rounded-lg border bg-card px-3 py-2 text-sm",
+            "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+            "focus:ring-offset-0 outline-none focus:outline-none",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            "transition-colors duration-200",
+            error
+              ? "border-red-500 focus:ring-red-500 dark:border-red-400"
+              : "border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary hover:border-primary",
+            fullWidth && "w-full",
+            showMaxLength && maxLength && "pr-13",
+            className,
+          )}
+          ref={ref}
+          value={value}
+          maxLength={maxLength}
+          {...props}
+        />
+        {showMaxLength && maxLength && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-secondary pointer-events-none">
+            {currentLength}/{maxLength}
+          </span>
         )}
-        ref={ref}
-        {...props}
-      />
+      </div>
     );
   },
 );
