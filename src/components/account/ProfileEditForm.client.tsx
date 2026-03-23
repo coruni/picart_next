@@ -8,7 +8,12 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/Dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/Dialog";
 import { userControllerUpdate, uploadControllerUploadFile } from "@/api";
 import type { UserDetail } from "@/types";
 
@@ -31,20 +36,26 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
   });
   const [avatarUrl, setAvatarUrl] = useState(user.avatar || "");
   const [backgroundUrl, setBackgroundUrl] = useState(user.background || "");
-  
+
   // Avatar editor states
   const [showAvatarEditor, setShowAvatarEditor] = useState(false);
-  const [selectedAvatarImage, setSelectedAvatarImage] = useState<File | null>(null);
+  const [selectedAvatarImage, setSelectedAvatarImage] = useState<File | null>(
+    null,
+  );
   const [avatarScale, setAvatarScale] = useState(1);
   const [avatarUploading, setAvatarUploading] = useState(false);
-  const [avatarLastTouchDistance, setAvatarLastTouchDistance] = useState<number | null>(null);
+  const [avatarLastTouchDistance, setAvatarLastTouchDistance] = useState<
+    number | null
+  >(null);
 
   // Background editor states
   const [showBackgroundEditor, setShowBackgroundEditor] = useState(false);
-  const [selectedBackgroundImage, setSelectedBackgroundImage] = useState<File | null>(null);
+  const [selectedBackgroundImage, setSelectedBackgroundImage] =
+    useState<File | null>(null);
   const [backgroundScale, setBackgroundScale] = useState(1);
   const [backgroundUploading, setBackgroundUploading] = useState(false);
-  const [backgroundLastTouchDistance, setBackgroundLastTouchDistance] = useState<number | null>(null);
+  const [backgroundLastTouchDistance, setBackgroundLastTouchDistance] =
+    useState<number | null>(null);
 
   // Avatar handlers
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,9 +75,13 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
     try {
       const canvas = avatarEditorRef.current.getImageScaledToCanvas();
       const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => {
-          resolve(blob!);
-        }, "image/jpeg", 0.95);
+        canvas.toBlob(
+          (blob) => {
+            resolve(blob!);
+          },
+          "image/jpeg",
+          0.95,
+        );
       });
 
       const croppedFile = new File([blob], selectedAvatarImage.name, {
@@ -115,9 +130,13 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
     try {
       const canvas = backgroundEditorRef.current.getImageScaledToCanvas();
       const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => {
-          resolve(blob!);
-        }, "image/jpeg", 0.95);
+        canvas.toBlob(
+          (blob) => {
+            resolve(blob!);
+          },
+          "image/jpeg",
+          0.95,
+        );
       });
 
       const croppedFile = new File([blob], selectedBackgroundImage.name, {
@@ -233,7 +252,6 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
         },
       });
 
-
       router.push(`/${locale}/account/${user.id}`);
       router.refresh();
     } catch (error) {
@@ -249,7 +267,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
         <div className="mb-8 flex flex-col items-center">
           <div className="relative mt-4">
             <Avatar url={avatarUrl} className="mb-4 size-28" />
-            
+
             <input
               id="avatar-upload"
               type="file"
@@ -306,6 +324,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
             {t("gender")}
           </label>
           <Select
+            key="gender"
             value={formData.gender}
             onChange={(value) => setFormData({ ...formData, gender: value })}
             options={[
@@ -338,7 +357,13 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
 
         {/* 提交按钮 */}
         <div className="flex gap-4 justify-center">
-          <Button type="submit" variant="default" loading={loading} size="lg" className="rounded-full h-10 max-w-2xs w-full">
+          <Button
+            type="submit"
+            variant="default"
+            loading={loading}
+            size="lg"
+            className="rounded-full h-10 max-w-2xs w-full"
+          >
             {t("save")}
           </Button>
         </div>
@@ -350,11 +375,11 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
           <DialogHeader>
             <DialogTitle>{t("cropAvatar")}</DialogTitle>
           </DialogHeader>
-          
+
           <div className="flex flex-col items-center gap-4 py-4">
             {selectedAvatarImage && (
               <>
-                <div 
+                <div
                   className="w-full max-w-sm aspect-square rounded-lg overflow-hidden cursor-move touch-none"
                   onWheel={handleAvatarWheel}
                   onTouchStart={handleAvatarTouchStart}
@@ -371,7 +396,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
                     color={[0, 0, 0, 0.6]}
                     scale={avatarScale}
                     rotate={0}
-                    style={{ width: '100%', height: '100%' }}
+                    style={{ width: "100%", height: "100%" }}
                   />
                 </div>
 
@@ -408,12 +433,15 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
       </Dialog>
 
       {/* Background Editor Modal */}
-      <Dialog open={showBackgroundEditor} onOpenChange={setShowBackgroundEditor}>
+      <Dialog
+        open={showBackgroundEditor}
+        onOpenChange={setShowBackgroundEditor}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>{t("cropBackground")}</DialogTitle>
           </DialogHeader>
-          
+
           <div className="flex flex-col gap-4 py-4">
             {selectedBackgroundImage && (
               <>
@@ -428,13 +456,15 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
                   )}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-white text-center">
-                      <div className="text-sm opacity-75">{t("backgroundPreview")}</div>
+                      <div className="text-sm opacity-75">
+                        {t("backgroundPreview")}
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Crop area */}
-                <div 
+                <div
                   className="w-full aspect-[21/9] rounded-lg overflow-hidden cursor-move touch-none"
                   onWheel={handleBackgroundWheel}
                   onTouchStart={handleBackgroundTouchStart}
@@ -451,7 +481,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
                     color={[0, 0, 0, 0.6]}
                     scale={backgroundScale}
                     rotate={0}
-                    style={{ width: '100%', height: '100%' }}
+                    style={{ width: "100%", height: "100%" }}
                   />
                 </div>
 

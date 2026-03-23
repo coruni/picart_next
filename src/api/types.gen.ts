@@ -4,6 +4,23 @@ export type ClientOptions = {
     baseUrl: string;
 };
 
+export type 装饰 = {
+    COMMENT_BUBBLE: {
+        id: number;
+        name: string;
+        type: string;
+        imageUrl: string;
+        rarity: string;
+    };
+    AVATAR_FRAME: {
+        id: number;
+        name: string;
+        type: string;
+        imageUrl: string;
+        rarity: string;
+    };
+};
+
 export type CreatePermissionDto = {
     /**
      * 权限名称
@@ -426,7 +443,7 @@ export type DownloadDto = {
     /**
      * 下载类型
      */
-    type: 'baidu' | 'onedrive' | 'google' | 'quark' | 'aliyun' | 'dropbox' | 'direct' | 'lanzou' | 'mega' | 'other';
+    type: 'baidu' | 'onedrive' | 'google' | 'quark' | 'aliyun' | 'dropbox' | 'direct' | 'lanzou' | 'mega' | 'telegram' | 'other';
     /**
      * 下载链接
      */
@@ -439,6 +456,9 @@ export type DownloadDto = {
      * 提取码
      */
     extractionCode?: string;
+    /**
+     * 是否在文章需要权限时仍可见
+     */
     visibleWithoutPermission?: boolean;
 };
 
@@ -466,7 +486,7 @@ export type CreateArticleDto = {
     /**
      * 排序
      */
-    sort?: number;
+    sort: number;
     /**
      * 分类ID
      */
@@ -486,27 +506,27 @@ export type CreateArticleDto = {
     /**
      * 是否需要登录后才能查看
      */
-    requireLogin?: boolean;
+    requireLogin: boolean;
     /**
      * 是否仅关注后可查看
      */
-    requireFollow?: boolean;
+    requireFollow: boolean;
     /**
      * 是否需要支付后才能查看
      */
-    requirePayment?: boolean;
+    requirePayment: boolean;
     /**
      * 是否需要会员才能查看
      */
-    requireMembership?: boolean;
+    requireMembership: boolean;
     /**
      * 仅登录后才在列表显示
      */
-    listRequireLogin?: boolean;
+    listRequireLogin: boolean;
     /**
      * 查看所需支付金额
      */
-    viewPrice?: number;
+    viewPrice: number;
     /**
      * 文章类型
      */
@@ -622,19 +642,19 @@ export type CreateTagDto = {
     /**
      * 标签头像
      */
-    avatar?: string;
+    avatar: string;
     /**
      * 标签背景
      */
-    background?: string;
+    background: string;
     /**
      * 标签封面
      */
-    cover?: string;
+    cover: string;
     /**
      * 排序
      */
-    sort?: number;
+    sort: number;
 };
 
 export type UpdateTagDto = {
@@ -1732,7 +1752,7 @@ export type RoleControllerFindAllResponses = {
 export type RoleControllerFindAllResponse = RoleControllerFindAllResponses[keyof RoleControllerFindAllResponses];
 
 export type RoleControllerCreateData = {
-    body: unknown;
+    body: CreateRoleDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -1748,8 +1768,10 @@ export type RoleControllerCreateResponses = {
     /**
      * 创建成功
      */
-    201: unknown;
+    201: Role;
 };
+
+export type RoleControllerCreateResponse = RoleControllerCreateResponses[keyof RoleControllerCreateResponses];
 
 export type RoleControllerRemoveData = {
     body?: never;
@@ -1834,8 +1856,10 @@ export type RoleControllerUpdateResponses = {
     /**
      * 更新成功
      */
-    200: unknown;
+    200: Role;
 };
+
+export type RoleControllerUpdateResponse = RoleControllerUpdateResponses[keyof RoleControllerUpdateResponses];
 
 export type RoleControllerFindWithPaginationData = {
     body?: never;
@@ -1939,7 +1963,7 @@ export type RoleControllerGetActiveRolesResponses = {
 export type RoleControllerGetActiveRolesResponse = RoleControllerGetActiveRolesResponses[keyof RoleControllerGetActiveRolesResponses];
 
 export type RoleControllerAssignPermissionsData = {
-    body: unknown;
+    body: AssignPermissionsDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -2054,17 +2078,7 @@ export type ConfigControllerFindAllResponses = {
 export type ConfigControllerFindAllResponse = ConfigControllerFindAllResponses[keyof ConfigControllerFindAllResponses];
 
 export type ConfigControllerUpdateAllData = {
-    body?: Array<{
-        id: number;
-        key: string;
-        value: string;
-        description?: string;
-        type?: string;
-        group?: string;
-        public?: boolean;
-        createdAt?: string;
-        updatedAt?: string;
-    }>;
+    body: Array<string>;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -2099,7 +2113,7 @@ export type ConfigControllerUpdateAllResponses = {
 };
 
 export type ConfigControllerCreateData = {
-    body: unknown;
+    body: CreateConfigDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -2227,82 +2241,6 @@ export type ConfigControllerUpdateGroupResponses = {
     200: unknown;
 };
 
-export type ConfigControllerFindByKeyData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        /**
-         * 配置键
-         */
-        key: string;
-    };
-    query?: never;
-    url: '/config/key/{key}';
-};
-
-export type ConfigControllerFindByKeyErrors = {
-    /**
-     * 配置不存在
-     */
-    404: unknown;
-};
-
-export type ConfigControllerFindByKeyResponses = {
-    /**
-     * 获取成功
-     */
-    200: unknown;
-};
-
-export type ConfigControllerUpdateByKeyData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        /**
-         * 配置键
-         */
-        key: string;
-    };
-    query?: never;
-    url: '/config/key/{key}';
-};
-
-export type ConfigControllerUpdateByKeyErrors = {
-    /**
-     * 请求参数错误
-     */
-    400: unknown;
-    /**
-     * 未授权
-     */
-    401: unknown;
-    /**
-     * 权限不足
-     */
-    403: unknown;
-    /**
-     * 配置不存在
-     */
-    404: unknown;
-};
-
-export type ConfigControllerUpdateByKeyResponses = {
-    /**
-     * 更新成功
-     */
-    200: unknown;
-};
-
 export type ConfigControllerGetPublicConfigsData = {
     body?: never;
     headers?: {
@@ -2384,6 +2322,12 @@ export type ConfigControllerGetPublicConfigsResponses = {
             app_maintenance_message: string;
             favorite_max_free_count: number;
             favorite_create_cost: number;
+            telegram_proxy_enabled: boolean;
+            telegram_proxy_url: string;
+            telegram_mtproto_proxy_enabled: boolean;
+            telegram_mtproto_proxy_url: string;
+            telegram_download_enabled: boolean;
+            telegram_max_requests_per_minute: number;
         };
     };
 };
@@ -2520,6 +2464,50 @@ export type ConfigControllerUpdateResponses = {
     200: unknown;
 };
 
+export type ConfigControllerUpdateByKeyData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 配置键
+         */
+        key: string;
+    };
+    query?: never;
+    url: '/config/key/{key}';
+};
+
+export type ConfigControllerUpdateByKeyErrors = {
+    /**
+     * 请求参数错误
+     */
+    400: unknown;
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 权限不足
+     */
+    403: unknown;
+    /**
+     * 配置不存在
+     */
+    404: unknown;
+};
+
+export type ConfigControllerUpdateByKeyResponses = {
+    /**
+     * 更新成功
+     */
+    200: unknown;
+};
+
 export type UserControllerFindAllData = {
     body?: never;
     headers?: {
@@ -2552,56 +2540,136 @@ export type UserControllerFindAllResponses = {
         message: string;
         data: {
             data: Array<{
-                id?: number;
-                username?: string;
-                nickname?: string;
-                status?: string;
-                banned?: string;
-                banReason?: string;
-                avatar?: string;
-                description?: string;
-                background?: string;
-                gender?: string;
-                birthDate?: unknown;
-                articleCount?: number;
-                followerCount?: number;
-                followingCount?: number;
-                level?: number;
-                experience?: number;
-                score?: number;
-                wallet?: number;
-                membershipLevel?: number;
-                membershipLevelName?: string;
-                membershipStatus?: string;
-                membershipStartDate?: string;
-                membershipEndDate?: string;
-                lastLoginAt?: string;
-                lastActiveAt?: string;
-                refreshToken?: string;
-                inviterId?: string;
-                myInviteCode?: string;
-                inviteCode?: string;
-                inviteEarnings?: string;
-                inviteCount?: number;
-                roles?: Array<{
-                    id?: number;
-                    name?: string;
-                    displayName?: unknown;
-                    description?: string;
-                    isActive?: boolean;
-                    isSystem?: boolean;
-                    permissions?: Array<{
+                id: number;
+                username: string;
+                nickname: string;
+                email: string;
+                phone: string;
+                status: string;
+                banned: boolean;
+                banReason: string;
+                avatar: string;
+                description: string;
+                background: string;
+                address: string;
+                gender: string;
+                birthDate: string;
+                articleCount: number;
+                followerCount: number;
+                followingCount: number;
+                level: number;
+                experience: number;
+                wallet: number;
+                points: number;
+                membershipLevel: number;
+                membershipLevelName: string;
+                membershipStatus: string;
+                membershipStartDate: string;
+                membershipEndDate: string;
+                lastLoginAt: string;
+                lastActiveAt: string;
+                inviterId: string;
+                myInviteCode: string;
+                inviteCode: string;
+                inviteEarnings: string;
+                inviteCount: number;
+                roles: Array<{
+                    id: number;
+                    name: string;
+                    displayName: string;
+                    description: string;
+                    isActive: boolean;
+                    isSystem: boolean;
+                    permissions: Array<{
                         id: number;
                         name: string;
                         description: string;
                     }>;
-                    createdAt?: string;
-                    updatedAt?: string;
+                    createdAt: string;
+                    updatedAt: string;
                 }>;
-                createdAt?: string;
-                updatedAt?: string;
-                isFollowed?: boolean;
-                isMember?: boolean;
+                config: {
+                    id: number;
+                    userId: number;
+                    articleCommissionRate: string;
+                    membershipCommissionRate: string;
+                    productCommissionRate: string;
+                    serviceCommissionRate: string;
+                    enableCustomCommission: boolean;
+                    enableSystemNotification: boolean;
+                    enableCommentNotification: boolean;
+                    enableLikeNotification: boolean;
+                    enableFollowNotification: boolean;
+                    enableMessageNotification: boolean;
+                    enableOrderNotification: boolean;
+                    enablePaymentNotification: boolean;
+                    enableInviteNotification: boolean;
+                    enableEmailNotification: boolean;
+                    enableSmsNotification: boolean;
+                    enablePushNotification: boolean;
+                    hideFavorites: boolean;
+                    remark: unknown;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                createdAt: string;
+                updatedAt: string;
+                isMember: boolean;
+                isFollowed: boolean;
+                articles: Array<{
+                    id: number;
+                    title: string;
+                    requireLogin: boolean;
+                    requireFollow: boolean;
+                    requirePayment: boolean;
+                    requireMembership: boolean;
+                    listRequireLogin: boolean;
+                    viewPrice: string;
+                    type: string;
+                    content: string;
+                    sort: number;
+                    summary: unknown;
+                    views: number;
+                    likes: number;
+                    favoriteCount: number;
+                    commentCount: number;
+                    status: string;
+                    cover: string;
+                    authorId: number;
+                    category: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        parentId: unknown;
+                        link: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                    tags: Array<{
+                        id: number;
+                        name: string;
+                        description: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    }>;
+                    downloadCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                }>;
+                equippedDecorations: 装饰;
             }>;
             meta: {
                 total: number;
@@ -2616,7 +2684,7 @@ export type UserControllerFindAllResponses = {
 export type UserControllerFindAllResponse = UserControllerFindAllResponses[keyof UserControllerFindAllResponses];
 
 export type UserControllerCreateData = {
-    body: unknown;
+    body: CreateUserDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -2644,11 +2712,93 @@ export type UserControllerCreateErrors = {
 };
 
 export type UserControllerCreateResponses = {
-    /**
-     * 创建成功
-     */
-    201: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            username: string;
+            nickname: string;
+            email: string;
+            phone: string;
+            status: string;
+            banned: string;
+            banReason: string;
+            avatar: string;
+            description: string;
+            background: string;
+            address: string;
+            gender: string;
+            birthDate: string;
+            articleCount: number;
+            followerCount: number;
+            followingCount: number;
+            level: number;
+            experience: number;
+            wallet: number;
+            points: number;
+            membershipLevel: number;
+            membershipLevelName: string;
+            membershipStatus: string;
+            membershipStartDate: string;
+            membershipEndDate: string;
+            lastLoginAt: string;
+            lastActiveAt: string;
+            inviterId: string;
+            myInviteCode: string;
+            inviteCode: string;
+            inviteEarnings: string;
+            inviteCount: number;
+            roles: Array<{
+                id?: number;
+                name?: string;
+                displayName?: string;
+                description?: string;
+                isActive?: boolean;
+                isSystem?: boolean;
+                permissions?: Array<{
+                    id: number;
+                    name: string;
+                    description: string;
+                }>;
+                createdAt?: string;
+                updatedAt?: string;
+            }>;
+            config: {
+                id: number;
+                userId: number;
+                articleCommissionRate: string;
+                membershipCommissionRate: string;
+                productCommissionRate: string;
+                serviceCommissionRate: string;
+                enableCustomCommission: boolean;
+                enableSystemNotification: boolean;
+                enableCommentNotification: boolean;
+                enableLikeNotification: boolean;
+                enableFollowNotification: boolean;
+                enableMessageNotification: boolean;
+                enableOrderNotification: boolean;
+                enablePaymentNotification: boolean;
+                enableInviteNotification: boolean;
+                enableEmailNotification: boolean;
+                enableSmsNotification: boolean;
+                enablePushNotification: boolean;
+                hideFavorites: boolean;
+                remark: unknown;
+                createdAt: string;
+                updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+            isMember: boolean;
+            token: string;
+            refreshToken: string;
+            equippedDecorations: 装饰;
+        };
+    };
 };
+
+export type UserControllerCreateResponse = UserControllerCreateResponses[keyof UserControllerCreateResponses];
 
 export type UserControllerRemoveData = {
     body?: never;
@@ -2720,12 +2870,15 @@ export type UserControllerFindOneResponses = {
             id: number;
             username: string;
             nickname: string;
+            email: string;
+            phone: string;
             status: string;
             banned: string;
             banReason: string;
             avatar: string;
             description: string;
             background: string;
+            address: string;
             gender: string;
             birthDate: string;
             articleCount: number;
@@ -2762,19 +2915,35 @@ export type UserControllerFindOneResponses = {
                 createdAt?: string;
                 updatedAt?: string;
             }>;
+            config: {
+                id: number;
+                userId: number;
+                articleCommissionRate: string;
+                membershipCommissionRate: string;
+                productCommissionRate: string;
+                serviceCommissionRate: string;
+                enableCustomCommission: boolean;
+                enableSystemNotification: boolean;
+                enableCommentNotification: boolean;
+                enableLikeNotification: boolean;
+                enableFollowNotification: boolean;
+                enableMessageNotification: boolean;
+                enableOrderNotification: boolean;
+                enablePaymentNotification: boolean;
+                enableInviteNotification: boolean;
+                enableEmailNotification: boolean;
+                enableSmsNotification: boolean;
+                enablePushNotification: boolean;
+                hideFavorites: boolean;
+                remark: unknown;
+                createdAt: string;
+                updatedAt: string;
+            };
             createdAt: string;
             updatedAt: string;
-            equippedDecorations: {
-                AVATAR_FRAME: {
-                    id: number;
-                    name: string;
-                    type: string;
-                    imageUrl: string;
-                    rarity: string;
-                };
-            };
             isFollowed: boolean;
             isMember: boolean;
+            equippedDecorations: 装饰;
         };
     };
 };
@@ -2782,7 +2951,7 @@ export type UserControllerFindOneResponses = {
 export type UserControllerFindOneResponse = UserControllerFindOneResponses[keyof UserControllerFindOneResponses];
 
 export type UserControllerUpdateData = {
-    body: unknown;
+    body: UpdateUserDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -2920,16 +3089,8 @@ export type UserControllerGetProfileResponses = {
             };
             createdAt: string;
             updatedAt: string;
-            equippedDecorations: {
-                AVATAR_FRAME: {
-                    id: number;
-                    name: string;
-                    type: string;
-                    imageUrl: string;
-                    rarity: string;
-                };
-            };
             isMember: boolean;
+            equippedDecorations: 装饰;
         };
     };
 };
@@ -3001,7 +3162,7 @@ export type UserControllerGetFollowersData = {
     path: {
         id: string;
     };
-    query?: {
+    query: {
         /**
          * 页码
          */
@@ -3010,13 +3171,28 @@ export type UserControllerGetFollowersData = {
          * 每页数量
          */
         limit?: number;
+        keyword: string;
     };
     url: '/user/{id}/followers';
 };
 
 export type UserControllerGetFollowersResponses = {
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<string>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
 };
+
+export type UserControllerGetFollowersResponse = UserControllerGetFollowersResponses[keyof UserControllerGetFollowersResponses];
 
 export type UserControllerGetFollowingsData = {
     body?: never;
@@ -3029,7 +3205,7 @@ export type UserControllerGetFollowingsData = {
     path: {
         id: string;
     };
-    query?: {
+    query: {
         /**
          * 页码
          */
@@ -3038,6 +3214,7 @@ export type UserControllerGetFollowingsData = {
          * 每页数量
          */
         limit?: number;
+        keyword: string;
     };
     url: '/user/{id}/followings';
 };
@@ -3047,17 +3224,7 @@ export type UserControllerGetFollowingsResponses = {
         code: number;
         message: string;
         data: {
-            data: Array<{
-                id: number;
-                username: string;
-                nickname: string;
-                status: string;
-                avatar: string;
-                description: string;
-                createdAt: string;
-                isMember: boolean;
-                isFollowed: boolean;
-            }>;
+            data: Array<string>;
             meta: {
                 total: number;
                 page: number;
@@ -3117,7 +3284,7 @@ export type UserControllerGetUserCommissionConfigResponses = {
             enableSmsNotification: boolean;
             enablePushNotification: boolean;
             hideFavorites: boolean;
-            remark: string;
+            remark: unknown;
             createdAt: string;
             updatedAt: string;
         };
@@ -3127,7 +3294,7 @@ export type UserControllerGetUserCommissionConfigResponses = {
 export type UserControllerGetUserCommissionConfigResponse = UserControllerGetUserCommissionConfigResponses[keyof UserControllerGetUserCommissionConfigResponses];
 
 export type UserControllerSetUserCommissionConfigData = {
-    body: unknown;
+    body: UserCommissionConfigDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3154,8 +3321,40 @@ export type UserControllerSetUserCommissionConfigResponses = {
     /**
      * 设置成功
      */
-    201: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            message: string;
+            data: {
+                id: number;
+                userId: number;
+                articleCommissionRate: number;
+                membershipCommissionRate: number;
+                productCommissionRate: number;
+                serviceCommissionRate: number;
+                enableCustomCommission: boolean;
+                enableSystemNotification: boolean;
+                enableCommentNotification: boolean;
+                enableLikeNotification: boolean;
+                enableFollowNotification: boolean;
+                enableMessageNotification: boolean;
+                enableOrderNotification: boolean;
+                enablePaymentNotification: boolean;
+                enableInviteNotification: boolean;
+                enableEmailNotification: boolean;
+                enableSmsNotification: boolean;
+                enablePushNotification: boolean;
+                hideFavorites: boolean;
+                remark: string;
+                createdAt: string;
+                updatedAt: string;
+            };
+        };
+    };
 };
+
+export type UserControllerSetUserCommissionConfigResponse = UserControllerSetUserCommissionConfigResponses[keyof UserControllerSetUserCommissionConfigResponses];
 
 export type UserControllerGetUserConfigData = {
     body?: never;
@@ -3208,7 +3407,7 @@ export type UserControllerGetUserConfigResponses = {
             enableSmsNotification: boolean;
             enablePushNotification: boolean;
             hideFavorites: boolean;
-            remark: string;
+            remark: unknown;
             createdAt: string;
             updatedAt: string;
         };
@@ -3253,10 +3452,7 @@ export type UserControllerUpdateUserConfigResponses = {
 };
 
 export type UserControllerLoginData = {
-    body: {
-        account: string;
-        password: string;
-    };
+    body: LoginDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3287,153 +3483,33 @@ export type UserControllerLoginResponses = {
             username: string;
             nickname: string;
             email: string;
-            phone: unknown;
+            phone: string;
             status: string;
-            banned: unknown;
-            banReason: unknown;
+            banned: string;
+            banReason: string;
             avatar: string;
             description: string;
-            background: unknown;
-            address: unknown;
+            background: string;
+            address: string;
             gender: string;
-            birthDate: unknown;
+            birthDate: string;
             articleCount: number;
             followerCount: number;
             followingCount: number;
             level: number;
             experience: number;
-            score: number;
             wallet: number;
+            points: number;
             membershipLevel: number;
             membershipLevelName: string;
             membershipStatus: string;
             membershipStartDate: string;
-            membershipEndDate: unknown;
+            membershipEndDate: string;
             lastLoginAt: string;
-            lastActiveAt: unknown;
-            refreshToken: string;
-            inviterId: unknown;
-            myInviteCode: unknown;
-            inviteCode: unknown;
-            inviteEarnings: string;
-            inviteCount: number;
-            roles: Array<{
-                id?: number;
-                name?: string;
-                displayName?: unknown;
-                description?: string;
-                isActive?: boolean;
-                isSystem?: boolean;
-                permissions?: Array<{
-                    id: number;
-                    name: string;
-                    description: string;
-                }>;
-                createdAt?: string;
-                updatedAt?: string;
-            }>;
-            config: {
-                id: number;
-                userId: number;
-                articleCommissionRate: string;
-                membershipCommissionRate: string;
-                productCommissionRate: string;
-                serviceCommissionRate: string;
-                enableCustomCommission: boolean;
-                enableSystemNotification: boolean;
-                enableCommentNotification: boolean;
-                enableLikeNotification: boolean;
-                enableFollowNotification: boolean;
-                enableMessageNotification: boolean;
-                enableOrderNotification: boolean;
-                enablePaymentNotification: boolean;
-                enableInviteNotification: boolean;
-                enableEmailNotification: boolean;
-                enableSmsNotification: boolean;
-                enablePushNotification: boolean;
-                hideFavorites: boolean;
-                remark: string;
-                createdAt: string;
-                updatedAt: string;
-            };
-            createdAt: string;
-            updatedAt: string;
-            isMember: boolean;
-            token: string;
-        };
-    };
-};
-
-export type UserControllerLoginResponse = UserControllerLoginResponses[keyof UserControllerLoginResponses];
-
-export type UserControllerRegisterUserData = {
-    body: unknown;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/user/register';
-};
-
-export type UserControllerRegisterUserErrors = {
-    /**
-     * 请求参数不合法
-     */
-    400: unknown;
-    /**
-     * 用户不存在
-     */
-    404: unknown;
-    /**
-     * 用户名已存在
-     */
-    409: unknown;
-};
-
-export type UserControllerRegisterUserResponses = {
-    /**
-     * 注册成功，返回用户信息
-     */
-    201: {
-        code: number;
-        message: string;
-        data: {
-            id: number;
-            username: string;
-            nickname: unknown;
-            email: string;
-            phone: unknown;
-            status: string;
-            banned: unknown;
-            banReason: unknown;
-            avatar: unknown;
-            description: unknown;
-            background: unknown;
-            address: unknown;
-            gender: string;
-            birthDate: unknown;
-            articleCount: number;
-            followerCount: number;
-            followingCount: number;
-            level: number;
-            experience: number;
-            score: number;
-            wallet: number;
-            membershipLevel: number;
-            membershipLevelName: string;
-            membershipStatus: string;
-            membershipStartDate: unknown;
-            membershipEndDate: unknown;
-            lastLoginAt: unknown;
-            lastActiveAt: unknown;
-            refreshToken: string;
-            inviterId: unknown;
+            lastActiveAt: string;
+            inviterId: string;
             myInviteCode: string;
-            inviteCode: unknown;
+            inviteCode: string;
             inviteEarnings: string;
             inviteCount: number;
             roles: Array<{
@@ -3479,6 +3555,128 @@ export type UserControllerRegisterUserResponses = {
             updatedAt: string;
             isMember: boolean;
             token: string;
+            refreshToken: string;
+            equippedDecorations: 装饰;
+        };
+    };
+};
+
+export type UserControllerLoginResponse = UserControllerLoginResponses[keyof UserControllerLoginResponses];
+
+export type UserControllerRegisterUserData = {
+    body: CreateUserDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/user/register';
+};
+
+export type UserControllerRegisterUserErrors = {
+    /**
+     * 请求参数不合法
+     */
+    400: unknown;
+    /**
+     * 用户不存在
+     */
+    404: unknown;
+    /**
+     * 用户名已存在
+     */
+    409: unknown;
+};
+
+export type UserControllerRegisterUserResponses = {
+    /**
+     * 注册成功，返回用户信息
+     */
+    201: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            username: string;
+            nickname: string;
+            email: string;
+            phone: string;
+            status: string;
+            banned: string;
+            banReason: string;
+            avatar: string;
+            description: string;
+            background: string;
+            address: string;
+            gender: string;
+            birthDate: string;
+            articleCount: number;
+            followerCount: number;
+            followingCount: number;
+            level: number;
+            experience: number;
+            wallet: number;
+            points: number;
+            membershipLevel: number;
+            membershipLevelName: string;
+            membershipStatus: string;
+            membershipStartDate: string;
+            membershipEndDate: string;
+            lastLoginAt: string;
+            lastActiveAt: string;
+            inviterId: string;
+            myInviteCode: string;
+            inviteCode: string;
+            inviteEarnings: string;
+            inviteCount: number;
+            roles: Array<{
+                id?: number;
+                name?: string;
+                displayName?: string;
+                description?: string;
+                isActive?: boolean;
+                isSystem?: boolean;
+                permissions?: Array<{
+                    id: number;
+                    name: string;
+                    description: string;
+                }>;
+                createdAt?: string;
+                updatedAt?: string;
+            }>;
+            config: {
+                id: number;
+                userId: number;
+                articleCommissionRate: string;
+                membershipCommissionRate: string;
+                productCommissionRate: string;
+                serviceCommissionRate: string;
+                enableCustomCommission: boolean;
+                enableSystemNotification: boolean;
+                enableCommentNotification: boolean;
+                enableLikeNotification: boolean;
+                enableFollowNotification: boolean;
+                enableMessageNotification: boolean;
+                enableOrderNotification: boolean;
+                enablePaymentNotification: boolean;
+                enableInviteNotification: boolean;
+                enableEmailNotification: boolean;
+                enableSmsNotification: boolean;
+                enablePushNotification: boolean;
+                hideFavorites: boolean;
+                remark: unknown;
+                createdAt: string;
+                updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+            isMember: boolean;
+            token: string;
+            refreshToken: string;
+            equippedDecorations: 装饰;
         };
     };
 };
@@ -3518,8 +3716,17 @@ export type UserControllerLogoutData = {
 };
 
 export type UserControllerLogoutResponses = {
-    201: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+        };
+    };
 };
+
+export type UserControllerLogoutResponse = UserControllerLogoutResponses[keyof UserControllerLogoutResponses];
 
 export type UserControllerFollowData = {
     body?: never;
@@ -3537,8 +3744,17 @@ export type UserControllerFollowData = {
 };
 
 export type UserControllerFollowResponses = {
-    201: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+        };
+    };
 };
+
+export type UserControllerFollowResponse = UserControllerFollowResponses[keyof UserControllerFollowResponses];
 
 export type UserControllerUnfollowData = {
     body?: never;
@@ -3556,11 +3772,20 @@ export type UserControllerUnfollowData = {
 };
 
 export type UserControllerUnfollowResponses = {
-    201: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+        };
+    };
 };
 
+export type UserControllerUnfollowResponse = UserControllerUnfollowResponses[keyof UserControllerUnfollowResponses];
+
 export type UserControllerCalculateCommissionData = {
-    body: unknown;
+    body: CalculateCommissionDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3587,39 +3812,19 @@ export type UserControllerCalculateCommissionResponses = {
     /**
      * 计算成功
      */
-    200: unknown;
-};
-
-export type UserControllerRechargeWalletData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            commissionAmount: number;
+            commissionRate: number;
+            userAmount: number;
+            configType: string;
+        };
     };
-    path?: never;
-    query?: never;
-    url: '/user/wallet/recharge';
 };
 
-export type UserControllerRechargeWalletErrors = {
-    /**
-     * 请求参数错误
-     */
-    400: unknown;
-    /**
-     * 未授权
-     */
-    401: unknown;
-};
-
-export type UserControllerRechargeWalletResponses = {
-    /**
-     * 充值成功
-     */
-    200: unknown;
-};
+export type UserControllerCalculateCommissionResponse = UserControllerCalculateCommissionResponses[keyof UserControllerCalculateCommissionResponses];
 
 export type UserControllerWithdrawWalletData = {
     body?: never;
@@ -3653,7 +3858,7 @@ export type UserControllerWithdrawWalletResponses = {
 };
 
 export type UserControllerSendVerificationCodeData = {
-    body: unknown;
+    body: SendMailDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3684,15 +3889,20 @@ export type UserControllerSendVerificationCodeResponses = {
     /**
      * 发送成功
      */
-    200: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+        };
+    };
 };
 
+export type UserControllerSendVerificationCodeResponse = UserControllerSendVerificationCodeResponses[keyof UserControllerSendVerificationCodeResponses];
+
 export type UserControllerResetPasswordData = {
-    body?: {
-        email: string;
-        code: string;
-        newPassword: string;
-    };
+    body?: never;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3758,7 +3968,7 @@ export type UserControllerBatchCheckMembershipStatusResponses = {
 };
 
 export type UserControllerChangePasswordData = {
-    body: unknown;
+    body: ChangePasswordDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3803,24 +4013,25 @@ export type UserControllerSignInData = {
 
 export type UserControllerSignInErrors = {
     /**
-     * 今天已经签到过了
+     * 签到成功
      */
-    400: unknown;
+    400: {
+        code: number;
+        message: string;
+        data: unknown;
+        timestamp: string;
+        path: string;
+    };
     /**
      * 未授权
      */
     401: unknown;
 };
 
-export type UserControllerSignInResponses = {
-    /**
-     * 签到成功
-     */
-    200: unknown;
-};
+export type UserControllerSignInError = UserControllerSignInErrors[keyof UserControllerSignInErrors];
 
 export type UserControllerUpdateNotificationSettingsData = {
-    body: unknown;
+    body: UpdateUserNoticeDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -3917,7 +4128,7 @@ export type UserControllerGetWalletTransactionsResponses = {
             total: number;
             page: number;
             limit: number;
-            totalPages: number;
+            totalPages: unknown;
         };
     };
 };
@@ -3948,8 +4159,17 @@ export type UserControllerGetWalletStatisticsResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            currentBalance: number;
+            transactions: Array<string>;
+        };
+    };
 };
+
+export type UserControllerGetWalletStatisticsResponse = UserControllerGetWalletStatisticsResponses[keyof UserControllerGetWalletStatisticsResponses];
 
 export type UserControllerGetWalletBalanceData = {
     body?: never;
@@ -4015,8 +4235,21 @@ export type UserControllerGetSignInRecordsResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: Array<{
+            id: number;
+            userId: number;
+            signInDate: string;
+            consecutiveDays: number;
+            isAuto: boolean;
+            createdAt: string;
+        }>;
+    };
 };
+
+export type UserControllerGetSignInRecordsResponse = UserControllerGetSignInRecordsResponses[keyof UserControllerGetSignInRecordsResponses];
 
 export type UserControllerGetSignInStatsData = {
     body?: never;
@@ -4042,8 +4275,77 @@ export type UserControllerGetSignInStatsResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            hasSignedToday: boolean;
+            totalDays: number;
+            consecutiveDays: number;
+            todaySignIn: {
+                id: number;
+                userId: number;
+                signInDate: string;
+                consecutiveDays: number;
+                isAuto: boolean;
+                createdAt: string;
+            };
+        };
+    };
 };
+
+export type UserControllerGetSignInStatsResponse = UserControllerGetSignInStatsResponses[keyof UserControllerGetSignInStatsResponses];
+
+export type UserControllerCheckMembershipStatusData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/user/{id}/membership/check';
+};
+
+export type UserControllerCheckMembershipStatusErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 权限不足
+     */
+    403: unknown;
+    /**
+     * 用户不存在
+     */
+    404: unknown;
+};
+
+export type UserControllerCheckMembershipStatusResponses = {
+    /**
+     * 检查完成
+     */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+            data: {
+                membershipStatus: string;
+                membershipLevel: number;
+                membershipLevelName: string;
+            };
+        };
+    };
+};
+
+export type UserControllerCheckMembershipStatusResponse = UserControllerCheckMembershipStatusResponses[keyof UserControllerCheckMembershipStatusResponses];
 
 export type ArticleControllerFindAllData = {
     body?: never;
@@ -4067,10 +4369,6 @@ export type ArticleControllerFindAllData = {
         categoryId?: number;
         type?: string;
         tagId?: number;
-        /**
-         * 状态
-         */
-        status?: string;
     };
     url: '/article';
 };
@@ -4085,25 +4383,25 @@ export type ArticleControllerFindAllResponses = {
         data: {
             data: Array<{
                 id: number;
-                title?: string;
-                requireLogin?: boolean;
-                requireFollow?: boolean;
-                requirePayment?: boolean;
-                requireMembership?: boolean;
-                listRequireLogin?: boolean;
-                viewPrice?: string;
-                type?: string;
-                content?: string;
-                images?: Array<string>;
-                sort?: number;
-                summary?: string;
-                views?: number;
-                likes?: number;
-                favoriteCount?: number;
-                commentCount?: number;
-                status?: string;
-                cover?: string;
-                authorId?: number;
+                title: string;
+                requireLogin: boolean;
+                requireFollow: boolean;
+                requirePayment: boolean;
+                requireMembership: boolean;
+                listRequireLogin: boolean;
+                viewPrice: string;
+                type: string;
+                content: string;
+                images: Array<string>;
+                sort: number;
+                summary: string;
+                views: number;
+                likes: number;
+                favoriteCount: number;
+                commentCount: number;
+                status: string;
+                cover: string;
+                authorId: number;
                 author: {
                     id: number;
                     username: string;
@@ -4137,40 +4435,16 @@ export type ArticleControllerFindAllResponses = {
                     inviteCount: number;
                     createdAt: string;
                     updatedAt: string;
-                    equippedDecorations: {
-                        AVATAR_FRAME: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
-                    };
                     isMember: boolean;
                     isFollowed: boolean;
+                    equippedDecorations: 装饰;
                 };
-                category?: {
+                category: {
                     id: number;
                     name: string;
                     description: string;
                     parentId: number;
                     link: string;
-                    parent: {
-                        id: number;
-                        name: string;
-                        description: string;
-                        parentId: string;
-                        link: string;
-                        avatar: string;
-                        background: string;
-                        cover: string;
-                        sort: number;
-                        status: string;
-                        articleCount: number;
-                        followCount: number;
-                        createdAt: string;
-                        updatedAt: string;
-                    };
                     avatar: string;
                     background: string;
                     cover: string;
@@ -4181,7 +4455,7 @@ export type ArticleControllerFindAllResponses = {
                     createdAt: string;
                     updatedAt: string;
                 };
-                tags?: Array<{
+                tags: Array<{
                     id: number;
                     name: string;
                     description: string;
@@ -4194,23 +4468,14 @@ export type ArticleControllerFindAllResponses = {
                     createdAt: string;
                     updatedAt: string;
                 }>;
-                downloads?: Array<{
-                    id: number;
-                    type: string;
-                    url: string;
-                    password: string;
-                    extractionCode: string;
-                    articleId: number;
-                    createdAt: string;
-                    updatedAt: string;
-                }>;
-                downloadCount?: number;
-                createdAt?: string;
-                updatedAt?: string;
-                isLiked?: boolean;
-                isPaid?: boolean;
-                imageCount?: number;
-                reactionStats?: {
+                downloads: Array<string>;
+                downloadCount: number;
+                createdAt: string;
+                updatedAt: string;
+                isLiked: boolean;
+                isPaid: boolean;
+                imageCount: number;
+                reactionStats: {
                     like: number;
                     love: number;
                     haha: number;
@@ -4219,6 +4484,7 @@ export type ArticleControllerFindAllResponses = {
                     angry: number;
                     dislike: number;
                 };
+                isFavorited: boolean;
             }>;
             meta: {
                 total: number;
@@ -4249,116 +4515,8 @@ export type ArticleControllerCreateResponses = {
     /**
      * 创建成功
      */
-    201: {
-        code: number;
-        message: string;
-        data: {
-            success: boolean;
-            message: string;
-            data: {
-                id: number;
-                title: string;
-                requireLogin: boolean;
-                requireFollow: boolean;
-                requirePayment: boolean;
-                requireMembership: boolean;
-                listRequireLogin: boolean;
-                viewPrice: string;
-                type: string;
-                content: string;
-                images: Array<string>;
-                sort: number;
-                summary: string;
-                views: number;
-                likes: number;
-                favoriteCount: number;
-                commentCount: number;
-                status: string;
-                cover: string;
-                authorId: number;
-                author: {
-                    id: number;
-                    username: string;
-                    nickname: string;
-                    status: string;
-                    banned: unknown;
-                    banReason: unknown;
-                    avatar: string;
-                    description: string;
-                    background: unknown;
-                    gender: string;
-                    birthDate: unknown;
-                    articleCount: number;
-                    followerCount: number;
-                    followingCount: number;
-                    level: number;
-                    experience: number;
-                    wallet: number;
-                    points: number;
-                    membershipLevel: number;
-                    membershipLevelName: string;
-                    membershipStatus: string;
-                    membershipStartDate: unknown;
-                    membershipEndDate: unknown;
-                    lastLoginAt: string;
-                    lastActiveAt: unknown;
-                    inviterId: unknown;
-                    myInviteCode: string;
-                    inviteCode: unknown;
-                    inviteEarnings: string;
-                    inviteCount: number;
-                    createdAt: string;
-                    updatedAt: string;
-                };
-                category: {
-                    id: number;
-                    name: string;
-                    description: string;
-                    parentId: unknown;
-                    link: string;
-                    avatar: string;
-                    background: string;
-                    cover: string;
-                    sort: number;
-                    status: string;
-                    articleCount: number;
-                    followCount: number;
-                    createdAt: string;
-                    updatedAt: string;
-                };
-                tags: Array<{
-                    id: number;
-                    name: string;
-                    description: string;
-                    avatar: string;
-                    background: string;
-                    cover: string;
-                    sort: number;
-                    articleCount: number;
-                    followCount: number;
-                    createdAt: string;
-                    updatedAt: string;
-                }>;
-                downloads: Array<{
-                    id: number;
-                    type: string;
-                    url: string;
-                    password: string;
-                    extractionCode: string;
-                    articleId: number;
-                    createdAt: string;
-                    updatedAt: string;
-                }>;
-                downloadCount: number;
-                createdAt: string;
-                updatedAt: string;
-                imageCount: number;
-            };
-        };
-    };
+    201: unknown;
 };
-
-export type ArticleControllerCreateResponse = ArticleControllerCreateResponses[keyof ArticleControllerCreateResponses];
 
 export type ArticleControllerRemoveData = {
     body?: never;
@@ -4439,7 +4597,7 @@ export type ArticleControllerFindOneResponses = {
             content: string;
             images: Array<string>;
             sort: number;
-            summary?: string;
+            summary: string;
             views: number;
             likes: number;
             favoriteCount: number;
@@ -4480,17 +4638,9 @@ export type ArticleControllerFindOneResponses = {
                 inviteCount: number;
                 createdAt: string;
                 updatedAt: string;
-                equippedDecorations: {
-                    AVATAR_FRAME: {
-                        id: number;
-                        name: string;
-                        type: string;
-                        imageUrl: string;
-                        rarity: string;
-                    };
-                };
                 isMember: boolean;
                 isFollowed: boolean;
+                equippedDecorations: 装饰;
             };
             category: {
                 id: number;
@@ -4498,22 +4648,6 @@ export type ArticleControllerFindOneResponses = {
                 description: string;
                 parentId: number;
                 link: string;
-                parent: {
-                    id: number;
-                    name: string;
-                    description: string;
-                    parentId: unknown;
-                    link: string;
-                    avatar: string;
-                    background: string;
-                    cover: string;
-                    sort: number;
-                    status: string;
-                    articleCount: number;
-                    followCount: number;
-                    createdAt: string;
-                    updatedAt: string;
-                };
                 avatar: string;
                 background: string;
                 cover: string;
@@ -4524,25 +4658,14 @@ export type ArticleControllerFindOneResponses = {
                 createdAt: string;
                 updatedAt: string;
             };
-            tags: Array<{
-                id: number;
-                name: string;
-                description: string | null;
-                avatar: string;
-                background: string | null;
-                cover: string | null;
-                sort: number;
-                articleCount: number;
-                followCount: number;
-                createdAt: string;
-                updatedAt: string;
-            }>;
+            tags: Array<string>;
             downloads: Array<{
                 id?: number;
                 type?: string;
                 url?: string;
                 password?: string;
                 extractionCode?: string;
+                visibleWithoutPermission?: boolean;
                 articleId?: number;
                 createdAt?: string;
                 updatedAt?: string;
@@ -4562,7 +4685,6 @@ export type ArticleControllerFindOneResponses = {
                 angry: number;
                 dislike: number;
             };
-            userReaction: string;
         };
     };
 };
@@ -4607,156 +4729,8 @@ export type ArticleControllerUpdateResponses = {
     /**
      * 更新成功
      */
-    200: {
-        code: number;
-        message: string;
-        data: {
-            success: boolean;
-            message: string;
-            data: {
-                id: number;
-                title: string;
-                requireLogin: boolean;
-                requireFollow: boolean;
-                requirePayment: boolean;
-                requireMembership: boolean;
-                listRequireLogin: boolean;
-                viewPrice: string;
-                type: string;
-                content: string;
-                images: Array<string>;
-                sort: number;
-                summary: string;
-                views: number;
-                likes: number;
-                commentCount: number;
-                status: string;
-                cover: string;
-                authorId: number;
-                author: {
-                    id: number;
-                    username: string;
-                    nickname: unknown;
-                    password: string;
-                    email: string;
-                    phone: unknown;
-                    status: string;
-                    banned: unknown;
-                    banReason: unknown;
-                    avatar: unknown;
-                    description: unknown;
-                    background: unknown;
-                    address: unknown;
-                    gender: string;
-                    birthDate: unknown;
-                    articleCount: number;
-                    followerCount: number;
-                    followingCount: number;
-                    level: number;
-                    experience: number;
-                    score: number;
-                    wallet: number;
-                    membershipLevel: number;
-                    membershipLevelName: string;
-                    membershipStatus: string;
-                    membershipStartDate: unknown;
-                    membershipEndDate: unknown;
-                    lastLoginAt: unknown;
-                    lastActiveAt: unknown;
-                    refreshToken: unknown;
-                    inviterId: unknown;
-                    myInviteCode: string;
-                    inviteCode: unknown;
-                    inviteEarnings: string;
-                    inviteCount: number;
-                    userDecorations: Array<{
-                        id?: number;
-                        userId?: number;
-                        decorationId?: number;
-                        decoration?: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            description: string;
-                            imageUrl: string;
-                            previewUrl: string;
-                            rarity: string;
-                            obtainMethod: string;
-                            isPurchasable: boolean;
-                            price: string;
-                            isPermanent: boolean;
-                            validDays: number;
-                            sort: number;
-                            status: string;
-                            activityId: unknown;
-                            requiredLikes: number;
-                            requiredComments: number;
-                            createdAt: string;
-                            updatedAt: string;
-                        };
-                        obtainMethod?: string;
-                        isPermanent?: boolean;
-                        expiresAt?: unknown;
-                        isUsing?: boolean;
-                        giftFromUserId?: unknown;
-                        orderId?: unknown;
-                        activityId?: unknown;
-                        remark?: unknown;
-                        createdAt?: string;
-                        updatedAt?: string;
-                    }>;
-                    createdAt: string;
-                    updatedAt: string;
-                };
-                category: {
-                    id: number;
-                    name: string;
-                    description: string;
-                    parentId: number;
-                    link: string;
-                    avatar: string;
-                    background: string;
-                    cover: string;
-                    sort: number;
-                    status: string;
-                    articleCount: number;
-                    followCount: number;
-                    createdAt: string;
-                    updatedAt: string;
-                };
-                tags: Array<{
-                    id: number;
-                    name: string;
-                    description: string;
-                    avatar: string;
-                    background: string;
-                    cover: string;
-                    sort: number;
-                    articleCount: number;
-                    followCount: number;
-                    createdAt: string;
-                    updatedAt: string;
-                }>;
-                downloads: Array<{
-                    id?: number;
-                    type?: string;
-                    url?: string;
-                    password?: string;
-                    extractionCode?: string;
-                    articleId?: number;
-                    createdAt?: string;
-                    updatedAt?: string;
-                }>;
-                downloadCount: number;
-                createdAt: string;
-                updatedAt: string;
-                imageCount: number;
-            };
-        };
-    };
+    200: unknown;
 };
-
-export type ArticleControllerUpdateResponse = ArticleControllerUpdateResponses[keyof ArticleControllerUpdateResponses];
 
 export type ArticleControllerGetLikeStatusData = {
     body?: never;
@@ -4788,8 +4762,16 @@ export type ArticleControllerGetLikeStatusResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            liked: boolean;
+        };
+    };
 };
+
+export type ArticleControllerGetLikeStatusResponse = ArticleControllerGetLikeStatusResponses[keyof ArticleControllerGetLikeStatusResponses];
 
 export type ArticleControllerGetLikeCountData = {
     body?: never;
@@ -4817,8 +4799,14 @@ export type ArticleControllerGetLikeCountResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: number;
+    };
 };
+
+export type ArticleControllerGetLikeCountResponse = ArticleControllerGetLikeCountResponses[keyof ArticleControllerGetLikeCountResponses];
 
 export type ArticleControllerSearchData = {
     body?: never;
@@ -4829,8 +4817,8 @@ export type ArticleControllerSearchData = {
         'Device-Type'?: string;
     };
     path?: never;
-    query?: {
-        keyword?: string;
+    query: {
+        keyword: string;
         /**
          * 页码
          */
@@ -4877,12 +4865,13 @@ export type ArticleControllerSearchResponses = {
                 listRequireLogin: boolean;
                 viewPrice: string;
                 type: string;
-                content: string | null;
+                content: string;
                 images: Array<string>;
                 sort: number;
-                summary: unknown;
+                summary: string;
                 views: number;
                 likes: number;
+                favoriteCount: number;
                 commentCount: number;
                 status: string;
                 cover: string;
@@ -4891,24 +4880,38 @@ export type ArticleControllerSearchResponses = {
                     id: number;
                     username: string;
                     nickname: string;
-                    avatar: string;
-                    background: unknown;
-                    level: number;
-                    membershipLevel: number;
-                    membershipStatus: string;
-                    membershipStartDate: string;
-                    membershipEndDate: unknown;
                     status: string;
-                    createdAt: string;
-                    updatedAt: string;
+                    banned: string;
+                    banReason: string;
+                    avatar: string;
                     description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: string;
+                    articleCount: number;
                     followerCount: number;
                     followingCount: number;
-                    lastActiveAt: unknown;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
                     lastLoginAt: string;
-                    gender: string;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
                     isMember: boolean;
                     isFollowed: boolean;
+                    equippedDecorations: 装饰;
                 };
                 category: {
                     id: number;
@@ -4916,24 +4919,8 @@ export type ArticleControllerSearchResponses = {
                     description: string;
                     parentId: number;
                     link: string;
-                    parent: {
-                        id: number;
-                        name: string;
-                        description: string;
-                        parentId: unknown;
-                        link: string;
-                        avatar: string;
-                        background: string;
-                        cover: string;
-                        sort: number;
-                        status: string;
-                        articleCount: number;
-                        followCount: number;
-                        createdAt: string;
-                        updatedAt: string;
-                    };
                     avatar: string;
-                    background: string | null;
+                    background: string;
                     cover: string;
                     sort: number;
                     status: string;
@@ -4945,26 +4932,17 @@ export type ArticleControllerSearchResponses = {
                 tags: Array<{
                     id: number;
                     name: string;
-                    description: string | null;
+                    description: string;
                     avatar: string;
-                    background: string | null;
-                    cover: string | null;
+                    background: string;
+                    cover: string;
                     sort: number;
                     articleCount: number;
                     followCount: number;
                     createdAt: string;
                     updatedAt: string;
                 }>;
-                downloads: Array<{
-                    id: number;
-                    type: string;
-                    url: string;
-                    password: string;
-                    extractionCode: string;
-                    articleId: number;
-                    createdAt: string;
-                    updatedAt: string;
-                }>;
+                downloads: Array<string>;
                 downloadCount: number;
                 createdAt: string;
                 updatedAt: string;
@@ -4980,6 +4958,7 @@ export type ArticleControllerSearchResponses = {
                     angry: number;
                     dislike: number;
                 };
+                isFavorited: boolean;
             }>;
             meta: {
                 total: number;
@@ -5018,25 +4997,25 @@ export type ArticleControllerFindRecommendationsResponses = {
         data: {
             data: Array<{
                 id: number;
-                title?: string;
-                requireLogin?: boolean;
-                requireFollow?: boolean;
-                requirePayment?: boolean;
-                requireMembership?: boolean;
-                listRequireLogin?: boolean;
-                viewPrice?: string;
-                type?: string;
-                content?: string;
-                images?: Array<string>;
-                sort?: number;
-                summary?: string;
-                views?: number;
-                likes?: number;
-                favoriteCount?: number;
-                commentCount?: number;
-                status?: string;
-                cover?: string;
-                authorId?: number;
+                title: string;
+                requireLogin: boolean;
+                requireFollow: boolean;
+                requirePayment: boolean;
+                requireMembership: boolean;
+                listRequireLogin: boolean;
+                viewPrice: string;
+                type: string;
+                content: string;
+                images: Array<string>;
+                sort: number;
+                summary: string;
+                views: number;
+                likes: number;
+                favoriteCount: number;
+                commentCount: number;
+                status: string;
+                cover: string;
+                authorId: number;
                 author: {
                     id: number;
                     username: string;
@@ -5070,40 +5049,16 @@ export type ArticleControllerFindRecommendationsResponses = {
                     inviteCount: number;
                     createdAt: string;
                     updatedAt: string;
-                    equippedDecorations: {
-                        AVATAR_FRAME: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
-                    };
                     isMember: boolean;
                     isFollowed: boolean;
+                    equippedDecorations: 装饰;
                 };
-                category?: {
+                category: {
                     id: number;
                     name: string;
                     description: string;
                     parentId: number;
                     link: string;
-                    parent: {
-                        id: number;
-                        name: string;
-                        description: string;
-                        parentId: string;
-                        link: string;
-                        avatar: string;
-                        background: string;
-                        cover: string;
-                        sort: number;
-                        status: string;
-                        articleCount: number;
-                        followCount: number;
-                        createdAt: string;
-                        updatedAt: string;
-                    };
                     avatar: string;
                     background: string;
                     cover: string;
@@ -5114,7 +5069,7 @@ export type ArticleControllerFindRecommendationsResponses = {
                     createdAt: string;
                     updatedAt: string;
                 };
-                tags?: Array<{
+                tags: Array<{
                     id: number;
                     name: string;
                     description: string;
@@ -5127,23 +5082,14 @@ export type ArticleControllerFindRecommendationsResponses = {
                     createdAt: string;
                     updatedAt: string;
                 }>;
-                downloads?: Array<{
-                    id: number;
-                    type: string;
-                    url: string;
-                    password: string;
-                    extractionCode: string;
-                    articleId: number;
-                    createdAt: string;
-                    updatedAt: string;
-                }>;
-                downloadCount?: number;
-                createdAt?: string;
-                updatedAt?: string;
-                isLiked?: boolean;
-                isPaid?: boolean;
-                imageCount?: number;
-                reactionStats?: {
+                downloads: Array<string>;
+                downloadCount: number;
+                createdAt: string;
+                updatedAt: string;
+                isLiked: boolean;
+                isPaid: boolean;
+                imageCount: number;
+                reactionStats: {
                     like: number;
                     love: number;
                     haha: number;
@@ -5152,6 +5098,7 @@ export type ArticleControllerFindRecommendationsResponses = {
                     angry: number;
                     dislike: number;
                 };
+                isFavorited: boolean;
             }>;
             meta: {
                 total: number;
@@ -5210,12 +5157,13 @@ export type ArticleControllerFindByAuthorResponses = {
                 listRequireLogin: boolean;
                 viewPrice: string;
                 type: string;
-                content: string | null;
+                content: string;
                 images: Array<string>;
                 sort: number;
                 summary: string;
                 views: number;
                 likes: number;
+                favoriteCount: number;
                 commentCount: number;
                 status: string;
                 cover: string;
@@ -5224,24 +5172,38 @@ export type ArticleControllerFindByAuthorResponses = {
                     id: number;
                     username: string;
                     nickname: string;
-                    avatar: string;
-                    background: unknown;
-                    level: number;
-                    membershipLevel: number;
-                    membershipStatus: string;
-                    membershipStartDate: string;
-                    membershipEndDate: unknown;
                     status: string;
-                    createdAt: string;
-                    updatedAt: string;
+                    banned: string;
+                    banReason: string;
+                    avatar: string;
                     description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: string;
+                    articleCount: number;
                     followerCount: number;
                     followingCount: number;
-                    lastActiveAt: unknown;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
                     lastLoginAt: string;
-                    gender: string;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
                     isMember: boolean;
                     isFollowed: boolean;
+                    equippedDecorations: 装饰;
                 };
                 category: {
                     id: number;
@@ -5249,24 +5211,8 @@ export type ArticleControllerFindByAuthorResponses = {
                     description: string;
                     parentId: number;
                     link: string;
-                    parent: {
-                        id: number;
-                        name: string;
-                        description: string;
-                        parentId: unknown;
-                        link: string;
-                        avatar: string;
-                        background: string;
-                        cover: string;
-                        sort: number;
-                        status: string;
-                        articleCount: number;
-                        followCount: number;
-                        createdAt: string;
-                        updatedAt: string;
-                    };
                     avatar: string;
-                    background: string | null;
+                    background: string;
                     cover: string;
                     sort: number;
                     status: string;
@@ -5278,26 +5224,17 @@ export type ArticleControllerFindByAuthorResponses = {
                 tags: Array<{
                     id: number;
                     name: string;
-                    description: string | null;
+                    description: string;
                     avatar: string;
-                    background: string | null;
-                    cover: string | null;
+                    background: string;
+                    cover: string;
                     sort: number;
                     articleCount: number;
                     followCount: number;
                     createdAt: string;
                     updatedAt: string;
                 }>;
-                downloads: Array<{
-                    id: number;
-                    type: string;
-                    url: string;
-                    password: string;
-                    extractionCode: string;
-                    articleId: number;
-                    createdAt: string;
-                    updatedAt: string;
-                }>;
+                downloads: Array<string>;
                 downloadCount: number;
                 createdAt: string;
                 updatedAt: string;
@@ -5313,6 +5250,7 @@ export type ArticleControllerFindByAuthorResponses = {
                     angry: number;
                     dislike: number;
                 };
+                isFavorited: boolean;
             }>;
             meta: {
                 total: number;
@@ -5347,8 +5285,8 @@ export type ArticleControllerGetPublishedArticleIdsResponses = {
         code: number;
         message: string;
         data: Array<{
-            id?: number;
-            updatedAt?: string;
+            id: number;
+            updatedAt: string;
         }>;
     };
 };
@@ -5395,12 +5333,13 @@ export type ArticleControllerGetLikedArticlesResponses = {
                 listRequireLogin: boolean;
                 viewPrice: string;
                 type: string;
-                content: string | null;
+                content: string;
                 images: Array<string>;
                 sort: number;
-                summary: unknown;
+                summary: string;
                 views: number;
                 likes: number;
+                favoriteCount: number;
                 commentCount: number;
                 status: string;
                 cover: string;
@@ -5409,24 +5348,38 @@ export type ArticleControllerGetLikedArticlesResponses = {
                     id: number;
                     username: string;
                     nickname: string;
-                    avatar: string;
-                    background: unknown;
-                    level: number;
-                    membershipLevel: number;
-                    membershipStatus: string;
-                    membershipStartDate: string | null;
-                    membershipEndDate: unknown;
                     status: string;
-                    createdAt: string;
-                    updatedAt: string;
+                    banned: string;
+                    banReason: string;
+                    avatar: string;
                     description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: string;
+                    articleCount: number;
                     followerCount: number;
                     followingCount: number;
-                    lastActiveAt: unknown;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
                     lastLoginAt: string;
-                    gender: string;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
                     isMember: boolean;
                     isFollowed: boolean;
+                    equippedDecorations: 装饰;
                 };
                 category: {
                     id: number;
@@ -5434,24 +5387,8 @@ export type ArticleControllerGetLikedArticlesResponses = {
                     description: string;
                     parentId: number;
                     link: string;
-                    parent: {
-                        id: number;
-                        name: string;
-                        description: string;
-                        parentId: unknown;
-                        link: string;
-                        avatar: string;
-                        background: string | null;
-                        cover: string;
-                        sort: number;
-                        status: string;
-                        articleCount: number;
-                        followCount: number;
-                        createdAt: string;
-                        updatedAt: string;
-                    };
                     avatar: string;
-                    background: string | null;
+                    background: string;
                     cover: string;
                     sort: number;
                     status: string;
@@ -5463,16 +5400,17 @@ export type ArticleControllerGetLikedArticlesResponses = {
                 tags: Array<{
                     id: number;
                     name: string;
-                    description: string | null;
+                    description: string;
                     avatar: string;
-                    background: string | null;
-                    cover: string | null;
+                    background: string;
+                    cover: string;
                     sort: number;
                     articleCount: number;
                     followCount: number;
                     createdAt: string;
                     updatedAt: string;
                 }>;
+                downloads: Array<string>;
                 downloadCount: number;
                 createdAt: string;
                 updatedAt: string;
@@ -5488,7 +5426,7 @@ export type ArticleControllerGetLikedArticlesResponses = {
                     angry: number;
                     dislike: number;
                 };
-                userReaction: string;
+                isFavorited: boolean;
             }>;
             meta: {
                 total: number;
@@ -5542,17 +5480,17 @@ export type ArticleControllerGetUserBrowseHistoryResponses = {
         message: string;
         data: {
             data: Array<{
-                id?: number;
-                viewCount?: number;
-                progress?: number;
-                duration?: number;
-                createdAt?: string;
-                updatedAt?: string;
-                article?: {
+                id: number;
+                viewCount: number;
+                progress: number;
+                duration: number;
+                createdAt: string;
+                updatedAt: string;
+                article: {
                     id: number;
                     title: string;
                     cover: string;
-                    summary: string;
+                    summary: string | null;
                     views: number;
                     likes: number;
                     commentCount: number;
@@ -5564,13 +5502,13 @@ export type ArticleControllerGetUserBrowseHistoryResponses = {
                         username: string;
                         nickname: string;
                         status: string;
-                        banned: unknown;
-                        banReason: unknown;
+                        banned: string;
+                        banReason: string;
                         avatar: string;
                         description: string;
                         background: string;
                         gender: string;
-                        birthDate: unknown;
+                        birthDate: string;
                         articleCount: number;
                         followerCount: number;
                         followingCount: number;
@@ -5581,26 +5519,18 @@ export type ArticleControllerGetUserBrowseHistoryResponses = {
                         membershipLevel: number;
                         membershipLevelName: string;
                         membershipStatus: string;
-                        membershipStartDate: unknown;
-                        membershipEndDate: unknown;
+                        membershipStartDate: string;
+                        membershipEndDate: string;
                         lastLoginAt: string;
-                        lastActiveAt: unknown;
-                        inviterId: unknown;
+                        lastActiveAt: string;
+                        inviterId: string;
                         myInviteCode: string;
-                        inviteCode: unknown;
+                        inviteCode: string;
                         inviteEarnings: string;
                         inviteCount: number;
                         createdAt: string;
                         updatedAt: string;
-                        equippedDecorations: {
-                            AVATAR_FRAME: {
-                                id: number;
-                                name: string;
-                                type: string;
-                                imageUrl: string;
-                                rarity: string;
-                            };
-                        };
+                        equippedDecorations: 装饰;
                     };
                     category: {
                         id: number;
@@ -5659,8 +5589,21 @@ export type ArticleControllerGetBrowseStatsData = {
 };
 
 export type ArticleControllerGetBrowseStatsResponses = {
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            totalCount: number;
+            totalViews: number;
+            totalDuration: number;
+            todayCount: number;
+            weekCount: number;
+            monthCount: number;
+        };
+    };
 };
+
+export type ArticleControllerGetBrowseStatsResponse = ArticleControllerGetBrowseStatsResponses[keyof ArticleControllerGetBrowseStatsResponses];
 
 export type ArticleControllerGetRecentBrowsedArticlesData = {
     body?: never;
@@ -5697,6 +5640,7 @@ export type ArticleControllerGetRecentBrowsedArticlesResponses = {
             summary?: string;
             views?: number;
             likes?: number;
+            favoriteCount?: number;
             commentCount?: number;
             status?: string;
             cover?: string;
@@ -5704,32 +5648,37 @@ export type ArticleControllerGetRecentBrowsedArticlesResponses = {
             author?: {
                 id: number;
                 username: string;
-                nickname: unknown;
-                avatar: unknown;
-                background: unknown;
-                level: number;
-                membershipLevel: number;
-                membershipStatus: string;
-                membershipStartDate: unknown;
-                membershipEndDate: unknown;
+                nickname: string;
                 status: string;
-                createdAt: string;
-                updatedAt: string;
-                description: unknown;
+                banned: string;
+                banReason: string;
+                avatar: string;
+                description: string;
+                background: string;
+                gender: string;
+                birthDate: string;
+                articleCount: number;
                 followerCount: number;
                 followingCount: number;
-                lastActiveAt: unknown;
-                lastLoginAt: unknown;
-                gender: string;
-                equippedDecorations: {
-                    AVATAR_FRAME: {
-                        id: number;
-                        name: string;
-                        type: string;
-                        imageUrl: string;
-                        rarity: string;
-                    };
-                };
+                level: number;
+                experience: number;
+                wallet: number;
+                points: number;
+                membershipLevel: number;
+                membershipLevelName: string;
+                membershipStatus: string;
+                membershipStartDate: string;
+                membershipEndDate: string;
+                lastLoginAt: string;
+                lastActiveAt: string;
+                inviterId: string;
+                myInviteCode: string;
+                inviteCode: string;
+                inviteEarnings: string;
+                inviteCount: number;
+                createdAt: string;
+                updatedAt: string;
+                equippedDecorations: 装饰;
             };
             category?: {
                 id: number;
@@ -5747,19 +5696,7 @@ export type ArticleControllerGetRecentBrowsedArticlesResponses = {
                 createdAt: string;
                 updatedAt: string;
             };
-            tags?: Array<{
-                id: number;
-                name: string;
-                description: string;
-                avatar: string;
-                background: string;
-                cover: string;
-                sort: number;
-                articleCount: number;
-                followCount: number;
-                createdAt: string;
-                updatedAt: string;
-            }>;
+            tags?: Array<string>;
             downloadCount?: number;
             createdAt?: string;
             updatedAt?: string;
@@ -5828,12 +5765,13 @@ export type ArticleControllerGetBrowseHistoryResponses = {
                 listRequireLogin: boolean;
                 viewPrice: string;
                 type: string;
-                content: unknown;
+                content: string;
                 images: string;
                 sort: number;
-                summary: unknown;
+                summary: string;
                 views: number;
                 likes: number;
+                favoriteCount: number;
                 commentCount: number;
                 status: string;
                 cover: string;
@@ -5842,22 +5780,36 @@ export type ArticleControllerGetBrowseHistoryResponses = {
                     id: number;
                     username: string;
                     nickname: string;
-                    avatar: string;
-                    background: unknown;
-                    level: number;
-                    membershipLevel: number;
-                    membershipStatus: string;
-                    membershipStartDate: string;
-                    membershipEndDate: unknown;
                     status: string;
-                    createdAt: string;
-                    updatedAt: string;
+                    banned: string;
+                    banReason: string;
+                    avatar: string;
                     description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: string;
+                    articleCount: number;
                     followerCount: number;
                     followingCount: number;
-                    lastActiveAt: unknown;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
                     lastLoginAt: string;
-                    gender: string;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    equippedDecorations: 装饰;
                 };
                 category: {
                     id: number;
@@ -5875,19 +5827,7 @@ export type ArticleControllerGetBrowseHistoryResponses = {
                     createdAt: string;
                     updatedAt: string;
                 };
-                tags: Array<{
-                    id: number;
-                    name: string;
-                    description: string | null;
-                    avatar: string;
-                    background: string | null;
-                    cover: string | null;
-                    sort: number;
-                    articleCount: number;
-                    followCount: number;
-                    createdAt: string;
-                    updatedAt: string;
-                }>;
+                tags: Array<string>;
                 downloadCount: number;
                 createdAt: string;
                 updatedAt: string;
@@ -5909,99 +5849,97 @@ export type ArticleControllerGetFavoritedArticlesData = {
     path?: never;
     query?: {
         /**
-         * 用户id
+         * 页码
          */
-        userId?: number;
         page?: number;
+        /**
+         * 每页数量
+         */
         limit?: number;
+        userId?: number;
     };
     url: '/article/favorited/list';
 };
 
+export type ArticleControllerGetFavoritedArticlesErrors = {
+    /**
+     * 用户隐私设置不允许查看
+     */
+    403: unknown;
+};
+
 export type ArticleControllerGetFavoritedArticlesResponses = {
+    /**
+     * 获取成功
+     */
     200: {
         code: number;
         message: string;
         data: {
             data: Array<{
-                id?: number;
-                title?: string;
-                requireLogin?: boolean;
-                requireFollow?: boolean;
-                requirePayment?: boolean;
-                requireMembership?: boolean;
-                listRequireLogin?: boolean;
-                viewPrice?: string;
-                type?: string;
-                content?: string;
-                images?: Array<string>;
-                sort?: number;
-                summary?: string;
-                views?: number;
-                likes?: number;
-                favoriteCount?: number;
-                commentCount?: number;
-                status?: string;
-                cover?: string;
-                authorId?: number;
-                author?: {
+                id: number;
+                title: string;
+                requireLogin: boolean;
+                requireFollow: boolean;
+                requirePayment: boolean;
+                requireMembership: boolean;
+                listRequireLogin: boolean;
+                viewPrice: string;
+                type: string;
+                content: string;
+                images: Array<string>;
+                sort: number;
+                summary: string;
+                views: number;
+                likes: number;
+                favoriteCount: number;
+                commentCount: number;
+                status: string;
+                cover: string;
+                authorId: number;
+                author: {
                     id: number;
                     username: string;
                     nickname: string;
                     status: string;
-                    banned: unknown;
-                    banReason: unknown;
+                    banned: string;
+                    banReason: string;
                     avatar: string;
                     description: string;
-                    background: unknown;
+                    background: string;
                     gender: string;
-                    birthDate: unknown;
+                    birthDate: string;
                     articleCount: number;
                     followerCount: number;
                     followingCount: number;
                     level: number;
                     experience: number;
-                    score: number;
                     wallet: number;
+                    points: number;
                     membershipLevel: number;
                     membershipLevelName: string;
                     membershipStatus: string;
                     membershipStartDate: string;
-                    membershipEndDate: unknown;
+                    membershipEndDate: string;
                     lastLoginAt: string;
-                    lastActiveAt: unknown;
-                    inviterId: unknown;
-                    myInviteCode: unknown;
-                    inviteCode: unknown;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
                     inviteEarnings: string;
                     inviteCount: number;
                     createdAt: string;
                     updatedAt: string;
                     isMember: boolean;
                     isFollowed: boolean;
+                    equippedDecorations: 装饰;
                 };
-                category?: {
+                category: {
                     id: number;
                     name: string;
                     description: string;
                     parentId: number;
                     link: string;
-                    parent: {
-                        id: number;
-                        name: string;
-                        description: string;
-                        parentId: unknown;
-                        link: string;
-                        avatar: string;
-                        background: string;
-                        cover: string;
-                        sort: number;
-                        status: string;
-                        articleCount: number;
-                        followCount: number;
-                        createdAt: string;
-                        updatedAt: string;
-                    };
                     avatar: string;
                     background: string;
                     cover: string;
@@ -6012,37 +5950,27 @@ export type ArticleControllerGetFavoritedArticlesResponses = {
                     createdAt: string;
                     updatedAt: string;
                 };
-                tags?: Array<{
+                tags: Array<{
                     id: number;
                     name: string;
-                    description: string | null;
+                    description: string;
                     avatar: string;
-                    background: string | null;
-                    cover: string | null;
+                    background: string;
+                    cover: string;
                     sort: number;
                     articleCount: number;
                     followCount: number;
                     createdAt: string;
                     updatedAt: string;
                 }>;
-                downloads?: Array<{
-                    id?: number;
-                    type?: string;
-                    url?: string;
-                    password?: string;
-                    extractionCode?: string;
-                    articleId?: number;
-                    createdAt?: string;
-                    updatedAt?: string;
-                }>;
-                downloadCount?: number;
-                createdAt?: string;
-                updatedAt?: string;
-                favoritedAt?: string;
-                isLiked?: boolean;
-                isPaid?: boolean;
-                imageCount?: number;
-                reactionStats?: {
+                downloads: Array<string>;
+                downloadCount: number;
+                createdAt: string;
+                updatedAt: string;
+                isLiked: boolean;
+                isPaid: boolean;
+                imageCount: number;
+                reactionStats: {
                     like: number;
                     love: number;
                     haha: number;
@@ -6051,6 +5979,7 @@ export type ArticleControllerGetFavoritedArticlesResponses = {
                     angry: number;
                     dislike: number;
                 };
+                isFavorited: boolean;
             }>;
             meta: {
                 total: number;
@@ -6065,7 +5994,7 @@ export type ArticleControllerGetFavoritedArticlesResponses = {
 export type ArticleControllerGetFavoritedArticlesResponse = ArticleControllerGetFavoritedArticlesResponses[keyof ArticleControllerGetFavoritedArticlesResponses];
 
 export type ArticleControllerUpdateBrowseProgressData = {
-    body: unknown;
+    body: RecordBrowseHistoryDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -6140,9 +6069,24 @@ export type ArticleControllerUnfavoriteArticleData = {
     url: '/article/{id}/favorite';
 };
 
+export type ArticleControllerUnfavoriteArticleErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+};
+
 export type ArticleControllerUnfavoriteArticleResponses = {
+    /**
+     * 取消收藏成功
+     */
     200: {
-        [key: string]: unknown;
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+        };
     };
 };
 
@@ -6163,22 +6107,23 @@ export type ArticleControllerFavoriteArticleData = {
     url: '/article/{id}/favorite';
 };
 
-export type ArticleControllerFavoriteArticleResponses = {
-    201: {
-        code: number;
-        message: string;
-        data: {
-            success: boolean;
-            message: string;
-            data: {
-                favoriteId: number;
-                createdAt: string;
-            };
-        };
-    };
+export type ArticleControllerFavoriteArticleErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 文章不存在
+     */
+    404: unknown;
 };
 
-export type ArticleControllerFavoriteArticleResponse = ArticleControllerFavoriteArticleResponses[keyof ArticleControllerFavoriteArticleResponses];
+export type ArticleControllerFavoriteArticleResponses = {
+    /**
+     * 收藏成功
+     */
+    200: unknown;
+};
 
 export type ArticleControllerBatchDeleteBrowseHistoryData = {
     body?: never;
@@ -6214,6 +6159,43 @@ export type ArticleControllerClearBrowseHistoryResponses = {
     200: unknown;
 };
 
+export type ArticleControllerCheckFavoriteStatusData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/article/{id}/favorite/status';
+};
+
+export type ArticleControllerCheckFavoriteStatusErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+};
+
+export type ArticleControllerCheckFavoriteStatusResponses = {
+    /**
+     * 获取成功
+     */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            isFavorited: boolean;
+        };
+    };
+};
+
+export type ArticleControllerCheckFavoriteStatusResponse = ArticleControllerCheckFavoriteStatusResponses[keyof ArticleControllerCheckFavoriteStatusResponses];
+
 export type CommentControllerFindAllData = {
     body?: never;
     headers?: {
@@ -6247,48 +6229,64 @@ export type CommentControllerFindAllResponses = {
         message: string;
         data: {
             data: Array<{
-                id: number;
-                content: string;
-                images: Array<string>;
-                likes: number;
-                replyCount: number;
-                status: string;
-                author: {
+                id?: number;
+                content?: string;
+                images?: Array<string>;
+                likes?: number;
+                replyCount?: number;
+                status?: string;
+                author?: {
                     id: number;
                     username: string;
                     nickname: string;
                     status: string;
-                    banned: unknown;
-                    banReason: unknown;
+                    banned: string;
+                    banReason: string;
                     avatar: string;
                     description: string;
-                    background: unknown;
+                    background: string;
                     gender: string;
-                    birthDate: unknown;
+                    birthDate: string;
                     articleCount: number;
                     followerCount: number;
                     followingCount: number;
                     level: number;
                     experience: number;
-                    score: number;
                     wallet: number;
+                    points: number;
                     membershipLevel: number;
                     membershipLevelName: string;
                     membershipStatus: string;
                     membershipStartDate: string;
-                    membershipEndDate: unknown;
+                    membershipEndDate: string;
                     lastLoginAt: string;
-                    lastActiveAt: unknown;
-                    inviterId: unknown;
-                    myInviteCode: unknown;
-                    inviteCode: unknown;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
                     inviteEarnings: string;
                     inviteCount: number;
                     createdAt: string;
                     updatedAt: string;
+                    equippedDecorations: {
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                        COMMENT_BUBBLE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
                     isMember: boolean;
                 };
-                article: {
+                article?: {
                     id: number;
                     title: string;
                     requireLogin: boolean;
@@ -6298,12 +6296,13 @@ export type CommentControllerFindAllResponses = {
                     listRequireLogin: boolean;
                     viewPrice: string;
                     type: string;
-                    content: unknown;
+                    content: string;
                     images: Array<string>;
                     sort: number;
-                    summary: unknown;
+                    summary: string;
                     views: number;
                     likes: number;
+                    favoriteCount: number;
                     commentCount: number;
                     status: string;
                     cover: string;
@@ -6312,7 +6311,7 @@ export type CommentControllerFindAllResponses = {
                         id: number;
                         name: string;
                         description: string;
-                        parentId: number;
+                        parentId: unknown;
                         link: string;
                         avatar: string;
                         background: string;
@@ -6328,146 +6327,13 @@ export type CommentControllerFindAllResponses = {
                     createdAt: string;
                     updatedAt: string;
                 };
-                parent: unknown;
-                rootId: number;
-                replies: Array<{
-                    id?: number;
-                    content?: string;
-                    images?: Array<string>;
-                    likes?: number;
-                    replyCount?: number;
-                    status?: string;
-                    author?: {
-                        id: number;
-                        username: string;
-                        nickname: string;
-                        status: string;
-                        banned: unknown;
-                        banReason: unknown;
-                        avatar: string;
-                        description: string;
-                        background: unknown;
-                        gender: string;
-                        birthDate: unknown;
-                        articleCount: number;
-                        followerCount: number;
-                        followingCount: number;
-                        level: number;
-                        experience: number;
-                        score: number;
-                        wallet: number;
-                        membershipLevel: number;
-                        membershipLevelName: string;
-                        membershipStatus: string;
-                        membershipStartDate: string;
-                        membershipEndDate: unknown;
-                        lastLoginAt: string;
-                        lastActiveAt: unknown;
-                        inviterId: unknown;
-                        myInviteCode: unknown;
-                        inviteCode: unknown;
-                        inviteEarnings: string;
-                        inviteCount: number;
-                        createdAt: string;
-                        updatedAt: string;
-                        isMember: boolean;
-                    };
-                    article?: {
-                        id: number;
-                        title: string;
-                        requireLogin: boolean;
-                        requireFollow: boolean;
-                        requirePayment: boolean;
-                        requireMembership: boolean;
-                        listRequireLogin: boolean;
-                        viewPrice: string;
-                        type: string;
-                        content: unknown;
-                        images: Array<string>;
-                        sort: number;
-                        summary: unknown;
-                        views: number;
-                        likes: number;
-                        commentCount: number;
-                        status: string;
-                        cover: string;
-                        authorId: number;
-                        category: {
-                            id: number;
-                            name: string;
-                            description: string;
-                            parentId: number;
-                            link: string;
-                            avatar: string;
-                            background: string;
-                            cover: string;
-                            sort: number;
-                            status: string;
-                            articleCount: number;
-                            followCount: number;
-                            createdAt: string;
-                            updatedAt: string;
-                        };
-                        downloadCount: number;
-                        createdAt: string;
-                        updatedAt: string;
-                    };
-                    parent?: {
-                        id: number;
-                        content: string;
-                        images: unknown;
-                        likes: number;
-                        replyCount: number;
-                        status: string;
-                        author: {
-                            id: number;
-                            username: string;
-                            nickname: string;
-                            status: string;
-                            banned: unknown;
-                            banReason: unknown;
-                            avatar: string;
-                            description: string;
-                            background: unknown;
-                            gender: string;
-                            birthDate: unknown;
-                            articleCount: number;
-                            followerCount: number;
-                            followingCount: number;
-                            level: number;
-                            experience: number;
-                            score: number;
-                            wallet: number;
-                            membershipLevel: number;
-                            membershipLevelName: string;
-                            membershipStatus: string;
-                            membershipStartDate: string;
-                            membershipEndDate: unknown;
-                            lastLoginAt: string;
-                            lastActiveAt: unknown;
-                            inviterId: unknown;
-                            myInviteCode: unknown;
-                            inviteCode: unknown;
-                            inviteEarnings: string;
-                            inviteCount: number;
-                            createdAt: string;
-                            updatedAt: string;
-                            isMember: boolean;
-                        };
-                        rootId: unknown;
-                        createdAt: string;
-                        updatedAt: string;
-                    };
-                    rootId?: number;
-                    createdAt?: string;
-                    updatedAt?: string;
-                    parentId?: number;
-                    isLiked?: boolean;
-                }>;
-                createdAt: string;
-                updatedAt: string;
-                parentId: unknown;
-                isLiked: boolean;
+                parent?: number;
+                rootId?: number;
+                replies?: Array<string>;
+                createdAt?: string;
+                updatedAt?: string;
+                parentId?: number;
+                isLiked?: boolean;
             }>;
             meta: {
                 total: number;
@@ -6558,13 +6424,13 @@ export type CommentControllerFindOneResponses = {
         message: string;
         data: {
             data: Array<{
-                id: number;
-                content: string;
-                images: Array<string>;
-                likes: number;
-                replyCount: number;
-                status: string;
-                author: {
+                id?: number;
+                content?: string;
+                images?: Array<string>;
+                likes?: number;
+                replyCount?: number;
+                status?: string;
+                author?: {
                     id: number;
                     username: string;
                     nickname: string;
@@ -6581,8 +6447,8 @@ export type CommentControllerFindOneResponses = {
                     followingCount: number;
                     level: number;
                     experience: number;
-                    score: number;
                     wallet: number;
+                    points: number;
                     membershipLevel: number;
                     membershipLevelName: string;
                     membershipStatus: string;
@@ -6597,9 +6463,25 @@ export type CommentControllerFindOneResponses = {
                     inviteCount: number;
                     createdAt: string;
                     updatedAt: string;
+                    equippedDecorations: {
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                        COMMENT_BUBBLE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
                     isMember: boolean;
                 };
-                article: {
+                article?: {
                     id: number;
                     title: string;
                     requireLogin: boolean;
@@ -6615,6 +6497,7 @@ export type CommentControllerFindOneResponses = {
                     summary: string;
                     views: number;
                     likes: number;
+                    favoriteCount: number;
                     commentCount: number;
                     status: string;
                     cover: string;
@@ -6623,7 +6506,7 @@ export type CommentControllerFindOneResponses = {
                         id: number;
                         name: string;
                         description: string;
-                        parentId: number;
+                        parentId: unknown;
                         link: string;
                         avatar: string;
                         background: string;
@@ -6639,22 +6522,22 @@ export type CommentControllerFindOneResponses = {
                     createdAt: string;
                     updatedAt: string;
                 };
-                parent: {
+                parent?: {
                     id: number;
                     content: string;
-                    images: Array<string>;
+                    images: string;
                     likes: number;
                     replyCount: number;
                     status: string;
                     author: {
                         id: number;
                         username: string;
-                        nickname: string;
+                        nickname: unknown;
                         status: string;
                         banned: unknown;
                         banReason: unknown;
                         avatar: string;
-                        description: string;
+                        description: unknown;
                         background: unknown;
                         gender: string;
                         birthDate: unknown;
@@ -6663,33 +6546,49 @@ export type CommentControllerFindOneResponses = {
                         followingCount: number;
                         level: number;
                         experience: number;
-                        score: number;
                         wallet: number;
+                        points: number;
                         membershipLevel: number;
                         membershipLevelName: string;
                         membershipStatus: string;
-                        membershipStartDate: string;
+                        membershipStartDate: unknown;
                         membershipEndDate: unknown;
                         lastLoginAt: string;
                         lastActiveAt: unknown;
                         inviterId: unknown;
-                        myInviteCode: unknown;
+                        myInviteCode: string;
                         inviteCode: unknown;
                         inviteEarnings: string;
                         inviteCount: number;
                         createdAt: string;
                         updatedAt: string;
+                        equippedDecorations: {
+                            COMMENT_BUBBLE: {
+                                id: number;
+                                name: string;
+                                type: string;
+                                imageUrl: string;
+                                rarity: string;
+                            };
+                            AVATAR_FRAME: {
+                                id: number;
+                                name: string;
+                                type: string;
+                                imageUrl: string;
+                                rarity: string;
+                            };
+                        };
                         isMember: boolean;
                     };
-                    rootId: number | null;
+                    rootId: unknown;
                     createdAt: string;
                     updatedAt: string;
                 };
-                rootId: number;
-                createdAt: string;
-                updatedAt: string;
-                parentId: number;
-                isLiked: boolean;
+                rootId?: number;
+                createdAt?: string;
+                updatedAt?: string;
+                parentId?: number;
+                isLiked?: boolean;
             }>;
             meta: {
                 total: number;
@@ -6704,7 +6603,7 @@ export type CommentControllerFindOneResponses = {
 export type CommentControllerFindOneResponse = CommentControllerFindOneResponses[keyof CommentControllerFindOneResponses];
 
 export type CommentControllerUpdateData = {
-    body: unknown;
+    body: UpdateCommentDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -6741,8 +6640,91 @@ export type CommentControllerUpdateResponses = {
     /**
      * 更新成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+            data: {
+                id: number;
+                content: string;
+                images: Array<string>;
+                likes: number;
+                replyCount: number;
+                status: string;
+                author: {
+                    id: number;
+                    username: string;
+                    nickname: unknown;
+                    password: string;
+                    email: string;
+                    phone: unknown;
+                    status: string;
+                    banned: unknown;
+                    banReason: unknown;
+                    avatar: string;
+                    description: unknown;
+                    background: unknown;
+                    address: unknown;
+                    gender: string;
+                    birthDate: unknown;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: unknown;
+                    membershipEndDate: unknown;
+                    lastLoginAt: string;
+                    lastActiveAt: unknown;
+                    inviterId: unknown;
+                    myInviteCode: string;
+                    inviteCode: unknown;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                article: {
+                    id: number;
+                    title: string;
+                    requireLogin: boolean;
+                    requireFollow: boolean;
+                    requirePayment: boolean;
+                    requireMembership: boolean;
+                    listRequireLogin: boolean;
+                    viewPrice: string;
+                    type: string;
+                    content: string;
+                    images: string;
+                    sort: number;
+                    summary: string;
+                    views: number;
+                    likes: number;
+                    favoriteCount: number;
+                    commentCount: number;
+                    status: string;
+                    cover: string;
+                    authorId: number;
+                    downloadCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                rootId: unknown;
+                createdAt: string;
+                updatedAt: string;
+            };
+        };
+    };
 };
+
+export type CommentControllerUpdateResponse = CommentControllerUpdateResponses[keyof CommentControllerUpdateResponses];
 
 export type CommentControllerFindAllCommentsData = {
     body?: never;
@@ -6777,7 +6759,113 @@ export type CommentControllerFindAllCommentsResponses = {
         code: number;
         message: string;
         data: {
-            data: Array<string>;
+            data: Array<{
+                id?: number;
+                content?: string;
+                images?: Array<string>;
+                likes?: number;
+                replyCount?: number;
+                status?: string;
+                author?: {
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: string;
+                    banReason: string;
+                    avatar: string;
+                    description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: string;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
+                    lastLoginAt: string;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    equippedDecorations: {
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                        COMMENT_BUBBLE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
+                    isMember: boolean;
+                };
+                article?: {
+                    id: number;
+                    title: string;
+                    requireLogin: boolean;
+                    requireFollow: boolean;
+                    requirePayment: boolean;
+                    requireMembership: boolean;
+                    listRequireLogin: boolean;
+                    viewPrice: string;
+                    type: string;
+                    content: string;
+                    images: Array<string>;
+                    sort: number;
+                    summary: string;
+                    views: number;
+                    likes: number;
+                    favoriteCount: number;
+                    commentCount: number;
+                    status: string;
+                    cover: string;
+                    authorId: number;
+                    category: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        parentId: unknown;
+                        link: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                    downloadCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                parent?: number;
+                rootId?: number;
+                replies?: Array<string>;
+                createdAt?: string;
+                updatedAt?: string;
+                parentId?: number;
+                isLiked?: boolean;
+            }>;
             meta: {
                 total: number;
                 page: number;
@@ -6791,7 +6879,7 @@ export type CommentControllerFindAllCommentsResponses = {
 export type CommentControllerFindAllCommentsResponse = CommentControllerFindAllCommentsResponses[keyof CommentControllerFindAllCommentsResponses];
 
 export type CommentControllerCreateData = {
-    body: unknown;
+    body: CreateCommentDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -6899,13 +6987,13 @@ export type CommentControllerGetUserCommentsResponses = {
         message: string;
         data: {
             data: Array<{
-                id: number;
-                content: string;
-                images: Array<string>;
-                likes: number;
-                replyCount: number;
-                status: string;
-                author: {
+                id?: number;
+                content?: string;
+                images?: Array<string>;
+                likes?: number;
+                replyCount?: number;
+                status?: string;
+                author?: {
                     id: number;
                     username: string;
                     nickname: string;
@@ -6922,8 +7010,8 @@ export type CommentControllerGetUserCommentsResponses = {
                     followingCount: number;
                     level: number;
                     experience: number;
-                    score: number;
                     wallet: number;
+                    points: number;
                     membershipLevel: number;
                     membershipLevelName: string;
                     membershipStatus: string;
@@ -6938,9 +7026,25 @@ export type CommentControllerGetUserCommentsResponses = {
                     inviteCount: number;
                     createdAt: string;
                     updatedAt: string;
+                    equippedDecorations: {
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                        COMMENT_BUBBLE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
                     isMember: boolean;
                 };
-                article: {
+                article?: {
                     id: number;
                     title: string;
                     requireLogin: boolean;
@@ -6950,12 +7054,13 @@ export type CommentControllerGetUserCommentsResponses = {
                     listRequireLogin: boolean;
                     viewPrice: string;
                     type: string;
-                    content: string | null;
+                    content: string;
                     images: Array<string>;
                     sort: number;
                     summary: string;
                     views: number;
                     likes: number;
+                    favoriteCount: number;
                     commentCount: number;
                     status: string;
                     cover: string;
@@ -6964,10 +7069,10 @@ export type CommentControllerGetUserCommentsResponses = {
                         id: number;
                         name: string;
                         description: string;
-                        parentId: number;
+                        parentId: unknown;
                         link: string;
                         avatar: string;
-                        background: string | null;
+                        background: string;
                         cover: string;
                         sort: number;
                         status: string;
@@ -6980,56 +7085,13 @@ export type CommentControllerGetUserCommentsResponses = {
                     createdAt: string;
                     updatedAt: string;
                 };
-                parent: {
-                    id: number;
-                    content: string;
-                    images: string;
-                    likes: number;
-                    replyCount: number;
-                    status: Array<string>;
-                    author: {
-                        id: number;
-                        username: string;
-                        nickname: string | null;
-                        status: string;
-                        banned: string;
-                        banReason: string;
-                        avatar: string | null;
-                        description: string | null;
-                        background: string;
-                        gender: string;
-                        birthDate: string;
-                        articleCount: number;
-                        followerCount: number;
-                        followingCount: number;
-                        level: number;
-                        experience: number;
-                        score: number;
-                        wallet: number;
-                        membershipLevel: number;
-                        membershipLevelName: string;
-                        membershipStatus: string;
-                        membershipStartDate: string | null;
-                        membershipEndDate: string | null;
-                        lastLoginAt: string;
-                        lastActiveAt: string;
-                        inviterId: string;
-                        myInviteCode: string;
-                        inviteCode: string;
-                        inviteEarnings: string;
-                        inviteCount: number;
-                        createdAt: string;
-                        updatedAt: string;
-                        isMember: boolean;
-                    };
-                    rootId: number;
-                    createdAt: string;
-                    updatedAt: string;
-                };
-                rootId: number;
-                createdAt: string;
-                updatedAt: string;
-                parentId: number;
+                parent?: number;
+                rootId?: number;
+                replies?: Array<string>;
+                createdAt?: string;
+                updatedAt?: string;
+                parentId?: number;
+                isLiked?: boolean;
             }>;
             meta: {
                 total: number;
@@ -7062,8 +7124,14 @@ export type CommentControllerGetCommentCountResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: number;
+    };
 };
+
+export type CommentControllerGetCommentCountResponse = CommentControllerGetCommentCountResponses[keyof CommentControllerGetCommentCountResponses];
 
 export type CommentControllerLikeData = {
     body?: never;
@@ -7118,7 +7186,7 @@ export type TagControllerFindAllData = {
         limit?: number;
         name?: string;
         sortBy?: string;
-        sortOrder?: 'DESC' | 'ASC';
+        sortOrder?: string;
     };
     url: '/tag';
 };
@@ -7188,30 +7256,8 @@ export type TagControllerCreateResponses = {
     /**
      * 创建成功
      */
-    201: {
-        code: number;
-        message: string;
-        data: {
-            success: boolean;
-            message: string;
-            data: {
-                id: number;
-                name: string;
-                description: string;
-                avatar: string;
-                background: string;
-                cover: string;
-                sort: number;
-                articleCount: number;
-                followCount: number;
-                createdAt: string;
-                updatedAt: string;
-            };
-        };
-    };
+    201: unknown;
 };
-
-export type TagControllerCreateResponse = TagControllerCreateResponses[keyof TagControllerCreateResponses];
 
 export type TagControllerRemoveData = {
     body?: never;
@@ -7298,7 +7344,7 @@ export type TagControllerFindOneResponses = {
 export type TagControllerFindOneResponse = TagControllerFindOneResponses[keyof TagControllerFindOneResponses];
 
 export type TagControllerUpdateData = {
-    body: unknown;
+    body: UpdateTagDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -7425,11 +7471,8 @@ export type CategoryControllerFindAllData = {
         name?: string;
         status?: string;
         parentId?: number;
-        /**
-         * 排序字段
-         */
         sortBy?: string;
-        sortOrder?: 'DESC' | 'ASC';
+        sortOrder?: string;
     };
     url: '/category';
 };
@@ -7446,7 +7489,7 @@ export type CategoryControllerFindAllResponses = {
                 id: number;
                 name: string;
                 description: string;
-                parentId: unknown;
+                parentId: number;
                 link: string;
                 children: Array<{
                     id: number;
@@ -7455,7 +7498,7 @@ export type CategoryControllerFindAllResponses = {
                     parentId: number;
                     link: string;
                     avatar: string;
-                    background: string | null;
+                    background: string;
                     cover: string;
                     sort: number;
                     status: string;
@@ -7465,7 +7508,7 @@ export type CategoryControllerFindAllResponses = {
                     updatedAt: string;
                 }>;
                 avatar: string;
-                background: string | null;
+                background: string;
                 cover: string;
                 sort: number;
                 status: string;
@@ -7518,33 +7561,8 @@ export type CategoryControllerCreateResponses = {
     /**
      * 创建成功
      */
-    201: {
-        code: number;
-        message: string;
-        data: {
-            success: boolean;
-            message: string;
-            data: {
-                id: number;
-                name: string;
-                description: string;
-                parentId: number;
-                link: string;
-                avatar: string;
-                background: string;
-                cover: string;
-                sort: number;
-                status: string;
-                articleCount: number;
-                followCount: number;
-                createdAt: string;
-                updatedAt: string;
-            };
-        };
-    };
+    201: unknown;
 };
-
-export type CategoryControllerCreateResponse = CategoryControllerCreateResponses[keyof CategoryControllerCreateResponses];
 
 export type CategoryControllerRemoveData = {
     body?: never;
@@ -7616,9 +7634,9 @@ export type CategoryControllerFindOneResponses = {
             id: number;
             name: string;
             description: string;
-            parentId: unknown;
+            parentId: number;
             link: string;
-            parent: unknown;
+            parent: number;
             children: Array<{
                 id: number;
                 name: string;
@@ -7626,7 +7644,7 @@ export type CategoryControllerFindOneResponses = {
                 parentId: number;
                 link: string;
                 avatar: string;
-                background: string | null;
+                background: string;
                 cover: string;
                 sort: number;
                 status: string;
@@ -7688,65 +7706,8 @@ export type CategoryControllerUpdateResponses = {
     /**
      * 更新成功
      */
-    200: {
-        code: number;
-        message: string;
-        data: {
-            success: boolean;
-            message: string;
-            data: {
-                id: number;
-                name: string;
-                description: string;
-                parentId: number;
-                link: string;
-                parent: {
-                    id: number;
-                    name: string;
-                    description: string;
-                    parentId: number;
-                    link: string;
-                    avatar: string;
-                    background: string;
-                    cover: string;
-                    sort: number;
-                    status: string;
-                    articleCount: number;
-                    followCount: number;
-                    createdAt: string;
-                    updatedAt: string;
-                };
-                children: Array<{
-                    id?: number;
-                    name?: string;
-                    description?: string;
-                    parentId?: number;
-                    link?: string;
-                    avatar?: string;
-                    background?: string;
-                    cover?: string;
-                    sort?: number;
-                    status?: string;
-                    articleCount?: number;
-                    followCount?: number;
-                    createdAt?: string;
-                    updatedAt?: string;
-                }>;
-                avatar: string;
-                background: string;
-                cover: string;
-                sort: number;
-                status: string;
-                articleCount: number;
-                followCount: number;
-                createdAt: string;
-                updatedAt: string;
-            };
-        };
-    };
+    200: unknown;
 };
-
-export type CategoryControllerUpdateResponse = CategoryControllerUpdateResponses[keyof CategoryControllerUpdateResponses];
 
 export type PermissionControllerFindAllData = {
     body?: never;
@@ -7792,7 +7753,7 @@ export type PermissionControllerFindAllResponses = {
 export type PermissionControllerFindAllResponse = PermissionControllerFindAllResponses[keyof PermissionControllerFindAllResponses];
 
 export type PermissionControllerCreateData = {
-    body: unknown;
+    body: CreatePermissionDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -7823,8 +7784,10 @@ export type PermissionControllerCreateResponses = {
     /**
      * 创建成功
      */
-    201: unknown;
+    201: Permission;
 };
+
+export type PermissionControllerCreateResponse = PermissionControllerCreateResponses[keyof PermissionControllerCreateResponses];
 
 export type PermissionControllerRemoveData = {
     body?: never;
@@ -7911,7 +7874,7 @@ export type PermissionControllerFindOneResponses = {
 export type PermissionControllerFindOneResponse = PermissionControllerFindOneResponses[keyof PermissionControllerFindOneResponses];
 
 export type PermissionControllerUpdateData = {
-    body: unknown;
+    body: UpdatePermissionDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -7948,8 +7911,10 @@ export type PermissionControllerUpdateResponses = {
     /**
      * 更新成功
      */
-    200: unknown;
+    200: Permission;
 };
+
+export type PermissionControllerUpdateResponse = PermissionControllerUpdateResponses[keyof PermissionControllerUpdateResponses];
 
 export type OrderControllerGetAllOrdersData = {
     body?: never;
@@ -7981,6 +7946,10 @@ export type OrderControllerGetAllOrdersData = {
          * 用户ID（筛选特定用户的订单）
          */
         userId?: number;
+        /**
+         * 关键词搜索（订单号）
+         */
+        keyword?: string;
     };
     url: '/order';
 };
@@ -8002,10 +7971,10 @@ export type OrderControllerGetAllOrdersResponses = {
                 type: string;
                 title: string;
                 amount: string;
-                paymentMethod: unknown;
+                paymentMethod: string | null;
                 paymentOrderNo: unknown;
                 status: string;
-                paidAt: unknown;
+                paidAt: string | null;
                 details: {
                     plan: string;
                     duration: number;
@@ -8014,9 +7983,8 @@ export type OrderControllerGetAllOrdersResponses = {
                     totalAmount: number;
                     membershipName: string;
                     membershipLevel: number;
-                    remark?: string;
                 };
-                remark: string | null;
+                remark: unknown;
                 createdAt: string;
                 updatedAt: string;
             }>;
@@ -8058,8 +8026,39 @@ export type OrderControllerFindOneResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            userId: number;
+            authorId: number;
+            articleId: unknown;
+            orderNo: string;
+            type: string;
+            title: string;
+            amount: string;
+            paymentMethod: unknown;
+            paymentOrderNo: unknown;
+            status: string;
+            paidAt: unknown;
+            details: {
+                plan: string;
+                duration: number;
+                basePrice: number;
+                isLifetime: boolean;
+                totalAmount: number;
+                membershipName: string;
+                membershipLevel: number;
+            };
+            remark: unknown;
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
 };
+
+export type OrderControllerFindOneResponse = OrderControllerFindOneResponses[keyof OrderControllerFindOneResponses];
 
 export type OrderControllerFindByOrderNoData = {
     body?: never;
@@ -8087,8 +8086,39 @@ export type OrderControllerFindByOrderNoResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            userId: number;
+            authorId: number;
+            articleId: unknown;
+            orderNo: string;
+            type: string;
+            title: string;
+            amount: string;
+            paymentMethod: unknown;
+            paymentOrderNo: unknown;
+            status: string;
+            paidAt: unknown;
+            details: {
+                plan: string;
+                duration: number;
+                basePrice: number;
+                isLifetime: boolean;
+                totalAmount: number;
+                membershipName: string;
+                membershipLevel: number;
+            };
+            remark: unknown;
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
 };
+
+export type OrderControllerFindByOrderNoResponse = OrderControllerFindByOrderNoResponses[keyof OrderControllerFindByOrderNoResponses];
 
 export type OrderControllerGetWalletBalanceData = {
     body?: never;
@@ -8114,8 +8144,17 @@ export type OrderControllerGetWalletBalanceResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            wallet: number;
+            userId: number;
+        };
+    };
 };
+
+export type OrderControllerGetWalletBalanceResponse = OrderControllerGetWalletBalanceResponses[keyof OrderControllerGetWalletBalanceResponses];
 
 export type OrderControllerGetUserOrdersData = {
     body?: never;
@@ -8143,6 +8182,10 @@ export type OrderControllerGetUserOrdersData = {
          * 订单类型
          */
         type?: 'MEMBERSHIP' | 'PRODUCT' | 'SERVICE' | 'ARTICLE';
+        /**
+         * 关键词搜索（订单号）
+         */
+        keyword?: string;
     };
     url: '/order/user';
 };
@@ -8151,8 +8194,22 @@ export type OrderControllerGetUserOrdersResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<string>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
 };
+
+export type OrderControllerGetUserOrdersResponse = OrderControllerGetUserOrdersResponses[keyof OrderControllerGetUserOrdersResponses];
 
 export type OrderControllerGetPendingOrdersData = {
     body?: never;
@@ -8171,8 +8228,14 @@ export type OrderControllerGetPendingOrdersResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: Array<string>;
+    };
 };
+
+export type OrderControllerGetPendingOrdersResponse = OrderControllerGetPendingOrdersResponses[keyof OrderControllerGetPendingOrdersResponses];
 
 export type OrderControllerCancelOrderData = {
     body?: never;
@@ -8355,7 +8418,7 @@ export type InviteControllerGetMyInvitesData = {
         'Device-Type'?: string;
     };
     path?: never;
-    query?: {
+    query: {
         /**
          * 页码
          */
@@ -8364,6 +8427,8 @@ export type InviteControllerGetMyInvitesData = {
          * 每页数量
          */
         limit?: number;
+        keyword: string;
+        status: string;
     };
     url: '/invite/my';
 };
@@ -8379,8 +8444,22 @@ export type InviteControllerGetMyInvitesResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<string>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
 };
+
+export type InviteControllerGetMyInvitesResponse = InviteControllerGetMyInvitesResponses[keyof InviteControllerGetMyInvitesResponses];
 
 export type InviteControllerGetInviteStatsData = {
     body?: never;
@@ -8406,8 +8485,19 @@ export type InviteControllerGetInviteStatsResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            inviteCount: number;
+            totalEarnings: number;
+            thisMonthEarnings: number;
+            userInviteEarnings: string;
+        };
+    };
 };
+
+export type InviteControllerGetInviteStatsResponse = InviteControllerGetInviteStatsResponses[keyof InviteControllerGetInviteStatsResponses];
 
 export type InviteControllerGetMyInviteEarningsData = {
     body?: never;
@@ -8442,8 +8532,22 @@ export type InviteControllerGetMyInviteEarningsResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<string>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
 };
+
+export type InviteControllerGetMyInviteEarningsResponse = InviteControllerGetMyInviteEarningsResponses[keyof InviteControllerGetMyInviteEarningsResponses];
 
 export type InviteControllerGetInviteDetailData = {
     body?: never;
@@ -8479,7 +8583,7 @@ export type InviteControllerGetInviteDetailResponses = {
 };
 
 export type InviteControllerUseInviteData = {
-    body: unknown;
+    body: UseInviteDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8518,7 +8622,7 @@ export type InviteControllerUseInviteResponses = {
 };
 
 export type InviteControllerCreateInviteData = {
-    body: unknown;
+    body: CreateInviteDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8577,8 +8681,27 @@ export type UploadControllerGetFileInfoResponses = {
     /**
      * 获取文件信息成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            hash: string;
+            originalName: string;
+            storage: string;
+            filename: string;
+            path: string;
+            url: string;
+            size: number;
+            mimeType: string;
+            referenceCount: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
 };
+
+export type UploadControllerGetFileInfoResponse = UploadControllerGetFileInfoResponses[keyof UploadControllerGetFileInfoResponses];
 
 export type UploadControllerFindAllData = {
     body?: never;
@@ -8589,7 +8712,7 @@ export type UploadControllerFindAllData = {
         'Device-Type'?: string;
     };
     path?: never;
-    query?: {
+    query: {
         /**
          * 页码
          */
@@ -8598,8 +8721,8 @@ export type UploadControllerFindAllData = {
          * 每页数量
          */
         limit?: number;
-        sortBy?: string;
-        sortOrder?: 'DESC' | 'ASC';
+        sortBy: string;
+        sortOrder: string;
     };
     url: '/upload';
 };
@@ -8608,14 +8731,31 @@ export type UploadControllerFindAllResponses = {
     /**
      * 获取所有上传文件成功
      */
-    200: Array<unknown>;
+    200: {
+        code: number;
+        message: string;
+        data: Array<{
+            id: number;
+            hash: string;
+            originalName: string;
+            storage: string;
+            filename: string;
+            path: string;
+            url: string;
+            size: number;
+            mimeType: string;
+            referenceCount: number;
+            createdAt: string;
+            updatedAt: string;
+        }>;
+    };
 };
 
 export type UploadControllerFindAllResponse = UploadControllerFindAllResponses[keyof UploadControllerFindAllResponses];
 
 export type UploadControllerUploadFileData = {
     body: {
-        file?: Blob | File;
+        file: Blob | File;
     };
     headers?: {
         Authorization?: string;
@@ -8741,55 +8881,80 @@ export type MessageControllerFindAllResponses = {
         message: string;
         data: {
             data: Array<{
-                id: number;
-                senderId: unknown;
-                receiverId: number;
-                content: string;
-                type: string;
-                isRead: boolean;
-                isBroadcast: boolean;
-                title: string;
-                metadata: {
-                    articleId: number;
-                    commentId?: number;
-                    targetType: string;
-                    articleTitle?: string;
-                    commenterName?: string;
-                    commentContent?: string;
-                    notificationType: string;
+                id?: number;
+                senderId?: unknown;
+                receiverId?: number;
+                content?: string;
+                type?: string;
+                isRead?: boolean;
+                isBroadcast?: boolean;
+                title?: string;
+                metadata?: {
                     targetId: number;
+                    articleId: number;
                     likerName: string;
+                    targetType: string;
                     targetTitle: string;
+                    notificationType: string;
                 };
-                createdAt: string;
-                updatedAt: string;
-                sender: unknown;
-                receiver: {
+                createdAt?: string;
+                updatedAt?: string;
+                sender?: unknown;
+                receiver?: {
                     id: number;
                     username: string;
-                    nickname: string;
-                    avatar: string;
-                    background: unknown;
-                    level: number;
-                    membershipLevel: number;
-                    membershipStatus: string;
-                    membershipStartDate: string;
-                    membershipEndDate: unknown;
+                    nickname: unknown;
                     status: string;
-                    createdAt: string;
-                    updatedAt: string;
-                    description: string;
+                    banned: unknown;
+                    banReason: unknown;
+                    avatar: string;
+                    description: unknown;
+                    background: unknown;
+                    gender: string;
+                    birthDate: unknown;
+                    articleCount: number;
                     followerCount: number;
                     followingCount: number;
-                    lastActiveAt: unknown;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: unknown;
+                    membershipEndDate: unknown;
                     lastLoginAt: string;
-                    gender: string;
+                    lastActiveAt: unknown;
+                    inviterId: unknown;
+                    myInviteCode: string;
+                    inviteCode: unknown;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    equippedDecorations: {
+                        COMMENT_BUBBLE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
                 };
-                articleId: number;
-                commentId: number | null;
-                targetId: number | null;
-                targetType: string;
-                notificationType: string;
+                articleId?: number;
+                commentId?: unknown;
+                targetId?: number;
+                targetType?: string;
+                notificationType?: string;
             }>;
             meta: {
                 total: number;
@@ -8804,7 +8969,7 @@ export type MessageControllerFindAllResponses = {
 export type MessageControllerFindAllResponse = MessageControllerFindAllResponses[keyof MessageControllerFindAllResponses];
 
 export type MessageControllerCreateData = {
-    body: unknown;
+    body: CreateMessageDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -8817,32 +8982,8 @@ export type MessageControllerCreateData = {
 };
 
 export type MessageControllerCreateResponses = {
-    201: {
-        code: number;
-        message: string;
-        data: {
-            success: boolean;
-            message: string;
-            data: Array<{
-                id: number;
-                senderId: number;
-                receiverId: number;
-                content: string;
-                type: string;
-                isRead: boolean;
-                isBroadcast: boolean;
-                title: string;
-                metadata: {
-                    [key: string]: unknown;
-                };
-                createdAt: string;
-                updatedAt: string;
-            }>;
-        };
-    };
+    201: unknown;
 };
-
-export type MessageControllerCreateResponse = MessageControllerCreateResponses[keyof MessageControllerCreateResponses];
 
 export type MessageControllerSearchData = {
     body?: never;
@@ -8896,55 +9037,80 @@ export type MessageControllerSearchResponses = {
         message: string;
         data: {
             data: Array<{
-                id: number;
-                senderId: unknown;
-                receiverId: number;
-                content: string;
-                type: string;
-                isRead: boolean;
-                isBroadcast: boolean;
-                title: string;
-                metadata: {
-                    articleId: number;
-                    commentId?: number;
-                    targetType: string;
-                    articleTitle?: string;
-                    commenterName?: string;
-                    commentContent?: string;
-                    notificationType: string;
+                id?: number;
+                senderId?: unknown;
+                receiverId?: number;
+                content?: string;
+                type?: string;
+                isRead?: boolean;
+                isBroadcast?: boolean;
+                title?: string;
+                metadata?: {
                     targetId: number;
+                    articleId: number;
                     likerName: string;
+                    targetType: string;
                     targetTitle: string;
+                    notificationType: string;
                 };
-                createdAt: string;
-                updatedAt: string;
-                sender: unknown;
-                receiver: {
+                createdAt?: string;
+                updatedAt?: string;
+                sender?: unknown;
+                receiver?: {
                     id: number;
                     username: string;
-                    nickname: string;
-                    avatar: string;
-                    background: unknown;
-                    level: number;
-                    membershipLevel: number;
-                    membershipStatus: string;
-                    membershipStartDate: string;
-                    membershipEndDate: unknown;
+                    nickname: unknown;
                     status: string;
-                    createdAt: string;
-                    updatedAt: string;
-                    description: string;
+                    banned: unknown;
+                    banReason: unknown;
+                    avatar: string;
+                    description: unknown;
+                    background: unknown;
+                    gender: string;
+                    birthDate: unknown;
+                    articleCount: number;
                     followerCount: number;
                     followingCount: number;
-                    lastActiveAt: unknown;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: unknown;
+                    membershipEndDate: unknown;
                     lastLoginAt: string;
-                    gender: string;
+                    lastActiveAt: unknown;
+                    inviterId: unknown;
+                    myInviteCode: string;
+                    inviteCode: unknown;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    equippedDecorations: {
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                        COMMENT_BUBBLE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
                 };
-                articleId: number;
-                commentId: number | null;
-                targetId: number | null;
-                targetType: string;
-                notificationType: string;
+                articleId?: number;
+                commentId?: unknown;
+                targetId?: number;
+                targetType?: string;
+                notificationType?: string;
             }>;
             meta: {
                 total: number;
@@ -9025,23 +9191,52 @@ export type MessageControllerFindOneResponses = {
             receiver: {
                 id: number;
                 username: string;
-                nickname: string;
-                avatar: string;
-                background: unknown;
-                level: number;
-                membershipLevel: number;
-                membershipStatus: string;
-                membershipStartDate: string;
-                membershipEndDate: unknown;
+                nickname: unknown;
                 status: string;
-                createdAt: string;
-                updatedAt: string;
-                description: string;
+                banned: unknown;
+                banReason: unknown;
+                avatar: string;
+                description: unknown;
+                background: unknown;
+                gender: string;
+                birthDate: unknown;
+                articleCount: number;
                 followerCount: number;
                 followingCount: number;
-                lastActiveAt: unknown;
+                level: number;
+                experience: number;
+                wallet: number;
+                points: number;
+                membershipLevel: number;
+                membershipLevelName: string;
+                membershipStatus: string;
+                membershipStartDate: unknown;
+                membershipEndDate: unknown;
                 lastLoginAt: string;
-                gender: string;
+                lastActiveAt: unknown;
+                inviterId: unknown;
+                myInviteCode: string;
+                inviteCode: unknown;
+                inviteEarnings: string;
+                inviteCount: number;
+                createdAt: string;
+                updatedAt: string;
+                equippedDecorations: {
+                    AVATAR_FRAME: {
+                        id: number;
+                        name: string;
+                        type: string;
+                        imageUrl: string;
+                        rarity: string;
+                    };
+                    COMMENT_BUBBLE: {
+                        id: number;
+                        name: string;
+                        type: string;
+                        imageUrl: string;
+                        rarity: string;
+                    };
+                };
             };
             articleId: number;
             commentId: unknown;
@@ -9055,7 +9250,7 @@ export type MessageControllerFindOneResponses = {
 export type MessageControllerFindOneResponse = MessageControllerFindOneResponses[keyof MessageControllerFindOneResponses];
 
 export type MessageControllerUpdateData = {
-    body: unknown;
+    body: UpdateMessageDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9122,20 +9317,11 @@ export type MessageControllerMarkAsReadData = {
 };
 
 export type MessageControllerMarkAsReadResponses = {
-    201: {
-        code: number;
-        message: string;
-        data: {
-            success: boolean;
-            message: string;
-        };
-    };
+    201: unknown;
 };
 
-export type MessageControllerMarkAsReadResponse = MessageControllerMarkAsReadResponses[keyof MessageControllerMarkAsReadResponses];
-
 export type MessageControllerMarkAllAsReadData = {
-    body?: never;
+    body: MarkAllReadDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9152,7 +9338,7 @@ export type MessageControllerMarkAllAsReadResponses = {
 };
 
 export type MessageControllerBatchOperationData = {
-    body: unknown;
+    body: BatchMessageDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9177,7 +9363,7 @@ export type BannerControllerFindAllData = {
         'Device-Type'?: string;
     };
     path?: never;
-    query?: {
+    query: {
         /**
          * 页码
          */
@@ -9186,28 +9372,32 @@ export type BannerControllerFindAllData = {
          * 每页数量
          */
         limit?: number;
-        sortBy?: string;
-        sortOrder?: 'DESC' | 'ASC';
+        /**
+         * 状态筛选（管理员可查询，普通用户默认active）
+         */
+        status?: string;
+        sortBy: string;
+        sortOrder: string;
     };
     url: '/banners';
 };
 
+export type BannerControllerFindAllErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+};
+
 export type BannerControllerFindAllResponses = {
+    /**
+     * 获取成功
+     */
     200: {
         code: number;
         message: string;
         data: {
-            data: Array<{
-                id?: number;
-                title?: string;
-                description?: string;
-                imageUrl?: string;
-                linkUrl?: string;
-                sortOrder?: number;
-                status?: string;
-                createdAt?: string;
-                updatedAt?: string;
-            }>;
+            data: Array<string>;
             meta: {
                 total: number;
                 page: number;
@@ -9221,7 +9411,7 @@ export type BannerControllerFindAllResponses = {
 export type BannerControllerFindAllResponse = BannerControllerFindAllResponses[keyof BannerControllerFindAllResponses];
 
 export type BannerControllerCreateData = {
-    body?: unknown;
+    body: CreateBannerDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9233,29 +9423,23 @@ export type BannerControllerCreateData = {
     url: '/banners';
 };
 
-export type BannerControllerCreateResponses = {
-    201: {
-        code: number;
-        message: string;
-        data: {
-            success: boolean;
-            message: string;
-            data: {
-                id: number;
-                title: string;
-                description: string;
-                imageUrl: string;
-                linkUrl: string;
-                sortOrder: number;
-                status: string;
-                createdAt: string;
-                updatedAt: string;
-            };
-        };
-    };
+export type BannerControllerCreateErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 无权限
+     */
+    403: unknown;
 };
 
-export type BannerControllerCreateResponse = BannerControllerCreateResponses[keyof BannerControllerCreateResponses];
+export type BannerControllerCreateResponses = {
+    /**
+     * 创建成功
+     */
+    201: unknown;
+};
 
 export type BannerControllerFindActiveData = {
     body?: never;
@@ -9271,20 +9455,13 @@ export type BannerControllerFindActiveData = {
 };
 
 export type BannerControllerFindActiveResponses = {
+    /**
+     * 获取成功
+     */
     200: {
         code: number;
         message: string;
-        data: Array<{
-            id?: number;
-            title?: string;
-            description?: string;
-            imageUrl?: string;
-            linkUrl?: string;
-            sortOrder?: number;
-            status?: string;
-            createdAt?: string;
-            updatedAt?: string;
-        }>;
+        data: Array<string>;
     };
 };
 
@@ -9299,13 +9476,34 @@ export type BannerControllerRemoveData = {
         'Device-Type'?: string;
     };
     path: {
-        id: string;
+        /**
+         * 轮播ID
+         */
+        id: number;
     };
     query?: never;
     url: '/banners/{id}';
 };
 
+export type BannerControllerRemoveErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 无权限
+     */
+    403: unknown;
+    /**
+     * 轮播不存在
+     */
+    404: unknown;
+};
+
 export type BannerControllerRemoveResponses = {
+    /**
+     * 删除成功
+     */
     200: unknown;
 };
 
@@ -9318,34 +9516,33 @@ export type BannerControllerFindOneData = {
         'Device-Type'?: string;
     };
     path: {
-        id: string;
+        /**
+         * 轮播ID
+         */
+        id: number;
     };
     query?: never;
     url: '/banners/{id}';
 };
 
+export type BannerControllerFindOneErrors = {
+    /**
+     * 轮播不存在
+     */
+    404: unknown;
+};
+
 export type BannerControllerFindOneResponses = {
-    200: {
-        code: number;
-        message: string;
-        data: {
-            id: number;
-            title: string;
-            description: string;
-            imageUrl: string;
-            linkUrl: string;
-            sortOrder: number;
-            status: string;
-            createdAt: string;
-            updatedAt: string;
-        };
-    };
+    /**
+     * 获取成功
+     */
+    200: Banner;
 };
 
 export type BannerControllerFindOneResponse = BannerControllerFindOneResponses[keyof BannerControllerFindOneResponses];
 
 export type BannerControllerUpdateData = {
-    body?: unknown;
+    body: UpdateBannerDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9353,13 +9550,34 @@ export type BannerControllerUpdateData = {
         'Device-Type'?: string;
     };
     path: {
-        id: string;
+        /**
+         * 轮播ID
+         */
+        id: number;
     };
     query?: never;
     url: '/banners/{id}';
 };
 
+export type BannerControllerUpdateErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 无权限
+     */
+    403: unknown;
+    /**
+     * 轮播不存在
+     */
+    404: unknown;
+};
+
 export type BannerControllerUpdateResponses = {
+    /**
+     * 更新成功
+     */
     200: unknown;
 };
 
@@ -9398,7 +9616,7 @@ export type PaymentControllerCreatePaymentResponses = {
 export type PaymentControllerCreatePaymentResponse = PaymentControllerCreatePaymentResponses[keyof PaymentControllerCreatePaymentResponses];
 
 export type PaymentControllerAlipayNotifyData = {
-    body: unknown;
+    body: AlipayNotifyDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9418,7 +9636,7 @@ export type PaymentControllerAlipayNotifyResponses = {
 };
 
 export type PaymentControllerWechatNotifyData = {
-    body: unknown;
+    body: WechatNotifyDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9533,8 +9751,107 @@ export type PaymentControllerFindPaymentRecordResponses = {
     /**
      * 查询成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            orderId: number;
+            userId: number;
+            paymentMethod: string;
+            amount: string;
+            thirdPartyOrderNo: unknown;
+            status: string;
+            paidAt: unknown;
+            details: {
+                appId: string;
+                amount: string;
+                params: {
+                    pid: string;
+                    name: string;
+                    sign: string;
+                    type: string;
+                    money: string;
+                    sign_type: string;
+                    notify_url: string;
+                    return_url: string;
+                    out_trade_no: string;
+                };
+                epayUrl: string;
+                orderNo: string;
+            };
+            errorMessage: unknown;
+            createdAt: string;
+            updatedAt: string;
+            order: {
+                id: number;
+                userId: number;
+                authorId: number;
+                articleId: unknown;
+                orderNo: string;
+                type: string;
+                title: string;
+                amount: string;
+                paymentMethod: unknown;
+                paymentOrderNo: unknown;
+                status: string;
+                paidAt: unknown;
+                details: {
+                    plan: string;
+                    duration: number;
+                    basePrice: number;
+                    isLifetime: boolean;
+                    totalAmount: number;
+                    membershipName: string;
+                    membershipLevel: number;
+                };
+                remark: unknown;
+                createdAt: string;
+                updatedAt: string;
+            };
+            user: {
+                id: number;
+                username: string;
+                nickname: unknown;
+                password: string;
+                email: string;
+                phone: unknown;
+                status: string;
+                banned: unknown;
+                banReason: unknown;
+                avatar: unknown;
+                description: unknown;
+                background: unknown;
+                address: unknown;
+                gender: string;
+                birthDate: unknown;
+                articleCount: number;
+                followerCount: number;
+                followingCount: number;
+                level: number;
+                experience: number;
+                wallet: number;
+                points: number;
+                membershipLevel: number;
+                membershipLevelName: string;
+                membershipStatus: string;
+                membershipStartDate: string;
+                membershipEndDate: string;
+                lastLoginAt: string;
+                lastActiveAt: unknown;
+                inviterId: unknown;
+                myInviteCode: string;
+                inviteCode: unknown;
+                inviteEarnings: string;
+                inviteCount: number;
+                createdAt: string;
+                updatedAt: string;
+            };
+        };
+    };
 };
+
+export type PaymentControllerFindPaymentRecordResponse = PaymentControllerFindPaymentRecordResponses[keyof PaymentControllerFindPaymentRecordResponses];
 
 export type PaymentControllerFindPaymentByOrderIdData = {
     body?: never;
@@ -9555,8 +9872,108 @@ export type PaymentControllerFindPaymentByOrderIdResponses = {
     /**
      * 查询成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            orderId: number;
+            userId: number;
+            paymentMethod: string;
+            amount: string;
+            thirdPartyOrderNo: unknown;
+            status: string;
+            paidAt: unknown;
+            details: {
+                appId: string;
+                amount: string;
+                params: {
+                    pid: string;
+                    name: string;
+                    sign: string;
+                    type: string;
+                    money: string;
+                    sign_type: string;
+                    notify_url: string;
+                    return_url: string;
+                    out_trade_no: string;
+                };
+                epayUrl: string;
+                orderNo: string;
+            };
+            errorMessage: unknown;
+            createdAt: string;
+            updatedAt: string;
+            order: {
+                id: number;
+                userId: number;
+                authorId: number;
+                articleId: unknown;
+                orderNo: string;
+                type: string;
+                title: string;
+                amount: string;
+                paymentMethod: unknown;
+                paymentOrderNo: unknown;
+                status: string;
+                paidAt: unknown;
+                details: {
+                    plan: string;
+                    remark: string;
+                    duration: number;
+                    basePrice: number;
+                    isLifetime: boolean;
+                    totalAmount: number;
+                    membershipName: string;
+                    membershipLevel: number;
+                };
+                remark: string;
+                createdAt: string;
+                updatedAt: string;
+            };
+            user: {
+                id: number;
+                username: string;
+                nickname: unknown;
+                password: string;
+                email: string;
+                phone: unknown;
+                status: string;
+                banned: unknown;
+                banReason: unknown;
+                avatar: string;
+                description: unknown;
+                background: unknown;
+                address: unknown;
+                gender: string;
+                birthDate: unknown;
+                articleCount: number;
+                followerCount: number;
+                followingCount: number;
+                level: number;
+                experience: number;
+                wallet: number;
+                points: number;
+                membershipLevel: number;
+                membershipLevelName: string;
+                membershipStatus: string;
+                membershipStartDate: unknown;
+                membershipEndDate: unknown;
+                lastLoginAt: string;
+                lastActiveAt: unknown;
+                inviterId: unknown;
+                myInviteCode: string;
+                inviteCode: unknown;
+                inviteEarnings: string;
+                inviteCount: number;
+                createdAt: string;
+                updatedAt: string;
+            };
+        };
+    };
 };
+
+export type PaymentControllerFindPaymentByOrderIdResponse = PaymentControllerFindPaymentByOrderIdResponses[keyof PaymentControllerFindPaymentByOrderIdResponses];
 
 export type PaymentControllerFindUserPaymentsData = {
     body?: never;
@@ -9578,8 +9995,78 @@ export type PaymentControllerFindUserPaymentsResponses = {
     /**
      * 查询成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<{
+                id?: number;
+                orderId?: number;
+                userId?: number;
+                paymentMethod?: string;
+                amount?: string;
+                thirdPartyOrderNo?: unknown;
+                status?: string;
+                paidAt?: unknown;
+                details?: {
+                    appId: string;
+                    amount: string;
+                    params: {
+                        pid: string;
+                        name: string;
+                        sign: string;
+                        type: string;
+                        money: string;
+                        sign_type: string;
+                        notify_url: string;
+                        return_url: string;
+                        out_trade_no: string;
+                    };
+                    epayUrl: string;
+                    orderNo: string;
+                };
+                errorMessage?: unknown;
+                createdAt?: string;
+                updatedAt?: string;
+                order?: {
+                    id: number;
+                    userId: number;
+                    authorId: number;
+                    articleId: unknown;
+                    orderNo: string;
+                    type: string;
+                    title: string;
+                    amount: string;
+                    paymentMethod: unknown;
+                    paymentOrderNo: unknown;
+                    status: string;
+                    paidAt: unknown;
+                    details: {
+                        plan: string;
+                        remark: string;
+                        duration: number;
+                        basePrice: number;
+                        isLifetime: boolean;
+                        totalAmount: number;
+                        membershipName: string;
+                        membershipLevel: number;
+                    };
+                    remark: string;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+            }>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: unknown;
+            };
+        };
+    };
 };
+
+export type PaymentControllerFindUserPaymentsResponse = PaymentControllerFindUserPaymentsResponses[keyof PaymentControllerFindUserPaymentsResponses];
 
 export type ReportControllerFindAllData = {
     body?: never;
@@ -9615,8 +10102,18 @@ export type ReportControllerFindAllData = {
          * 举报人ID
          */
         reporterId?: number;
+        /**
+         * 关键词搜索（举报原因）
+         */
+        keyword?: string;
+        /**
+         * 排序字段
+         */
         sortBy?: string;
-        sortOrder?: 'DESC' | 'ASC';
+        /**
+         * 排序方向
+         */
+        sortOrder?: 'ASC' | 'DESC';
     };
     url: '/report';
 };
@@ -9625,105 +10122,11 @@ export type ReportControllerFindAllResponses = {
     /**
      * 获取成功
      */
-    200: {
-        code: number;
-        message: string;
-        data: {
-            data: Array<{
-                id?: number;
-                type?: string;
-                reason?: string;
-                category?: string;
-                description?: string;
-                status?: string;
-                result?: unknown;
-                action?: unknown;
-                reporterId?: number;
-                reporter?: {
-                    id: number;
-                    username: string;
-                    nickname: unknown;
-                    avatar: unknown;
-                    background: unknown;
-                    level: number;
-                    membershipLevel: number;
-                    membershipStatus: string;
-                    membershipStartDate: unknown;
-                    membershipEndDate: unknown;
-                    status: string;
-                    createdAt: string;
-                    updatedAt: string;
-                    description: unknown;
-                    followerCount: number;
-                    followingCount: number;
-                    lastActiveAt: unknown;
-                    lastLoginAt: unknown;
-                    gender: string;
-                    equippedDecorations: {
-                        AVATAR_FRAME: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
-                    };
-                };
-                reportedUserId?: number;
-                reportedUser?: {
-                    id: number;
-                    username: string;
-                    nickname: unknown;
-                    avatar: unknown;
-                    background: unknown;
-                    level: number;
-                    membershipLevel: number;
-                    membershipStatus: string;
-                    membershipStartDate: unknown;
-                    membershipEndDate: unknown;
-                    status: string;
-                    createdAt: string;
-                    updatedAt: string;
-                    description: unknown;
-                    followerCount: number;
-                    followingCount: number;
-                    lastActiveAt: unknown;
-                    lastLoginAt: unknown;
-                    gender: string;
-                    equippedDecorations: {
-                        AVATAR_FRAME: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
-                    };
-                };
-                reportedArticleId?: unknown;
-                reportedArticle?: unknown;
-                reportedCommentId?: unknown;
-                reportedComment?: unknown;
-                handlerId?: unknown;
-                handler?: unknown;
-                handledAt?: unknown;
-                createdAt?: string;
-                updatedAt?: string;
-            }>;
-            meta: {
-                total: number;
-                page: number;
-                limit: number;
-                totalPages: number;
-            };
-        };
-    };
+    200: unknown;
 };
 
-export type ReportControllerFindAllResponse = ReportControllerFindAllResponses[keyof ReportControllerFindAllResponses];
-
 export type ReportControllerCreateData = {
-    body: unknown;
+    body: CreateReportDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9739,31 +10142,8 @@ export type ReportControllerCreateResponses = {
     /**
      * 创建成功
      */
-    201: {
-        code: number;
-        message: string;
-        data: {
-            id: number;
-            type: string;
-            reason: string;
-            category: string;
-            description: string;
-            status: string;
-            result: unknown;
-            action: unknown;
-            reporterId: number;
-            reportedUserId: number;
-            reportedArticleId: unknown;
-            reportedCommentId: unknown;
-            handlerId: unknown;
-            handledAt: unknown;
-            createdAt: string;
-            updatedAt: string;
-        };
-    };
+    201: unknown;
 };
-
-export type ReportControllerCreateResponse = ReportControllerCreateResponses[keyof ReportControllerCreateResponses];
 
 export type ReportControllerGetStatisticsData = {
     body?: never;
@@ -9782,30 +10162,8 @@ export type ReportControllerGetStatisticsResponses = {
     /**
      * 获取成功
      */
-    200: {
-        code: number;
-        message: string;
-        data: {
-            total: number;
-            byStatus: {
-                pending: number;
-                processing: number;
-                resolved: number;
-                rejected: number;
-            };
-            byType: Array<{
-                type?: string;
-                count?: string;
-            }>;
-            byCategory: Array<{
-                category?: string;
-                count?: string;
-            }>;
-        };
-    };
+    200: unknown;
 };
-
-export type ReportControllerGetStatisticsResponse = ReportControllerGetStatisticsResponses[keyof ReportControllerGetStatisticsResponses];
 
 export type ReportControllerRemoveData = {
     body?: never;
@@ -9848,97 +10206,11 @@ export type ReportControllerFindOneResponses = {
     /**
      * 获取成功
      */
-    200: {
-        code: number;
-        message: string;
-        data: {
-            id: number;
-            type: string;
-            reason: string;
-            category: string;
-            description: string;
-            status: string;
-            result: unknown;
-            action: unknown;
-            reporterId: number;
-            reporter: {
-                id: number;
-                username: string;
-                nickname: unknown;
-                avatar: unknown;
-                background: unknown;
-                level: number;
-                membershipLevel: number;
-                membershipStatus: string;
-                membershipStartDate: unknown;
-                membershipEndDate: unknown;
-                status: string;
-                createdAt: string;
-                updatedAt: string;
-                description: unknown;
-                followerCount: number;
-                followingCount: number;
-                lastActiveAt: unknown;
-                lastLoginAt: unknown;
-                gender: string;
-                equippedDecorations: {
-                    AVATAR_FRAME: {
-                        id: number;
-                        name: string;
-                        type: string;
-                        imageUrl: string;
-                        rarity: string;
-                    };
-                };
-            };
-            reportedUserId: number;
-            reportedUser: {
-                id: number;
-                username: string;
-                nickname: unknown;
-                avatar: unknown;
-                background: unknown;
-                level: number;
-                membershipLevel: number;
-                membershipStatus: string;
-                membershipStartDate: unknown;
-                membershipEndDate: unknown;
-                status: string;
-                createdAt: string;
-                updatedAt: string;
-                description: unknown;
-                followerCount: number;
-                followingCount: number;
-                lastActiveAt: unknown;
-                lastLoginAt: unknown;
-                gender: string;
-                equippedDecorations: {
-                    AVATAR_FRAME: {
-                        id: number;
-                        name: string;
-                        type: string;
-                        imageUrl: string;
-                        rarity: string;
-                    };
-                };
-            };
-            reportedArticleId: unknown;
-            reportedArticle: unknown;
-            reportedCommentId: unknown;
-            reportedComment: unknown;
-            handlerId: unknown;
-            handler: unknown;
-            handledAt: unknown;
-            createdAt: string;
-            updatedAt: string;
-        };
-    };
+    200: unknown;
 };
 
-export type ReportControllerFindOneResponse = ReportControllerFindOneResponses[keyof ReportControllerFindOneResponses];
-
 export type ReportControllerUpdateData = {
-    body: unknown;
+    body: UpdateReportDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -9969,18 +10241,28 @@ export type DecorationControllerFindAllData = {
     };
     path?: never;
     query?: {
+        /**
+         * 装饰品类型
+         */
         type?: string;
+        /**
+         * 状态（管理员可查询，普通用户默认ACTIVE）
+         */
         status?: string;
         /**
-         * 分页
+         * 关键词搜索
+         */
+        keyword?: string;
+        /**
+         * 页码
          */
         page?: number;
         /**
-         * 限制
+         * 每页数量
          */
         limit?: number;
         sortBy?: string;
-        sortOrder?: 'DESC' | 'ASC';
+        sortOrder?: string;
     };
     url: '/decoration';
 };
@@ -9995,39 +10277,27 @@ export type DecorationControllerFindAllResponses = {
         data: {
             data: Array<{
                 id?: number;
-                userId?: number;
-                decorationId?: number;
-                decoration?: {
-                    id: number;
-                    name: string;
-                    type: string;
-                    description: string;
-                    imageUrl: string;
-                    previewUrl: string;
-                    rarity: string;
-                    obtainMethod: string;
-                    isPurchasable: boolean;
-                    price: string;
-                    isPermanent: boolean;
-                    validDays: number;
-                    sort: number;
-                    status: string;
-                    activityId: unknown;
-                    requiredLikes: number;
-                    requiredComments: number;
-                    createdAt: string;
-                    updatedAt: string;
-                };
+                name?: string;
+                type?: string;
+                description?: string;
+                imageUrl?: string;
+                previewUrl?: string;
+                rarity?: string;
                 obtainMethod?: string;
-                isPermanent?: boolean;
-                expiresAt?: unknown;
-                isUsing?: boolean;
-                giftFromUserId?: unknown;
-                orderId?: unknown;
+                isPurchasable?: boolean;
+                price?: string;
+                validDays?: number;
+                sort?: number;
+                status?: string;
                 activityId?: unknown;
-                remark?: unknown;
+                achievementId?: unknown;
+                requiredLikes?: number;
+                requiredComments?: number;
                 createdAt?: string;
                 updatedAt?: string;
+                isOwned?: boolean;
+                isUsing?: boolean;
+                canDirectEquip?: boolean;
             }>;
             meta: {
                 total: number;
@@ -10058,34 +10328,8 @@ export type DecorationControllerCreateResponses = {
     /**
      * 创建成功
      */
-    201: {
-        code: number;
-        message: string;
-        data: {
-            id: number;
-            name: string;
-            type: string;
-            description: string;
-            imageUrl: string;
-            previewUrl: string;
-            rarity: string;
-            obtainMethod: string;
-            isPurchasable: boolean;
-            price: string;
-            isPermanent: boolean;
-            validDays: number;
-            sort: number;
-            status: string;
-            activityId: unknown;
-            requiredLikes: number;
-            requiredComments: number;
-            createdAt: string;
-            updatedAt: string;
-        };
-    };
+    201: unknown;
 };
-
-export type DecorationControllerCreateResponse = DecorationControllerCreateResponses[keyof DecorationControllerCreateResponses];
 
 export type DecorationControllerRemoveData = {
     body?: never;
@@ -10146,6 +10390,7 @@ export type DecorationControllerFindOneResponses = {
             sort: number;
             status: string;
             activityId: unknown;
+            achievementId: unknown;
             requiredLikes: number;
             requiredComments: number;
             createdAt: string;
@@ -10160,7 +10405,7 @@ export type DecorationControllerFindOneResponses = {
 export type DecorationControllerFindOneResponse = DecorationControllerFindOneResponses[keyof DecorationControllerFindOneResponses];
 
 export type DecorationControllerUpdateData = {
-    body: unknown;
+    body: UpdateDecorationDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10178,34 +10423,8 @@ export type DecorationControllerUpdateResponses = {
     /**
      * 更新成功
      */
-    200: {
-        code: number;
-        message: string;
-        data: {
-            id: number;
-            name: string;
-            type: string;
-            description: string;
-            imageUrl: string;
-            previewUrl: string;
-            rarity: string;
-            obtainMethod: string;
-            isPurchasable: boolean;
-            price: number;
-            isPermanent: boolean;
-            validDays: number;
-            sort: number;
-            status: string;
-            activityId: unknown;
-            requiredLikes: number;
-            requiredComments: number;
-            createdAt: string;
-            updatedAt: string;
-        };
-    };
+    200: unknown;
 };
-
-export type DecorationControllerUpdateResponse = DecorationControllerUpdateResponses[keyof DecorationControllerUpdateResponses];
 
 export type DecorationControllerGetMyDecorationsData = {
     body?: never;
@@ -10219,11 +10438,11 @@ export type DecorationControllerGetMyDecorationsData = {
     query: {
         type: string;
         /**
-         * 分页
+         * 页码
          */
         page?: number;
         /**
-         * 限制
+         * 每页数量
          */
         limit?: number;
     };
@@ -10258,6 +10477,7 @@ export type DecorationControllerGetMyDecorationsResponses = {
                     sort: number;
                     status: string;
                     activityId: unknown;
+                    achievementId: unknown;
                     requiredLikes: number;
                     requiredComments: number;
                     createdAt: string;
@@ -10297,14 +10517,14 @@ export type DecorationControllerGetUserDecorationsData = {
     path: {
         userId: string;
     };
-    query: {
-        type: string;
+    query?: {
+        type?: string;
         /**
-         * 分页
+         * 页码
          */
         page?: number;
         /**
-         * 限制
+         * 每页数量
          */
         limit?: number;
     };
@@ -10339,6 +10559,7 @@ export type DecorationControllerGetUserDecorationsResponses = {
                     sort: number;
                     status: string;
                     activityId: unknown;
+                    achievementId: unknown;
                     requiredLikes: number;
                     requiredComments: number;
                     createdAt: string;
@@ -10384,8 +10605,14 @@ export type DecorationControllerGetMyActivityProgressResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: Array<string>;
+    };
 };
+
+export type DecorationControllerGetMyActivityProgressResponse = DecorationControllerGetMyActivityProgressResponses[keyof DecorationControllerGetMyActivityProgressResponses];
 
 export type DecorationControllerGetCurrentDecorationsData = {
     body?: never;
@@ -10428,6 +10655,44 @@ export type DecorationControllerGetCurrentDecorationsResponses = {
                     sort: number;
                     status: string;
                     activityId: unknown;
+                    achievementId: unknown;
+                    requiredLikes: number;
+                    requiredComments: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                obtainMethod: string;
+                isPermanent: boolean;
+                expiresAt: unknown;
+                isUsing: boolean;
+                giftFromUserId: unknown;
+                orderId: unknown;
+                activityId: unknown;
+                remark: unknown;
+                createdAt: string;
+                updatedAt: string;
+            };
+            commentBubble: {
+                id: number;
+                userId: number;
+                decorationId: number;
+                decoration: {
+                    id: number;
+                    name: string;
+                    type: string;
+                    description: string;
+                    imageUrl: string;
+                    previewUrl: string;
+                    rarity: string;
+                    obtainMethod: string;
+                    isPurchasable: boolean;
+                    price: string;
+                    isPermanent: boolean;
+                    validDays: number;
+                    sort: number;
+                    status: string;
+                    activityId: unknown;
+                    achievementId: unknown;
                     requiredLikes: number;
                     requiredComments: number;
                     createdAt: string;
@@ -10451,7 +10716,7 @@ export type DecorationControllerGetCurrentDecorationsResponses = {
 export type DecorationControllerGetCurrentDecorationsResponse = DecorationControllerGetCurrentDecorationsResponses[keyof DecorationControllerGetCurrentDecorationsResponses];
 
 export type DecorationControllerPurchaseData = {
-    body: unknown;
+    body: PurchaseDecorationDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10463,23 +10728,15 @@ export type DecorationControllerPurchaseData = {
     url: '/decoration/purchase';
 };
 
-export type DecorationControllerPurchaseErrors = {
+export type DecorationControllerPurchaseResponses = {
     /**
      * 购买成功
      */
-    400: {
-        code: number;
-        message: string;
-        data: unknown;
-        timestamp: string;
-        path: string;
-    };
+    200: unknown;
 };
 
-export type DecorationControllerPurchaseError = DecorationControllerPurchaseErrors[keyof DecorationControllerPurchaseErrors];
-
 export type DecorationControllerGiftData = {
-    body: unknown;
+    body: GiftDecorationDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10524,27 +10781,6 @@ export type DecorationControllerUseDecorationResponses = {
             id: number;
             userId: number;
             decorationId: number;
-            decoration: {
-                id: number;
-                name: string;
-                type: string;
-                description: string;
-                imageUrl: string;
-                previewUrl: string;
-                rarity: string;
-                obtainMethod: string;
-                isPurchasable: boolean;
-                price: string;
-                isPermanent: boolean;
-                validDays: number;
-                sort: number;
-                status: string;
-                activityId: unknown;
-                requiredLikes: number;
-                requiredComments: number;
-                createdAt: string;
-                updatedAt: string;
-            };
             obtainMethod: string;
             isPermanent: boolean;
             expiresAt: unknown;
@@ -10622,8 +10858,61 @@ export type DecorationControllerCleanExpiredResponses = {
     /**
      * 清理成功
      */
-    200: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+            count: number;
+        };
+    };
 };
+
+export type DecorationControllerCleanExpiredResponse = DecorationControllerCleanExpiredResponses[keyof DecorationControllerCleanExpiredResponses];
+
+export type DecorationControllerGetMyAchievementBadgesData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: {
+        /**
+         * 页码
+         */
+        page?: number;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+    };
+    url: '/decoration/achievement-badges/my';
+};
+
+export type DecorationControllerGetMyAchievementBadgesResponses = {
+    /**
+     * 获取成功
+     */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<string>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
+};
+
+export type DecorationControllerGetMyAchievementBadgesResponse = DecorationControllerGetMyAchievementBadgesResponses[keyof DecorationControllerGetMyAchievementBadgesResponses];
 
 export type FavoriteControllerFindAllData = {
     body?: never;
@@ -10647,74 +10936,28 @@ export type FavoriteControllerFindAllData = {
          * 用户ID
          */
         userId?: number;
+        /**
+         * 关键词搜索（收藏夹名称）
+         */
+        keyword?: string;
+        /**
+         * 排序字段
+         */
         sortBy?: string;
-        sortOrder?: 'DESC' | 'ASC';
+        /**
+         * 排序方向
+         */
+        sortOrder?: 'ASC' | 'DESC';
     };
     url: '/favorite';
 };
 
 export type FavoriteControllerFindAllResponses = {
-    200: {
-        code: number;
-        message: string;
-        data: {
-            data: Array<{
-                id?: number;
-                name?: string;
-                description?: string;
-                avatar?: unknown;
-                cover?: string;
-                isPublic?: boolean;
-                sort?: number;
-                userId?: number;
-                user?: {
-                    id: number;
-                    username: string;
-                    nickname: unknown;
-                    avatar: unknown;
-                    background: unknown;
-                    level: number;
-                    membershipLevel: number;
-                    membershipStatus: string;
-                    membershipStartDate: unknown;
-                    membershipEndDate: unknown;
-                    status: string;
-                    createdAt: string;
-                    updatedAt: string;
-                    description: unknown;
-                    followerCount: number;
-                    followingCount: number;
-                    lastActiveAt: unknown;
-                    lastLoginAt: unknown;
-                    gender: string;
-                    equippedDecorations: {
-                        AVATAR_FRAME: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
-                    };
-                };
-                itemCount?: number;
-                createdAt?: string;
-                updatedAt?: string;
-            }>;
-            meta: {
-                total: number;
-                page: number;
-                limit: number;
-                totalPages: number;
-            };
-        };
-    };
+    200: unknown;
 };
 
-export type FavoriteControllerFindAllResponse = FavoriteControllerFindAllResponses[keyof FavoriteControllerFindAllResponses];
-
 export type FavoriteControllerCreateData = {
-    body: unknown;
+    body: CreateFavoriteDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10727,30 +10970,8 @@ export type FavoriteControllerCreateData = {
 };
 
 export type FavoriteControllerCreateResponses = {
-    201: {
-        code: number;
-        message: string;
-        data: {
-            success: boolean;
-            message: string;
-            data: {
-                id: number;
-                name: string;
-                description: string;
-                avatar: unknown;
-                cover: string;
-                isPublic: boolean;
-                sort: number;
-                userId: number;
-                itemCount: number;
-                createdAt: string;
-                updatedAt: string;
-            };
-        };
-    };
+    201: unknown;
 };
-
-export type FavoriteControllerCreateResponse = FavoriteControllerCreateResponses[keyof FavoriteControllerCreateResponses];
 
 export type FavoriteControllerRemoveData = {
     body?: never;
@@ -10793,59 +11014,11 @@ export type FavoriteControllerFindOneData = {
 };
 
 export type FavoriteControllerFindOneResponses = {
-    200: {
-        code: number;
-        message: string;
-        data: {
-            id: number;
-            name: string;
-            description: string;
-            avatar: unknown;
-            cover: string;
-            isPublic: boolean;
-            sort: number;
-            userId: number;
-            user: {
-                id: number;
-                username: string;
-                nickname: unknown;
-                avatar: unknown;
-                background: unknown;
-                level: number;
-                membershipLevel: number;
-                membershipStatus: string;
-                membershipStartDate: unknown;
-                membershipEndDate: unknown;
-                status: string;
-                createdAt: string;
-                updatedAt: string;
-                description: unknown;
-                followerCount: number;
-                followingCount: number;
-                lastActiveAt: unknown;
-                lastLoginAt: unknown;
-                gender: string;
-                equippedDecorations: {
-                    AVATAR_FRAME: {
-                        id: number;
-                        name: string;
-                        type: string;
-                        imageUrl: string;
-                        rarity: string;
-                    };
-                };
-            };
-            itemCount: number;
-            createdAt: string;
-            updatedAt: string;
-        };
-    };
+    200: unknown;
 };
 
-export type FavoriteControllerFindOneResponse = FavoriteControllerFindOneResponses[keyof FavoriteControllerFindOneResponses];
-
 export type FavoriteControllerUpdateData = {
-    body: unknown;
+    body: UpdateFavoriteDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10942,7 +11115,7 @@ export type FavoriteControllerCheckArticleInFavoritesResponses = {
 };
 
 export type FavoriteControllerAddToFavoriteData = {
-    body: unknown;
+    body: AddToFavoriteDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10984,6 +11157,72 @@ export type FavoriteControllerRemoveFromFavoriteResponses = {
     200: unknown;
 };
 
+export type PointsControllerAddPointsData = {
+    body: AddPointsDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/points/add';
+};
+
+export type PointsControllerAddPointsErrors = {
+    /**
+     * 请求参数错误
+     */
+    400: unknown;
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 权限不足
+     */
+    403: unknown;
+};
+
+export type PointsControllerAddPointsResponses = {
+    /**
+     * 积分增加成功
+     */
+    201: unknown;
+};
+
+export type PointsControllerSpendPointsData = {
+    body: SpendPointsDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/points/spend';
+};
+
+export type PointsControllerSpendPointsErrors = {
+    /**
+     * 积分不足或请求参数错误
+     */
+    400: unknown;
+    /**
+     * 未授权
+     */
+    401: unknown;
+};
+
+export type PointsControllerSpendPointsResponses = {
+    /**
+     * 积分消费成功
+     */
+    201: unknown;
+};
+
 export type PointsControllerGetBalanceData = {
     body?: never;
     headers?: {
@@ -11011,6 +11250,50 @@ export type PointsControllerGetBalanceResponses = {
     200: unknown;
 };
 
+export type PointsControllerGetTransactionsData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: {
+        /**
+         * 页码
+         */
+        page?: number;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+        /**
+         * 交易类型
+         */
+        type?: 'EARN' | 'SPEND' | 'ADMIN_ADJUST' | 'EXPIRE' | 'REFUND';
+        /**
+         * 积分来源/用途
+         */
+        source?: string;
+    };
+    url: '/points/transactions';
+};
+
+export type PointsControllerGetTransactionsErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+};
+
+export type PointsControllerGetTransactionsResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};
+
 export type PointsControllerFindAllActivitiesData = {
     body?: never;
     headers?: {
@@ -11022,6 +11305,7 @@ export type PointsControllerFindAllActivitiesData = {
     path?: never;
     query: {
         type: string;
+        keyword: string;
     };
     url: '/points/activities';
 };
@@ -11175,41 +11459,6 @@ export type PointsControllerUpdateActivityResponses = {
     200: unknown;
 };
 
-export type PointsControllerAddPointsData = {
-    body: AddPointsDto;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/points/add';
-};
-
-export type PointsControllerAddPointsErrors = {
-    /**
-     * 请求参数错误
-     */
-    400: unknown;
-    /**
-     * 未授权
-     */
-    401: unknown;
-    /**
-     * 权限不足
-     */
-    403: unknown;
-};
-
-export type PointsControllerAddPointsResponses = {
-    /**
-     * 积分增加成功
-     */
-    201: unknown;
-};
-
 export type PointsControllerClaimTaskRewardData = {
     body?: never;
     headers?: {
@@ -11245,81 +11494,6 @@ export type PointsControllerClaimTaskRewardResponses = {
      * 奖励领取成功
      */
     201: unknown;
-};
-
-export type PointsControllerSpendPointsData = {
-    body: SpendPointsDto;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/points/spend';
-};
-
-export type PointsControllerSpendPointsErrors = {
-    /**
-     * 积分不足或请求参数错误
-     */
-    400: unknown;
-    /**
-     * 未授权
-     */
-    401: unknown;
-};
-
-export type PointsControllerSpendPointsResponses = {
-    /**
-     * 积分消费成功
-     */
-    201: unknown;
-};
-
-export type PointsControllerGetTransactionsData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: {
-        /**
-         * 页码
-         */
-        page?: number;
-        /**
-         * 每页数量
-         */
-        limit?: number;
-        /**
-         * 交易类型
-         */
-        type?: 'EARN' | 'SPEND' | 'ADMIN_ADJUST' | 'EXPIRE' | 'REFUND';
-        /**
-         * 积分来源/用途
-         */
-        source?: string;
-    };
-    url: '/points/transactions';
-};
-
-export type PointsControllerGetTransactionsErrors = {
-    /**
-     * 未授权
-     */
-    401: unknown;
-};
-
-export type PointsControllerGetTransactionsResponses = {
-    /**
-     * 获取成功
-     */
-    200: unknown;
 };
 
 export type PointsControllerGetMyTasksData = {
@@ -11590,8 +11764,14 @@ export type EmojiControllerFindAllData = {
          * 是否只查询收藏的表情
          */
         onlyFavorites?: boolean;
+        /**
+         * 排序字段
+         */
         sortBy?: string;
-        sortOrder?: 'DESC' | 'ASC';
+        /**
+         * 排序方向
+         */
+        sortOrder?: 'ASC' | 'DESC';
     };
     url: '/emoji';
 };
@@ -11601,7 +11781,7 @@ export type EmojiControllerFindAllResponses = {
 };
 
 export type EmojiControllerCreateData = {
-    body: unknown;
+    body: CreateEmojiDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -11662,7 +11842,7 @@ export type EmojiControllerFindOneResponses = {
 };
 
 export type EmojiControllerUpdateData = {
-    body: unknown;
+    body: UpdateEmojiDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -11806,4 +11986,239 @@ export type EmojiControllerAddToFavoritesData = {
 
 export type EmojiControllerAddToFavoritesResponses = {
     201: unknown;
+};
+
+export type EmojiControllerUploadData = {
+    body: {
+        /**
+         * 表情名称
+         */
+        name: string;
+        /**
+         * 表情代码
+         */
+        code?: string;
+        /**
+         * 分类
+         */
+        category?: string;
+        /**
+         * 标签（逗号分隔）
+         */
+        tags?: string;
+        /**
+         * 是否公开
+         */
+        isPublic: boolean;
+    };
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/emoji/upload';
+};
+
+export type EmojiControllerUploadResponses = {
+    201: unknown;
+};
+
+export type EmojiControllerIncrementUseCountData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 表情ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/emoji/{id}/use';
+};
+
+export type EmojiControllerIncrementUseCountResponses = {
+    201: unknown;
+};
+
+export type AchievementControllerFindAllData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query: {
+        /**
+         * 关键词搜索（成就名称）
+         */
+        keyword?: string;
+        sortBy: string;
+        sortOrder: string;
+    };
+    url: '/achievement';
+};
+
+export type AchievementControllerFindAllResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};
+
+export type AchievementControllerCreateData = {
+    body: CreateAchievementDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/achievement';
+};
+
+export type AchievementControllerCreateResponses = {
+    /**
+     * 创建成功
+     */
+    201: unknown;
+};
+
+export type AchievementControllerGetUserStatsData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/achievement/stats';
+};
+
+export type AchievementControllerGetUserStatsResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};
+
+export type AchievementControllerRemoveData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/achievement/{id}';
+};
+
+export type AchievementControllerRemoveResponses = {
+    /**
+     * 删除成功
+     */
+    200: unknown;
+};
+
+export type AchievementControllerFindOneData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/achievement/{id}';
+};
+
+export type AchievementControllerFindOneResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};
+
+export type AchievementControllerUpdateData = {
+    body: UpdateAchievementDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/achievement/{id}';
+};
+
+export type AchievementControllerUpdateResponses = {
+    /**
+     * 更新成功
+     */
+    200: unknown;
+};
+
+export type AchievementControllerClaimRewardData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/achievement/{id}/claim';
+};
+
+export type AchievementControllerClaimRewardResponses = {
+    /**
+     * 领取成功
+     */
+    200: unknown;
+};
+
+export type AchievementControllerClaimAllRewardsData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/achievement/claim-all';
+};
+
+export type AchievementControllerClaimAllRewardsResponses = {
+    /**
+     * 领取成功
+     */
+    200: unknown;
 };
