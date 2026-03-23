@@ -98,8 +98,8 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
 
                             {/* 频道下拉面板 - 仅在 channels 标签上显示 */}
                             {tab.hasDropdown && (
-                                <div className="absolute top-full left-0 mt-2 w-80 bg-card rounded-xl shadow-lg z-50 overflow-hidden opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                                    <div className="p-2">
+                                <div className="absolute top-full left-0 mt-2 w-80 bg-card rounded-xl shadow-lg z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                    <div className="p-2 max-h-100 overflow-y-auto">
                                         <div className="grid gap-2">
                                             {channels?.map((channel) => {
                                                 // 如果有子频道，跳转到第一个子频道，否则跳转到主频道

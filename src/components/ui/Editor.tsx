@@ -4,6 +4,14 @@ import { forwardRef, useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
+import { SizeClass, SizeStyle } from "quill/formats/size";
+
+// 注册自定义字号
+SizeClass.whitelist = ["12px", "14px", "16px", "18px", "20px", "24px", "32px"];
+SizeStyle.whitelist = ["12px", "14px", "16px", "18px", "20px", "24px", "32px"];
+Quill.register(SizeStyle, true);
+Quill.register(SizeClass, true);
+
 import { cn } from "@/lib/utils";
 import {
   Undo2,
@@ -64,6 +72,58 @@ const quillOverrideStyles = `
   {
     border:none !important;
     }
+  /* 下拉菜单隐藏滚动条但允许溢出 */
+  .ql-toolbar [id^="dropdown-"] {
+    overflow: visible !important;
+  }
+  .ql-toolbar [id^="dropdown-"]::-webkit-scrollbar {
+    display: none !important;
+  }
+  .ql-toolbar [id^="dropdown-"] {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  /* Tooltip 样式 */
+  .ql-toolbar .tooltip-wrapper {
+    position: relative;
+    display: inline-flex;
+  }
+  .ql-toolbar .tooltip-wrapper .tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 8px;
+    padding: 6px 10px;
+    background: #333;
+    color: white;
+    font-size: 12px;
+    white-space: nowrap;
+    border-radius: 6px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    pointer-events: none;
+    z-index: 100;
+  }
+  .ql-toolbar .tooltip-wrapper .tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
+  }
+  .ql-toolbar .tooltip-wrapper:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+  }
+  /* 下拉菜单打开时隐藏按钮tooltip */
+  .ql-toolbar .tooltip-wrapper:has([id^="dropdown-"]:not(.hidden)):hover .tooltip {
+    opacity: 0 !important;
+    visibility: hidden !important;
+  }
 `;
 
 export interface EditorProps {
@@ -81,7 +141,6 @@ const defaultFormats = [
   "underline",
   "strike",
   "list",
-  "bullet",
   "link",
   "image",
   "video",
@@ -93,13 +152,14 @@ const defaultFormats = [
 ];
 
 // 字号选项
+// 字号选项
 const fontSizes = [
-  { value: 12, label: "12px" },
-  { value: 14, label: "14px" },
-  { value: 16, label: "16px" },
-  { value: 22, label: "22px" },
-  { value: 24, label: "24px" },
-  { value: 32, label: "32px" },
+  { value: "12px", label: "12px" },
+  { value: "14px", label: "14px" },
+  { value: "16px", label: "16px" },
+  { value: "18px", label: "18px" },
+  { value: "24px", label: "24px" },
+  { value: "32px", label: "32px" },
 ];
 
 // 更多选项
@@ -107,6 +167,79 @@ const moreOptions = [
   { name: "link", label: "链接", Icon: Link },
   { name: "video", label: "视频", Icon: Video },
   { name: "clean", label: "清除", Icon: RemoveFormatting },
+];
+
+// 颜色面板 - 72个颜色
+const colorPalette = [
+  "rgba(0, 0, 0, 0.85)",
+  "rgb(230, 230, 230)",
+  "rgb(217, 217, 217)",
+  "rgb(191, 191, 191)",
+  "rgb(166, 166, 166)",
+  "rgb(140, 140, 140)",
+  "rgb(115, 115, 115)",
+  "rgb(89, 89, 89)",
+  "rgb(213, 255, 191)",
+  "rgb(196, 255, 166)",
+  "rgb(160, 251, 113)",
+  "rgb(122, 216, 76)",
+  "rgb(59, 177, 0)",
+  "rgb(50, 150, 0)",
+  "rgb(37, 112, 0)",
+  "rgb(30, 89, 0)",
+  "rgb(191, 255, 248)",
+  "rgb(166, 255, 244)",
+  "rgb(109, 242, 227)",
+  "rgb(76, 217, 200)",
+  "rgb(45, 178, 162)",
+  "rgb(21, 143, 129)",
+  "rgb(0, 102, 90)",
+  "rgb(0, 77, 68)",
+  "rgb(191, 232, 255)",
+  "rgb(166, 222, 255)",
+  "rgb(115, 204, 255)",
+  "rgb(85, 185, 242)",
+  "rgb(57, 166, 229)",
+  "rgb(28, 128, 186)",
+  "rgb(0, 81, 128)",
+  "rgb(0, 65, 102)",
+  "rgb(229, 191, 255)",
+  "rgb(219, 166, 255)",
+  "rgb(199, 115, 255)",
+  "rgb(170, 80, 229)",
+  "rgb(131, 21, 204)",
+  "rgb(112, 12, 178)",
+  "rgb(92, 0, 153)",
+  "rgb(76, 0, 128)",
+  "rgb(255, 191, 223)",
+  "rgb(255, 166, 211)",
+  "rgb(255, 115, 186)",
+  "rgb(229, 80, 156)",
+  "rgb(204, 51, 128)",
+  "rgb(178, 27, 103)",
+  "rgb(152, 0, 76)",
+  "rgb(128, 0, 64)",
+  "rgb(255, 196, 191)",
+  "rgb(255, 173, 166)",
+  "rgb(255, 111, 99)",
+  "rgb(239, 34, 12)",
+  "rgb(204, 71, 51)",
+  "rgb(178, 41, 27)",
+  "rgb(153, 18, 0)",
+  "rgb(128, 15, 0)",
+  "rgb(255, 219, 191)",
+  "rgb(255, 192, 140)",
+  "rgb(255, 164, 43)",
+  "rgb(255, 122, 0)",
+  "rgb(226, 100, 0)",
+  "rgb(199, 89, 0)",
+  "rgb(159, 72, 0)",
+  "rgb(128, 57, 0)",
+  "rgb(255, 238, 191)",
+  "rgb(246, 214, 122)",
+  "rgb(245, 201, 73)",
+  "rgb(230, 179, 34)",
+  "rgb(204, 159, 30)",
 ];
 
 // 对齐选项
@@ -159,6 +292,118 @@ const renderToolbar = (
     dropdown?.classList.toggle("hidden");
   };
 
+  // 创建带tooltip的按钮
+  const createTooltipButton = (
+    button: HTMLButtonElement,
+    tooltipText: string,
+  ) => {
+    const wrapper = document.createElement("span");
+    wrapper.className = "tooltip-wrapper";
+    button.style.position = "relative";
+    const tooltip = document.createElement("span");
+    tooltip.className = "tooltip";
+    tooltip.textContent = tooltipText;
+    wrapper.appendChild(button);
+    wrapper.appendChild(tooltip);
+    return wrapper;
+  };
+
+  // 创建颜色下拉菜单
+  const createColorDropdown = (
+    triggerBtn: HTMLButtonElement,
+    title: string,
+    onSelect: (color: string | false) => void,
+  ) => {
+    const container = document.createElement("div");
+    container.className = "relative inline-flex tooltip-wrapper";
+
+    const dropdown = document.createElement("div");
+    dropdown.className =
+      "absolute top-full left-0 z-50 mt-2 bg-card border border-border rounded-xl shadow-lg p-3 hidden";
+    dropdown.id = `dropdown-${title}`;
+
+    // 标题
+    const titleEl = document.createElement("div");
+    titleEl.className = "text-sm font-medium mb-2";
+    titleEl.textContent = title;
+    dropdown.appendChild(titleEl);
+
+    // 颜色网格
+    const colorGrid = document.createElement("div");
+    colorGrid.className = "grid grid-cols-8 gap-1.5";
+
+    // 第一个是取消/移除颜色
+    const removeBtn = document.createElement("button");
+    removeBtn.className =
+      "w-5! h-5! flex-none rounded flex items-center justify-center bg-muted hover:bg-accent border border-border";
+    removeBtn.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+    removeBtn.onclick = () => {
+      onSelect(false);
+      dropdown.classList.add("hidden");
+    };
+    colorGrid.appendChild(removeBtn);
+
+    // 添加颜色
+    colorPalette.forEach((color) => {
+      const colorBtn = document.createElement("button");
+      colorBtn.className =
+        "w-5! h-5! flex-none rounded hover:ring-2 hover:ring-primary/50";
+      colorBtn.style.backgroundColor = color;
+      colorBtn.onclick = () => {
+        onSelect(color);
+        dropdown.classList.add("hidden");
+      };
+      colorGrid.appendChild(colorBtn);
+    });
+
+    dropdown.appendChild(colorGrid);
+
+    // 分割线
+    const divider = document.createElement("div");
+    divider.className = "border-t border-border my-2";
+    dropdown.appendChild(divider);
+
+    // 十六进制输入
+    const hexInputContainer = document.createElement("div");
+    hexInputContainer.className = "flex items-center gap-1";
+    const hexInput = document.createElement("input");
+    hexInput.type = "text";
+    hexInput.placeholder = "输入十六进制颜色";
+    hexInput.className =
+      "flex h-6 flex-1 rounded-md border bg-card px-2 py-1 text-sm placeholder:text-gray-400 focus:outline-none transition-colors duration-200 border-gray-300 hover:border-primary focus:border-primary";
+    hexInput.maxLength = 7;
+    const hexBtn = document.createElement("button");
+    hexBtn.className =
+      "inline-flex items-center justify-center gap-2 rounded-md border! border-primary! font-medium transition-all duration-200 focus:outline-none bg-primary text-primary! hover:bg-primary/20! px-3 h-6! text-sm";
+    hexBtn.textContent = "确定";
+    hexBtn.onclick = () => {
+      const hex = hexInput.value.trim();
+      if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+        onSelect(hex);
+        dropdown.classList.add("hidden");
+      }
+    };
+    hexInputContainer.appendChild(hexInput);
+    hexInputContainer.appendChild(hexBtn);
+    dropdown.appendChild(hexInputContainer);
+
+    container.appendChild(triggerBtn);
+    container.appendChild(dropdown);
+
+    // 添加tooltip
+    const tooltip = document.createElement("span");
+    tooltip.className = "tooltip";
+    tooltip.textContent = title;
+    container.appendChild(tooltip);
+
+    triggerBtn.onclick = (e) => {
+      toggleDropdown(`dropdown-${title}`, e);
+    };
+
+    return container;
+  };
+
   // 第一行：undo redo | emoji image video more
   const row1 = document.createElement("div");
   row1.className = "ql-formats flex! items-center gap-3";
@@ -169,14 +414,14 @@ const renderToolbar = (
   undoBtn.type = "button";
   undoBtn.innerHTML = renderIcon(Undo2);
   undoBtn.onclick = () => quill.history.undo();
-  row1.appendChild(undoBtn);
+  row1.appendChild(createTooltipButton(undoBtn, "撤销"));
 
   const redoBtn = document.createElement("button");
   redoBtn.className = "ql-redo";
   redoBtn.type = "button";
   redoBtn.innerHTML = renderIcon(Redo2);
   redoBtn.onclick = () => quill.history.redo();
-  row1.appendChild(redoBtn);
+  row1.appendChild(createTooltipButton(redoBtn, "重做"));
 
   // 分隔符
   const divider1 = document.createElement("span");
@@ -195,7 +440,7 @@ const renderToolbar = (
       quill.insertText(range?.index || 0, emoji);
     }
   };
-  row1.appendChild(emojiBtn);
+  row1.appendChild(createTooltipButton(emojiBtn, "表情"));
 
   const imageBtn = document.createElement("button");
   imageBtn.className = "ql-image";
@@ -219,7 +464,7 @@ const renderToolbar = (
       }
     };
   };
-  row1.appendChild(imageBtn);
+  row1.appendChild(createTooltipButton(imageBtn, "图片"));
 
   // Video 按钮
   const videoBtn = document.createElement("button");
@@ -227,17 +472,21 @@ const renderToolbar = (
   videoBtn.type = "button";
   videoBtn.innerHTML = renderIcon(Video);
   videoBtn.onclick = onVideoClick;
-  row1.appendChild(videoBtn);
+  row1.appendChild(createTooltipButton(videoBtn, "视频"));
 
   // 更多下拉菜单 - 点击显示
   const moreDiv = document.createElement("div");
-  moreDiv.className = "relative inline-flex";
+  moreDiv.className = "relative inline-flex tooltip-wrapper";
   const moreBtn = document.createElement("button");
   moreBtn.className =
     "flex w-full! items-center justify-center rounded-full bg-primary text-primary";
   moreBtn.type = "button";
   moreBtn.innerHTML = renderIcon(Plus, "w-3 h-3", 22);
   moreDiv.appendChild(moreBtn);
+  const moreTooltip = document.createElement("span");
+  moreTooltip.className = "tooltip";
+  moreTooltip.textContent = "更多";
+  moreDiv.appendChild(moreTooltip);
 
   const moreDropdown = document.createElement("div");
   moreDropdown.className =
@@ -282,12 +531,12 @@ const renderToolbar = (
   row2.className = "ql-formats flex! items-center gap-3";
 
   const formatBtns = [
-    { name: "bold", Icon: Bold },
-    { name: "italic", Icon: Italic },
-    { name: "strike", Icon: Strikethrough },
-    { name: "underline", Icon: Underline },
+    { name: "bold", Icon: Bold, tooltip: "粗体" },
+    { name: "italic", Icon: Italic, tooltip: "斜体" },
+    { name: "strike", Icon: Strikethrough, tooltip: "删除线" },
+    { name: "underline", Icon: Underline, tooltip: "下划线" },
   ];
-  formatBtns.forEach(({ name, Icon }) => {
+  formatBtns.forEach(({ name, Icon, tooltip }) => {
     const button = document.createElement("button");
     button.className = `ql-${name}`;
     button.type = "button";
@@ -295,7 +544,7 @@ const renderToolbar = (
     button.onclick = () => {
       quill.format(name, !quill.getFormat()[name]);
     };
-    row2.appendChild(button);
+    row2.appendChild(createTooltipButton(button, tooltip));
   });
 
   // 分隔符
@@ -305,13 +554,17 @@ const renderToolbar = (
 
   // 字号下拉
   const sizeDiv = document.createElement("div");
-  sizeDiv.className = "relative inline-flex";
+  sizeDiv.className = "relative inline-flex tooltip-wrapper";
   const sizeTrigger = document.createElement("button");
   sizeTrigger.className =
     "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-accent relative";
   sizeTrigger.type = "button";
-  sizeTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(Type)}</span><span class="flex items-center absolute top-full -right-2 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
+  sizeTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(Type)}</span><span class="flex items-center absolute top-full -right-1 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
   sizeDiv.appendChild(sizeTrigger);
+  const sizeTooltip = document.createElement("span");
+  sizeTooltip.className = "tooltip";
+  sizeTooltip.textContent = "字号";
+  sizeDiv.appendChild(sizeTooltip);
 
   const sizeMenu = document.createElement("div");
   sizeMenu.className =
@@ -345,43 +598,39 @@ const renderToolbar = (
   colorBtn.className = "ql-color";
   colorBtn.type = "button";
   colorBtn.innerHTML = renderIcon(Palette);
-  colorBtn.onclick = () => {
-    const colors = [
-      "#000000",
-      "#ff0000",
-      "#00ff00",
-      "#0000ff",
-      "#ffff00",
-      "#ff00ff",
-      "#00ffff",
-    ];
-    const color = prompt(`选择颜色 (${colors.join(", ")}):`);
-    if (color && colors.includes(color)) {
-      quill.format("color", color);
-    }
+  colorBtn.onclick = (e) => {
+    e.stopPropagation();
+    const dropdown = document.getElementById("dropdown-文字颜色");
+    closeAllDropdowns();
+    dropdown?.classList.toggle("hidden");
   };
-  row3.appendChild(colorBtn);
 
   const bgColorBtn = document.createElement("button");
   bgColorBtn.className = "ql-background";
   bgColorBtn.type = "button";
   bgColorBtn.innerHTML = renderIcon(Highlighter);
-  bgColorBtn.onclick = () => {
-    const colors = [
-      "transparent",
-      "#ff0000",
-      "#00ff00",
-      "#0000ff",
-      "#ffff00",
-      "#ff00ff",
-      "#00ffff",
-    ];
-    const color = prompt(`选择背景颜色 (${colors.join(", ")}):`);
-    if (color && colors.includes(color)) {
-      quill.format("background", color);
-    }
+  bgColorBtn.onclick = (e) => {
+    e.stopPropagation();
+    const dropdown = document.getElementById("dropdown-背景颜色");
+    closeAllDropdowns();
+    dropdown?.classList.toggle("hidden");
   };
-  row3.appendChild(bgColorBtn);
+
+  // 创建颜色下拉
+  const colorDropdown = createColorDropdown(colorBtn, "文字颜色", (color) => {
+    quill.format("color", color);
+  });
+
+  const bgColorDropdown = createColorDropdown(
+    bgColorBtn,
+    "背景颜色",
+    (color) => {
+      quill.format("background", color);
+    },
+  );
+
+  row3.appendChild(colorDropdown);
+  row3.appendChild(bgColorDropdown);
 
   toolbar.appendChild(row3);
 
@@ -390,13 +639,17 @@ const renderToolbar = (
   row4.className = "ql-formats flex! items-center gap-3";
 
   const alignDiv = document.createElement("div");
-  alignDiv.className = "relative inline-flex";
+  alignDiv.className = "relative inline-flex tooltip-wrapper";
   const alignTrigger = document.createElement("button");
   alignTrigger.className =
     "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-accent relative";
   alignTrigger.type = "button";
-  alignTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(AlignLeft)}</span><span class="flex items-center absolute top-full -right-2 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
+  alignTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(AlignLeft)}</span><span class="flex items-center absolute top-full -right-1 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
   alignDiv.appendChild(alignTrigger);
+  const alignTooltip = document.createElement("span");
+  alignTooltip.className = "tooltip";
+  alignTooltip.textContent = "对齐";
+  alignDiv.appendChild(alignTooltip);
 
   const alignMenu = document.createElement("div");
   alignMenu.className =
@@ -422,25 +675,49 @@ const renderToolbar = (
 
   toolbar.appendChild(row4);
 
-  // 第五行：list
+  // 第五行：list 下拉
   const row5 = document.createElement("div");
   row5.className = "ql-formats flex! items-center gap-3";
 
-  const listBtns = [
-    { value: "ordered", Icon: ListOrdered },
-    { value: "bullet", Icon: List },
+  const listOptions = [
+    { value: "ordered", label: "有序", Icon: ListOrdered },
+    { value: "bullet", label: "无序", Icon: List },
   ];
-  listBtns.forEach(({ value, Icon }) => {
-    const button = document.createElement("button");
-    button.className = "ql-list";
-    button.type = "button";
-    button.setAttribute("data-value", value);
-    button.innerHTML = renderIcon(Icon);
-    button.onclick = () => {
+
+  const listDiv = document.createElement("div");
+  listDiv.className = "relative inline-flex tooltip-wrapper";
+  const listTrigger = document.createElement("button");
+  listTrigger.className =
+    "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-accent relative";
+  listTrigger.type = "button";
+  listTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(List)}</span><span class="flex items-center absolute top-full -right-1 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
+  listDiv.appendChild(listTrigger);
+  const listTooltip = document.createElement("span");
+  listTooltip.className = "tooltip";
+  listTooltip.textContent = "列表";
+  listDiv.appendChild(listTooltip);
+
+  const listMenu = document.createElement("div");
+  listMenu.className =
+    "absolute top-full left-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg py-2! px-1! min-w-24 flex flex-col hidden";
+  listMenu.id = "dropdown-list";
+  listOptions.forEach(({ value, label, Icon }) => {
+    const item = document.createElement("button");
+    item.className =
+      "w-full! hover:bg-primary/20! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors";
+    item.type = "button";
+    item.innerHTML = `${Icon ? renderIcon(Icon, "w-4 h-4!") : ""}<span>${label}</span>`;
+    item.onclick = () => {
       quill.format("list", quill.getFormat().list === value ? false : value);
+      listMenu.classList.add("hidden");
     };
-    row5.appendChild(button);
+    listMenu.appendChild(item);
   });
+  listDiv.appendChild(listMenu);
+  listTrigger.onclick = (e) => {
+    toggleDropdown("dropdown-list", e);
+  };
+  row5.appendChild(listDiv);
 
   toolbar.appendChild(row5);
 
@@ -449,13 +726,17 @@ const renderToolbar = (
   row6.className = "ql-formats flex! items-center gap-3";
 
   const headerDiv = document.createElement("div");
-  headerDiv.className = "relative inline-flex";
+  headerDiv.className = "relative inline-flex tooltip-wrapper";
   const headerTrigger = document.createElement("button");
   headerTrigger.className =
     "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-accent relative";
   headerTrigger.type = "button";
-  headerTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(Heading1)}</span><span class="flex items-center absolute top-full -right-2 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
+  headerTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(Heading1)}</span><span class="flex items-center absolute top-full -right-1 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
   headerDiv.appendChild(headerTrigger);
+  const headerTooltip = document.createElement("span");
+  headerTooltip.className = "tooltip";
+  headerTooltip.textContent = "标题";
+  headerDiv.appendChild(headerTooltip);
 
   const headerMenu = document.createElement("div");
   headerMenu.className =
@@ -603,14 +884,14 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         <style dangerouslySetInnerHTML={{ __html: quillOverrideStyles }} />
         <div
           className={cn(
-            "bg-card border border-border rounded-lg overflow-hidden",
+            "bg-card border border-border rounded-lg",
             "[&_.ql-toolbar]:border-b [&_.ql-toolbar]:bg-muted/50 [&_.ql-toolbar]:rounded-t-lg",
             "[&_.ql-toolbar_.ql-formats]:flex [&_.ql-toolbar_.ql-formats]:gap-1 [&_.ql-toolbar]:flex-wrap [&_.ql-toolbar]:p-2",
             "[&_.ql-toolbar button]:w-8 [&_.ql-toolbar button]:h-8 [&_.ql-toolbar button]:p-1 [&_.ql-toolbar button]:rounded [&_.ql-toolbar button]:flex [&_.ql-toolbar button]:items-center [&_.ql-toolbar button]:justify-center [&_.ql-toolbar button]:border-0 [&_.ql-toolbar button]:bg-transparent [&_.ql-toolbar button svg]:h-[auto]! [&_.ql-toolbar button svg]:!h-auto",
             "[&_.ql-toolbar button:hover]:bg-accent [&_.ql-toolbar button:hover]:text-accent-foreground",
             "[&_.ql-toolbar button.ql-active]:bg-primary [&_.ql-toolbar button.ql-active]:text-primary-foreground",
-            "[&_.ql-container]:border-0 [&_.ql-container]:rounded-b-lg [&_.ql-container]:min-h-50",
-            "[&_.ql-editor]:min-h-50 [&_.ql-editor]:text-sm",
+            "[&_.ql-container]:border-0 [&_.ql-container]:rounded-b-lg [&_.ql-container]:min-h-50 [&_.ql-container]:overflow-visible",
+            "[&_.ql-editor]:min-h-50 [&_.ql-editor]:text-sm [&_.ql-editor]:overflow-visible",
             "[&_.ql-editor.ql-blank::before]:text-muted-foreground [&_.ql-editor.ql-blank::before]:italic",
             className,
           )}
