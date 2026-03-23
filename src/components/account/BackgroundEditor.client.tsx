@@ -67,6 +67,14 @@ export const BackgroundEditor = ({
       });
 
       const { data } = await uploadControllerUploadFile({
+        bodySerializer: (body) => {
+          const formData = new FormData();
+          formData.append("file", body.file);
+          return formData;
+        },
+        headers: {
+          "Content-Type": null,
+        },
         body: {
           file: croppedFile,
         },
@@ -142,7 +150,7 @@ export const BackgroundEditor = ({
         <DialogHeader className="mb-0">
           <div
             style={{ backgroundImage: `url(${user?.background})` }}
-            className="h-46 bg-center bg-no-repeat bg-cover relative" 
+            className="h-46 bg-center bg-no-repeat bg-cover relative"
           >
             <div className="pl-6 bg-linear-to-b from-black/60 to-transparent">
               <h2 className="leading-12 text-white text-sm font-semibold">
@@ -155,8 +163,7 @@ export const BackgroundEditor = ({
                 {/* 使用 flex 对齐 */}
                 <Avatar
                   url={user?.avatar}
-                  
-                  className="absolute bottom-0 size-40"
+                  className="absolute bottom-0 size-20"
                 />
               </div>
             </div>

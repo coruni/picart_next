@@ -34,8 +34,8 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
   };
   return (
     <>
-      <div className="px-10 z-10 sticky top-15 bg-card border-t-border border-t box-border">
-        <div className="flex items-center h-14 space-x-4">
+      <div className="px-10 z-10 sticky top-15 bg-card border-t-border border-t box-border ">
+        <div className="flex items-center h-14 space-x-4 max-w-7xl mx-auto">
           {/* 头像 */}
           <Avatar
             bordered
