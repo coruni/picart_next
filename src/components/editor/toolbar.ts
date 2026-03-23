@@ -1,0 +1,524 @@
+import Quill from "quill";
+import {
+  renderIcon,
+  fontSizes,
+  moreOptions,
+  colorPalette,
+  alignOptions,
+  headerOptions,
+  icons,
+} from "./constants";
+
+const {
+  Undo2,
+  Redo2,
+  Smile,
+  Image,
+  Video,
+  Type,
+  Bold,
+  Italic,
+  Strikethrough,
+  Underline,
+  Palette,
+  Highlighter,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  ListOrdered,
+  List,
+  Plus,
+  ChevronDown,
+} = icons;
+
+interface RenderToolbarOptions {
+  quill: Quill;
+  container: HTMLElement;
+  onVideoClick: () => void;
+  onLinkClick: () => void;
+  onImageUpload: () => void;
+}
+
+export const renderToolbar = ({
+  quill,
+  container,
+  onVideoClick,
+  onLinkClick,
+  onImageUpload,
+}: RenderToolbarOptions) => {
+  const toolbar = document.createElement("div");
+  toolbar.className = "ql-toolbar ql-snow flex items-center bg-border!";
+
+  // 关闭所有下拉菜单
+  const closeAllDropdowns = () => {
+    container.querySelectorAll('[id^="dropdown-"]').forEach((el) => {
+      el.classList.add("hidden");
+    });
+  };
+
+  // 切换指定下拉菜单（先关闭其他下拉菜单）
+  const toggleDropdown = (dropdownId: string, e: Event) => {
+    e.stopPropagation();
+    closeAllDropdowns();
+    const dropdown = document.getElementById(dropdownId);
+    dropdown?.classList.toggle("hidden");
+  };
+
+  // 创建带tooltip的按钮
+  const createTooltipButton = (
+    button: HTMLButtonElement,
+    tooltipText: string,
+  ) => {
+    const wrapper = document.createElement("span");
+    wrapper.className = "tooltip-wrapper";
+    button.style.position = "relative";
+    const tooltip = document.createElement("span");
+    tooltip.className = "tooltip";
+    tooltip.textContent = tooltipText;
+    wrapper.appendChild(button);
+    wrapper.appendChild(tooltip);
+    return wrapper;
+  };
+
+  // 创建颜色下拉菜单
+  const createColorDropdown = (
+    triggerBtn: HTMLButtonElement,
+    title: string,
+    onSelect: (color: string | false) => void,
+  ) => {
+    const dropdownContainer = document.createElement("div");
+    dropdownContainer.className = "relative inline-flex tooltip-wrapper";
+
+    const dropdown = document.createElement("div");
+    dropdown.className =
+      "absolute top-full left-0 z-50 mt-2 bg-card border border-border rounded-xl shadow-lg p-3 hidden";
+    dropdown.id = `dropdown-${title}`;
+
+    // 标题
+    const titleEl = document.createElement("div");
+    titleEl.className = "text-sm font-medium mb-2";
+    titleEl.textContent = title;
+    dropdown.appendChild(titleEl);
+
+    // 颜色网格
+    const colorGrid = document.createElement("div");
+    colorGrid.className = "grid grid-cols-8 gap-1.5";
+
+    // 第一个是取消/移除颜色
+    const removeBtn = document.createElement("button");
+    removeBtn.className =
+      "w-5! h-5! flex-none rounded flex items-center justify-center bg-muted hover:bg-accent border border-border";
+    removeBtn.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+    removeBtn.onclick = () => {
+      onSelect(false);
+      dropdown.classList.add("hidden");
+    };
+    colorGrid.appendChild(removeBtn);
+
+    // 添加颜色
+    colorPalette.forEach((color) => {
+      const colorBtn = document.createElement("button");
+      colorBtn.className =
+        "w-5! h-5! flex-none rounded hover:ring-2 hover:ring-primary/50";
+      colorBtn.style.backgroundColor = color;
+      colorBtn.onclick = () => {
+        onSelect(color);
+        dropdown.classList.add("hidden");
+      };
+      colorGrid.appendChild(colorBtn);
+    });
+
+    dropdown.appendChild(colorGrid);
+
+    // 分割线
+    const divider = document.createElement("div");
+    divider.className = "border-t border-border my-2";
+    dropdown.appendChild(divider);
+
+    // 十六进制输入
+    const hexInputContainer = document.createElement("div");
+    hexInputContainer.className = "flex items-center gap-1";
+    const hexInput = document.createElement("input");
+    hexInput.type = "text";
+    hexInput.placeholder = "输入十六进制颜色";
+    hexInput.className =
+      "flex h-6 flex-1 rounded-md border bg-card px-2 py-1 text-sm placeholder:text-gray-400 focus:outline-none transition-colors duration-200 border-gray-300 hover:border-primary focus:border-primary";
+    hexInput.maxLength = 7;
+    const hexBtn = document.createElement("button");
+    hexBtn.className =
+      "inline-flex items-center justify-center gap-2 rounded-md border! border-primary! font-medium transition-all duration-200 focus:outline-none bg-primary text-primary! hover:bg-primary/20! px-3 h-6! text-sm";
+    hexBtn.textContent = "确定";
+    hexBtn.onclick = () => {
+      const hex = hexInput.value.trim();
+      if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+        onSelect(hex);
+        dropdown.classList.add("hidden");
+      }
+    };
+    hexInputContainer.appendChild(hexInput);
+    hexInputContainer.appendChild(hexBtn);
+    dropdown.appendChild(hexInputContainer);
+
+    dropdownContainer.appendChild(triggerBtn);
+    dropdownContainer.appendChild(dropdown);
+
+    // 添加tooltip
+    const tooltip = document.createElement("span");
+    tooltip.className = "tooltip";
+    tooltip.textContent = title;
+    dropdownContainer.appendChild(tooltip);
+
+    triggerBtn.onclick = (e) => {
+      toggleDropdown(`dropdown-${title}`, e);
+    };
+
+    return dropdownContainer;
+  };
+
+  // 第一行：undo redo | emoji image video more
+  const row1 = document.createElement("div");
+  row1.className = "ql-formats flex! items-center gap-3";
+
+  // Undo, Redo
+  const undoBtn = document.createElement("button");
+  undoBtn.className = "ql-undo";
+  undoBtn.type = "button";
+  undoBtn.innerHTML = renderIcon(Undo2);
+  undoBtn.onclick = () => quill.history.undo();
+  row1.appendChild(createTooltipButton(undoBtn, "撤销"));
+
+  const redoBtn = document.createElement("button");
+  redoBtn.className = "ql-redo";
+  redoBtn.type = "button";
+  redoBtn.innerHTML = renderIcon(Redo2);
+  redoBtn.onclick = () => quill.history.redo();
+  row1.appendChild(createTooltipButton(redoBtn, "重做"));
+
+  // 分隔符
+  const divider1 = document.createElement("span");
+  divider1.className = "w-px h-4 bg-border mx-1";
+  row1.appendChild(divider1);
+
+  // Emoji, Image
+  const emojiBtn = document.createElement("button");
+  emojiBtn.className = "ql-emoji";
+  emojiBtn.type = "button";
+  emojiBtn.innerHTML = renderIcon(Smile);
+  emojiBtn.onclick = () => {
+    const emoji = prompt("输入 emoji:");
+    if (emoji) {
+      const range = quill.getSelection();
+      quill.insertText(range?.index || 0, emoji);
+    }
+  };
+  row1.appendChild(createTooltipButton(emojiBtn, "表情"));
+
+  const imageBtn = document.createElement("button");
+  imageBtn.className = "ql-image";
+  imageBtn.type = "button";
+  imageBtn.innerHTML = renderIcon(Image);
+  imageBtn.onclick = onImageUpload;
+  row1.appendChild(createTooltipButton(imageBtn, "图片"));
+
+  // Video 按钮
+  const videoBtn = document.createElement("button");
+  videoBtn.className = "ql-video";
+  videoBtn.type = "button";
+  videoBtn.innerHTML = renderIcon(Video);
+  videoBtn.onclick = onVideoClick;
+  row1.appendChild(createTooltipButton(videoBtn, "视频"));
+
+  // 更多下拉菜单 - 点击显示
+  const moreDiv = document.createElement("div");
+  moreDiv.className = "relative inline-flex tooltip-wrapper";
+  const moreBtn = document.createElement("button");
+  moreBtn.className =
+    "flex w-full! items-center justify-center rounded-full bg-primary text-primary";
+  moreBtn.type = "button";
+  moreBtn.innerHTML = renderIcon(Plus, "w-3 h-3", 22);
+  moreDiv.appendChild(moreBtn);
+  const moreTooltip = document.createElement("span");
+  moreTooltip.className = "tooltip";
+  moreTooltip.textContent = "更多";
+  moreDiv.appendChild(moreTooltip);
+
+  const moreDropdown = document.createElement("div");
+  moreDropdown.className =
+    "absolute top-full left-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg py-2 px-1 min-w-24 flex flex-col hidden";
+  moreDropdown.id = "dropdown-more";
+  moreOptions.forEach(({ name, label, Icon }) => {
+    const item = document.createElement("button");
+    item.className =
+      "w-full! hover:bg-primary/20! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary!  transition-colors";
+    item.type = "button";
+    item.innerHTML = `${Icon ? renderIcon(Icon, "w-4 h-4!") : ""}<span>${label}</span>`;
+    if (name === "link") {
+      item.onclick = () => {
+        onLinkClick();
+        moreDropdown.classList.add("hidden");
+      };
+    } else if (name === "video") {
+      item.onclick = () => {
+        onVideoClick();
+        moreDropdown.classList.add("hidden");
+      };
+    } else if (name === "clean") {
+      item.onclick = () => {
+        const format = quill.getFormat();
+        Object.keys(format).forEach((key) => quill.format(key, false));
+        moreDropdown.classList.add("hidden");
+      };
+    }
+    moreDropdown.appendChild(item);
+  });
+  moreDiv.appendChild(moreDropdown);
+  moreBtn.onclick = (e) => {
+    toggleDropdown("dropdown-more", e);
+  };
+  row1.appendChild(moreDiv);
+
+  toolbar.appendChild(row1);
+
+  // 第二行：bold italic strike underline | 字号
+  const row2 = document.createElement("div");
+  row2.className = "ql-formats flex! items-center gap-3";
+
+  const formatBtns = [
+    { name: "bold", Icon: Bold, tooltip: "粗体" },
+    { name: "italic", Icon: Italic, tooltip: "斜体" },
+    { name: "strike", Icon: Strikethrough, tooltip: "删除线" },
+    { name: "underline", Icon: Underline, tooltip: "下划线" },
+  ];
+  formatBtns.forEach(({ name, Icon, tooltip }) => {
+    const button = document.createElement("button");
+    button.className = `ql-${name}`;
+    button.type = "button";
+    button.innerHTML = renderIcon(Icon);
+    button.onclick = () => {
+      quill.format(name, !quill.getFormat()[name]);
+    };
+    row2.appendChild(createTooltipButton(button, tooltip));
+  });
+
+  // 分隔符
+  const divider2 = document.createElement("span");
+  divider2.className = "w-px h-4 bg-border mx-1";
+  row2.appendChild(divider2);
+
+  // 字号下拉
+  const sizeDiv = document.createElement("div");
+  sizeDiv.className = "relative inline-flex tooltip-wrapper";
+  const sizeTrigger = document.createElement("button");
+  sizeTrigger.className =
+    "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-accent relative";
+  sizeTrigger.type = "button";
+  sizeTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(Type)}</span><span class="flex items-center absolute top-full -right-1 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
+  sizeDiv.appendChild(sizeTrigger);
+  const sizeTooltip = document.createElement("span");
+  sizeTooltip.className = "tooltip";
+  sizeTooltip.textContent = "字号";
+  sizeDiv.appendChild(sizeTooltip);
+
+  const sizeMenu = document.createElement("div");
+  sizeMenu.className =
+    "absolute top-full left-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg py-2! px-1! min-w-24 flex flex-col hidden";
+  sizeMenu.id = "dropdown-size";
+  fontSizes.forEach(({ value, label }) => {
+    const item = document.createElement("button");
+    item.className =
+      "w-full! hover:bg-primary/20! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors";
+    item.type = "button";
+    item.textContent = label;
+    item.onclick = () => {
+      quill.format("size", value);
+      sizeMenu.classList.add("hidden");
+    };
+    sizeMenu.appendChild(item);
+  });
+  sizeDiv.appendChild(sizeMenu);
+  sizeTrigger.onclick = (e) => {
+    toggleDropdown("dropdown-size", e);
+  };
+  row2.appendChild(sizeDiv);
+
+  toolbar.appendChild(row2);
+
+  // 第三行：color bgcolor
+  const row3 = document.createElement("div");
+  row3.className = "ql-formats flex! items-center gap-3";
+
+  const colorBtn = document.createElement("button");
+  colorBtn.className = "ql-color";
+  colorBtn.type = "button";
+  colorBtn.innerHTML = renderIcon(Palette);
+  colorBtn.onclick = (e) => {
+    e.stopPropagation();
+    const dropdown = document.getElementById("dropdown-文字颜色");
+    closeAllDropdowns();
+    dropdown?.classList.toggle("hidden");
+  };
+
+  const bgColorBtn = document.createElement("button");
+  bgColorBtn.className = "ql-background";
+  bgColorBtn.type = "button";
+  bgColorBtn.innerHTML = renderIcon(Highlighter);
+  bgColorBtn.onclick = (e) => {
+    e.stopPropagation();
+    const dropdown = document.getElementById("dropdown-背景颜色");
+    closeAllDropdowns();
+    dropdown?.classList.toggle("hidden");
+  };
+
+  // 创建颜色下拉
+  const colorDropdown = createColorDropdown(colorBtn, "文字颜色", (color) => {
+    quill.format("color", color);
+  });
+
+  const bgColorDropdown = createColorDropdown(
+    bgColorBtn,
+    "背景颜色",
+    (color) => {
+      quill.format("background", color);
+    },
+  );
+
+  row3.appendChild(colorDropdown);
+  row3.appendChild(bgColorDropdown);
+
+  toolbar.appendChild(row3);
+
+  // 第四行：align 下拉
+  const row4 = document.createElement("div");
+  row4.className = "ql-formats flex! items-center gap-3";
+
+  const alignDiv = document.createElement("div");
+  alignDiv.className = "relative inline-flex tooltip-wrapper";
+  const alignTrigger = document.createElement("button");
+  alignTrigger.className =
+    "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-accent relative";
+  alignTrigger.type = "button";
+  alignTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(AlignLeft)}</span><span class="flex items-center absolute top-full -right-1 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
+  alignDiv.appendChild(alignTrigger);
+  const alignTooltip = document.createElement("span");
+  alignTooltip.className = "tooltip";
+  alignTooltip.textContent = "对齐";
+  alignDiv.appendChild(alignTooltip);
+
+  const alignMenu = document.createElement("div");
+  alignMenu.className =
+    "absolute top-full left-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg py-2! px-1! min-w-24 flex flex-col hidden";
+  alignMenu.id = "dropdown-align";
+  alignOptions.forEach(({ value, label, Icon }) => {
+    const item = document.createElement("button");
+    item.className =
+      "w-full! hover:bg-primary/20! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors";
+    item.type = "button";
+    item.innerHTML = `${Icon ? renderIcon(Icon, "w-3.5 h-3.5") : ""}<span>${label}</span>`;
+    item.onclick = () => {
+      quill.format("align", value);
+      alignMenu.classList.add("hidden");
+    };
+    alignMenu.appendChild(item);
+  });
+  alignDiv.appendChild(alignMenu);
+  alignTrigger.onclick = (e) => {
+    toggleDropdown("dropdown-align", e);
+  };
+  row4.appendChild(alignDiv);
+
+  toolbar.appendChild(row4);
+
+  // 第五行：list 下拉
+  const row5 = document.createElement("div");
+  row5.className = "ql-formats flex! items-center gap-3";
+
+  const listOptions = [
+    { value: "ordered", label: "有序", Icon: ListOrdered },
+    { value: "bullet", label: "无序", Icon: List },
+  ];
+
+  const listDiv = document.createElement("div");
+  listDiv.className = "relative inline-flex tooltip-wrapper";
+  const listTrigger = document.createElement("button");
+  listTrigger.className =
+    "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-accent relative";
+  listTrigger.type = "button";
+  listTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(List)}</span><span class="flex items-center absolute top-full -right-1 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
+  listDiv.appendChild(listTrigger);
+  const listTooltip = document.createElement("span");
+  listTooltip.className = "tooltip";
+  listTooltip.textContent = "列表";
+  listDiv.appendChild(listTooltip);
+
+  const listMenu = document.createElement("div");
+  listMenu.className =
+    "absolute top-full left-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg py-2! px-1! min-w-24 flex flex-col hidden";
+  listMenu.id = "dropdown-list";
+  listOptions.forEach(({ value, label, Icon }) => {
+    const item = document.createElement("button");
+    item.className =
+      "w-full! hover:bg-primary/20! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors";
+    item.type = "button";
+    item.innerHTML = `${Icon ? renderIcon(Icon, "w-4 h-4!") : ""}<span>${label}</span>`;
+    item.onclick = () => {
+      quill.format("list", quill.getFormat().list === value ? false : value);
+      listMenu.classList.add("hidden");
+    };
+    listMenu.appendChild(item);
+  });
+  listDiv.appendChild(listMenu);
+  listTrigger.onclick = (e) => {
+    toggleDropdown("dropdown-list", e);
+  };
+  row5.appendChild(listDiv);
+
+  toolbar.appendChild(row5);
+
+  // 第六行：header 下拉
+  const row6 = document.createElement("div");
+  row6.className = "ql-formats flex! items-center gap-3";
+
+  const headerDiv = document.createElement("div");
+  headerDiv.className = "relative inline-flex tooltip-wrapper";
+  const headerTrigger = document.createElement("button");
+  headerTrigger.className =
+    "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-accent relative";
+  headerTrigger.type = "button";
+  headerTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(icons.Heading1)}</span><span class="flex items-center absolute top-full -right-1 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
+  headerDiv.appendChild(headerTrigger);
+  const headerTooltip = document.createElement("span");
+  headerTooltip.className = "tooltip";
+  headerTooltip.textContent = "标题";
+  headerDiv.appendChild(headerTooltip);
+
+  const headerMenu = document.createElement("div");
+  headerMenu.className =
+    "absolute top-full left-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg py-2! px-1! min-w-24 flex flex-col hidden";
+  headerMenu.id = "dropdown-header";
+  headerOptions.forEach(({ value, label, Icon }) => {
+    const item = document.createElement("button");
+    item.className =
+      "w-full! hover:bg-primary/20! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors";
+    item.type = "button";
+    item.innerHTML = `${Icon ? renderIcon(Icon, "w-3.5 h-3.5") : ""}<span>${label}</span>`;
+    item.onclick = () => {
+      quill.format("header", value);
+      headerMenu.classList.add("hidden");
+    };
+    headerMenu.appendChild(item);
+  });
+  headerDiv.appendChild(headerMenu);
+  headerTrigger.onclick = (e) => {
+    toggleDropdown("dropdown-header", e);
+  };
+  row6.appendChild(headerDiv);
+
+  toolbar.appendChild(row6);
+
+  // 插入 toolbar
+  const editorContainer = container.querySelector(".editor-container");
+  if (editorContainer) {
+    container.insertBefore(toolbar, editorContainer);
+  }
+};
