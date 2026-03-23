@@ -1,19 +1,20 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "@/hooks/useForm";
 import AvatarEditor from "react-avatar-editor";
 import { Form, FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Editor } from "@/components/ui/Editor";
 import { Button } from "@/components/ui/Button";
+import { CategorySelect, CategoryOption } from "@/components/ui/CategorySelect";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
-import { uploadControllerUploadFile } from "@/api";
+import { uploadControllerUploadFile, categoryControllerFindAll } from "@/api";
 import Image from "next/image";
 import { cn } from "@/lib";
 import { Edit, Trash2 } from "lucide-react";
@@ -44,6 +45,18 @@ export default function CreatePostPage(props: CreatePostPageProps) {
   const [coverScale, setCoverScale] = useState(1);
   const [coverUploading, setCoverUploading] = useState(false);
 
+  // Category states
+  const [parentCategories, setParentCategories] = useState<CategoryOption[]>([]);
+  const [childCategories, setChildCategories] = useState<CategoryOption[]>([]);
+  const [selectedParentId, setSelectedParentId] = useState<string>("");
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [parentSearching, setParentSearching] = useState(false);
+  const [childSearching, setChildSearching] = useState(false);
+
+  // Store initial categories and children map in ref to avoid re-fetching
+  const initialParentCategoriesRef = useRef<CategoryOption[]>([]);
+  const childrenMapRef = useRef<Map<number, CategoryOption[]>>(new Map());
+
   const {
     values,
     errors,
@@ -73,6 +86,138 @@ export default function CreatePostPage(props: CreatePostPageProps) {
       console.log("提交表单:", values);
     },
   });
+
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await categoryControllerFindAll();
+        if (response.data?.data?.data) {
+          // 只获取父分类（parentId 为 0 或 null）
+          const parents = response.data.data.data
+            .filter((cat) => !cat.parentId || cat.parentId === 0)
+            .map((cat) => ({
+              value: String(cat.id),
+              label: cat.name,
+              avatar: cat.avatar || undefined,
+            }));
+          setParentCategories(parents);
+          // 缓存初始父分类
+          initialParentCategoriesRef.current = parents;
+
+          // 存储所有分类的 children 映射
+          response.data.data.data.forEach((cat) => {
+            if (cat.children && cat.children.length > 0) {
+              childrenMapRef.current.set(
+                cat.id,
+                cat.children.map((child) => ({
+                  value: String(child.id),
+                  label: child.name,
+                  avatar: child.avatar || undefined,
+                })),
+              );
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // Handle parent category change
+  const handleParentCategoryChange = (value: string) => {
+    setSelectedParentId(value);
+    // 获取子分类
+    const parentId = parseInt(value, 10);
+    const children = childrenMapRef.current.get(parentId) || [];
+    setChildCategories(children);
+    // 重置子分类选择
+    setFieldValues({ categoryId: "" });
+  };
+
+  // Handle child category change
+  const handleChildCategoryChange = (value: string) => {
+    setFieldValues({ categoryId: value });
+  };
+
+  // Search parent categories
+  const handleSearchParentCategories = async (query: string) => {
+    if (!query.trim()) {
+      // 如果搜索词为空，使用缓存的初始父分类
+      setParentCategories(initialParentCategoriesRef.current);
+      return;
+    }
+
+    setParentSearching(true);
+    try {
+      const response = await categoryControllerFindAll({
+        query: { name: query },
+      });
+      if (response.data?.data?.data) {
+        const parents = response.data.data.data
+          .filter((cat) => !cat.parentId || cat.parentId === 0)
+          .map((cat) => ({
+            value: String(cat.id),
+            label: cat.name,
+            avatar: cat.avatar || undefined,
+          }));
+        setParentCategories(parents);
+      }
+    } catch (error) {
+      console.error("Failed to search categories:", error);
+    } finally {
+      setParentSearching(false);
+    }
+  };
+
+  // Search child categories
+  const handleSearchChildCategories = async (query: string) => {
+    if (!selectedParentId) return;
+
+    if (!query.trim()) {
+      // 如果搜索词为空，恢复缓存的子分类
+      const parentId = parseInt(selectedParentId, 10);
+      const children = childrenMapRef.current.get(parentId) || [];
+      setChildCategories(children);
+      return;
+    }
+
+    setChildSearching(true);
+    try {
+      const parentId = parseInt(selectedParentId, 10);
+      const response = await categoryControllerFindAll({
+        query: { name: query, parentId },
+      });
+      if (response.data?.data?.data) {
+        // 搜索结果是父分类，需要从 children 中过滤
+        const parent = response.data.data.data.find(
+          (cat) => cat.id === parentId,
+        );
+        if (parent?.children) {
+          const filteredChildren = parent.children
+            .filter((child) =>
+              child.name.toLowerCase().includes(query.toLowerCase()),
+            )
+            .map((child) => ({
+              value: String(child.id),
+              label: child.name,
+              avatar: child.avatar || undefined,
+            }));
+          setChildCategories(filteredChildren);
+        } else {
+          setChildCategories([]);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to search child categories:", error);
+    } finally {
+      setChildSearching(false);
+    }
+  };
 
   // Cover handlers
   const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,9 +285,13 @@ export default function CreatePostPage(props: CreatePostPageProps) {
           </div>
         </div>
         <div className="flex-1">
-          <div className="px-6">
+          <div className="px-6 pb-6">
             <Form errors={errors} onSubmit={handleSubmit} touched={touched}>
-              <FormField name="cover" label={values.cover ? "" : "上传封面"}>
+              <FormField
+                name="cover"
+                label={values.cover ? "" : "上传封面"}
+                className={cn(!values.cover && "pt-4")}
+              >
                 <input
                   type="file"
                   accept="image/*"
@@ -221,12 +370,37 @@ export default function CreatePostPage(props: CreatePostPageProps) {
                   className="min-h-75"
                 />
               </FormField>
-
-              {/* <div className="pt-4">
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "提交中..." : "发布帖子"}
-                </Button>
-              </div> */}
+              <FormField
+                name="categoryId"
+                label="发布至"
+                className="pt-4">
+                <div className="flex items-center gap-2">
+                  <CategorySelect
+                    value={selectedParentId}
+                    onChange={handleParentCategoryChange}
+                    options={parentCategories}
+                    placeholder="选择分类"
+                    disabled={categoriesLoading}
+                    loading={parentSearching}
+                    onSearch={handleSearchParentCategories}
+                    className="flex-1"
+                  />
+                  {selectedParentId && childCategories.length > 0 && (
+                    <>
+                      <span className="relative w-3 h-3 shrink-0 before:absolute mx-1 before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-[#b2bdce]" />
+                      <CategorySelect
+                        value={values.categoryId}
+                        onChange={handleChildCategoryChange}
+                        options={childCategories}
+                        placeholder="选择子分类"
+                        loading={childSearching}
+                        onSearch={handleSearchChildCategories}
+                        className="flex-1"
+                      />
+                    </>
+                  )}
+                </div>
+              </FormField>
             </Form>
           </div>
         </div>
@@ -234,9 +408,9 @@ export default function CreatePostPage(props: CreatePostPageProps) {
 
       {/* Cover Editor Modal */}
       <Dialog open={showCoverEditor} onOpenChange={setShowCoverEditor}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl pt-4!">
           <DialogHeader>
-            <DialogTitle>裁剪封面</DialogTitle>
+            <DialogTitle className="text-sm">裁剪封面</DialogTitle>
           </DialogHeader>
 
           <div className="flex flex-col gap-4 py-4">
