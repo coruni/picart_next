@@ -23,7 +23,7 @@ export default async function AccountEditPage({
           </div>
         </div>
         <div className="px-4 flex-1 pb-4">
-          <ProfileEditForm user={data.data} locale={locale} />
+          <ProfileEditForm user={data.data} locale={locale} key={id} />
         </div>
       </div>
     </div>
