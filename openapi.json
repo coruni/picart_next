@@ -24044,6 +24044,9 @@
                               },
                               "updatedAt": {
                                 "type": "string"
+                              },
+                              "isFollowed": {
+                                "type": "boolean"
                               }
                             },
                             "required": [
@@ -24057,7 +24060,8 @@
                               "articleCount",
                               "followCount",
                               "createdAt",
-                              "updatedAt"
+                              "updatedAt",
+                              "isFollowed"
                             ]
                           }
                         },
@@ -24307,6 +24311,9 @@
                         },
                         "updatedAt": {
                           "type": "string"
+                        },
+                        "isFollowed": {
+                          "type": "boolean"
                         }
                       },
                       "required": [
@@ -24320,7 +24327,8 @@
                         "articleCount",
                         "followCount",
                         "createdAt",
-                        "updatedAt"
+                        "updatedAt",
+                        "isFollowed"
                       ]
                     }
                   },

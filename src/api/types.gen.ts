@@ -8403,6 +8403,7 @@ export type TagControllerFindAllResponses = {
                 followCount: number;
                 createdAt: string;
                 updatedAt: string;
+                isFollowed: boolean;
             }>;
             meta: {
                 total: number;
@@ -8529,6 +8530,7 @@ export type TagControllerFindOneResponses = {
             followCount: number;
             createdAt: string;
             updatedAt: string;
+            isFollowed: boolean;
         };
     };
 };

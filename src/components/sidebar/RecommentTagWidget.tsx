@@ -11,6 +11,7 @@ export const RecommendTagWidget = async () => {
     let tags: TagList = [];
     try {
         const { data } = await tagControllerFindAll({
+            
             query: {
                 page: 1,
                 limit: 4

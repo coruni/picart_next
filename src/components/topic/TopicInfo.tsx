@@ -88,29 +88,31 @@ export const TopicInfo = ({ tag, isFollowed: initialIsFollowed }: TopicInfoProps
                 </div>
 
                 {/* 关注按钮 */}
-                {!isFollowed && (
-                    <div className={cn("flex items-center space-x-3 relative transition-all", !scrolled ? ' -translate-y-14' : "")}>
-                        <div className={cn("size-9 flex items-center text-white hover:text-primary cursor-pointer justify-center rounded-full", !scrolled ? "bg-[#000000a6]" : "bg-gray-50 text-foreground")}>
-                            <MoreHorizontal size={20} />
-                        </div>
-                        <Button
-                            className={cn(`ml-2 rounded-full px-6 h-9 bg-[#e0e6ff]`)}
-                            onClick={handleFollowToggle}
-                            disabled={isLoading}
-                            size="md"
-                        >
-                            <span className="text-xs">
-                                {isLoading
-                                    ? '...'
-                                    : isFollowed
-                                        ? tButton('following')
-                                        : tButton('follow')
-                                }
-                            </span>
-
-                        </Button>
+                <div className={cn("flex items-center space-x-3 relative transition-all", !scrolled ? ' -translate-y-14' : "")}>
+                    <div className={cn("size-9 flex items-center text-white hover:text-primary cursor-pointer justify-center rounded-full", !scrolled ? "bg-[#000000a6]" : "bg-gray-50 text-foreground")}>
+                        <MoreHorizontal size={20} />
                     </div>
-                )}
+                    <Button
+                        className={cn(
+                            `ml-2 rounded-full px-6 h-9`,
+                            isFollowed 
+                                ? "bg-gray-200 text-gray-600 hover:bg-gray-300" 
+                                : "bg-[#e0e6ff] text-primary hover:bg-[#d0d9ff]"
+                        )}
+                        onClick={handleFollowToggle}
+                        disabled={isLoading}
+                        size="md"
+                    >
+                        <span className="text-xs">
+                            {isLoading
+                                ? '...'
+                                : isFollowed
+                                    ? tButton('following')
+                                    : tButton('follow')
+                            }
+                        </span>
+                    </Button>
+                </div>
 
             </div>
         </div>

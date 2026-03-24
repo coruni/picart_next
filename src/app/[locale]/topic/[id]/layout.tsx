@@ -49,7 +49,7 @@ export default async function TopicDetailLayout({ children, params }: TopicDetai
             {/* 页面内容 */}
             <div className="mt-75 w-full z-10 relative bg-border dark:bg-gray-800">
                 {/* 标签信息 */}
-                <TopicInfo tag={tag} />
+                <TopicInfo tag={tag} isFollowed={tag.isFollowed} />
                 {/* 子页面内容 */}
                 <div className="page-container pt-4!">
                     <div className="left-container">
