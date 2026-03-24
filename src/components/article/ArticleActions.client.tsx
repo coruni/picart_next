@@ -35,7 +35,7 @@ export function ArticleActions({
             {/* 评论 */}
             <div className="flex flex-col items-center justify-center group cursor-pointer">
                 <div className="rounded-full group-hover:bg-primary/15 p-1">
-                    <MessageCircleMore />
+                    <MessageCircleMore className="text-secondary" />
                 </div>
                 <span className="text-secondary text-sm">{commentCount}</span>
             </div>
@@ -43,7 +43,7 @@ export function ArticleActions({
             {/* 收藏 */}
             <div className="flex flex-col items-center justify-center group cursor-pointer">
                 <div className="rounded-full group-hover:bg-primary/15 p-1">
-                    <Star />
+                    <Star className="text-secondary" />
                 </div>
                 <span className="text-secondary text-sm">{favoriteCount}</span>
             </div>
@@ -64,7 +64,7 @@ export function ArticleActions({
             {/* 分享 */}
             <div className="flex flex-col items-center justify-center group cursor-pointer">
                 <div className="rounded-full group-hover:bg-primary/15 p-1">
-                    <ExternalLink />
+                    <ExternalLink className="text-secondary" />
                 </div>
                 <span className="text-secondary text-sm">{likes}</span>
             </div>

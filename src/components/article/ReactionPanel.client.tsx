@@ -106,7 +106,7 @@ export const ReactionPanel = ({
                 )}
                 onClick={() => setIsOpen(!isOpen)}
             >
-                {CurrentReactionIcon && <CurrentReactionIcon size={20} />}
+                {CurrentReactionIcon && <CurrentReactionIcon size={20} className="text-secondary" />}
                 {showCount && (
                     <span className="ml-2 text-xs">{totalReactions}</span>
                 )}

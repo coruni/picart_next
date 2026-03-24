@@ -15,7 +15,7 @@ import {
   configControllerGetPublicConfigs,
   userControllerGetProfile,
 } from "@/api";
-import { initializeInterceptors } from "@/rumtime.config";
+import { initializeInterceptors, setServerRequestToken, setServerRequestDeviceId, clearServerRequestContext } from "@/rumtime.config";
 import type { UserProfile } from "@/types";
 
 const TOKEN_COOKIE_NAME = "auth-token";
@@ -51,6 +51,8 @@ export default async function LocaleLayout({
 
   // 获取服务端的 token，用于初始化客户端状态
   const initialToken = await getServerCookie(TOKEN_COOKIE_NAME);
+  // 获取设备指纹（如果存在）
+  const deviceId = await getServerCookie("device_fingerprint");
   // 获取分类
   const category = await categoryControllerFindAll({ query: { limit: 100 } });
   // 如果有 token，在服务端获取用户资料
@@ -58,11 +60,18 @@ export default async function LocaleLayout({
   await initializeInterceptors();
   if (initialToken) {
     try {
-      // 初始化拦截器，让它自动处理 Authorization 和 Device-Id
+      // 设置服务端请求的 token 和设备 ID，让拦截器使用
+      setServerRequestToken(initialToken);
+      if (deviceId) setServerRequestDeviceId(deviceId);
+
+      // 调用 API，拦截器会自动添加 Authorization header
       const response = await userControllerGetProfile();
       initialUser = response?.data?.data || null;
     } catch {
       // 如果获取失败，客户端会处理（可能是 token 过期）
+    } finally {
+      // 清除服务端请求上下文，避免影响后续请求
+      clearServerRequestContext();
     }
   }
 

@@ -16,22 +16,22 @@ export function formatRelativeTime(
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   if (diffInSeconds < 60) {
-    return t("time.justNow");
+    return t("justNow");
   }
 
   const diffInMinutes = Math.floor(diffInSeconds / 60);
   if (diffInMinutes < 60) {
-    return t("time.minutesAgo", { count: diffInMinutes });
+    return t("minutesAgo", { count: diffInMinutes });
   }
 
   const diffInHours = Math.floor(diffInMinutes / 60);
   if (diffInHours < 24) {
-    return t("time.hoursAgo", { count: diffInHours });
+    return t("hoursAgo", { count: diffInHours });
   }
 
   const diffInDays = Math.floor(diffInHours / 24);
   if (diffInDays < 7) {
-    return t("time.daysAgo", { count: diffInDays });
+    return t("daysAgo", { count: diffInDays });
   }
 
   // 超过7天显示月份/日期

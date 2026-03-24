@@ -6,6 +6,33 @@ import { getCookie } from './lib/cookies';
 const TOKEN_COOKIE_NAME = 'auth-token';
 const DEVICE_ID_COOKIE_NAME = 'device_fingerprint';
 
+// 服务端请求的 token 存储（用于 SSR 阶段显式传递 token）
+let serverRequestToken: string | null = null;
+let serverRequestDeviceId: string | null = null;
+
+/**
+ * 设置服务端请求的 token（SSR 阶段使用）
+ * 在服务端组件调用 API 前设置，调用后清除
+ */
+export function setServerRequestToken(token: string | null) {
+  serverRequestToken = token;
+}
+
+/**
+ * 设置服务端请求的设备 ID（SSR 阶段使用）
+ */
+export function setServerRequestDeviceId(deviceId: string | null) {
+  serverRequestDeviceId = deviceId;
+}
+
+/**
+ * 清除服务端请求的 token 和设备 ID
+ */
+export function clearServerRequestContext() {
+  serverRequestToken = null;
+  serverRequestDeviceId = null;
+}
+
 /**
  * 获取认证 token（支持客户端和服务端）
  */
@@ -17,7 +44,12 @@ async function getAuthToken(): Promise<string | null> {
     return getCookie(TOKEN_COOKIE_NAME);
   }
 
-  // 服务端环境 - 使用动态导入的 server-cookies 工具
+  // 服务端环境 - 优先使用显式设置的 token（SSR 阶段由 layout.tsx 设置）
+  if (serverRequestToken !== null) {
+    return serverRequestToken;
+  }
+
+  // 如果没有显式设置，尝试从 cookie 读取（兜底方案）
   try {
     const { getServerCookie } = await import('./lib/server-cookies');
     return await getServerCookie(TOKEN_COOKIE_NAME);
@@ -39,7 +71,12 @@ async function getDeviceId(): Promise<string | null> {
     return getDeviceFingerprintSync();
   }
 
-  // 服务端环境 - 使用动态导入的 server-cookies 工具
+  // 服务端环境 - 优先使用显式设置的设备 ID
+  if (serverRequestDeviceId !== null) {
+    return serverRequestDeviceId;
+  }
+
+  // 如果没有显式设置，尝试从 cookie 读取（兜底方案）
   try {
     const { getServerCookie } = await import('./lib/server-cookies');
     return await getServerCookie(DEVICE_ID_COOKIE_NAME);
