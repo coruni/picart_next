@@ -3902,7 +3902,11 @@ export type UserControllerSendVerificationCodeResponses = {
 export type UserControllerSendVerificationCodeResponse = UserControllerSendVerificationCodeResponses[keyof UserControllerSendVerificationCodeResponses];
 
 export type UserControllerResetPasswordData = {
-    body?: never;
+    body?: {
+        email: string;
+        newPassword: string;
+        code: string;
+    };
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -11464,28 +11468,31 @@ export type DecorationControllerFindAllResponses = {
         message: string;
         data: {
             data: Array<{
-                id?: number;
-                name?: string;
-                type?: string;
-                description?: string;
-                imageUrl?: string;
-                previewUrl?: string;
-                rarity?: string;
-                obtainMethod?: string;
-                isPurchasable?: boolean;
-                price?: string;
-                validDays?: number;
-                sort?: number;
-                status?: string;
-                activityId?: unknown;
-                achievementId?: unknown;
-                requiredLikes?: number;
-                requiredComments?: number;
-                createdAt?: string;
-                updatedAt?: string;
-                isOwned?: boolean;
-                isUsing?: boolean;
-                canDirectEquip?: boolean;
+                id: number;
+                name: string;
+                type: string;
+                description: string;
+                imageUrl: string;
+                previewUrl: string;
+                rarity: string;
+                obtainMethod: string;
+                isPurchasable: boolean;
+                price: string;
+                isPermanent: boolean;
+                validDays: number;
+                sort: number;
+                status: string;
+                activityId: number;
+                achievementId: number;
+                requiredLikes: number;
+                requiredComments: number;
+                createdAt: string;
+                updatedAt: string;
+                isOwned: boolean;
+                isUsing: boolean;
+                canDirectEquip: boolean;
+                userExpiresAt: number;
+                userIsPermanent: boolean;
             }>;
             meta: {
                 total: number;
@@ -11574,11 +11581,12 @@ export type DecorationControllerFindOneResponses = {
             obtainMethod: string;
             isPurchasable: boolean;
             price: string;
+            isPermanent: boolean;
             validDays: number;
             sort: number;
             status: string;
-            activityId: unknown;
-            achievementId: unknown;
+            activityId: number;
+            achievementId: number;
             requiredLikes: number;
             requiredComments: number;
             createdAt: string;
@@ -11586,6 +11594,9 @@ export type DecorationControllerFindOneResponses = {
             isOwned: boolean;
             isUsing: boolean;
             canDirectEquip: boolean;
+            userExpiresAt: string;
+            userIsPermanent: boolean;
+            obtainedAt: string;
         };
     };
 };
@@ -11646,10 +11657,10 @@ export type DecorationControllerGetMyDecorationsResponses = {
         message: string;
         data: {
             data: Array<{
-                id?: number;
-                userId?: number;
-                decorationId?: number;
-                decoration?: {
+                id: number;
+                userId: number;
+                decorationId: number;
+                decoration: {
                     id: number;
                     name: string;
                     type: string;
@@ -11664,23 +11675,23 @@ export type DecorationControllerGetMyDecorationsResponses = {
                     validDays: number;
                     sort: number;
                     status: string;
-                    activityId: unknown;
-                    achievementId: unknown;
+                    activityId: number;
+                    achievementId: number;
                     requiredLikes: number;
                     requiredComments: number;
                     createdAt: string;
                     updatedAt: string;
                 };
-                obtainMethod?: string;
-                isPermanent?: boolean;
-                expiresAt?: unknown;
-                isUsing?: boolean;
-                giftFromUserId?: unknown;
-                orderId?: unknown;
-                activityId?: unknown;
-                remark?: unknown;
-                createdAt?: string;
-                updatedAt?: string;
+                obtainMethod: string;
+                isPermanent: boolean;
+                expiresAt: string;
+                isUsing: boolean;
+                giftFromUserId: number;
+                orderId: number;
+                activityId: number;
+                remark: string;
+                createdAt: string;
+                updatedAt: string;
             }>;
             meta: {
                 total: number;
@@ -11728,10 +11739,10 @@ export type DecorationControllerGetUserDecorationsResponses = {
         message: string;
         data: {
             data: Array<{
-                id?: number;
-                userId?: number;
-                decorationId?: number;
-                decoration?: {
+                id: number;
+                userId: number;
+                decorationId: number;
+                decoration: {
                     id: number;
                     name: string;
                     type: string;
@@ -11746,23 +11757,23 @@ export type DecorationControllerGetUserDecorationsResponses = {
                     validDays: number;
                     sort: number;
                     status: string;
-                    activityId: unknown;
-                    achievementId: unknown;
+                    activityId: number;
+                    achievementId: number;
                     requiredLikes: number;
                     requiredComments: number;
                     createdAt: string;
                     updatedAt: string;
                 };
-                obtainMethod?: string;
-                isPermanent?: boolean;
-                expiresAt?: unknown;
-                isUsing?: boolean;
-                giftFromUserId?: unknown;
-                orderId?: unknown;
-                activityId?: unknown;
-                remark?: unknown;
-                createdAt?: string;
-                updatedAt?: string;
+                obtainMethod: string;
+                isPermanent: boolean;
+                expiresAt: string;
+                isUsing: boolean;
+                giftFromUserId: number;
+                orderId: number;
+                activityId: number;
+                remark: string;
+                createdAt: string;
+                updatedAt: string;
             }>;
             meta: {
                 total: number;
@@ -11851,12 +11862,12 @@ export type DecorationControllerGetCurrentDecorationsResponses = {
                 };
                 obtainMethod: string;
                 isPermanent: boolean;
-                expiresAt: unknown;
+                expiresAt: string;
                 isUsing: boolean;
-                giftFromUserId: unknown;
-                orderId: unknown;
-                activityId: unknown;
-                remark: unknown;
+                giftFromUserId: number;
+                orderId: number;
+                activityId: number;
+                remark: string;
                 createdAt: string;
                 updatedAt: string;
             };

@@ -7635,6 +7635,32 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "newPassword": {
+                    "type": "string"
+                  },
+                  "code": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email",
+                  "newPassword",
+                  "code"
+                ]
+              },
+              "examples": {}
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "重置成功",
@@ -33911,6 +33937,9 @@
                               "price": {
                                 "type": "string"
                               },
+                              "isPermanent": {
+                                "type": "boolean"
+                              },
                               "validDays": {
                                 "type": "integer"
                               },
@@ -33921,10 +33950,10 @@
                                 "type": "string"
                               },
                               "activityId": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "achievementId": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "requiredLikes": {
                                 "type": "integer"
@@ -33946,8 +33975,41 @@
                               },
                               "canDirectEquip": {
                                 "type": "boolean"
+                              },
+                              "userExpiresAt": {
+                                "type": "integer"
+                              },
+                              "userIsPermanent": {
+                                "type": "boolean"
                               }
-                            }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "type",
+                              "description",
+                              "imageUrl",
+                              "previewUrl",
+                              "rarity",
+                              "obtainMethod",
+                              "isPurchasable",
+                              "price",
+                              "isPermanent",
+                              "validDays",
+                              "sort",
+                              "status",
+                              "activityId",
+                              "achievementId",
+                              "requiredLikes",
+                              "requiredComments",
+                              "createdAt",
+                              "updatedAt",
+                              "isOwned",
+                              "isUsing",
+                              "canDirectEquip",
+                              "userExpiresAt",
+                              "userIsPermanent"
+                            ]
                           }
                         },
                         "meta": {
@@ -34182,6 +34244,9 @@
                         "price": {
                           "type": "string"
                         },
+                        "isPermanent": {
+                          "type": "boolean"
+                        },
                         "validDays": {
                           "type": "integer"
                         },
@@ -34192,10 +34257,10 @@
                           "type": "string"
                         },
                         "activityId": {
-                          "type": "null"
+                          "type": "integer"
                         },
                         "achievementId": {
-                          "type": "null"
+                          "type": "integer"
                         },
                         "requiredLikes": {
                           "type": "integer"
@@ -34217,6 +34282,15 @@
                         },
                         "canDirectEquip": {
                           "type": "boolean"
+                        },
+                        "userExpiresAt": {
+                          "type": "string"
+                        },
+                        "userIsPermanent": {
+                          "type": "boolean"
+                        },
+                        "obtainedAt": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -34230,6 +34304,7 @@
                         "obtainMethod",
                         "isPurchasable",
                         "price",
+                        "isPermanent",
                         "validDays",
                         "sort",
                         "status",
@@ -34241,7 +34316,10 @@
                         "updatedAt",
                         "isOwned",
                         "isUsing",
-                        "canDirectEquip"
+                        "canDirectEquip",
+                        "userExpiresAt",
+                        "userIsPermanent",
+                        "obtainedAt"
                       ]
                     }
                   },
@@ -34583,10 +34661,10 @@
                                     "type": "string"
                                   },
                                   "activityId": {
-                                    "type": "null"
+                                    "type": "integer"
                                   },
                                   "achievementId": {
-                                    "type": "null"
+                                    "type": "integer"
                                   },
                                   "requiredLikes": {
                                     "type": "integer"
@@ -34631,22 +34709,22 @@
                                 "type": "boolean"
                               },
                               "expiresAt": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "isUsing": {
                                 "type": "boolean"
                               },
                               "giftFromUserId": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "orderId": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "activityId": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "remark": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "createdAt": {
                                 "type": "string"
@@ -34654,7 +34732,23 @@
                               "updatedAt": {
                                 "type": "string"
                               }
-                            }
+                            },
+                            "required": [
+                              "id",
+                              "userId",
+                              "decorationId",
+                              "decoration",
+                              "obtainMethod",
+                              "isPermanent",
+                              "expiresAt",
+                              "isUsing",
+                              "giftFromUserId",
+                              "orderId",
+                              "activityId",
+                              "remark",
+                              "createdAt",
+                              "updatedAt"
+                            ]
                           }
                         },
                         "meta": {
@@ -34877,10 +34971,10 @@
                                     "type": "string"
                                   },
                                   "activityId": {
-                                    "type": "null"
+                                    "type": "integer"
                                   },
                                   "achievementId": {
-                                    "type": "null"
+                                    "type": "integer"
                                   },
                                   "requiredLikes": {
                                     "type": "integer"
@@ -34925,22 +35019,22 @@
                                 "type": "boolean"
                               },
                               "expiresAt": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "isUsing": {
                                 "type": "boolean"
                               },
                               "giftFromUserId": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "orderId": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "activityId": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "remark": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "createdAt": {
                                 "type": "string"
@@ -34948,7 +35042,23 @@
                               "updatedAt": {
                                 "type": "string"
                               }
-                            }
+                            },
+                            "required": [
+                              "id",
+                              "userId",
+                              "decorationId",
+                              "decoration",
+                              "obtainMethod",
+                              "isPermanent",
+                              "expiresAt",
+                              "isUsing",
+                              "giftFromUserId",
+                              "orderId",
+                              "activityId",
+                              "remark",
+                              "createdAt",
+                              "updatedAt"
+                            ]
                           }
                         },
                         "meta": {
@@ -35267,22 +35377,22 @@
                               "type": "boolean"
                             },
                             "expiresAt": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "isUsing": {
                               "type": "boolean"
                             },
                             "giftFromUserId": {
-                              "type": "null"
+                              "type": "integer"
                             },
                             "orderId": {
-                              "type": "null"
+                              "type": "integer"
                             },
                             "activityId": {
-                              "type": "null"
+                              "type": "integer"
                             },
                             "remark": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "createdAt": {
                               "type": "string"

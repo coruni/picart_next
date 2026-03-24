@@ -463,7 +463,11 @@ export const userControllerSendVerificationCode = <ThrowOnError extends boolean 
 export const userControllerResetPassword = <ThrowOnError extends boolean = false>(options?: Options<UserControllerResetPasswordData, ThrowOnError>) => (options?.client ?? client).post<UserControllerResetPasswordResponses, UserControllerResetPasswordErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/user/password/reset',
-    ...options
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
 });
 
 /**

@@ -4,39 +4,34 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { CheckCircle2Icon, ChevronRight, Clock } from "lucide-react";
-import {
-  decorationControllerFindAll,
-  decorationControllerGetMyDecorations,
-} from "@/api";
+import { decorationControllerGetMyDecorations } from "@/api/sdk.gen";
+import type { DecorationControllerGetMyDecorationsResponse } from "@/api/types.gen";
+import { useModalStore } from "@/stores/useModalStore";
+import { MODAL_IDS } from "@/lib/modal-helpers";
+import { UserAvatarFarmeDialog } from "@/components/layout/UserAvatarFarmeDialog";
 
-type DecorationType = "AVATAR_FRAME" | "EMOJI" | "COMMENT";
+type DecorationType = "AVATAR_FRAME" | "EMOJI" | "COMMENT_BUBBLE";
 
-interface Decoration {
-  id: number;
-  name: string;
-  type: DecorationType;
-  imageUrl: string;
-  previewUrl?: string;
-  rarity: "COMMON" | "RARE" | "EPIC" | "LEGENDARY";
-  isUsing: boolean;
-  isPermanent: boolean;
-  expiresAt?: string;
-}
+type Decoration =
+  DecorationControllerGetMyDecorationsResponse["data"]["data"][0];
 
 export default function AccountDecorationPage() {
   const [activeType, setActiveType] = useState<DecorationType>("AVATAR_FRAME");
   const [decorations, setDecorations] = useState<Decoration[]>([]);
   const [loading, setLoading] = useState(false);
+  const openModal = useModalStore((state) => state.openModal);
+  const handleAvatarFrameOpen = () => {
+    openModal(MODAL_IDS.AVATAR_FRAME);
+  };
 
   // 根据激活类型获取装饰品数据
   useEffect(() => {
     const fetchDecorations = async () => {
       setLoading(true);
       try {
-        const response = await decorationControllerFindAll({
+        const response = await decorationControllerGetMyDecorations({
           query: {
             type: activeType,
-            status: "ACTIVE",
           },
         });
 
@@ -138,10 +133,10 @@ export default function AccountDecorationPage() {
               <span className="text-xs">表情包</span>
             </div>
             <div
-              onClick={() => setActiveType("COMMENT")}
+              onClick={() => setActiveType("COMMENT_BUBBLE")}
               className={cn(
                 "p-2 group aspect-square cursor-pointer rounded-xl flex flex-col items-center justify-center",
-                activeType === "COMMENT"
+                activeType === "COMMENT_BUBBLE"
                   ? "bg-primary/20"
                   : "hover:bg-primary/20",
               )}
@@ -153,7 +148,9 @@ export default function AccountDecorationPage() {
                   alt="comment"
                   className={cn(
                     "absolute w-full h-full top-50% left-50%",
-                    activeType === "COMMENT" ? "hidden" : "group-hover:hidden",
+                    activeType === "COMMENT_BUBBLE"
+                      ? "hidden"
+                      : "group-hover:hidden",
                   )}
                 />
                 <Image
@@ -162,7 +159,7 @@ export default function AccountDecorationPage() {
                   alt="comment"
                   className={cn(
                     "h-full w-full",
-                    activeType === "COMMENT"
+                    activeType === "COMMENT_BUBBLE"
                       ? "block"
                       : "hidden group-hover:block",
                   )}
@@ -176,7 +173,7 @@ export default function AccountDecorationPage() {
             {/* Content area based on activeType */}
             {activeType === "AVATAR_FRAME" && (
               <div className="flex flex-col h-full">
-                <div className="mb-4">
+                <div className="mb-4" onClick={handleAvatarFrameOpen}>
                   <div
                     className="h-20 w-full bg-center bg-cover rounded-xl bg-no-repeat flex items-center px-4 justify-between  cursor-pointer gap-4"
                     style={{
@@ -215,8 +212,8 @@ export default function AccountDecorationPage() {
                           <div className="flex items-center justify-center aspect-square rounded-xl bg-background relative shrink-0 relative">
                             <Image
                               fill
-                              src={decoration.imageUrl}
-                              alt={decoration.name}
+                              src={decoration.decoration.imageUrl}
+                              alt={decoration.decoration.name}
                               className="object-cover p-4"
                             ></Image>
                             {decoration.isUsing && (
@@ -230,7 +227,7 @@ export default function AccountDecorationPage() {
                           </div>
                           <div className="flex-1 p-2 relative flex flex-col">
                             <h3 className="text-sm group-hover:text-primary">
-                              {decoration.name}
+                              {decoration.decoration.name}
                             </h3>
                             <div className="flex items-center mt-auto text-secondary  text-xs gap-1">
                               <Clock size={12} />
@@ -322,24 +319,30 @@ export default function AccountDecorationPage() {
                           )}
 
                           <div className="flex items-start gap-4">
-                            <div className="relative size-20 flex-shrink-0">
+                            <div className="relative size-20 shrink-0">
                               <Image
                                 fill
-                                src={decoration.imageUrl}
-                                alt={decoration.name}
+                                src={decoration.decoration.imageUrl}
+                                alt={decoration.decoration.name}
                                 className="w-full h-full object-contain"
                               />
                             </div>
 
                             <div className="flex-1 min-w-0">
                               <div className="font-medium text-base mb-1 truncate">
-                                {decoration.name}
+                                {decoration.decoration.name}
                               </div>
                               <div className="text-xs text-secondary mb-2">
-                                {decoration.rarity === "COMMON" && "普通"}
-                                {decoration.rarity === "RARE" && "稀有"}
-                                {decoration.rarity === "EPIC" && "史诗"}
-                                {decoration.rarity === "LEGENDARY" && "传说"}
+                                {decoration.decoration.rarity === "COMMON" &&
+                                  "普通"}
+                                {decoration.decoration.rarity === "COMMON" &&
+                                  "普通"}
+                                {decoration.decoration.rarity === "RARE" &&
+                                  "稀有"}
+                                {decoration.decoration.rarity === "EPIC" &&
+                                  "史诗"}
+                                {decoration.decoration.rarity === "LEGENDARY" &&
+                                  "传说"}
                                 系列
                               </div>
                               <div className="flex items-center gap-1 text-xs text-secondary">
@@ -383,7 +386,7 @@ export default function AccountDecorationPage() {
                 </div>
               </div>
             )}
-            {activeType === "COMMENT" && (
+            {activeType === "COMMENT_BUBBLE" && (
               <div className="flex flex-col h-full">
                 <div className="mb-4">
                   <div
@@ -445,23 +448,30 @@ export default function AccountDecorationPage() {
                           )}
 
                           <div className="flex items-start gap-4">
-                            <div className="relative size-20 flex-shrink-0">
-                              <img
-                                src={decoration.imageUrl}
-                                alt={decoration.name}
+                            <div className="relative size-20 shrink-0">
+                              <Image
+                                src={decoration.decoration.imageUrl}
+                                fill
+                                alt={decoration.decoration.name}
                                 className="w-full h-full object-contain"
                               />
                             </div>
 
                             <div className="flex-1 min-w-0">
                               <div className="font-medium text-base mb-1 truncate">
-                                {decoration.name}
+                                {decoration.decoration.name}
                               </div>
                               <div className="text-xs text-secondary mb-2">
-                                {decoration.rarity === "COMMON" && "普通"}
-                                {decoration.rarity === "RARE" && "稀有"}
-                                {decoration.rarity === "EPIC" && "史诗"}
-                                {decoration.rarity === "LEGENDARY" && "传说"}
+                                {decoration.decoration.rarity === "COMMON" &&
+                                  "普通"}
+                                {decoration.decoration.rarity === "COMMON" &&
+                                  "普通"}
+                                {decoration.decoration.rarity === "RARE" &&
+                                  "稀有"}
+                                {decoration.decoration.rarity === "EPIC" &&
+                                  "史诗"}
+                                {decoration.decoration.rarity === "LEGENDARY" &&
+                                  "传说"}
                                 系列
                               </div>
                               <div className="flex items-center gap-1 text-xs text-secondary">
@@ -508,6 +518,7 @@ export default function AccountDecorationPage() {
           </div>
         </div>
       </div>
+      <UserAvatarFarmeDialog />
     </div>
   );
 }

@@ -8,6 +8,7 @@ export const MODAL_IDS = {
   REGISTER: "register-dialog",
   FORGOT_PASSWORD: "forgot-password-dialog",
   // 可以继续添加其他 modal ID
+  AVATAR_FRAME: "avatar-frame-dialog",
 } as const;
 
 /**
@@ -51,3 +52,18 @@ export function openForgotPasswordDialog() {
 export function closeForgotPasswordDialog() {
   useModalStore.getState().closeModal(MODAL_IDS.FORGOT_PASSWORD);
 }
+
+/**
+ * 打开头像框架对话框
+ */
+export function openAvatarFrameDialog() {
+  useModalStore.getState().openModal(MODAL_IDS.AVATAR_FRAME);
+}
+
+/**
+ * 关闭头像框架对话框
+ */
+export function closeAvatarFrameDialog() {
+  useModalStore.getState().closeModal(MODAL_IDS.AVATAR_FRAME);
+}
+
