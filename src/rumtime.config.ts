@@ -1,6 +1,6 @@
 import type { CreateClientConfig } from './api/client.gen';
 import { useUserStore } from './stores/useUserStore';
-import { getDeviceFingerprintSync } from './lib/fingerprint';
+import { useDeviceStore } from './stores/useDeviceStore';
 import { getCookie } from './lib/cookies';
 
 const TOKEN_COOKIE_NAME = 'auth-token';
@@ -68,9 +68,20 @@ async function getAuthToken(): Promise<string | null> {
  * 获取设备指纹（支持客户端和服务端）
  */
 async function getDeviceId(): Promise<string | null> {
-  // 客户端环境
+  // 客户端环境 - 优先从 Store 读取，其次从 Cookie
   if (typeof window !== 'undefined') {
-    return getDeviceFingerprintSync();
+    const storeDeviceId = useDeviceStore.getState().deviceId;
+    if (storeDeviceId) return storeDeviceId;
+
+    // Store 中没有，尝试从 Cookie 读取（首次加载或清除后）
+    const cookieDeviceId = getCookie(DEVICE_ID_COOKIE_NAME);
+    if (cookieDeviceId) {
+      // 同步到 Store，下次直接从 Store 读取
+      useDeviceStore.getState().setDeviceId(cookieDeviceId);
+      return cookieDeviceId;
+    }
+
+    return null;
   }
 
   // 服务端环境 - 优先从 cookie 读取（标准方式）
