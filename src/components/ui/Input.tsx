@@ -56,7 +56,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             "transition-colors duration-200",
             error
               ? "border-red-500 focus:ring-red-500 dark:border-red-400"
-              : "border-gray-300 dark:border-gray-600 focus:ring-primary focus:border-primary hover:border-primary",
+              : "border-border focus:ring-primary focus:border-primary hover:border-primary",
             fullWidth && "w-full",
             showMaxLength && maxLength && "pr-13",
             className,

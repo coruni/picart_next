@@ -39,7 +39,7 @@ export default async function TopicPage() {
                 <TagListClient
                     initTags={data?.data.data || []}
                     initPage={2}
-                    initTotal={data?.data.meta.total!}
+                    initTotal={data?.data.meta.total || 0}
                     pageSize={10}
                     cacheKey="topic-list"
                 />

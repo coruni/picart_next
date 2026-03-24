@@ -9221,6 +9221,65 @@
                                   "parentId": {
                                     "type": "integer"
                                   },
+                                  "parent": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "link": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "link",
+                                      "avatar",
+                                      "background",
+                                      "cover",
+                                      "sort",
+                                      "status",
+                                      "articleCount",
+                                      "followCount",
+                                      "createdAt",
+                                      "updatedAt"
+                                    ]
+                                  },
                                   "link": {
                                     "type": "string"
                                   },
@@ -9266,7 +9325,8 @@
                                   "articleCount",
                                   "followCount",
                                   "createdAt",
-                                  "updatedAt"
+                                  "updatedAt",
+                                  "parent"
                                 ]
                               },
                               "tags": {
@@ -9384,6 +9444,9 @@
                               },
                               "isFavorited": {
                                 "type": "boolean"
+                              },
+                              "userReaction": {
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -9418,7 +9481,8 @@
                               "isPaid",
                               "imageCount",
                               "reactionStats",
-                              "isFavorited"
+                              "isFavorited",
+                              "userReaction"
                             ]
                           }
                         },
@@ -9849,6 +9913,65 @@
                             "parentId": {
                               "type": "integer"
                             },
+                            "parent": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "integer"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "link": {
+                                  "type": "string"
+                                },
+                                "avatar": {
+                                  "type": "string"
+                                },
+                                "background": {
+                                  "type": "string"
+                                },
+                                "cover": {
+                                  "type": "string"
+                                },
+                                "sort": {
+                                  "type": "integer"
+                                },
+                                "status": {
+                                  "type": "string"
+                                },
+                                "articleCount": {
+                                  "type": "integer"
+                                },
+                                "followCount": {
+                                  "type": "integer"
+                                },
+                                "createdAt": {
+                                  "type": "string"
+                                },
+                                "updatedAt": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "name",
+                                "description",
+                                "link",
+                                "avatar",
+                                "background",
+                                "cover",
+                                "sort",
+                                "status",
+                                "articleCount",
+                                "followCount",
+                                "createdAt",
+                                "updatedAt"
+                              ]
+                            },
                             "link": {
                               "type": "string"
                             },
@@ -9894,13 +10017,62 @@
                             "articleCount",
                             "followCount",
                             "createdAt",
-                            "updatedAt"
+                            "updatedAt",
+                            "parent"
                           ]
                         },
                         "tags": {
                           "type": "array",
                           "items": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "avatar": {
+                                "type": "string"
+                              },
+                              "background": {
+                                "type": "string"
+                              },
+                              "cover": {
+                                "type": "string"
+                              },
+                              "sort": {
+                                "type": "integer"
+                              },
+                              "articleCount": {
+                                "type": "integer"
+                              },
+                              "followCount": {
+                                "type": "integer"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "description",
+                              "avatar",
+                              "background",
+                              "cover",
+                              "sort",
+                              "articleCount",
+                              "followCount",
+                              "createdAt",
+                              "updatedAt"
+                            ]
                           }
                         },
                         "downloads": {
@@ -9990,6 +10162,9 @@
                             "angry",
                             "dislike"
                           ]
+                        },
+                        "userReaction": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -10023,7 +10198,8 @@
                         "isLiked",
                         "isPaid",
                         "imageCount",
-                        "reactionStats"
+                        "reactionStats",
+                        "userReaction"
                       ]
                     }
                   },
@@ -10794,6 +10970,65 @@
                                   "parentId": {
                                     "type": "integer"
                                   },
+                                  "parent": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "link": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "link",
+                                      "avatar",
+                                      "background",
+                                      "cover",
+                                      "sort",
+                                      "status",
+                                      "articleCount",
+                                      "followCount",
+                                      "createdAt",
+                                      "updatedAt"
+                                    ]
+                                  },
                                   "link": {
                                     "type": "string"
                                   },
@@ -10839,7 +11074,8 @@
                                   "articleCount",
                                   "followCount",
                                   "createdAt",
-                                  "updatedAt"
+                                  "updatedAt",
+                                  "parent"
                                 ]
                               },
                               "tags": {
@@ -10957,6 +11193,9 @@
                               },
                               "isFavorited": {
                                 "type": "boolean"
+                              },
+                              "userReaction": {
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -10991,7 +11230,8 @@
                               "isPaid",
                               "imageCount",
                               "reactionStats",
-                              "isFavorited"
+                              "isFavorited",
+                              "userReaction"
                             ]
                           }
                         },
@@ -11365,6 +11605,65 @@
                                   "parentId": {
                                     "type": "integer"
                                   },
+                                  "parent": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "link": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "link",
+                                      "avatar",
+                                      "background",
+                                      "cover",
+                                      "sort",
+                                      "status",
+                                      "articleCount",
+                                      "followCount",
+                                      "createdAt",
+                                      "updatedAt"
+                                    ]
+                                  },
                                   "link": {
                                     "type": "string"
                                   },
@@ -11410,7 +11709,8 @@
                                   "articleCount",
                                   "followCount",
                                   "createdAt",
-                                  "updatedAt"
+                                  "updatedAt",
+                                  "parent"
                                 ]
                               },
                               "tags": {
@@ -11528,6 +11828,9 @@
                               },
                               "isFavorited": {
                                 "type": "boolean"
+                              },
+                              "userReaction": {
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -11562,7 +11865,8 @@
                               "isPaid",
                               "imageCount",
                               "reactionStats",
-                              "isFavorited"
+                              "isFavorited",
+                              "userReaction"
                             ]
                           }
                         },
@@ -11974,6 +12278,65 @@
                                   "parentId": {
                                     "type": "integer"
                                   },
+                                  "parent": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "link": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "link",
+                                      "avatar",
+                                      "background",
+                                      "cover",
+                                      "sort",
+                                      "status",
+                                      "articleCount",
+                                      "followCount",
+                                      "createdAt",
+                                      "updatedAt"
+                                    ]
+                                  },
                                   "link": {
                                     "type": "string"
                                   },
@@ -12019,7 +12382,8 @@
                                   "articleCount",
                                   "followCount",
                                   "createdAt",
-                                  "updatedAt"
+                                  "updatedAt",
+                                  "parent"
                                 ]
                               },
                               "tags": {
@@ -12137,6 +12501,9 @@
                               },
                               "isFavorited": {
                                 "type": "boolean"
+                              },
+                              "userReaction": {
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -12171,7 +12538,8 @@
                               "isPaid",
                               "imageCount",
                               "reactionStats",
-                              "isFavorited"
+                              "isFavorited",
+                              "userReaction"
                             ]
                           }
                         },
@@ -12650,6 +13018,65 @@
                                   "parentId": {
                                     "type": "integer"
                                   },
+                                  "parent": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "link": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "link",
+                                      "avatar",
+                                      "background",
+                                      "cover",
+                                      "sort",
+                                      "status",
+                                      "articleCount",
+                                      "followCount",
+                                      "createdAt",
+                                      "updatedAt"
+                                    ]
+                                  },
                                   "link": {
                                     "type": "string"
                                   },
@@ -12695,7 +13122,8 @@
                                   "articleCount",
                                   "followCount",
                                   "createdAt",
-                                  "updatedAt"
+                                  "updatedAt",
+                                  "parent"
                                 ]
                               },
                               "tags": {
@@ -12813,6 +13241,9 @@
                               },
                               "isFavorited": {
                                 "type": "boolean"
+                              },
+                              "userReaction": {
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -12847,7 +13278,8 @@
                               "isPaid",
                               "imageCount",
                               "reactionStats",
-                              "isFavorited"
+                              "isFavorited",
+                              "userReaction"
                             ]
                           }
                         },
@@ -13233,6 +13665,65 @@
                                       "parentId": {
                                         "type": "integer"
                                       },
+                                      "parent": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "integer"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "description": {
+                                            "type": "string"
+                                          },
+                                          "link": {
+                                            "type": "string"
+                                          },
+                                          "avatar": {
+                                            "type": "string"
+                                          },
+                                          "background": {
+                                            "type": "string"
+                                          },
+                                          "cover": {
+                                            "type": "string"
+                                          },
+                                          "sort": {
+                                            "type": "integer"
+                                          },
+                                          "status": {
+                                            "type": "string"
+                                          },
+                                          "articleCount": {
+                                            "type": "integer"
+                                          },
+                                          "followCount": {
+                                            "type": "integer"
+                                          },
+                                          "createdAt": {
+                                            "type": "string"
+                                          },
+                                          "updatedAt": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name",
+                                          "description",
+                                          "link",
+                                          "avatar",
+                                          "background",
+                                          "cover",
+                                          "sort",
+                                          "status",
+                                          "articleCount",
+                                          "followCount",
+                                          "createdAt",
+                                          "updatedAt"
+                                        ]
+                                      },
                                       "link": {
                                         "type": "string"
                                       },
@@ -13278,7 +13769,8 @@
                                       "articleCount",
                                       "followCount",
                                       "createdAt",
-                                      "updatedAt"
+                                      "updatedAt",
+                                      "parent"
                                     ]
                                   },
                                   "tags": {
@@ -13824,6 +14316,65 @@
                               "parentId": {
                                 "type": "integer"
                               },
+                              "parent": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "link": {
+                                    "type": "string"
+                                  },
+                                  "avatar": {
+                                    "type": "string"
+                                  },
+                                  "background": {
+                                    "type": "string"
+                                  },
+                                  "cover": {
+                                    "type": "string"
+                                  },
+                                  "sort": {
+                                    "type": "integer"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "description",
+                                  "link",
+                                  "avatar",
+                                  "background",
+                                  "cover",
+                                  "sort",
+                                  "status",
+                                  "articleCount",
+                                  "followCount",
+                                  "createdAt",
+                                  "updatedAt"
+                                ]
+                              },
                               "link": {
                                 "type": "string"
                               },
@@ -13869,7 +14420,8 @@
                               "articleCount",
                               "followCount",
                               "createdAt",
-                              "updatedAt"
+                              "updatedAt",
+                              "parent"
                             ]
                           },
                           "tags": {
@@ -14236,6 +14788,65 @@
                                 "parentId": {
                                   "type": "integer"
                                 },
+                                "parent": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer"
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "description": {
+                                      "type": "string"
+                                    },
+                                    "link": {
+                                      "type": "string"
+                                    },
+                                    "avatar": {
+                                      "type": "string"
+                                    },
+                                    "background": {
+                                      "type": "string"
+                                    },
+                                    "cover": {
+                                      "type": "string"
+                                    },
+                                    "sort": {
+                                      "type": "integer"
+                                    },
+                                    "status": {
+                                      "type": "string"
+                                    },
+                                    "articleCount": {
+                                      "type": "integer"
+                                    },
+                                    "followCount": {
+                                      "type": "integer"
+                                    },
+                                    "createdAt": {
+                                      "type": "string"
+                                    },
+                                    "updatedAt": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "description",
+                                    "link",
+                                    "avatar",
+                                    "background",
+                                    "cover",
+                                    "sort",
+                                    "status",
+                                    "articleCount",
+                                    "followCount",
+                                    "createdAt",
+                                    "updatedAt"
+                                  ]
+                                },
                                 "link": {
                                   "type": "string"
                                 },
@@ -14281,7 +14892,8 @@
                                 "articleCount",
                                 "followCount",
                                 "createdAt",
-                                "updatedAt"
+                                "updatedAt",
+                                "parent"
                               ]
                             },
                             "tags": {
@@ -14767,6 +15379,65 @@
                                   "parentId": {
                                     "type": "integer"
                                   },
+                                  "parent": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "link": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "link",
+                                      "avatar",
+                                      "background",
+                                      "cover",
+                                      "sort",
+                                      "status",
+                                      "articleCount",
+                                      "followCount",
+                                      "createdAt",
+                                      "updatedAt"
+                                    ]
+                                  },
                                   "link": {
                                     "type": "string"
                                   },
@@ -14812,7 +15483,8 @@
                                   "articleCount",
                                   "followCount",
                                   "createdAt",
-                                  "updatedAt"
+                                  "updatedAt",
+                                  "parent"
                                 ]
                               },
                               "tags": {
@@ -23969,7 +24641,8 @@
                 "required": [
                   "file"
                 ]
-              }
+              },
+              "examples": {}
             }
           },
           "required": true
@@ -24029,7 +24702,21 @@
                           "updatedAt": {
                             "type": "string"
                           }
-                        }
+                        },
+                        "required": [
+                          "id",
+                          "hash",
+                          "originalName",
+                          "storage",
+                          "filename",
+                          "path",
+                          "url",
+                          "size",
+                          "mimeType",
+                          "referenceCount",
+                          "createdAt",
+                          "updatedAt"
+                        ]
                       }
                     }
                   },

@@ -25,7 +25,7 @@ export default async function TopicDetailPage(props: TopicDetailPageProps) {
         <TopicArticleListClient
             initArticles={data?.data.data || []}
             initPage={2}
-            initTotal={data?.data.meta.total!}
+            initTotal={data?.data.meta.total || 0}
             id={id}
             fetchParams={{
                 query: {

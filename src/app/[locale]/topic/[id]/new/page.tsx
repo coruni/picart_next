@@ -1,7 +1,5 @@
 import { articleControllerFindAll } from "@/api";
 import { TopicArticleListClient } from "@/components/topic/TopicArticleList.client";
-import { generateTopicMetadata } from "@/lib/seo";
-import { Metadata } from "next";
 type TopicDetailNewPageProps = {
   params: Promise<{
     id: string;
@@ -28,7 +26,7 @@ export default async function TopicDetailNewPage(
     <TopicArticleListClient
       initArticles={data?.data.data || []}
       initPage={2}
-      initTotal={data?.data.meta.total!}
+      initTotal={data?.data.meta.total || 0}
       id={id}
       fetchParams={{
         query: {

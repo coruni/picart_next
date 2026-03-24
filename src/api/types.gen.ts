@@ -4444,6 +4444,21 @@ export type ArticleControllerFindAllResponses = {
                     name: string;
                     description: string;
                     parentId: number;
+                    parent: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        link: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
                     link: string;
                     avatar: string;
                     background: string;
@@ -4485,6 +4500,7 @@ export type ArticleControllerFindAllResponses = {
                     dislike: number;
                 };
                 isFavorited: boolean;
+                userReaction: string;
             }>;
             meta: {
                 total: number;
@@ -4647,6 +4663,21 @@ export type ArticleControllerFindOneResponses = {
                 name: string;
                 description: string;
                 parentId: number;
+                parent: {
+                    id: number;
+                    name: string;
+                    description: string;
+                    link: string;
+                    avatar: string;
+                    background: string;
+                    cover: string;
+                    sort: number;
+                    status: string;
+                    articleCount: number;
+                    followCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
                 link: string;
                 avatar: string;
                 background: string;
@@ -4658,7 +4689,19 @@ export type ArticleControllerFindOneResponses = {
                 createdAt: string;
                 updatedAt: string;
             };
-            tags: Array<string>;
+            tags: Array<{
+                id: number;
+                name: string;
+                description: string;
+                avatar: string;
+                background: string;
+                cover: string;
+                sort: number;
+                articleCount: number;
+                followCount: number;
+                createdAt: string;
+                updatedAt: string;
+            }>;
             downloads: Array<{
                 id?: number;
                 type?: string;
@@ -4685,6 +4728,7 @@ export type ArticleControllerFindOneResponses = {
                 angry: number;
                 dislike: number;
             };
+            userReaction: string;
         };
     };
 };
@@ -4918,6 +4962,21 @@ export type ArticleControllerSearchResponses = {
                     name: string;
                     description: string;
                     parentId: number;
+                    parent: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        link: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
                     link: string;
                     avatar: string;
                     background: string;
@@ -4959,6 +5018,7 @@ export type ArticleControllerSearchResponses = {
                     dislike: number;
                 };
                 isFavorited: boolean;
+                userReaction: string;
             }>;
             meta: {
                 total: number;
@@ -5058,6 +5118,21 @@ export type ArticleControllerFindRecommendationsResponses = {
                     name: string;
                     description: string;
                     parentId: number;
+                    parent: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        link: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
                     link: string;
                     avatar: string;
                     background: string;
@@ -5099,6 +5174,7 @@ export type ArticleControllerFindRecommendationsResponses = {
                     dislike: number;
                 };
                 isFavorited: boolean;
+                userReaction: string;
             }>;
             meta: {
                 total: number;
@@ -5210,6 +5286,21 @@ export type ArticleControllerFindByAuthorResponses = {
                     name: string;
                     description: string;
                     parentId: number;
+                    parent: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        link: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
                     link: string;
                     avatar: string;
                     background: string;
@@ -5251,6 +5342,7 @@ export type ArticleControllerFindByAuthorResponses = {
                     dislike: number;
                 };
                 isFavorited: boolean;
+                userReaction: string;
             }>;
             meta: {
                 total: number;
@@ -5386,6 +5478,21 @@ export type ArticleControllerGetLikedArticlesResponses = {
                     name: string;
                     description: string;
                     parentId: number;
+                    parent: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        link: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
                     link: string;
                     avatar: string;
                     background: string;
@@ -5427,6 +5534,7 @@ export type ArticleControllerGetLikedArticlesResponses = {
                     dislike: number;
                 };
                 isFavorited: boolean;
+                userReaction: string;
             }>;
             meta: {
                 total: number;
@@ -5537,6 +5645,21 @@ export type ArticleControllerGetUserBrowseHistoryResponses = {
                         name: string;
                         description: string;
                         parentId: number;
+                        parent: {
+                            id: number;
+                            name: string;
+                            description: string;
+                            link: string;
+                            avatar: string;
+                            background: string;
+                            cover: string;
+                            sort: number;
+                            status: string;
+                            articleCount: number;
+                            followCount: number;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
                         link: string;
                         avatar: string;
                         background: string;
@@ -5685,6 +5808,21 @@ export type ArticleControllerGetRecentBrowsedArticlesResponses = {
                 name: string;
                 description: string;
                 parentId: number;
+                parent: {
+                    id: number;
+                    name: string;
+                    description: string;
+                    link: string;
+                    avatar: string;
+                    background: string;
+                    cover: string;
+                    sort: number;
+                    status: string;
+                    articleCount: number;
+                    followCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
                 link: string;
                 avatar: string;
                 background: string;
@@ -5816,6 +5954,21 @@ export type ArticleControllerGetBrowseHistoryResponses = {
                     name: string;
                     description: string;
                     parentId: number;
+                    parent: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        link: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
                     link: string;
                     avatar: string;
                     background: string;
@@ -5939,6 +6092,21 @@ export type ArticleControllerGetFavoritedArticlesResponses = {
                     name: string;
                     description: string;
                     parentId: number;
+                    parent: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        link: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
                     link: string;
                     avatar: string;
                     background: string;
@@ -8791,18 +8959,18 @@ export type UploadControllerUploadFileResponses = {
         code: number;
         message: string;
         data: Array<{
-            id?: number;
-            hash?: string;
-            originalName?: string;
-            storage?: string;
-            filename?: string;
-            path?: string;
-            url?: string;
-            size?: number;
-            mimeType?: string;
-            referenceCount?: number;
-            createdAt?: string;
-            updatedAt?: string;
+            id: number;
+            hash: string;
+            originalName: string;
+            storage: string;
+            filename: string;
+            path: string;
+            url: string;
+            size: number;
+            mimeType: string;
+            referenceCount: number;
+            createdAt: string;
+            updatedAt: string;
         }>;
     };
 };
