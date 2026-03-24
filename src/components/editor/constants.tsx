@@ -31,6 +31,8 @@ import {
   ZoomIn,
   Copy,
   Trash2,
+  Unlink,
+  Pencil,
 } from "lucide-react";
 
 // 渲染图标组件为 HTML 字符串
@@ -53,6 +55,8 @@ export const customIcons = {
   left: renderIcon(AlignLeft, "bg-transparent! size-4", 16),
   center: renderIcon(AlignCenter, "bg-transparent! size-4", 16),
   right: renderIcon(AlignRight, "bg-transparent! size-4", 16),
+  "edit-link": renderIcon(Pencil, "bg-transparent! size-4", 16),
+  "remove-link": renderIcon(Unlink, "bg-transparent! size-4", 16),
 };
 
 export const defaultFormats = [

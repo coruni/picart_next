@@ -50,6 +50,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             loading = false,
             disabled,
             children,
+            type = "button",
             ...props
         },
         ref
@@ -80,6 +81,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         return (
             <button
                 ref={ref}
+                type={type}
                 className={cn(
                     baseStyles,
                     variants[variant],

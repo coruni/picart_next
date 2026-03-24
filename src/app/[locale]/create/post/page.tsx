@@ -32,16 +32,12 @@ type CreatePostPageProps = {
   }>;
 };
 
-// 生成metadata
-
 export default function CreatePostPage(props: CreatePostPageProps) {
   const coverEditorRef = useRef<AvatarEditor>(null);
 
   // Cover editor states
   const [showCoverEditor, setShowCoverEditor] = useState(false);
-  const [selectedCoverImage, setSelectedCoverImage] = useState<File | null>(
-    null,
-  );
+  const [selectedCoverImage, setSelectedCoverImage] = useState<File | null>(null);
   const [coverScale, setCoverScale] = useState(1);
   const [coverUploading, setCoverUploading] = useState(false);
 
@@ -49,6 +45,8 @@ export default function CreatePostPage(props: CreatePostPageProps) {
   const [parentCategories, setParentCategories] = useState<CategoryOption[]>([]);
   const [childCategories, setChildCategories] = useState<CategoryOption[]>([]);
   const [selectedParentId, setSelectedParentId] = useState<string>("");
+  // 独立控制子分类框的显示，不依赖 childCategories.length，避免搜索无结果时隐藏
+  const [showChildSelect, setShowChildSelect] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [parentSearching, setParentSearching] = useState(false);
   const [childSearching, setChildSearching] = useState(false);
@@ -56,6 +54,19 @@ export default function CreatePostPage(props: CreatePostPageProps) {
   // Store initial categories and children map in ref to avoid re-fetching
   const initialParentCategoriesRef = useRef<CategoryOption[]>([]);
   const childrenMapRef = useRef<Map<number, CategoryOption[]>>(new Map());
+
+  // Debounce timers for search，用 ref 避免闭包问题
+  const parentSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // 用 ref 跟踪请求序号，丢弃过期响应（防止竞态）
+  const childSearchSeqRef = useRef(0);
+  const parentSearchSeqRef = useRef(0);
+
+
+  // 记录上一次实际发起请求的 query，相同值直接跳过
+  const lastParentQueryRef = useRef<string | null>(null);
+  const lastChildQueryRef = useRef<string | null>(null);
 
   const {
     values,
@@ -93,7 +104,6 @@ export default function CreatePostPage(props: CreatePostPageProps) {
       try {
         const response = await categoryControllerFindAll();
         if (response.data?.data?.data) {
-          // 只获取父分类（parentId 为 0 或 null）
           const parents = response.data.data.data
             .filter((cat) => !cat.parentId || cat.parentId === 0)
             .map((cat) => ({
@@ -102,10 +112,8 @@ export default function CreatePostPage(props: CreatePostPageProps) {
               avatar: cat.avatar || undefined,
             }));
           setParentCategories(parents);
-          // 缓存初始父分类
           initialParentCategoriesRef.current = parents;
 
-          // 存储所有分类的 children 映射
           response.data.data.data.forEach((cat) => {
             if (cat.children && cat.children.length > 0) {
               childrenMapRef.current.set(
@@ -131,12 +139,14 @@ export default function CreatePostPage(props: CreatePostPageProps) {
   // Handle parent category change
   const handleParentCategoryChange = (value: string) => {
     setSelectedParentId(value);
-    // 获取子分类
     const parentId = parseInt(value, 10);
     const children = childrenMapRef.current.get(parentId) || [];
     setChildCategories(children);
-    // 重置子分类选择
     setFieldValues({ categoryId: "" });
+    // 有子分类数据时才显示子分类框
+    setShowChildSelect(children.length > 0);
+    // 重置子分类搜索去重记录
+    lastChildQueryRef.current = null;
   };
 
   // Handle child category change
@@ -144,86 +154,129 @@ export default function CreatePostPage(props: CreatePostPageProps) {
     setFieldValues({ categoryId: value });
   };
 
-  // Search parent categories
-  const handleSearchParentCategories = async (query: string) => {
+  // Search parent categories — debounced 300ms，竞态安全
+  const handleSearchParentCategories = (query: string) => {
+    // query 未变化时跳过，防止重渲染引起的重复调用
+    if (query === lastParentQueryRef.current) return;
+    lastParentQueryRef.current = query;
+
+    if (parentSearchTimerRef.current) {
+      clearTimeout(parentSearchTimerRef.current);
+    }
+
     if (!query.trim()) {
-      // 如果搜索词为空，使用缓存的初始父分类
       setParentCategories(initialParentCategoriesRef.current);
       return;
     }
 
-    setParentSearching(true);
-    try {
-      const response = await categoryControllerFindAll({
-        query: { name: query },
-      });
-      if (response.data?.data?.data) {
-        const parents = response.data.data.data
-          .filter((cat) => !cat.parentId || cat.parentId === 0)
-          .map((cat) => ({
-            value: String(cat.id),
-            label: cat.name,
-            avatar: cat.avatar || undefined,
-          }));
-        setParentCategories(parents);
+    parentSearchTimerRef.current = setTimeout(async () => {
+      const seq = ++parentSearchSeqRef.current;
+      setParentSearching(true);
+      try {
+        const response = await categoryControllerFindAll({
+          query: { name: query },
+        });
+        // 丢弃过期响应
+        if (seq !== parentSearchSeqRef.current) return;
+        if (response.data?.data?.data) {
+          const parents = response.data.data.data
+            .filter((cat) => !cat.parentId || cat.parentId === 0)
+            .map((cat) => ({
+              value: String(cat.id),
+              label: cat.name,
+              avatar: cat.avatar || undefined,
+            }));
+          setParentCategories(parents);
+        }
+      } catch (error) {
+        console.error("Failed to search categories:", error);
+      } finally {
+        if (seq === parentSearchSeqRef.current) {
+          setParentSearching(false);
+        }
       }
-    } catch (error) {
-      console.error("Failed to search categories:", error);
-    } finally {
-      setParentSearching(false);
-    }
+    }, 300);
   };
 
-  // Search child categories
-  const handleSearchChildCategories = async (query: string) => {
+  // Search child categories — debounced 300ms，竞态安全
+  // 搜索无结果时保留子分类框（showChildSelect 不变），仅清空列表
+  const handleSearchChildCategories = (query: string) => {
     if (!selectedParentId) return;
 
+    // query 未变化时跳过，防止重渲染引起的重复调用
+    if (query === lastChildQueryRef.current) return;
+    lastChildQueryRef.current = query;
+
+    if (childSearchTimerRef.current) {
+      clearTimeout(childSearchTimerRef.current);
+    }
+
     if (!query.trim()) {
-      // 如果搜索词为空，恢复缓存的子分类
+      // 恢复缓存的子分类列表，同时保留当前已选中项
       const parentId = parseInt(selectedParentId, 10);
-      const children = childrenMapRef.current.get(parentId) || [];
-      setChildCategories(children);
+      const cached = childrenMapRef.current.get(parentId) || [];
+      const currentSelectedId = values.categoryId;
+      if (currentSelectedId && !cached.find((c) => c.value === currentSelectedId)) {
+        const selectedChild = childCategories.find((c) => c.value === currentSelectedId);
+        if (selectedChild) {
+          setChildCategories([...cached, selectedChild]);
+          return;
+        }
+      }
+      setChildCategories(cached);
       return;
     }
 
-    setChildSearching(true);
-    try {
-      const parentId = parseInt(selectedParentId, 10);
-      const response = await categoryControllerFindAll({
-        query: { name: query, parentId },
-      });
-      if (response.data?.data?.data) {
-        // 搜索结果是父分类，需要从 children 中过滤
-        const parent = response.data.data.data.find(
-          (cat) => cat.id === parentId,
-        );
-        if (parent?.children) {
-          const filteredChildren = parent.children
-            .filter((child) =>
-              child.name.toLowerCase().includes(query.toLowerCase()),
-            )
-            .map((child) => ({
-              value: String(child.id),
-              label: child.name,
-              avatar: child.avatar || undefined,
+    childSearchTimerRef.current = setTimeout(async () => {
+      const seq = ++childSearchSeqRef.current;
+      setChildSearching(true);
+      try {
+        const parentId = parseInt(selectedParentId, 10);
+        const currentSelectedId = values.categoryId;
+        const response = await categoryControllerFindAll({
+          query: { name: query, parentId },
+        });
+        // 丢弃过期响应
+        if (seq !== childSearchSeqRef.current) return;
+        if (response.data?.data?.data) {
+          const results = response.data.data.data
+            .filter((cat) => cat.parentId === parentId)
+            .map((cat) => ({
+              value: String(cat.id),
+              label: cat.name,
+              avatar: cat.avatar || undefined,
             }));
-          setChildCategories(filteredChildren);
-        } else {
-          setChildCategories([]);
+
+          // 确保当前选中项始终在列表中，避免选中态丢失
+          if (
+            currentSelectedId &&
+            !results.find((c) => c.value === currentSelectedId)
+          ) {
+            const selectedChild = childCategories.find(
+              (c) => c.value === currentSelectedId,
+            );
+            if (selectedChild) {
+              results.push(selectedChild);
+            }
+          }
+
+          // 无论搜索结果是否为空，都更新列表；showChildSelect 不改变
+          setChildCategories(results);
+        }
+      } catch (error) {
+        console.error("Failed to search child categories:", error);
+      } finally {
+        if (seq === childSearchSeqRef.current) {
+          setChildSearching(false);
         }
       }
-    } catch (error) {
-      console.error("Failed to search child categories:", error);
-    } finally {
-      setChildSearching(false);
-    }
+    }, 300);
   };
 
   // Cover handlers
   const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setSelectedCoverImage(file);
     setShowCoverEditor(true);
     setCoverScale(1);
@@ -238,7 +291,6 @@ export default function CreatePostPage(props: CreatePostPageProps) {
 
   const handleSaveCover = async () => {
     if (!coverEditorRef.current || !selectedCoverImage) return;
-
     setCoverUploading(true);
     try {
       const canvas = coverEditorRef.current.getImageScaledToCanvas();
@@ -247,17 +299,12 @@ export default function CreatePostPage(props: CreatePostPageProps) {
           resolve(blob!);
         }, "image/png");
       });
-
       const croppedFile = new File([blob], selectedCoverImage.name, {
         type: "image/png",
       });
-
       const { data } = await uploadControllerUploadFile({
-        body: {
-          file: croppedFile,
-        },
+        body: { file: croppedFile },
       });
-
       if (data?.data?.[0]) {
         setFieldValues({ cover: data.data[0].url! });
         setShowCoverEditor(false);
@@ -299,21 +346,16 @@ export default function CreatePostPage(props: CreatePostPageProps) {
                   className="hidden"
                   id="cover-upload"
                 />
-                <div
-                  className={cn(
-                    "flex items-center gap-4",
-                    values.cover && "-mx-6",
-                  )}
-                >
+                <div className={cn("flex items-center gap-4", values.cover && "-mx-6")}>
                   {values.cover ? (
-                    <div className="relative w-full aspect-21/9 ">
+                    <div className="relative w-full aspect-21/9">
                       <Image
                         fill
                         src={values.cover}
                         alt="封面预览"
                         className="w-full h-full object-cover"
                       />
-                      <div className=" absolute right-6 bottom-4 flex items-center space-x-6">
+                      <div className="absolute right-6 bottom-4 flex items-center space-x-6">
                         <div
                           className={cn(
                             "bg-black/65 text-white font-semibold group hover:bg-primary rounded-full",
@@ -370,10 +412,7 @@ export default function CreatePostPage(props: CreatePostPageProps) {
                   className="min-h-75"
                 />
               </FormField>
-              <FormField
-                name="categoryId"
-                label="发布至"
-                className="pt-4">
+              <FormField name="categoryId" label="发布至" className="pt-4">
                 <div className="flex items-center gap-2">
                   <CategorySelect
                     value={selectedParentId}
@@ -385,7 +424,8 @@ export default function CreatePostPage(props: CreatePostPageProps) {
                     onSearch={handleSearchParentCategories}
                     className="flex-1"
                   />
-                  {selectedParentId && childCategories.length > 0 && (
+                  {/* 用独立的 showChildSelect 控制显隐，与搜索结果数量解耦 */}
+                  {selectedParentId && showChildSelect && (
                     <>
                       <span className="relative w-3 h-3 shrink-0 before:absolute mx-1 before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-[#b2bdce]" />
                       <CategorySelect
@@ -401,6 +441,18 @@ export default function CreatePostPage(props: CreatePostPageProps) {
                   )}
                 </div>
               </FormField>
+              <div className="mt-12 max-w-xl flex justify-center items-center mx-auto gap-8">
+                <Button variant="default" className="w-full h-11 rounded-full">
+                  预览
+                </Button>
+                <Button
+                  type="submit"
+                  variant="default"
+                  className="w-full h-11 rounded-full"
+                >
+                  发布
+                </Button>
+              </div>
             </Form>
           </div>
         </div>
@@ -412,11 +464,9 @@ export default function CreatePostPage(props: CreatePostPageProps) {
           <DialogHeader>
             <DialogTitle className="text-sm">裁剪封面</DialogTitle>
           </DialogHeader>
-
           <div className="flex flex-col gap-4 py-4">
             {selectedCoverImage && (
               <>
-                {/* Crop area */}
                 <div
                   className="w-full aspect-21/9 overflow-hidden cursor-move touch-none"
                   onWheel={handleCoverWheel}
@@ -434,11 +484,9 @@ export default function CreatePostPage(props: CreatePostPageProps) {
                     style={{ width: "100%", height: "100%" }}
                   />
                 </div>
-
                 <p className="text-xs text-gray-500 text-center">
                   滚轮缩放 · 拖动调整位置
                 </p>
-
                 <div className="flex gap-3 w-full">
                   <Button
                     type="button"

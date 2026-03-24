@@ -11,6 +11,7 @@ import "@enzedonline/quill-blot-formatter2/dist/css/quill-blot-formatter2.css";
 
 import { CustomImageBlot } from "./blots/CustomImageBlot";
 import { CustomImageSpec } from "./CustomImageSpec";
+import { CustomLinkSpec } from "./CustomLinkSpec";
 import {
   quillOverrideStyles,
   defaultFormats,
@@ -62,7 +63,6 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       null,
     );
     const quillRef = useRef<Quill | null>(null);
-    const linkToolbarRef = useRef<HTMLDivElement | null>(null);
     const uploadAbortControllerRef = useRef<AbortController | null>(null);
 
     // 初始化 Quill
@@ -88,7 +88,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               userOnly: true,
             },
             blotFormatter2: {
-              specs: [CustomImageSpec as unknown as typeof BlotSpec],
+              specs: [CustomImageSpec as unknown as typeof BlotSpec, CustomLinkSpec as unknown as typeof BlotSpec],
               toolbar: {
                 icons: customIcons,
                 mainStyle: {
@@ -103,6 +103,8 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                   padding: "8px 16px",
                   background: "rgba(0, 0, 0, 0.85)",
                   borderRadius: "8px",
+                  whiteSpace: "nowrap",
+                  minWidth: "auto",
                 },
                 buttonStyle: {
                   display: "flex",
@@ -399,119 +401,15 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quill.root.addEventListener("keydown", handleCaptionKeyDown, true);
 
-        // 监听链接点击
-        const handleLinkClick = (e: MouseEvent) => {
-          const target = e.target as HTMLElement;
-          const link = target.closest("a");
-          if (link && quill.root.contains(link)) {
-            e.preventDefault();
-            e.stopPropagation();
-            const href = link.getAttribute("href") || "";
-            const text = link.textContent || "";
-            // 找到链接在文档中的位置
-            const blot = quill.scroll.find(link);
-            if (blot) {
-              const offset = blot.offset(quill.scroll);
-              const length = blot.length();
-              savedSelection.current = { index: offset, length };
-              quill.setSelection(offset, length);
-            }
-            setLinkUrl(href);
-            setLinkText(text);
-
-            // 创建或显示 link toolbar
-            showLinkToolbar(link, href);
-          }
+        // 监听 link-edit 事件（由 blotFormatter2 的 EditLinkAction 触发）
+        const handleLinkEdit = (e: Event) => {
+          const customEvent = e as CustomEvent<{ href: string; text: string }>;
+          const { href, text } = customEvent.detail;
+          setLinkUrl(href);
+          setLinkText(text);
+          setShowLinkModal(true);
         };
-
-        // 显示链接 toolbar
-        const showLinkToolbar = (linkEl: HTMLAnchorElement, href: string) => {
-          // 移除已存在的 toolbar
-          const existingToolbar = document.getElementById("link-toolbar");
-          if (existingToolbar) {
-            existingToolbar.remove();
-          }
-
-          // 创建 toolbar
-          const toolbar = document.createElement("div");
-          toolbar.id = "link-toolbar";
-          toolbar.className = "link-toolbar";
-
-          // 链接地址
-          const linkDisplay = document.createElement("a");
-          linkDisplay.href = href;
-          linkDisplay.target = "_blank";
-          linkDisplay.textContent = href;
-          toolbar.appendChild(linkDisplay);
-
-          // 分隔符
-          const divider = document.createElement("span");
-          divider.className = "divider";
-          toolbar.appendChild(divider);
-
-          // 编辑按钮
-          const editBtn = document.createElement("button");
-          editBtn.innerHTML =
-            '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg><span>编辑</span>';
-          editBtn.onclick = (e) => {
-            e.stopPropagation();
-            toolbar.remove();
-            setShowLinkModal(true);
-          };
-          toolbar.appendChild(editBtn);
-
-          // 移除按钮
-          const removeBtn = document.createElement("button");
-          removeBtn.className = "danger";
-          removeBtn.innerHTML =
-            '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg><span>移除</span>';
-          removeBtn.onclick = (e) => {
-            e.stopPropagation();
-            if (savedSelection.current) {
-              quill.formatText(
-                savedSelection.current.index,
-                savedSelection.current.length,
-                "link",
-                false,
-              );
-            }
-            toolbar.remove();
-            savedSelection.current = null;
-          };
-          toolbar.appendChild(removeBtn);
-
-          // 计算位置
-          const linkRect = linkEl.getBoundingClientRect();
-
-          document.body.appendChild(toolbar);
-          linkToolbarRef.current = toolbar;
-
-          // 定位 toolbar
-          const toolbarRect = toolbar.getBoundingClientRect();
-          let left = linkRect.left + linkRect.width / 2 - toolbarRect.width / 2;
-          let top = linkRect.bottom + 8;
-
-          // 防止超出屏幕
-          if (left < 10) left = 10;
-          if (left + toolbarRect.width > window.innerWidth - 10) {
-            left = window.innerWidth - toolbarRect.width - 10;
-          }
-
-          toolbar.style.left = `${left}px`;
-          toolbar.style.top = `${top}px`;
-        };
-
-        // 点击其他地方关闭 toolbar
-        const handleClickOutsideToolbar = (e: MouseEvent) => {
-          const toolbar = document.getElementById("link-toolbar");
-          if (toolbar && !toolbar.contains(e.target as Node)) {
-            toolbar.remove();
-            savedSelection.current = null;
-          }
-        };
-
-        document.addEventListener("click", handleClickOutsideToolbar);
-        quill.root.addEventListener("click", handleLinkClick);
+        document.addEventListener("link-edit", handleLinkEdit);
       }
     }, [ref, placeholder, readOnly, onChange, value]);
 
@@ -592,9 +490,10 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             "[&_.ql-toolbar button]:w-8 [&_.ql-toolbar button]:h-8 [&_.ql-toolbar button]:p-1 [&_.ql-toolbar button]:rounded [&_.ql-toolbar button]:flex [&_.ql-toolbar button]:items-center [&_.ql-toolbar button]:justify-center [&_.ql-toolbar button]:border-0 [&_.ql-toolbar button]:bg-transparent [&_.ql-toolbar button svg]:h-[auto]! [&_.ql-toolbar button svg]:!h-auto",
             "[&_.ql-toolbar button:hover]:bg-accent [&_.ql-toolbar button:hover]:text-accent-foreground",
             "[&_.ql-toolbar button.ql-active]:bg-primary [&_.ql-toolbar button.ql-active]:text-primary-foreground",
-            "[&_.ql-container]:border-0 [&_.ql-container]:rounded-b-lg [&_.ql-container]:min-h-50 [&_.ql-container]:overflow-visible",
-            "[&_.ql-editor]:min-h-50 [&_.ql-editor]:text-sm [&_.ql-editor]:overflow-visible",
+            "[&_.ql-container]:border-0 [&_.ql-container]:rounded-b-lg [&_.ql-container]:min-h-100 [&_.ql-container]:overflow-visible",
+            "[&_.ql-editor]:min-h-100! [&_.ql-editor]:text-sm",
             "[&_.ql-editor.ql-blank::before]:text-muted-foreground [&_.ql-editor.ql-blank::before]:font-normal",
+            
             className,
           )}
         >

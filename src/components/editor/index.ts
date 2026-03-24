@@ -1,10 +1,13 @@
 export { CustomImageBlot } from "./blots/CustomImageBlot";
 export { CustomImageSpec } from "./CustomImageSpec";
+export { CustomLinkSpec } from "./CustomLinkSpec";
 export {
   ReplaceAction,
   ViewAction,
   CopyAction,
   DeleteAction,
+  EditLinkAction,
+  RemoveLinkAction,
 } from "./actions";
 export {
   renderIcon,

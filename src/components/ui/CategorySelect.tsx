@@ -51,15 +51,19 @@ export const CategorySelect = ({
   const selectedOptionRef = useRef<CategoryOption | null>(null);
 
   // 从 options 中查找选中项，或使用缓存的选中项
-  const selectedOption = options.find((opt) => opt.value === value) || selectedOptionRef.current;
+  // 如果 options 中没有找到匹配的，但 ref 中有值，也需要保留（搜索后列表变化的情况）
+  const foundInOptions = options.find((opt) => opt.value === value);
 
-  // 当 value 变化时，更新缓存的选中项
-  useEffect(() => {
+  // 始终保持 ref 更新，特别是当 value 存在时
+  if (value && selectedOptionRef.current?.value !== value) {
+    // 如果 ref 中没有当前值，尝试从 props 找到
     const found = options.find((opt) => opt.value === value);
     if (found) {
       selectedOptionRef.current = found;
     }
-  }, [value, options]);
+  }
+
+  const selectedOption = foundInOptions || selectedOptionRef.current;
 
   // 点击外部关闭
   useEffect(() => {
@@ -111,7 +115,7 @@ export const CategorySelect = ({
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         className={cn(
-          "w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer",
+          "w-full h-10 rounded-lg border border-border cursor-pointer",
           "px-3 py-2 text-sm text-left",
           "focus:outline-none focus:ring-primary focus:border-primary",
           "hover:border-primary transition-colors",

@@ -8,6 +8,7 @@ import {
   headerOptions,
   icons,
 } from "./constants";
+import { X } from "lucide-react";
 
 const {
   Undo2,
@@ -23,8 +24,6 @@ const {
   Palette,
   Highlighter,
   AlignLeft,
-  AlignCenter,
-  AlignRight,
   ListOrdered,
   List,
   Plus,
@@ -91,7 +90,7 @@ export const renderToolbar = ({
 
     const dropdown = document.createElement("div");
     dropdown.className =
-      "absolute top-full left-0 z-50 mt-2 bg-card border border-border rounded-xl shadow-lg p-3 hidden";
+      "absolute top-full left-0 z-50 mt-2 bg-card border border-border rounded-xl shadow-lg p-3 hidden w-48";
     dropdown.id = `dropdown-${title}`;
 
     // 标题
@@ -107,9 +106,8 @@ export const renderToolbar = ({
     // 第一个是取消/移除颜色
     const removeBtn = document.createElement("button");
     removeBtn.className =
-      "w-5! h-5! flex-none rounded flex items-center justify-center bg-muted hover:bg-accent border border-border";
-    removeBtn.innerHTML =
-      '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+      "w-5! h-5! flex-none rounded flex items-center justify-center bg-muted hover:bg-accent border! border-border!";
+    removeBtn.innerHTML = renderIcon(X);
     removeBtn.onclick = () => {
       onSelect(false);
       dropdown.classList.add("hidden");
@@ -138,16 +136,16 @@ export const renderToolbar = ({
 
     // 十六进制输入
     const hexInputContainer = document.createElement("div");
-    hexInputContainer.className = "flex items-center gap-1";
+    hexInputContainer.className = "flex items-center gap-1 w-full";
     const hexInput = document.createElement("input");
     hexInput.type = "text";
-    hexInput.placeholder = "输入十六进制颜色";
+    hexInput.placeholder = "#000000";
     hexInput.className =
-      "flex h-6 flex-1 rounded-md border bg-card px-2 py-1 text-sm placeholder:text-gray-400 focus:outline-none transition-colors duration-200 border-gray-300 hover:border-primary focus:border-primary";
+      "flex h-6 w-16 rounded-md border bg-card px-2 py-1 text-sm placeholder:text-gray-400 focus:outline-none transition-colors duration-200 border-gray-300 hover:border-primary focus:border-primary flex-shrink-0 flex-1";
     hexInput.maxLength = 7;
     const hexBtn = document.createElement("button");
     hexBtn.className =
-      "inline-flex items-center justify-center gap-2 rounded-md border! border-primary! font-medium transition-all duration-200 focus:outline-none bg-primary text-primary! hover:bg-primary/20! px-3 h-6! text-sm";
+      "inline-flex items-center justify-center rounded-md border! border-primary! font-medium transition-all duration-200 focus:outline-none bg-primary text-primary! hover:bg-primary/20! px-2 h-6! text-xs whitespace-nowrap flex-shrink-0";
     hexBtn.textContent = "确定";
     hexBtn.onclick = () => {
       const hex = hexInput.value.trim();
@@ -197,7 +195,7 @@ export const renderToolbar = ({
 
   // 分隔符
   const divider1 = document.createElement("span");
-  divider1.className = "w-px h-4 bg-border mx-1";
+  divider1.className = "w-px h-4 bg-[#eceff4] mx-1";
   row1.appendChild(divider1);
 
   // Emoji, Image
@@ -303,7 +301,7 @@ export const renderToolbar = ({
 
   // 分隔符
   const divider2 = document.createElement("span");
-  divider2.className = "w-px h-4 bg-border mx-1";
+  divider2.className = "w-px h-4 bg-[#eceff4] mx-1";
   row2.appendChild(divider2);
 
   // 字号下拉
@@ -520,5 +518,35 @@ export const renderToolbar = ({
   const editorContainer = container.querySelector(".editor-container");
   if (editorContainer) {
     container.insertBefore(toolbar, editorContainer);
+
+    // 获取 toolbar 的初始位置
+    const toolbarTop = toolbar.offsetTop;
+
+    // 监听滚动，让 toolbar 固定在视口上方 60px
+    window.addEventListener("scroll", () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      if (scrollTop > toolbarTop) {
+        // 获取容器的宽度和左边距
+        const containerWidth = container.offsetWidth;
+        const containerLeft =
+          container.getBoundingClientRect().left + window.scrollX;
+
+        toolbar.style.position = "fixed";
+        toolbar.style.top = "60px";
+        toolbar.style.zIndex = "50";
+        toolbar.style.left = `${containerLeft}px`;
+        toolbar.style.width = `${containerWidth}px`;
+        toolbar.style.background = "var(--muted)";
+        toolbar.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+      } else {
+        toolbar.style.position = "relative";
+        toolbar.style.top = "auto";
+        toolbar.style.zIndex = "auto";
+        toolbar.style.left = "auto";
+        toolbar.style.width = "auto";
+        toolbar.style.background = "";
+        toolbar.style.boxShadow = "";
+      }
+    });
   }
 };

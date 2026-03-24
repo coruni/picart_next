@@ -253,9 +253,28 @@ export const quillOverrideStyles = `
   .image-upload-pill button:hover {
     color: #ff6b6b;
   }
-  /* BlotFormatter2 Toolbar 美化 */
+  /* BlotFormatter2 链接 Toolbar 固定宽度 */
+  .blot-formatter__overlay {
+    position: absolute !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    left: auto !important;
+    right: auto !important;
+  }
+  /* 强制 toolbar 宽度固定 */
   .blot-formatter__toolbar {
     position: relative !important;
+    flex-wrap: nowrap !important;
+    width: auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+    transform: translateX(-50%) !important;
+    left: 50% !important;
+    margin-left: 0 !important;
   }
   .blot-formatter__toolbar::after {
     content: '' !important;
@@ -266,8 +285,17 @@ export const quillOverrideStyles = `
     border: 6px solid transparent !important;
     border-top-color: rgba(0, 0, 0, 0.8) !important;
   }
-  .blot-formatter__toolbar span {
-    background: transparent !important;
+  .blot-formatter__toolbar > span {
+    flex-shrink: 0 !important;
+    flex-grow: 0 !important;
+    flex-basis: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   .blot-formatter__toolbar span:hover {
     background: rgba(255, 255, 255, 0.15) !important;
@@ -276,7 +304,8 @@ export const quillOverrideStyles = `
     color: white !important;
     background: transparent !important;
   }
-  .blot-formatter__overlay {
+  /* 图片 overlay 样式 */
+  .blot-formatter__overlay:not(:empty) {
     border: 2px solid var(--primary) !important;
     border-radius: 8px !important;
     background: transparent !important;
