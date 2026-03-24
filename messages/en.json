@@ -245,5 +245,49 @@
       "backgroundEditorHint": "Drag to reposition, scroll to zoom",
       "selectImage": "Select Image"
     }
+  },
+  "editor": {
+    "toolbar": {
+      "undo": "Undo",
+      "redo": "Redo",
+      "emoji": "Emoji",
+      "emojiPrompt": "Enter emoji:",
+      "image": "Image",
+      "video": "Video",
+      "more": "More",
+      "bold": "Bold",
+      "italic": "Italic",
+      "strike": "Strikethrough",
+      "underline": "Underline",
+      "fontSize": "Font Size",
+      "textColor": "Text Color",
+      "bgColor": "Background Color",
+      "align": "Align",
+      "alignDefault": "Default",
+      "alignCenter": "Center",
+      "alignRight": "Right",
+      "list": "List",
+      "ordered": "Ordered",
+      "bullet": "Bullet",
+      "header": "Header",
+      "link": "Link",
+      "clean": "Clear Formatting",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "insert": "Insert"
+    },
+    "modal": {
+      "insertVideo": "Insert Video",
+      "videoUrlPlaceholder": "Enter video URL",
+      "insertLink": "Insert Link",
+      "linkTextPlaceholder": "Link text (optional, auto-filled when text is selected)",
+      "linkUrlPlaceholder": "Enter link URL"
+    },
+    "upload": {
+      "uploading": "Uploading...",
+      "uploadFailed": "Upload failed",
+      "percent": "{percent}%"
+    },
+    "placeholder": "Enter content here"
   }
 }

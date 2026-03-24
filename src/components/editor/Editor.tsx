@@ -1,6 +1,7 @@
 "use client";
 
 import { forwardRef, useEffect, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { SizeClass, SizeStyle } from "quill/formats/size";
@@ -47,12 +48,14 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     {
       value,
       onChange,
-      placeholder = "请输入内容",
+      placeholder: placeholderProp,
       className,
       readOnly = false,
     },
     ref,
   ) => {
+    const t = useTranslations("editor");
+    const placeholder = placeholderProp ?? t("placeholder");
     const containerRef = useRef<HTMLDivElement>(null);
     const [showVideoModal, setShowVideoModal] = useState(false);
     const [videoUrl, setVideoUrl] = useState("");
@@ -152,6 +155,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         renderToolbar({
           quill,
           container,
+          t: (key: string) => t(`toolbar.${key}`),
           onVideoClick: () => setShowVideoModal(true),
           onLinkClick: () => {
             const selection = quill.getSelection();
@@ -503,13 +507,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           <Dialog open={showVideoModal} onOpenChange={setShowVideoModal}>
             <DialogContent className="max-w-2xl pt-4!">
               <DialogHeader>
-                <DialogTitle className="text-sm">插入视频</DialogTitle>
+                <DialogTitle className="text-sm">{t("modal.insertVideo")}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <Input
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
-                  placeholder="请输入视频链接"
+                  placeholder={t("modal.videoUrlPlaceholder")}
                   fullWidth
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleInsertVideo();
@@ -520,10 +524,10 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     variant="ghost"
                     onClick={() => setShowVideoModal(false)}
                   >
-                    取消
+                    {t("toolbar.cancel")}
                   </Button>
                   <Button variant="primary" onClick={handleInsertVideo}>
-                    插入
+                    {t("toolbar.insert")}
                   </Button>
                 </div>
               </div>
@@ -544,19 +548,19 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           >
             <DialogContent className="max-w-2xl pt-4!">
               <DialogHeader>
-                <DialogTitle className="text-sm">插入链接</DialogTitle>
+                <DialogTitle className="text-sm">{t("modal.insertLink")}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <Input
                   value={linkText}
                   onChange={(e) => setLinkText(e.target.value)}
-                  placeholder="链接文字（可选，选中文字时自动填充）"
+                  placeholder={t("modal.linkTextPlaceholder")}
                   fullWidth
                 />
                 <Input
                   value={linkUrl}
                   onChange={(e) => setLinkUrl(e.target.value)}
-                  placeholder="请输入链接地址"
+                  placeholder={t("modal.linkUrlPlaceholder")}
                   fullWidth
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleInsertLink();
@@ -573,14 +577,14 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     }}
                     className="rounded-full bg-[#EDF1F7] hover:bg-[#8592A3] text-muted"
                   >
-                    取消
+                    {t("toolbar.cancel")}
                   </Button>
                   <Button
                     variant="default"
                     className="rounded-full"
                     onClick={handleInsertLink}
                   >
-                    确定
+                    {t("toolbar.confirm")}
                   </Button>
                 </div>
               </div>

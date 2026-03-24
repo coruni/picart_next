@@ -2,10 +2,7 @@ import Quill from "quill";
 import {
   renderIcon,
   fontSizes,
-  moreOptions,
   colorPalette,
-  alignOptions,
-  headerOptions,
   icons,
 } from "./constants";
 import { X } from "lucide-react";
@@ -24,15 +21,24 @@ const {
   Palette,
   Highlighter,
   AlignLeft,
+  AlignCenter,
+  AlignRight,
   ListOrdered,
   List,
   Plus,
   ChevronDown,
+  Heading1,
+  Heading2,
+  Heading3,
+  Heading4,
+  Link,
+  RemoveFormatting,
 } = icons;
 
 interface RenderToolbarOptions {
   quill: Quill;
   container: HTMLElement;
+  t: (key: string) => string;
   onVideoClick: () => void;
   onLinkClick: () => void;
   onImageUpload: () => void;
@@ -41,6 +47,7 @@ interface RenderToolbarOptions {
 export const renderToolbar = ({
   quill,
   container,
+  t,
   onVideoClick,
   onLinkClick,
   onImageUpload,
@@ -83,6 +90,7 @@ export const renderToolbar = ({
   const createColorDropdown = (
     triggerBtn: HTMLButtonElement,
     title: string,
+    dropdownKey: string,
     onSelect: (color: string | false) => void,
   ) => {
     const dropdownContainer = document.createElement("div");
@@ -91,7 +99,7 @@ export const renderToolbar = ({
     const dropdown = document.createElement("div");
     dropdown.className =
       "absolute top-full left-0 z-50 mt-2 bg-card border border-border rounded-xl shadow-lg p-3 hidden w-48";
-    dropdown.id = `dropdown-${title}`;
+    dropdown.id = `dropdown-${dropdownKey}`;
 
     // 标题
     const titleEl = document.createElement("div");
@@ -146,7 +154,7 @@ export const renderToolbar = ({
     const hexBtn = document.createElement("button");
     hexBtn.className =
       "inline-flex items-center justify-center rounded-md border! border-primary! font-medium transition-all duration-200 focus:outline-none bg-primary text-primary! hover:bg-primary/20! px-2 h-6! text-xs whitespace-nowrap flex-shrink-0";
-    hexBtn.textContent = "确定";
+    hexBtn.textContent = t("confirm");
     hexBtn.onclick = () => {
       const hex = hexInput.value.trim();
       if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
@@ -168,7 +176,7 @@ export const renderToolbar = ({
     dropdownContainer.appendChild(tooltip);
 
     triggerBtn.onclick = (e) => {
-      toggleDropdown(`dropdown-${title}`, e);
+      toggleDropdown(`dropdown-${dropdownKey}`, e);
     };
 
     return dropdownContainer;
@@ -184,14 +192,14 @@ export const renderToolbar = ({
   undoBtn.type = "button";
   undoBtn.innerHTML = renderIcon(Undo2);
   undoBtn.onclick = () => quill.history.undo();
-  row1.appendChild(createTooltipButton(undoBtn, "撤销"));
+  row1.appendChild(createTooltipButton(undoBtn, t("undo")));
 
   const redoBtn = document.createElement("button");
   redoBtn.className = "ql-redo";
   redoBtn.type = "button";
   redoBtn.innerHTML = renderIcon(Redo2);
   redoBtn.onclick = () => quill.history.redo();
-  row1.appendChild(createTooltipButton(redoBtn, "重做"));
+  row1.appendChild(createTooltipButton(redoBtn, t("redo")));
 
   // 分隔符
   const divider1 = document.createElement("span");
@@ -204,20 +212,20 @@ export const renderToolbar = ({
   emojiBtn.type = "button";
   emojiBtn.innerHTML = renderIcon(Smile);
   emojiBtn.onclick = () => {
-    const emoji = prompt("输入 emoji:");
+    const emoji = prompt(t("emojiPrompt"));
     if (emoji) {
       const range = quill.getSelection();
       quill.insertText(range?.index || 0, emoji);
     }
   };
-  row1.appendChild(createTooltipButton(emojiBtn, "表情"));
+  row1.appendChild(createTooltipButton(emojiBtn, t("emoji")));
 
   const imageBtn = document.createElement("button");
   imageBtn.className = "ql-image";
   imageBtn.type = "button";
   imageBtn.innerHTML = renderIcon(Image);
   imageBtn.onclick = onImageUpload;
-  row1.appendChild(createTooltipButton(imageBtn, "图片"));
+  row1.appendChild(createTooltipButton(imageBtn, t("image")));
 
   // Video 按钮
   const videoBtn = document.createElement("button");
@@ -225,7 +233,7 @@ export const renderToolbar = ({
   videoBtn.type = "button";
   videoBtn.innerHTML = renderIcon(Video);
   videoBtn.onclick = onVideoClick;
-  row1.appendChild(createTooltipButton(videoBtn, "视频"));
+  row1.appendChild(createTooltipButton(videoBtn, t("video")));
 
   // 更多下拉菜单 - 点击显示
   const moreDiv = document.createElement("div");
@@ -238,13 +246,18 @@ export const renderToolbar = ({
   moreDiv.appendChild(moreBtn);
   const moreTooltip = document.createElement("span");
   moreTooltip.className = "tooltip";
-  moreTooltip.textContent = "更多";
+  moreTooltip.textContent = t("more");
   moreDiv.appendChild(moreTooltip);
 
   const moreDropdown = document.createElement("div");
   moreDropdown.className =
     "absolute top-full left-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg py-2 px-1 min-w-24 flex flex-col hidden";
   moreDropdown.id = "dropdown-more";
+  const moreOptions = [
+    { name: "link", label: t("link"), Icon: Link },
+    { name: "video", label: t("video"), Icon: Video },
+    { name: "clean", label: t("clean"), Icon: RemoveFormatting },
+  ];
   moreOptions.forEach(({ name, label, Icon }) => {
     const item = document.createElement("button");
     item.className =
@@ -283,10 +296,10 @@ export const renderToolbar = ({
   row2.className = "ql-formats flex! items-center gap-3";
 
   const formatBtns = [
-    { name: "bold", Icon: Bold, tooltip: "粗体" },
-    { name: "italic", Icon: Italic, tooltip: "斜体" },
-    { name: "strike", Icon: Strikethrough, tooltip: "删除线" },
-    { name: "underline", Icon: Underline, tooltip: "下划线" },
+    { name: "bold", Icon: Bold, tooltip: t("bold") },
+    { name: "italic", Icon: Italic, tooltip: t("italic") },
+    { name: "strike", Icon: Strikethrough, tooltip: t("strike") },
+    { name: "underline", Icon: Underline, tooltip: t("underline") },
   ];
   formatBtns.forEach(({ name, Icon, tooltip }) => {
     const button = document.createElement("button");
@@ -315,7 +328,7 @@ export const renderToolbar = ({
   sizeDiv.appendChild(sizeTrigger);
   const sizeTooltip = document.createElement("span");
   sizeTooltip.className = "tooltip";
-  sizeTooltip.textContent = "字号";
+  sizeTooltip.textContent = t("fontSize");
   sizeDiv.appendChild(sizeTooltip);
 
   const sizeMenu = document.createElement("div");
@@ -352,7 +365,7 @@ export const renderToolbar = ({
   colorBtn.innerHTML = renderIcon(Palette);
   colorBtn.onclick = (e) => {
     e.stopPropagation();
-    const dropdown = document.getElementById("dropdown-文字颜色");
+    const dropdown = document.getElementById("dropdown-textColor");
     closeAllDropdowns();
     dropdown?.classList.toggle("hidden");
   };
@@ -363,19 +376,20 @@ export const renderToolbar = ({
   bgColorBtn.innerHTML = renderIcon(Highlighter);
   bgColorBtn.onclick = (e) => {
     e.stopPropagation();
-    const dropdown = document.getElementById("dropdown-背景颜色");
+    const dropdown = document.getElementById("dropdown-bgColor");
     closeAllDropdowns();
     dropdown?.classList.toggle("hidden");
   };
 
   // 创建颜色下拉
-  const colorDropdown = createColorDropdown(colorBtn, "文字颜色", (color) => {
+  const colorDropdown = createColorDropdown(colorBtn, t("textColor"), "textColor", (color) => {
     quill.format("color", color);
   });
 
   const bgColorDropdown = createColorDropdown(
     bgColorBtn,
-    "背景颜色",
+    t("bgColor"),
+    "bgColor",
     (color) => {
       quill.format("background", color);
     },
@@ -400,13 +414,18 @@ export const renderToolbar = ({
   alignDiv.appendChild(alignTrigger);
   const alignTooltip = document.createElement("span");
   alignTooltip.className = "tooltip";
-  alignTooltip.textContent = "对齐";
+  alignTooltip.textContent = t("align");
   alignDiv.appendChild(alignTooltip);
 
   const alignMenu = document.createElement("div");
   alignMenu.className =
     "absolute top-full left-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg py-2! px-1! min-w-24 flex flex-col hidden";
   alignMenu.id = "dropdown-align";
+  const alignOptions = [
+    { value: false, label: t("alignDefault"), Icon: AlignLeft },
+    { value: "center", label: t("alignCenter"), Icon: AlignCenter },
+    { value: "right", label: t("alignRight"), Icon: AlignRight },
+  ];
   alignOptions.forEach(({ value, label, Icon }) => {
     const item = document.createElement("button");
     item.className =
@@ -432,8 +451,8 @@ export const renderToolbar = ({
   row5.className = "ql-formats flex! items-center gap-3";
 
   const listOptions = [
-    { value: "ordered", label: "有序", Icon: ListOrdered },
-    { value: "bullet", label: "无序", Icon: List },
+    { value: "ordered", label: t("ordered"), Icon: ListOrdered },
+    { value: "bullet", label: t("bullet"), Icon: List },
   ];
 
   const listDiv = document.createElement("div");
@@ -446,7 +465,7 @@ export const renderToolbar = ({
   listDiv.appendChild(listTrigger);
   const listTooltip = document.createElement("span");
   listTooltip.className = "tooltip";
-  listTooltip.textContent = "列表";
+  listTooltip.textContent = t("list");
   listDiv.appendChild(listTooltip);
 
   const listMenu = document.createElement("div");
@@ -487,13 +506,19 @@ export const renderToolbar = ({
   headerDiv.appendChild(headerTrigger);
   const headerTooltip = document.createElement("span");
   headerTooltip.className = "tooltip";
-  headerTooltip.textContent = "标题";
+  headerTooltip.textContent = t("header");
   headerDiv.appendChild(headerTooltip);
 
   const headerMenu = document.createElement("div");
   headerMenu.className =
     "absolute top-full left-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg py-2! px-1! min-w-24 flex flex-col hidden";
   headerMenu.id = "dropdown-header";
+  const headerOptions = [
+    { value: 1, label: "H1", Icon: Heading1 },
+    { value: 2, label: "H2", Icon: Heading2 },
+    { value: 3, label: "H3", Icon: Heading3 },
+    { value: 4, label: "H4", Icon: Heading4 },
+  ];
   headerOptions.forEach(({ value, label, Icon }) => {
     const item = document.createElement("button");
     item.className =

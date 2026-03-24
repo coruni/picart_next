@@ -245,5 +245,49 @@
       "backgroundEditorHint": "拖动调整位置，滚动缩放大小",
       "selectImage": "选择图片"
     }
+  },
+  "editor": {
+    "toolbar": {
+      "undo": "撤销",
+      "redo": "重做",
+      "emoji": "表情",
+      "emojiPrompt": "输入 emoji:",
+      "image": "图片",
+      "video": "视频",
+      "more": "更多",
+      "bold": "粗体",
+      "italic": "斜体",
+      "strike": "删除线",
+      "underline": "下划线",
+      "fontSize": "字号",
+      "textColor": "文字颜色",
+      "bgColor": "背景颜色",
+      "align": "对齐",
+      "alignDefault": "默认",
+      "alignCenter": "居中",
+      "alignRight": "右对齐",
+      "list": "列表",
+      "ordered": "有序",
+      "bullet": "无序",
+      "header": "标题",
+      "link": "链接",
+      "clean": "清除格式",
+      "confirm": "确定",
+      "cancel": "取消",
+      "insert": "插入"
+    },
+    "modal": {
+      "insertVideo": "插入视频",
+      "videoUrlPlaceholder": "请输入视频链接",
+      "insertLink": "插入链接",
+      "linkTextPlaceholder": "链接文字（可选，选中文字时自动填充）",
+      "linkUrlPlaceholder": "请输入链接地址"
+    },
+    "upload": {
+      "uploading": "上传中...",
+      "uploadFailed": "上传失败",
+      "percent": "{percent}%"
+    },
+    "placeholder": "请输入内容"
   }
 }

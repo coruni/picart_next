@@ -41,11 +41,11 @@ export function CommentCard({
     const newIsLiked = !isLiked;
     setIsLiked(newIsLiked);
     setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
-    onLike?.(comment.id);
+    onLike?.(comment?.id || 0);
   };
 
   const handleReply = () => {
-    onReply?.(comment.id);
+    onReply?.(comment?.id || 0);
   };
 
   const formatTime = (dateString: string) => {
@@ -69,11 +69,11 @@ export function CommentCard({
       <div className="px-4 mt-4">
         <div className="flex items-center ">
           {/* 头像 */}
-          <Avatar className="size-8" url={comment.author.avatar}></Avatar>
+          <Avatar className="size-8" url={comment?.author?.avatar || ''}></Avatar>
           {/* 信息 */}
           <div className="ml-3 flex flex-col flex-1 self-stretch justify-start">
-            <span className="leading-5 font-semibold hover:text-primary">{comment.author.nickname || comment.author.username}</span>
-            <span className="mt-1 text-secondary text-sm leading-3.5">{formatRelativeTime(comment.createdAt, t)}</span>
+            <span className="leading-5 font-semibold hover:text-primary">{comment?.author?.nickname || comment?.author?.username || ''}</span>
+            <span className="mt-1 text-secondary text-sm leading-3.5">{formatRelativeTime(comment?.createdAt || '', t)}</span>
           </div>
         </div>
       </div>
@@ -85,19 +85,19 @@ export function CommentCard({
       {/* 回复了谁 */}
       {comment.parent && (
         <div className="ml-19 mt-2 pl-1.5 border-l-2 pr-4 border-[#f1f4f9] max-h-10">
-          <p className="text-secondary text-sm line-clamp-2 text-ellipsis">@{comment.parent.author.nickname || comment.parent.author.username}:{comment.parent.content}</p>
+          <p className="text-secondary text-sm line-clamp-2 text-ellipsis">@{comment?.parent?.author?.nickname || comment?.parent?.author?.username || ''}:{comment?.parent?.content || ''}</p>
         </div>
       )}
       {/* 文章信息 */}
       <div className="ml-16 pl-3 pr-4 mt-3 cursor-pointer">
-        <Link href={`/article/${comment.article.id}`} className="flex items-center h-12.5 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-600">
-          {(!!comment.article.cover || comment.article.images.length > 0) && (
+        <Link href={`/article/${comment?.article?.id}`} className="flex items-center h-12.5 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-600">
+          {(!!comment?.article?.cover || comment?.article?.images?.length > 0) && (
             <div className="size-12.5 bg-gray-50 relative">
-              <Image alt={comment.article.title} src={comment.article?.cover || comment.article.images?.[0] || ''} fill quality={95} className="object-cover"></Image>
+              <Image alt={comment?.article?.title || ''} src={comment?.article?.cover || comment?.article?.images?.[0] || ''} fill quality={95} className="object-cover"></Image>
             </div>
           )}
           <div className="ml-3">
-            <span className="text-secondary line-clamp-1 text-ellipsis">{comment.article.title}</span>
+            <span className="text-secondary line-clamp-1 text-ellipsis">{comment?.article?.title || ''}</span>
           </div>
         </Link>
       </div>

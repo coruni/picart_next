@@ -88,9 +88,9 @@ export const fontSizes = [
 
 // 更多选项
 export const moreOptions = [
-  { name: "link", label: "链接", Icon: Link },
-  { name: "video", label: "视频", Icon: Video },
-  { name: "clean", label: "清除", Icon: RemoveFormatting },
+  { name: "link", label: "Link", Icon: Link },
+  { name: "video", label: "Video", Icon: Video },
+  { name: "clean", label: "Clear", Icon: RemoveFormatting },
 ];
 
 // 颜色面板 - 72个颜色
@@ -170,9 +170,9 @@ export const colorPalette = [
 
 // 对齐选项
 export const alignOptions = [
-  { value: false, label: "默认", Icon: AlignLeft },
-  { value: "center", label: "居中", Icon: AlignCenter },
-  { value: "right", label: "右对齐", Icon: AlignRight },
+  { value: false, label: "Default", Icon: AlignLeft },
+  { value: "center", label: "Center", Icon: AlignCenter },
+  { value: "right", label: "Right", Icon: AlignRight },
 ];
 
 // 标题选项
@@ -205,4 +205,9 @@ export const icons = {
   Plus,
   ChevronDown,
   Heading1,
+  Heading2,
+  Heading3,
+  Heading4,
+  Link,
+  RemoveFormatting,
 };
