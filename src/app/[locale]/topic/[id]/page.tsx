@@ -19,7 +19,8 @@ export default async function TopicDetailPage(props: TopicDetailPageProps) {
             page: 1,
             limit: 10,
             tagId: Number(id)
-        }
+        },
+        cache: 'no-store',
     })
     return (
         <TopicArticleListClient

@@ -54,7 +54,7 @@ export default async function LocaleLayout({
   // 获取设备指纹（如果存在）
   const deviceId = await getServerCookie("device_fingerprint");
   // 获取分类
-  const category = await categoryControllerFindAll({ query: { limit: 100 } });
+  const category = await categoryControllerFindAll({ query: { limit: 100 }, cache: 'no-store' });
   // 如果有 token，在服务端获取用户资料
   let initialUser: UserProfile | null = null;
   await initializeInterceptors();

@@ -21,6 +21,7 @@ export default async function TopicDetailNewPage(
       limit: 10,
       tagId: Number(id),
     },
+    cache: 'no-store',
   });
   return (
     <TopicArticleListClient

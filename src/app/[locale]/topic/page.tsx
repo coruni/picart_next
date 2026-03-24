@@ -23,7 +23,8 @@ export default async function TopicPage() {
         query: {
             page: 1,
             limit: 10
-        }
+        },
+        cache: 'no-store',
     })
 
     return (

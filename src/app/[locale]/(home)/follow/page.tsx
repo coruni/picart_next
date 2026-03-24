@@ -13,7 +13,8 @@ export default async function FollowPage() {
         limit: 10,
         page: 1,
         type: 'following'
-      }
+      },
+      cache: 'no-store',
     });
     result = data?.data;
   }
