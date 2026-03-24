@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: ChannelLayoutProps) {
   // 获取分类列表
   const { data } = await categoryControllerFindAll({
     query: { page: 1, limit: 100 },
-    cache: 'no-store',
+    
   });
   const currentChannel = data?.data.data.find(
     (item) => item.id === Number(pid),
@@ -95,7 +95,7 @@ export default async function ChannelLayout({
   // 获取分类列表
   const { data } = await categoryControllerFindAll({
     query: { page: 1, limit: 100 },
-    cache: 'no-store',
+    
   });
   const currentChannel = data?.data.data.find(
     (item) => item.id === Number(pid),

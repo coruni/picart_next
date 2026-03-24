@@ -114,6 +114,7 @@ export function initializeInterceptors(): Promise<void> {
       try {
         const token = await getAuthToken();
         const deviceId = await getDeviceId();
+        console.log('deviceId:', deviceId);
 
         // 确保 headers 存在
         if (!request.headers) {

@@ -14,7 +14,7 @@ export default async function FollowPage() {
         page: 1,
         type: 'following'
       },
-      cache: 'no-store',
+      
     });
     result = data?.data;
   }

@@ -186,7 +186,7 @@ export async function generateArticleMetadata(
   const siteName = config?.site_name || "PicArt";
 
   const keywords = [
-    ...(article.tags || []),
+    ...(article?.tags?.map((tag) => tag.name) || []),
     config?.seo_article_page_keywords,
     config?.seo_long_tail_keywords,
   ]

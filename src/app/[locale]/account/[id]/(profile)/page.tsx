@@ -10,15 +10,16 @@ export default async function AccountHomePage({
   const { id } = await params;
   const { data } = await articleControllerFindByAuthor({
     path: {
-      id: id
-    }
-  })
+      id: id,
+    },
+  });
   return (
     <ArticleListClient
-      initArticles={data?.data.data as ArticleList || []}
+      initArticles={(data?.data.data as ArticleList) || []}
       initPage={2}
-      initTotal={data?.data.meta.total!}
+      initTotal={data?.data.meta.total || 0}
       showFollow={false}
-      id={id} />
+      id={id}
+    />
   );
 }

@@ -24,7 +24,7 @@ export default async function TopicPage() {
             page: 1,
             limit: 10
         },
-        cache: 'no-store',
+        
     })
 
     return (

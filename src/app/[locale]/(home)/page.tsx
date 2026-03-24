@@ -8,7 +8,7 @@ export default async function HomePage() {
       page: 1,
       limit: 10,
     },
-    cache: 'no-store',
+    
   })
 
   const articles = initialData?.data?.data?.data || [];

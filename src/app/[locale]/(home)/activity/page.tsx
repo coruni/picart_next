@@ -8,7 +8,7 @@ export default async function ActivityPage() {
       limit: 20,
       type: "activity",
     },
-    cache: 'no-store',
+    
   }).catch(() => ({ data: { data: { list: [], total: 0 } } }));
 
   const articles = initialData?.data?.data || [];

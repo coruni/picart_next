@@ -12,7 +12,7 @@ export default async function ChannelPage({
     // 获取所有频道
     const { data: categoryData } = await categoryControllerFindAll({
         query: { page: 1, limit: 100 },
-        cache: 'no-store',
+        
     });
 
     const channels = categoryData?.data.data || [];
@@ -90,7 +90,7 @@ export default async function ChannelPage({
             limit: 10,
             categoryId: Number(childId),
         },
-        cache: 'no-store',
+        
     });
 
     const articles = data?.data.data || [];
