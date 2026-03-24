@@ -7,6 +7,7 @@ const TOKEN_COOKIE_NAME = 'auth-token';
 const DEVICE_ID_COOKIE_NAME = 'device_fingerprint';
 
 // 服务端请求的 token 存储（用于 SSR 阶段显式传递 token）
+// 注意：这些变量仅用于覆盖，正常情况下拦截器会自动从 cookie 读取
 let serverRequestToken: string | null = null;
 let serverRequestDeviceId: string | null = null;
 
@@ -44,22 +45,23 @@ async function getAuthToken(): Promise<string | null> {
     return getCookie(TOKEN_COOKIE_NAME);
   }
 
-  // 服务端环境 - 优先使用显式设置的 token（SSR 阶段由 layout.tsx 设置）
+  // 服务端环境 - 优先从 cookie 读取（标准方式）
+  try {
+    const { getServerCookie } = await import('./lib/server-cookies');
+    const cookieToken = await getServerCookie(TOKEN_COOKIE_NAME);
+    if (cookieToken) return cookieToken;
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Failed to get auth token from cookie on server:', error);
+    }
+  }
+
+  // 兜底：使用显式设置的 token（兼容旧代码）
   if (serverRequestToken !== null) {
     return serverRequestToken;
   }
 
-  // 如果没有显式设置，尝试从 cookie 读取（兜底方案）
-  try {
-    const { getServerCookie } = await import('./lib/server-cookies');
-    return await getServerCookie(TOKEN_COOKIE_NAME);
-  } catch (error) {
-    // 在拦截器中静默处理错误，避免阻塞请求
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Failed to get auth token on server:', error);
-    }
-    return null;
-  }
+  return null;
 }
 
 /**
@@ -71,22 +73,24 @@ async function getDeviceId(): Promise<string | null> {
     return getDeviceFingerprintSync();
   }
 
-  // 服务端环境 - 优先使用显式设置的设备 ID
+  // 服务端环境 - 优先从 cookie 读取（标准方式）
+  // 设备ID在客户端生成后存入cookie，服务端直接使用，绝不生成临时ID
+  try {
+    const { getServerCookie } = await import('./lib/server-cookies');
+    const cookieDeviceId = await getServerCookie(DEVICE_ID_COOKIE_NAME);
+    if (cookieDeviceId) return cookieDeviceId;
+  } catch (error) {
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Failed to get device ID from cookie on server:', error);
+    }
+  }
+
+  // 兜底：使用显式设置的设备 ID（兼容旧代码）
   if (serverRequestDeviceId !== null) {
     return serverRequestDeviceId;
   }
 
-  // 如果没有显式设置，尝试从 cookie 读取（兜底方案）
-  try {
-    const { getServerCookie } = await import('./lib/server-cookies');
-    return await getServerCookie(DEVICE_ID_COOKIE_NAME);
-  } catch (error) {
-    // 在拦截器中静默处理错误，避免阻塞请求
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('Failed to get device ID on server:', error);
-    }
-    return null;
-  }
+  return null;
 }
 
 export const createClientConfig: CreateClientConfig = (config) => ({
@@ -121,7 +125,8 @@ export function initializeInterceptors(): Promise<void> {
           ? request.headers
           : new Headers(request.headers as HeadersInit);
 
-        // Device-Id 始终携带（如果存在）
+        // Device-Id 始终携带（如果存在于Cookie中）
+        // 设备ID在客户端生成后，无论是否登录都要携带
         if (deviceId) {
           headers.set('Device-Id', deviceId);
         }
@@ -134,15 +139,26 @@ export function initializeInterceptors(): Promise<void> {
         request.headers = headers;
 
         // 开发环境下的调试信息
-        if (process.env.NODE_ENV === 'development') {
-          console.log('API Request:', {
+        // if (process.env.NODE_ENV === 'development') {
+        //   console.log('API Request:', {
+        //     url: request.url,
+        //     method: request.method,
+        //     hasToken: !!token,
+        //     token: token || 'none',
+        //     deviceId: deviceId || 'none',
+        //     hasDeviceId: !!deviceId,
+        //     isServer: typeof window === 'undefined'
+        //   });
+        // }
+         console.log('API Request:', {
             url: request.url,
             method: request.method,
             hasToken: !!token,
+            token: token || 'none',
+            deviceId: deviceId || 'none',
             hasDeviceId: !!deviceId,
             isServer: typeof window === 'undefined'
           });
-        }
       } catch (error) {
         console.error('Error in request interceptor:', error);
         // 即使出错也要继续请求，只是没有 headers
