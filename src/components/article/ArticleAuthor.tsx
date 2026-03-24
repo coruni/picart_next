@@ -23,7 +23,7 @@ export function ArticleAuthor({
   const containerRef = useRef<HTMLDivElement>(null);
   const [originalTop, setOriginalTop] = useState(0);
   const [isSticky, setIsSticky] = useState(false);
-  const t = useTranslations();
+  const t = useTranslations("time");
   const isSelf = useUserStore((state) => state.user)?.id === author.id || false;
   useEffect(() => {
     const container = containerRef.current;

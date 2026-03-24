@@ -16,7 +16,7 @@ type ArticleCardProps = {
     showFollow: boolean;
 }
 export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) => {
-    const t = useTranslations();
+    const t = useTranslations("time");
 
     const menuItems: MenuItem[] = [
         {
