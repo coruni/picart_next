@@ -17,7 +17,7 @@ export default defineConfig({
   plugins: [
     {
       name: '@hey-api/client-next',
-      runtimeConfigPath: '../rumtime.config',
+      runtimeConfigPath: '../runtime.config',
     },
   ],
 });

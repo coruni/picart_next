@@ -15,7 +15,7 @@ import {
   configControllerGetPublicConfigs,
   userControllerGetProfile,
 } from "@/api";
-import { initializeInterceptors } from "@/rumtime.config";
+import { initializeInterceptors } from "@/runtime.config";
 import type { UserProfile } from "@/types";
 
 const TOKEN_COOKIE_NAME = "auth-token";

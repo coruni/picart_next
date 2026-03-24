@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/stores/useUserStore";
-import { initializeInterceptors } from "@/rumtime.config";
+import { initializeInterceptors } from "@/runtime.config";
 import type { PublicConfigs, UserProfile } from "@/types";
 import { useAppStore } from "@/stores";
 

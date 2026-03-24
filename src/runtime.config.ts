@@ -125,7 +125,6 @@ export function initializeInterceptors(): Promise<void> {
       try {
         const token = await getAuthToken();
         const deviceId = await getDeviceId();
-        console.log('deviceId:', deviceId);
 
         // 确保 headers 存在
         if (!request.headers) {
@@ -151,18 +150,8 @@ export function initializeInterceptors(): Promise<void> {
         request.headers = headers;
 
         // 开发环境下的调试信息
-        // if (process.env.NODE_ENV === 'development') {
-        //   console.log('API Request:', {
-        //     url: request.url,
-        //     method: request.method,
-        //     hasToken: !!token,
-        //     token: token || 'none',
-        //     deviceId: deviceId || 'none',
-        //     hasDeviceId: !!deviceId,
-        //     isServer: typeof window === 'undefined'
-        //   });
-        // }
-         console.log('API Request:', {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('API Request:', {
             url: request.url,
             method: request.method,
             hasToken: !!token,
@@ -171,6 +160,8 @@ export function initializeInterceptors(): Promise<void> {
             hasDeviceId: !!deviceId,
             isServer: typeof window === 'undefined'
           });
+        }
+         
       } catch (error) {
         console.error('Error in request interceptor:', error);
         // 即使出错也要继续请求，只是没有 headers
