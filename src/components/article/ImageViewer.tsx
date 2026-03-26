@@ -656,7 +656,7 @@ export function ImageViewer({
 
         <div
           ref={panelRef}
-          className="custom-panel relative flex h-full shrink-0 flex-col overflow-hidden bg-black/85 transition-[width] duration-300"
+          className="custom-panel relative flex h-full shrink-0 flex-col overflow-hidden bg-card transition-[width] duration-300"
           id="right-panel"
           style={{ width: panelExpanded ? "390px" : "0" }}
         >
