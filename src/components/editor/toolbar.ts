@@ -558,7 +558,7 @@ export const renderToolbar = ({
 
         toolbar.style.position = "fixed";
         toolbar.style.top = "60px";
-        toolbar.style.zIndex = "50";
+        toolbar.style.zIndex = "20";
         toolbar.style.left = `${containerLeft}px`;
         toolbar.style.width = `${containerWidth}px`;
         toolbar.style.background = "var(--muted)";

@@ -1,0 +1,6 @@
+onlyBuiltDependencies:
+  - '@enzedonline/quill-blot-formatter2'
+  - '@parcel/watcher'
+  - '@swc/core'
+  - sharp
+  - unrs-resolver
