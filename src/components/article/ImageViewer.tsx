@@ -4,7 +4,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
-import { ChevronLeft, ChevronRight, PanelRight, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
 
@@ -49,6 +49,84 @@ export function ImageViewer({
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [viewerMounted, setViewerMounted] = useState(visible);
   const totalImages = images.length;
+  const panelToggleStyles = `
+    .custom-panel-toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: 0;
+      width: 28px;
+      height: 48px;
+      background: #ffffff;
+      border: none;
+      border-radius: 999px 0 0 999px;
+      color: #1f2937;
+      box-shadow: -4px 8px 18px rgba(0, 0, 0, 0.18);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      outline: none;
+      padding: 0;
+      z-index: 9999;
+      transition: background-color 0.2s, color 0.2s, transform 0.2s;
+    }
+
+    .custom-panel-toggle-btn::before,
+    .custom-panel-toggle-btn::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
+    }
+
+    .custom-panel-toggle-btn::before {
+      top: -16px;
+      background: radial-gradient(
+        circle at 100% 100%,
+        transparent 18px,
+        #ffffff 19px
+      );
+      transform: rotate(180deg);
+    }
+
+    .custom-panel-toggle-btn::after {
+      bottom: -16px;
+      background: radial-gradient(
+        circle at 100% 0,
+        transparent 18px,
+        #ffffff 19px
+      );
+      transform: rotate(180deg);
+    }
+
+    .custom-panel-toggle-btn:focus,
+    .custom-panel-toggle-btn:focus-visible {
+      outline: none;
+      box-shadow: -4px 8px 18px rgba(0, 0, 0, 0.18);
+    }
+
+
+
+    .custom-panel-toggle-btn:hover::before {
+      background: radial-gradient(
+        circle at 100% 100%,
+        transparent 18px,
+        #f8fafc 19px
+      );
+      transform: rotate(180deg);
+    }
+
+    .custom-panel-toggle-btn:hover::after {
+      background: radial-gradient(
+        circle at 100% 0,
+        transparent 18px,
+        #f8fafc 19px
+      );
+      transform: rotate(180deg);
+    }
+  `;
 
   useEffect(() => {
     panelExpandedRef.current = panelExpanded;
@@ -124,6 +202,27 @@ export function ImageViewer({
     [totalImages],
   );
 
+  const syncPanelToggleButton = useCallback(() => {
+    const container = viewerContainerRef.current;
+    if (!container) return;
+
+    const panelToggleBtn = container.querySelector(
+      ".custom-panel-toggle-btn",
+    ) as HTMLButtonElement | null;
+
+    if (!panelToggleBtn) return;
+
+    panelToggleBtn.innerHTML = renderIcon(
+      panelExpandedRef.current ? ChevronRight : ChevronLeft,
+      "",
+      18,
+    );
+    panelToggleBtn.setAttribute(
+      "aria-label",
+      panelExpandedRef.current ? "收起图片信息面板" : "展开图片信息面板",
+    );
+  }, []);
+
   const setupCustomUI = useCallback(() => {
     if (!viewerRef.current || !viewerContainerRef.current) return;
 
@@ -173,32 +272,9 @@ export function ImageViewer({
     if (!container.querySelector(".custom-panel-toggle-btn")) {
       const panelToggleBtn = document.createElement("button");
       panelToggleBtn.className = "custom-panel-toggle-btn";
-      panelToggleBtn.innerHTML = renderIcon(PanelRight, "", 20);
 
       Object.assign(panelToggleBtn.style, {
-        position: "absolute",
-        top: "20px",
-        right: "60px",
-        width: "44px",
-        height: "44px",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        border: "none",
-        borderRadius: "50%",
-        color: "white",
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: "9999",
-        transition: "background-color 0.2s",
-      });
-
-      panelToggleBtn.addEventListener("mouseenter", () => {
-        panelToggleBtn.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
-      });
-
-      panelToggleBtn.addEventListener("mouseleave", () => {
-        panelToggleBtn.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+        padding: "0",
       });
 
       panelToggleBtn.addEventListener("click", () => {
@@ -207,6 +283,8 @@ export function ImageViewer({
 
       container.appendChild(panelToggleBtn);
     }
+
+    syncPanelToggleButton();
 
     if (!container.querySelector(".custom-prev-btn")) {
       const prevButton = document.createElement("button");
@@ -395,7 +473,15 @@ export function ImageViewer({
     }
 
     updateIndexDisplay(getCurrentIndex());
-  }, [alt, applyCanvasLayout, getCurrentIndex, images, totalImages, updateIndexDisplay]);
+  }, [
+    alt,
+    applyCanvasLayout,
+    getCurrentIndex,
+    images,
+    syncPanelToggleButton,
+    totalImages,
+    updateIndexDisplay,
+  ]);
 
   useEffect(() => {
     if (!containerRef.current || !viewerContainerRef.current) return;
@@ -509,6 +595,7 @@ export function ImageViewer({
     if (!visible || !isShownRef.current) return;
 
     applyCanvasLayout();
+    syncPanelToggleButton();
 
     const panelEl = panelRef.current;
     if (!panelEl) return;
@@ -529,7 +616,14 @@ export function ImageViewer({
     return () => {
       panelEl.removeEventListener("transitionend", handleTransitionEnd);
     };
-  }, [panelExpanded, visible, applyCanvasLayout, getCurrentIndex, updateIndexDisplay]);
+  }, [
+    panelExpanded,
+    visible,
+    applyCanvasLayout,
+    getCurrentIndex,
+    syncPanelToggleButton,
+    updateIndexDisplay,
+  ]);
 
   return (
     <>
@@ -553,6 +647,7 @@ export function ImageViewer({
           visibility: viewerMounted ? "visible" : "hidden",
         }}
       >
+        <style>{panelToggleStyles}</style>
         <div
           ref={viewerContainerRef}
           className="relative flex-1"
@@ -576,4 +671,3 @@ export function ImageViewer({
     </>
   );
 }
-

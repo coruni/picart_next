@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  viewerjs:
+    hash: de8186f6400cf63a74ed346c222ced0b4d9b073e82af82fd2db3d15ae5b929a8
+    path: patches/viewerjs.patch
+
 importers:
 
   .:
@@ -61,7 +66,7 @@ importers:
         version: 13.0.0
       viewerjs:
         specifier: ^1.11.7
-        version: 1.11.7
+        version: 1.11.7(patch_hash=de8186f6400cf63a74ed346c222ced0b4d9b073e82af82fd2db3d15ae5b929a8)
       zustand:
         specifier: ^5.0.10
         version: 5.0.12(@types/react@19.2.14)(react@19.2.3)
@@ -5029,7 +5034,7 @@ snapshots:
 
   uuid@13.0.0: {}
 
-  viewerjs@1.11.7: {}
+  viewerjs@1.11.7(patch_hash=de8186f6400cf63a74ed346c222ced0b4d9b073e82af82fd2db3d15ae5b929a8): {}
 
   which-boxed-primitive@1.1.1:
     dependencies:

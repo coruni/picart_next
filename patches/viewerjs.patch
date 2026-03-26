@@ -1,0 +1,81 @@
+diff --git a/dist/viewer.common.js b/dist/viewer.common.js
+index d24bdee3895ddcf92d685a26d4e99ec18d107084..b1fa14e9b447c9008b7761f241d89dbbe0575ecc 100644
+--- a/dist/viewer.common.js
++++ b/dist/viewer.common.js
+@@ -953,10 +953,18 @@ var render = {
+     this.initialBodyComputedPaddingRight = window.getComputedStyle(body).paddingRight;
+   },
+   initContainer: function initContainer() {
+-    this.containerData = {
+-      width: window.innerWidth,
+-      height: window.innerHeight
+-    };
++    // Use canvas dimensions if available (for proper centering with CSS offsets like left: 130px; right: 130px)
++    if (this.canvas && this.canvas.offsetWidth > 0) {
++      this.containerData = {
++        width: this.canvas.offsetWidth,
++        height: this.canvas.offsetHeight
++      };
++    } else {
++      this.containerData = {
++        width: window.innerWidth,
++        height: window.innerHeight
++      };
++    }
+   },
+   initViewer: function initViewer() {
+     var options = this.options,
+diff --git a/dist/viewer.esm.js b/dist/viewer.esm.js
+index 7a2ef14b7d07dd96bc524cac45c31195109262c1..76ef36e0b23d89894eba81b47a272abc7b9d3507 100644
+--- a/dist/viewer.esm.js
++++ b/dist/viewer.esm.js
+@@ -951,10 +951,18 @@ var render = {
+     this.initialBodyComputedPaddingRight = window.getComputedStyle(body).paddingRight;
+   },
+   initContainer: function initContainer() {
+-    this.containerData = {
+-      width: window.innerWidth,
+-      height: window.innerHeight
+-    };
++    // Use canvas dimensions if available (for proper centering with CSS offsets like left: 130px; right: 130px)
++    if (this.canvas && this.canvas.offsetWidth > 0) {
++      this.containerData = {
++        width: this.canvas.offsetWidth,
++        height: this.canvas.offsetHeight
++      };
++    } else {
++      this.containerData = {
++        width: window.innerWidth,
++        height: window.innerHeight
++      };
++    }
+   },
+   initViewer: function initViewer() {
+     var options = this.options,
+diff --git a/dist/viewer.js b/dist/viewer.js
+index 78f2765c52d550c180a65b9f2c44d477baf6507c..e3f6eed15da17abfb08ac469333f5d3e5b89c448 100644
+--- a/dist/viewer.js
++++ b/dist/viewer.js
+@@ -957,10 +957,18 @@
+       this.initialBodyComputedPaddingRight = window.getComputedStyle(body).paddingRight;
+     },
+     initContainer: function initContainer() {
+-      this.containerData = {
+-        width: window.innerWidth,
+-        height: window.innerHeight
+-      };
++      // Use canvas dimensions if available (for proper centering with CSS offsets like left: 130px; right: 130px)
++      if (this.canvas && this.canvas.offsetWidth > 0) {
++        this.containerData = {
++          width: this.canvas.offsetWidth,
++          height: this.canvas.offsetHeight
++        };
++      } else {
++        this.containerData = {
++          width: window.innerWidth,
++          height: window.innerHeight
++        };
++      }
+     },
+     initViewer: function initViewer() {
+       var options = this.options,

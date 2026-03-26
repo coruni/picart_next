@@ -8,7 +8,7 @@ import { NotificationContainer } from "@/components/shared";
 import { generateSiteMetadata } from "@/lib/seo";
 import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
 import { UserStateProvider } from "@/components/providers/UserStateProvider";
-import { getServerCookie } from "@/lib/server-cookies";
+import { getServerCookie, setServerCookie } from "@/lib/server-cookies";
 import NextTopLoader from "nextjs-toploader";
 import {
   categoryControllerFindAll,
@@ -19,6 +19,16 @@ import { initializeInterceptors } from "@/runtime.config";
 import type { UserProfile } from "@/types";
 
 const TOKEN_COOKIE_NAME = "auth-token";
+const DEVICE_ID_COOKIE_NAME = "device_fingerprint";
+
+// 生成 UUID v4
+function generateUUID(): string {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
 
 // 动态生成元数据
 export async function generateMetadata({
@@ -51,6 +61,18 @@ export default async function LocaleLayout({
 
   // 获取服务端的 token，用于初始化客户端状态
   const initialToken = await getServerCookie(TOKEN_COOKIE_NAME);
+
+  // 确保设备ID存在（服务端生成，确保SSR和客户端一致）
+  let deviceId = await getServerCookie(DEVICE_ID_COOKIE_NAME);
+  if (!deviceId) {
+    // 服务端生成设备ID并设置到cookie
+    deviceId = generateUUID();
+    await setServerCookie(DEVICE_ID_COOKIE_NAME, deviceId, {
+      maxAge: 60 * 60 * 24 * 365 * 10, // 10年
+      path: "/",
+      sameSite: "lax",
+    });
+  }
 
   // 获取分类（公开接口，不需要认证）
   const category = await categoryControllerFindAll({

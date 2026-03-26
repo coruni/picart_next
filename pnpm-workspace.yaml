@@ -4,3 +4,5 @@ onlyBuiltDependencies:
   - '@swc/core'
   - sharp
   - unrs-resolver
+patchedDependencies:
+  viewerjs: patches/viewerjs.patch

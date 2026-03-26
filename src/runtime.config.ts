@@ -151,13 +151,15 @@ export function initializeInterceptors(): Promise<void> {
 
         // 开发环境下的调试信息
         if (process.env.NODE_ENV === 'development') {
+          const fullUrl = (request.baseUrl || '') + request.url;
           console.log('API Request:', {
-            url: request.url,
-            method: request.method,
+            url: fullUrl,
+            path: request.url,
+            method: request.method || 'GET',
+            headers: request.headers ? Object.fromEntries(request.headers.entries()) : {},
+            body: request.serializedBody || request.body || null,
             hasToken: !!token,
-            token: token || 'none',
             deviceId: deviceId || 'none',
-            hasDeviceId: !!deviceId,
             isServer: typeof window === 'undefined'
           });
         }

@@ -5,7 +5,9 @@
       "WebFetch(domain:*)",
       "Bash(git push:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(rm -rf node_modules/viewerjs)",
+      "Bash(pnpm install:*)"
     ]
   }
 }

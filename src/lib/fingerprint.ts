@@ -7,6 +7,18 @@ const FINGERPRINT_EXPIRY_DAYS = 3650; // 10年，永久保存
 let fpPromise: Promise<string> | null = null;
 
 /**
+ * 生成 UUID v4
+ * 用于服务端临时生成设备ID
+ */
+function generateUUID(): string {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+/**
  * 生成新的设备指纹（使用浏览器指纹）
  */
 async function generateFingerprint(): Promise<string> {
@@ -43,10 +55,11 @@ export async function getDeviceFingerprint(): Promise<string> {
         // 永久保存到 cookie（10年过期）
         const expires = new Date();
         expires.setDate(expires.getDate() + FINGERPRINT_EXPIRY_DAYS);
-        setCookie(FINGERPRINT_COOKIE_NAME, fingerprint, { 
+        setCookie(FINGERPRINT_COOKIE_NAME, fingerprint, {
           expires,
           path: "/",
           sameSite: "Lax",
+          secure: window.location.protocol === "https:", // HTTPS 环境下设置 secure
         });
       }
       return fingerprint;
@@ -62,6 +75,13 @@ export async function getDeviceFingerprint(): Promise<string> {
  */
 export function getDeviceFingerprintSync(): string | null {
   return getCookie(FINGERPRINT_COOKIE_NAME);
+}
+
+/**
+ * 检查是否已有设备指纹
+ */
+export function hasDeviceFingerprint(): boolean {
+  return getCookie(FINGERPRINT_COOKIE_NAME) !== null;
 }
 
 /**

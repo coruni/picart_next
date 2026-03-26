@@ -78,12 +78,12 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           {article?.cover && (
             <div className="relative w-full h-80 md:h-120">
               <Image
-                src={article.cover}
+                src={article?.cover}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 quality={95}
                 className="object-cover"
-                alt={article.title}
+                alt={article?.title}
               />
             </div>
           )}
@@ -94,7 +94,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             </h1>
           </div>
           {/* 作者信息 */}
-          <div className="mt-4 h-14 sticky top-[99px] z-10 bg-white dark:bg-gray-800">
+          <div className="mt-4 h-14 sticky top-24.75 z-10 bg-white dark:bg-gray-800">
             <ArticleAuthor
               author={article?.author}
               createdAt={article?.createdAt}

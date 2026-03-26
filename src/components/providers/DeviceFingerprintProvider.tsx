@@ -1,24 +1,34 @@
 "use client";
 
 import { useEffect } from "react";
-import { getDeviceFingerprint } from "@/lib/fingerprint";
+import { getDeviceFingerprint, hasDeviceFingerprint } from "@/lib/fingerprint";
 import { useDeviceStore } from "@/stores/useDeviceStore";
+import { getCookie } from "@/lib/cookies";
+
+const DEVICE_ID_COOKIE_NAME = "device_fingerprint";
 
 /**
  * 设备指纹提供者
- * 在客户端初始化时生成设备指纹并持久化存储到Cookie和Store中
- * 设备ID一旦生成，无论是否登录都会随请求携带
- * 服务端绝不生成临时设备ID，只使用客户端已生成的设备ID
+ * 在客户端初始化时确保设备指纹存在
+ * 优先使用服务端已生成的设备ID（从cookie读取）
+ * 如果不存在才生成新的
  */
 export function DeviceFingerprintProvider() {
   const setDeviceId = useDeviceStore((state) => state.setDeviceId);
 
   useEffect(() => {
-    // 在客户端生成真实的设备指纹
+    // 先检查 cookie 中是否已有设备ID（可能由服务端生成）
+    const existingDeviceId = getCookie(DEVICE_ID_COOKIE_NAME);
+    if (existingDeviceId) {
+      // 已存在，同步到 Store
+      setDeviceId(existingDeviceId);
+      return;
+    }
+
+    // 不存在，在客户端生成设备指纹
     getDeviceFingerprint()
       .then((deviceId) => {
         if (deviceId) {
-          // 同时存入 Store，方便快速读取
           setDeviceId(deviceId);
         }
       })

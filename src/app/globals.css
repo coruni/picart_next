@@ -105,20 +105,31 @@ body {
 
 
 /*  Viewer 自定义样式 */
-.viewer-canvas{
-  @apply left-4! right-4! md:left-30! md:right-30!
+.viewer-canvas {
+  left: 130px !important;
+  right: 130px !important;
+}
+
+.viewer-container{
+  @apply absolute! left-0! bottom-0!
 }
 
 .viewer-toolbar ul{
   @apply mb-5! bg-[#000000d9] rounded-xl px-3 py-2  gap-2 inline-flex!
 }
 
-.viewer-backdrop{
-  @apply bg-black/60! backdrop-blur-lg
+.viewer-backdrop {
+    @apply bg-black/60! backdrop-blur-lg
+    /* 或者用其他视觉手段 */
 }
+
+
 
 .viewer-prev {
   order:1
+}
+.custom-index-display{
+  order:2
 }
 .viewer-next{
   order:3
