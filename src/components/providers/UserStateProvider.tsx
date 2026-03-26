@@ -48,8 +48,8 @@ export function UserStateProvider({ initialToken, initialUser, initialConfig, ch
     if (initialUser && (!user || user.id !== initialUser.id)) {
       setUser(initialUser);
     }
-    // 服务端没有用户资料，但客户端有，清除客户端状态
-    else if (!initialUser && user) {
+    // 只有在服务端确认未登录时，才清除客户端用户状态
+    else if (!initialUser && !initialToken && user) {
       setUser(null);
     }
 

@@ -56,14 +56,17 @@ export const useUserStore = create<UserState>()(
       isAuthenticated: false,
 
       setUser: (user) =>
-        set({
+        set((state) => ({
           user,
-          isAuthenticated: !!user,
-        }),
+          isAuthenticated: !!user || !!state.token,
+        })),
 
       setToken: (token) => {
         syncTokenToCookie(token);
-        set({ token });
+        set((state) => ({
+          token,
+          isAuthenticated: !!token || !!state.user,
+        }));
       },
 
       login: (user, token) => {
