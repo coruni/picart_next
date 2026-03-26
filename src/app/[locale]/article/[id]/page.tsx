@@ -37,7 +37,7 @@ export async function generateMetadata({
     path: { id },
   });
   const article = data?.data;
-  return generateArticleMetadata(article!, locale);
+  return generateArticleMetadata(article, locale);
 }
 
 export default async function ArticleDetailPage(props: ArticleDetailPageProps) {

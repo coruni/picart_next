@@ -32,11 +32,6 @@ export function Header({ categories }: HeaderProps) {
   // 使用自定义 hook 监听滚动
   const scrolled = useScrollThreshold(240, isTransparentBgPage);
 
-  const handleSearch = (query: string, categoryId?: number) => {
-    // TODO: 实现搜索逻辑
-    console.log("Search:", { query, categoryId });
-  };
-
   return (
     <header
       className={cn(
@@ -71,7 +66,6 @@ export function Header({ categories }: HeaderProps) {
             categories={categories}
             isAccountPage={isTransparentBgPage}
             scrolled={scrolled}
-            onSearch={handleSearch}
           />
 
           {/* 右侧操作 */}

@@ -1,19 +1,41 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Search, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import { cn, debounce } from "@/lib/utils";
 import { CategoryList } from "@/types";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useClickOutside } from "@/hooks/useClickOutside";
+import { useRouter } from "@/i18n/routing";
+import { articleControllerSearch } from "@/api";
+
+interface SearchResult {
+  id: number;
+  title: string;
+  cover?: string;
+}
+
+// 高亮匹配文本
+function highlightText(text: string, query: string) {
+  if (!query.trim()) return text;
+
+  const regex = new RegExp(`(${query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  const parts = text.split(regex);
+
+  return parts.map((part, index) => {
+    if (part.toLowerCase() === query.trim().toLowerCase()) {
+      return <span key={index} className="text-primary">{part}</span>;
+    }
+    return part;
+  });
+}
 
 interface SearchBoxProps {
   categories?: CategoryList;
   isAccountPage?: boolean;
   scrolled?: boolean;
-  onSearch?: (query: string, categoryId?: number) => void;
   placeholder?: string;
   className?: string;
 }
@@ -22,17 +44,19 @@ export function SearchBox({
   categories,
   isAccountPage = false,
   scrolled = false,
-  onSearch,
   placeholder,
   className,
 }: SearchBoxProps) {
   const t = useTranslations("common");
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<
     CategoryList[0] | undefined
   >(undefined);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchPanelOpen, setIsSearchPanelOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [searchHistory, setSearchHistory] = useLocalStorage<string[]>(
     "searchHistory",
     [],
@@ -60,27 +84,83 @@ export function SearchBox({
     description: t("searchAll"),
   };
 
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    if (query.trim()) {
+  // 搜索建议（防抖）
+  const searchSuggestions = useCallback(
+    debounce((query: string) => {
+      (async () => {
+        if (!query.trim()) {
+          setSearchResults([]);
+          return;
+        }
+
+        setIsSearching(true);
+        try {
+          const response = await articleControllerSearch({
+            query: {
+              keyword: query.trim(),
+              limit: 3,
+              ...(selectedCategory?.id && { categoryId: selectedCategory.id }),
+            },
+          });
+          setSearchResults(response?.data?.data?.data || []);
+        } catch (error) {
+          console.error("Search error:", error);
+          setSearchResults([]);
+        } finally {
+          setIsSearching(false);
+        }
+      })();
+    }, 300),
+    [selectedCategory],
+  );
+
+  // 清空搜索结果
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+    }
+  }, [searchQuery]);
+
+  // 跳转到搜索页面
+  const goToSearchPage = useCallback(
+    (query: string) => {
+      if (!query.trim()) return;
+
       // Add to search history
       const newHistory = [
         query.trim(),
         ...searchHistory.filter((item) => item !== query.trim()),
       ].slice(0, 10);
       setSearchHistory(newHistory);
+
+      // 跳转到搜索页面
+      const params = new URLSearchParams({ q: query.trim() });
+      if (selectedCategory?.id) {
+        params.set("category", String(selectedCategory.id));
+      }
+      router.push(`/search?${params.toString()}`);
       setIsSearchPanelOpen(false);
-      onSearch?.(query, selectedCategory?.id);
-    }
+    },
+    [router, searchHistory, setSearchHistory, selectedCategory],
+  );
+
+  // 跳转到文章详情
+  const goToArticle = useCallback(
+    (articleId: number) => {
+      router.push(`/article/${articleId}`);
+      setIsSearchPanelOpen(false);
+    },
+    [router],
+  );
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    goToSearchPage(query);
   };
 
   const handleSearchFromHistory = (query: string) => {
     setSearchQuery(query);
     handleSearch(query);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
   };
 
   const handleInputFocus = () => {
@@ -101,10 +181,12 @@ export function SearchBox({
   const handleCategorySelect = (category: CategoryList[0] | undefined) => {
     setSelectedCategory(category);
     setIsDropdownOpen(false);
-    // 如果有搜索内容，重新搜索
-    if (searchQuery) {
-      onSearch?.(searchQuery, category?.id);
-    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    searchSuggestions(value);
   };
 
   return (
@@ -194,7 +276,7 @@ export function SearchBox({
           placeholder={placeholder || t("search")}
           className={cn(
             "w-full h-full rounded-full transition-all px-2 bg-transparent border-none",
-            "placeholder:text-secondary placeholder:text-sm",
+            "placeholder:text-secondary placeholder:text-xs text-xs text-black/80",
             "focus:outline-none",
             // Account 页面未滚动时的透明样式
             isAccountPage && !scrolled && ["placeholder:text-white/70"],
@@ -212,66 +294,111 @@ export function SearchBox({
               : "text-white/70 hover:text-white",
           )}
         >
-          <Search size={16} />
+          {isSearching ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <Search size={16} />
+          )}
         </button>
 
         {/* 搜索面板 */}
         {isSearchPanelOpen && (
           <div className="absolute top-full left-0 mt-2 w-full bg-card border border-border rounded-xl shadow-lg z-50 max-h-96 overflow-hidden">
             <div className="p-4">
-              {/* 历史搜索 */}
-              {searchHistory.length > 0 && (
-                <div className="mb-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-medium text-foreground">
-                      {t("searchHistory")}
+              {!searchQuery ? (
+                <>
+                  {/* 历史搜索 */}
+                  {searchHistory.length > 0 && (
+                    <div className="mb-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-sm font-medium text-foreground">
+                          {t("searchHistory")}
+                        </h3>
+                        <button
+                          onClick={clearSearchHistory}
+                          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {t("clear")}
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {searchHistory.map((item, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleSearchFromHistory(item)}
+                            className="px-3 py-1.5 text-sm bg-muted hover:bg-muted/80 rounded-full transition-colors text-muted-foreground hover:text-foreground"
+                          >
+                            {item}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {/* 热门搜索 */}
+                  <div>
+                    <h3 className="text-sm font-medium text-foreground mb-3">
+                      {t("hotSearches")}
                     </h3>
-                    <button
-                      onClick={clearSearchHistory}
-                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {t("clear")}
-                    </button>
+                    <div className="flex flex-wrap gap-2">
+                      {hotSearches.map((item, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleSearchFromHistory(item)}
+                          className="px-3 py-1.5 text-sm bg-primary/10 hover:bg-primary/20 rounded-full transition-colors text-primary"
+                        >
+                          {item}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {searchHistory.map((item, index) => (
+                  {/* 无搜索历史时的提示 */}
+                  {searchHistory.length === 0 && (
+                    <div className="text-center py-8">
+                      <p className="text-sm text-muted-foreground">
+                        {t("noSearchHistory")}
+                      </p>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  {/* 搜索建议 */}
+                  {isSearching ? (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2
+                        size={20}
+                        className="animate-spin text-muted-foreground"
+                      />
+                    </div>
+                  ) : searchResults.length > 0 ? (
+                    <div className="space-y-1 -mx-2">
+                      {searchResults.map((article) => (
+                        <button
+                          key={article.id}
+                          onClick={() => goToArticle(article.id)}
+                          className="cursor-pointer h-9 px-3 w-full flex-1 text-left rounded-md hover:bg-primary/10 text-nowrap text-ellipsis line-clamp-1 text-sm"
+                        >
+                          <span className="text-black/65 dark:text-white font-semibold">
+                            {highlightText(article.title, searchQuery)}
+                          </span>
+                        </button>
+                      ))}
+                      {/* 查看更多 */}
                       <button
-                        key={index}
-                        onClick={() => handleSearchFromHistory(item)}
-                        className="px-3 py-1.5 text-sm bg-muted hover:bg-muted/80 rounded-full transition-colors text-muted-foreground hover:text-foreground"
+                        onClick={() => goToSearchPage(searchQuery)}
+                        className="w-full text-center py-2 text-sm text-primary hover:underline"
                       >
-                        {item}
+                        {t("viewAllResults")}
                       </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* 热门搜索 */}
-              <div>
-                <h3 className="text-sm font-medium text-foreground mb-3">
-                  {t("hotSearches")}
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {hotSearches.map((item, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleSearchFromHistory(item)}
-                      className="px-3 py-1.5 text-sm bg-primary/10 hover:bg-primary/20 rounded-full transition-colors text-primary"
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 无搜索历史时的提示 */}
-              {searchHistory.length === 0 && (
-                <div className="text-center py-8">
-                  <p className="text-sm text-muted-foreground">
-                    {t("noSearchHistory")}
-                  </p>
-                </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-sm text-muted-foreground">
+                        {t("noResults")}
+                      </p>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>

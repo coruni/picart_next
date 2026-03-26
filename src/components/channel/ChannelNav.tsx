@@ -14,6 +14,7 @@ interface ChannelNavProps {
 export function ChannelNav({ channels, currentId }: ChannelNavProps) {
   const [isHidden, setIsHidden] = useState(false);
   const scrollRef = useRef<HTMLUListElement>(null);
+  const activeRef = useRef<HTMLLIElement>(null);
 
   // 滚动监听
   useEffect(() => {
@@ -28,6 +29,17 @@ export function ChannelNav({ channels, currentId }: ChannelNavProps) {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  // 激活频道定位到可视区域
+  useEffect(() => {
+    if (activeRef.current && scrollRef.current) {
+      activeRef.current.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
+  }, [currentId]);
 
   const scroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return;
@@ -80,7 +92,7 @@ export function ChannelNav({ channels, currentId }: ChannelNavProps) {
                 const isActive = channel.id === currentId;
 
                 return (
-                  <li key={channel.id} className="inline-flex items-center h-full">
+                  <li key={channel.id} ref={isActive ? activeRef : null} className="inline-flex items-center h-full">
                     <Link
                       href={channelHref}
                       className="flex items-center gap-2 h-full group"

@@ -23,7 +23,9 @@
     "searchHistory": "Search History",
     "hotSearches": "Hot Searches",
     "clear": "Clear",
-    "noSearchHistory": "No search history"
+    "noSearchHistory": "No search history",
+    "viewAllResults": "View all results",
+    "noResults": "No results found"
   },
   "nav": {
     "home": "Home",

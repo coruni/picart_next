@@ -179,11 +179,16 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
  * 生成文章页面 SEO 元数据
  */
 export async function generateArticleMetadata(
-  article: ArticleDetail,
+  article: ArticleDetail | undefined | null,
   locale: string = "zh"
 ): Promise<Metadata> {
   const config = await getPublicConfig();
   const siteName = config?.site_name || "PicArt";
+
+  // 如果文章不存在，返回基本的站点元数据
+  if (!article) {
+    return generateSiteMetadata(locale);
+  }
 
   const keywords = [
     ...(article?.tags?.map((tag) => tag.name) || []),
