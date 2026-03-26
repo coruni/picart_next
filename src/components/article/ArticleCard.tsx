@@ -5,7 +5,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { cn, formatRelativeTime } from "@/lib";
 import { useTranslations } from "next-intl";
 import { FollowButtonWithStatus } from "@/components/ui/FollowButtonWithStatus";
-import { EllipsisVertical, Eye, FileImage, GalleryHorizontalEnd, Hash, HeartCrack, MessageCircleMore } from "lucide-react";
+import { Dot, EllipsisVertical, Eye, FileImage, GalleryHorizontalEnd, Hash, HeartCrack, MessageCircleMore } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { DropdownMenu, MenuItem } from "@/components/shared";
 import { ReactionPanel } from "./ReactionPanel.client";
@@ -143,7 +143,7 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
                             <span className="font-bold hover:text-primary">{(article?.author?.nickname || article?.author?.username) as string}</span>
                         </Link>
                         <div className="mt-1 leading-4">
-                            <span className="text-xs text-secondary">{formatRelativeTime(article.createdAt!, t)} · {article?.category?.name}</span>
+                            <span className="text-xs text-secondary ">{formatRelativeTime(article.createdAt!, t)} • {article?.category?.name}</span>
                         </div>
                     </div>
                     {/* 关注 */}

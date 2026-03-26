@@ -6,6 +6,7 @@ import { ReactNode } from "react";
 import Image from "next/image";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { ChannelTabs } from "@/components/channel/ChannelTabs";
+import { ChannelNav } from "@/components/channel/ChannelNav";
 import { generateSiteMetadata } from "@/lib/seo";
 
 interface ChannelLayoutProps {
@@ -26,7 +27,6 @@ export async function generateMetadata({ params }: ChannelLayoutProps) {
   // 获取分类列表
   const { data } = await categoryControllerFindAll({
     query: { page: 1, limit: 100 },
-    
   });
   const currentChannel = data?.data.data.find(
     (item) => item.id === Number(pid),
@@ -95,7 +95,6 @@ export default async function ChannelLayout({
   // 获取分类列表
   const { data } = await categoryControllerFindAll({
     query: { page: 1, limit: 100 },
-    
   });
   const currentChannel = data?.data.data.find(
     (item) => item.id === Number(pid),
@@ -129,11 +128,14 @@ export default async function ChannelLayout({
         />
       </div>
 
+      {/* 频道切换 */}
+      <ChannelNav channels={data?.data.data || []} currentId={Number(pid)} />
+
       {/* 页面内容 */}
       <div className="mt-60 w-full z-10 relative dark:bg-gray-800">
         <div className="page-container">
           <div className="left-container">
-            <div className="px-10 h-14 flex items-center border-b border-border sticky top-[60px] bg-card z-5 rounded-t-xl">
+            <div className="px-10 h-14 flex items-center border-b border-border sticky top-15 bg-card z-5 rounded-t-xl">
               <ChannelTabs parentId={pid}>
                 {currentChannel.children}
               </ChannelTabs>
