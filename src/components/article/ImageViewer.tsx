@@ -242,6 +242,42 @@ export function ImageViewer({
     );
   }, []);
 
+  const cleanupCustomUI = useCallback(() => {
+    const container = viewerContainerRef.current;
+    if (!container) return;
+
+    const selectors = [
+      ".custom-close-btn",
+      ".custom-panel-toggle-btn",
+      ".custom-prev-btn",
+      ".custom-next-btn",
+      ".custom-thumbnail-column",
+      ".custom-index-display",
+    ];
+
+    selectors.forEach((selector) => {
+      container.querySelectorAll(selector).forEach((node) => node.remove());
+    });
+  }, []);
+
+  const disposeViewerInstance = useCallback(() => {
+    cleanupCustomUI();
+
+    if (viewerRef.current) {
+      viewerRef.current.destroy();
+      viewerRef.current = null;
+    }
+
+    isShownRef.current = false;
+  }, [cleanupCustomUI]);
+
+  const destroyViewerInstance = useCallback(() => {
+    disposeViewerInstance();
+    panelExpandedRef.current = false;
+    setPanelExpanded(false);
+    setViewerMounted(false);
+  }, [disposeViewerInstance]);
+
   const setupCustomUI = useCallback(() => {
     if (!viewerRef.current || !viewerContainerRef.current) return;
 
@@ -503,13 +539,16 @@ export function ImageViewer({
   ]);
 
   useEffect(() => {
+    if (!visible) {
+      requestAnimationFrame(() => {
+        destroyViewerInstance();
+      });
+      return;
+    }
+
     if (!containerRef.current || !viewerContainerRef.current) return;
 
-    if (viewerRef.current) {
-      viewerRef.current.destroy();
-      viewerRef.current = null;
-      isShownRef.current = false;
-    }
+    disposeViewerInstance();
 
     const viewerContainer = viewerContainerRef.current;
 
@@ -563,10 +602,7 @@ export function ImageViewer({
       },
 
       hidden() {
-        isShownRef.current = false;
-        setViewerMounted(false);
-        panelExpandedRef.current = false;
-        setPanelExpanded(false);
+        destroyViewerInstance();
       },
 
       view(event) {
@@ -577,37 +613,28 @@ export function ImageViewer({
       },
     });
 
-    if (visible) {
-      openViewerInstance(pendingIndexRef.current ?? initialIndex);
-    }
+    openViewerInstance(pendingIndexRef.current ?? initialIndex);
 
     return () => {
-      if (viewerRef.current) {
-        viewerRef.current.destroy();
-        viewerRef.current = null;
-      }
-      isShownRef.current = false;
+      destroyViewerInstance();
     };
   }, [
+    visible,
     images,
     alt,
     initialIndex,
     openViewerInstance,
     setupCustomUI,
+    disposeViewerInstance,
+    destroyViewerInstance,
     applyCanvasLayout,
     updateIndexDisplay,
-    visible,
   ]);
 
   useEffect(() => {
-    const viewer = viewerRef.current;
-    if (!viewer) return;
+    if (!viewerRef.current || !visible) return;
 
-    if (visible) {
-      openViewerInstance(initialIndex);
-    } else if (isShownRef.current) {
-      viewer.hide();
-    }
+    openViewerInstance(initialIndex);
   }, [visible, initialIndex, openViewerInstance]);
 
   useEffect(() => {
