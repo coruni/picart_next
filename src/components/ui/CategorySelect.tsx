@@ -12,6 +12,7 @@ export type CategoryOption = {
   value: string;
   label: string;
   avatar?: string;
+  
 };
 
 /**

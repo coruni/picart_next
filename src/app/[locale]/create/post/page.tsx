@@ -7,6 +7,8 @@ import { Form, FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Editor } from "@/components/ui/Editor";
 import { Button } from "@/components/ui/Button";
+import { useRouter } from "@/i18n/routing";
+import { useSearchParams } from "next/navigation";
 import { CategorySelect, CategoryOption } from "@/components/ui/CategorySelect";
 import {
   Dialog,
@@ -14,35 +16,66 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
-import { uploadControllerUploadFile, categoryControllerFindAll } from "@/api";
+import {
+  uploadControllerUploadFile,
+  categoryControllerFindAll,
+  articleControllerCreate,
+  articleControllerFindOne,
+  articleControllerUpdate,
+} from "@/api";
 import Image from "next/image";
 import { cn } from "@/lib";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Loader2 } from "lucide-react";
+import { Switch } from "@/components/ui/Switch";
+import { useTranslations } from "next-intl";
 
 type CreatePostFormData = {
   cover: string;
   title: string;
   content: string;
   categoryId: string;
+  requireFollow: boolean;
+  requirePayment: boolean;
+  requireMembership: boolean;
+  listRequireLogin: boolean;
+  requireLogin: boolean;
+  viewPrice: number;
+  sort: number;
+  type: "mixed" | "image";
 };
 
 type CreatePostPageProps = {
   params: Promise<{
     locale: string;
+    articleId: string;
   }>;
 };
 
 export default function CreatePostPage(props: CreatePostPageProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const articleId = searchParams.get("articleId");
+  const isEditMode = !!articleId;
+
+  const t = useTranslations("createPost");
+  const tc = useTranslations("common");
   const coverEditorRef = useRef<AvatarEditor>(null);
+
+  // Article loading state for edit mode
+  const [articleLoading, setArticleLoading] = useState(isEditMode);
 
   // Cover editor states
   const [showCoverEditor, setShowCoverEditor] = useState(false);
-  const [selectedCoverImage, setSelectedCoverImage] = useState<File | null>(null);
+  const [selectedCoverImage, setSelectedCoverImage] = useState<File | null>(
+    null,
+  );
   const [coverScale, setCoverScale] = useState(1);
   const [coverUploading, setCoverUploading] = useState(false);
 
   // Category states
-  const [parentCategories, setParentCategories] = useState<CategoryOption[]>([]);
+  const [parentCategories, setParentCategories] = useState<CategoryOption[]>(
+    [],
+  );
   const [childCategories, setChildCategories] = useState<CategoryOption[]>([]);
   const [selectedParentId, setSelectedParentId] = useState<string>("");
   // 独立控制子分类框的显示，不依赖 childCategories.length，避免搜索无结果时隐藏
@@ -56,13 +89,16 @@ export default function CreatePostPage(props: CreatePostPageProps) {
   const childrenMapRef = useRef<Map<number, CategoryOption[]>>(new Map());
 
   // Debounce timers for search，用 ref 避免闭包问题
-  const parentSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const parentSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   // 用 ref 跟踪请求序号，丢弃过期响应（防止竞态）
   const childSearchSeqRef = useRef(0);
   const parentSearchSeqRef = useRef(0);
-
 
   // 记录上一次实际发起请求的 query，相同值直接跳过
   const lastParentQueryRef = useRef<string | null>(null);
@@ -83,20 +119,145 @@ export default function CreatePostPage(props: CreatePostPageProps) {
       title: "",
       content: "",
       categoryId: "",
+      requireLogin: false,
+      requireFollow: false,
+      requirePayment: false,
+      requireMembership: false,
+      listRequireLogin: false,
+      viewPrice: 0,
+      sort: 0,
+      type: "mixed",
     },
     validationRules: {
       title: {
-        required: "请输入帖子标题",
-        minLength: { value: 4, message: "标题至少4个字符" },
-        maxLength: { value: 200, message: "标题最长200个字符" },
+        required: t("form.titleRequired"),
+        minLength: { value: 4, message: t("form.titleMinLength") },
+        maxLength: { value: 200, message: t("form.titleMaxLength") },
       },
-      content: { required: "请输入帖子内容" },
-      categoryId: { required: "请选择帖子分类" },
+      content: { required: t("form.contentRequired") },
+      categoryId: { required: t("form.categoryRequired") },
     },
     async onSubmit(values) {
-      console.log("提交表单:", values);
+      const body = {
+        ...values,
+        categoryId: Number(values.categoryId),
+        sort: 0,
+        type: "mixed" as const,
+      };
+
+      if (isEditMode && articleId) {
+        await articleControllerUpdate({
+          path: { id: articleId },
+          body,
+        });
+      } else {
+        await articleControllerCreate({ body });
+      }
+      // 返回上一页
+      try {
+        router.back();
+      } catch {
+        // 无法返回时重定向首页
+        router.push("/");
+      }
     },
   });
+
+  // Fetch article data in edit mode
+  useEffect(() => {
+    if (!isEditMode || !articleId) return;
+
+    const fetchArticle = async () => {
+      try {
+        const response = await articleControllerFindOne({
+          path: { id: articleId },
+        });
+        const article = response.data?.data;
+        if (article) {
+          // Set form values
+          setFieldValues({
+            cover: article.cover || "",
+            title: article.title || "",
+            content: article.content || "",
+            categoryId: String(article.category.id || ""),
+            requireLogin: article.requireLogin || false,
+            requireFollow: article.requireFollow || false,
+            requirePayment: article.requirePayment || false,
+            requireMembership: article.requireMembership || false,
+            listRequireLogin: article.listRequireLogin || false,
+            viewPrice: Number(article.viewPrice) || 0,
+            sort: article.sort || 0,
+            type: (article.type as "mixed" | "image") || "mixed",
+          });
+
+          // Handle article category - add to lists if not present
+          const category = article.category;
+          const parentIdNum = category.parentId;
+          const categoryIdStr = String(category.id);
+
+          if (parentIdNum && parentIdNum !== 0) {
+            // Category is a child - ensure parent and child are in lists
+            const parentOption: CategoryOption = {
+              value: String(parentIdNum),
+              label: category.parent?.name || "",
+              ...(category.parent?.avatar
+                ? { avatar: category.parent.avatar }
+                : {}),
+            };
+
+            // Add parent to parentCategories if not present
+            setParentCategories((prev) => {
+              if (prev.some((p) => p.value === String(parentIdNum)))
+                return prev;
+              const updated = [...prev, parentOption];
+              initialParentCategoriesRef.current = updated;
+              return updated;
+            });
+
+            // Add child to childrenMap
+            const childOption: CategoryOption = {
+              value: categoryIdStr,
+              label: category.name,
+              ...(category.avatar ? { avatar: category.avatar } : {}),
+            };
+
+            const existingChildren =
+              childrenMapRef.current.get(parentIdNum) || [];
+            if (!existingChildren.some((c) => c.value === categoryIdStr)) {
+              childrenMapRef.current.set(parentIdNum, [
+                ...existingChildren,
+                childOption,
+              ]);
+            }
+
+            // Set selected parent and children
+            setSelectedParentId(String(parentIdNum));
+            setChildCategories(childrenMapRef.current.get(parentIdNum) || []);
+            setShowChildSelect(true);
+          } else {
+            // Category is a parent - ensure it's in parent list
+            const parentOption: CategoryOption = {
+              value: categoryIdStr,
+              label: category.name,
+              ...(category.avatar ? { avatar: category.avatar } : {}),
+            };
+
+            setParentCategories((prev) => {
+              if (prev.some((p) => p.value === categoryIdStr)) return prev;
+              const updated = [...prev, parentOption];
+              initialParentCategoriesRef.current = updated;
+              return updated;
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch article:", error);
+      } finally {
+        setArticleLoading(false);
+      }
+    };
+    fetchArticle();
+  }, [isEditMode, articleId]);
 
   // Fetch categories on mount
   useEffect(() => {
@@ -109,7 +270,7 @@ export default function CreatePostPage(props: CreatePostPageProps) {
             .map((cat) => ({
               value: String(cat.id),
               label: cat.name,
-              avatar: cat.avatar || undefined,
+              ...(cat.avatar ? { avatar: cat.avatar } : {}),
             }));
           setParentCategories(parents);
           initialParentCategoriesRef.current = parents;
@@ -121,7 +282,7 @@ export default function CreatePostPage(props: CreatePostPageProps) {
                 cat.children.map((child) => ({
                   value: String(child.id),
                   label: child.name,
-                  avatar: child.avatar || undefined,
+                  ...(child.avatar ? { avatar: child.avatar } : {}),
                 })),
               );
             }
@@ -184,7 +345,7 @@ export default function CreatePostPage(props: CreatePostPageProps) {
             .map((cat) => ({
               value: String(cat.id),
               label: cat.name,
-              avatar: cat.avatar || undefined,
+              ...(cat.avatar ? { avatar: cat.avatar } : {}),
             }));
           setParentCategories(parents);
         }
@@ -216,8 +377,13 @@ export default function CreatePostPage(props: CreatePostPageProps) {
       const parentId = parseInt(selectedParentId, 10);
       const cached = childrenMapRef.current.get(parentId) || [];
       const currentSelectedId = values.categoryId;
-      if (currentSelectedId && !cached.find((c) => c.value === currentSelectedId)) {
-        const selectedChild = childCategories.find((c) => c.value === currentSelectedId);
+      if (
+        currentSelectedId &&
+        !cached.find((c) => c.value === currentSelectedId)
+      ) {
+        const selectedChild = childCategories.find(
+          (c) => c.value === currentSelectedId,
+        );
         if (selectedChild) {
           setChildCategories([...cached, selectedChild]);
           return;
@@ -244,7 +410,7 @@ export default function CreatePostPage(props: CreatePostPageProps) {
             .map((cat) => ({
               value: String(cat.id),
               label: cat.name,
-              avatar: cat.avatar || undefined,
+              ...(cat.avatar ? { avatar: cat.avatar } : {}),
             }));
 
           // 确保当前选中项始终在列表中，避免选中态丢失
@@ -328,132 +494,236 @@ export default function CreatePostPage(props: CreatePostPageProps) {
       <div className="flex-1 max-w-4xl mx-auto bg-card rounded-xl flex flex-col">
         <div className="px-6 h-14 flex items-center border-b border-border">
           <div className="h-full flex-1 flex items-center">
-            <span className="font-bold text-base pr-6">发布帖子</span>
+            <span className="font-bold text-base pr-6">
+              {isEditMode ? t("editTitle") : t("title")}
+            </span>
           </div>
         </div>
         <div className="flex-1">
           <div className="px-6 pb-6">
-            <Form errors={errors} onSubmit={handleSubmit} touched={touched}>
-              <FormField
-                name="cover"
-                label={values.cover ? "" : "上传封面"}
-                className={cn(!values.cover && "pt-4")}
-              >
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleCoverChange}
-                  className="hidden"
-                  id="cover-upload"
-                />
-                <div className={cn("flex items-center gap-4", values.cover && "-mx-6")}>
-                  {values.cover ? (
-                    <div className="relative w-full aspect-21/9">
-                      <Image
-                        fill
-                        src={values.cover}
-                        alt="封面预览"
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute right-6 bottom-4 flex items-center space-x-6">
-                        <div
-                          className={cn(
-                            "bg-black/65 text-white font-semibold group hover:bg-primary rounded-full",
-                            "flex items-center justify-center p-2 cursor-pointer",
-                          )}
-                        >
-                          <Edit size={16} />
-                        </div>
-                        <div
-                          className={cn(
-                            "bg-black/65 text-white font-semibold group hover:bg-primary rounded-full",
-                            "flex items-center justify-center p-2 cursor-pointer",
-                          )}
-                        >
-                          <Trash2 size={16} />
+            {articleLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="size-8 animate-spin text-primary" />
+                <span className="ml-2 text-primary">{t("loading")}</span>
+              </div>
+            ) : (
+              <Form errors={errors} onSubmit={handleSubmit} touched={touched}>
+                <FormField
+                  name="cover"
+                  label={values.cover ? "" : t("cover.upload")}
+                  className={cn(!values.cover && "pt-4")}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverChange}
+                    className="hidden"
+                    id="cover-upload"
+                  />
+                  <div
+                    className={cn(
+                      "flex items-center gap-4",
+                      values.cover && "-mx-6",
+                    )}
+                  >
+                    {values.cover ? (
+                      <div className="relative w-full aspect-21/9">
+                        <Image
+                          fill
+                          src={values.cover}
+                          alt={t("cover.preview")}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute right-6 bottom-4 flex items-center space-x-6">
+                          <label
+                            htmlFor="cover-upload"
+                            className={cn(
+                              "bg-black/65 text-white font-semibold group hover:bg-primary rounded-full",
+                              "flex items-center justify-center p-2 cursor-pointer",
+                              "outline-0 border-0 focus:outline-0",
+                            )}
+                          >
+                            <Edit size={16} />
+                          </label>
+                          <button
+                            className={cn(
+                              "bg-black/65 text-white font-semibold group hover:bg-primary rounded-full",
+                              "flex items-center justify-center p-2 cursor-pointer",
+                              "outline-0 border-0 focus:outline-0",
+                            )}
+                            onClick={() => setFieldValues({ cover: "" })}
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div>
-                      <label
-                        htmlFor="cover-upload"
-                        className={cn(
-                          "text-sm cursor-pointer px-4 py-2 text-primary border-primary border rounded-md",
-                          "hover:bg-primary hover:text-white",
-                        )}
-                      >
-                        封面上传
-                      </label>
-                    </div>
-                  )}
-                </div>
-              </FormField>
-              <FormField name="title" label="标题">
-                <Input
-                  name="title"
-                  maxLength={200}
-                  onChange={handleChange("title")}
-                  onBlur={handleBlur("title")}
-                  value={values.title}
-                  placeholder="请输入标题"
-                  fullWidth
-                  showMaxLength
-                  className="block h-14"
-                />
-              </FormField>
-              <FormField name="content" label="内容">
-                <Editor
-                  value={values.content}
-                  onChange={(value: string) => {
-                    setFieldValues({ content: value });
-                  }}
-                  placeholder="请输入帖子内容"
-                  className="min-h-75"
-                />
-              </FormField>
-              <FormField name="categoryId" label="发布至" className="pt-4">
-                <div className="flex items-center gap-2">
-                  <CategorySelect
-                    value={selectedParentId}
-                    onChange={handleParentCategoryChange}
-                    options={parentCategories}
-                    placeholder="选择分类"
-                    disabled={categoriesLoading}
-                    loading={parentSearching}
-                    onSearch={handleSearchParentCategories}
-                    className="flex-1"
+                    ) : (
+                      <div>
+                        <label
+                          htmlFor="cover-upload"
+                          className={cn(
+                            "text-sm cursor-pointer px-4 py-2 text-primary border-primary border rounded-md",
+                            "hover:bg-primary hover:text-white",
+                          )}
+                        >
+                          {t("cover.uploadButton")}
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                </FormField>
+                <FormField name="title" label={t("form.title")}>
+                  <Input
+                    name="title"
+                    maxLength={200}
+                    onChange={handleChange("title")}
+                    onBlur={handleBlur("title")}
+                    value={values.title}
+                    placeholder={t("form.titlePlaceholder")}
+                    fullWidth
+                    showMaxLength
+                    className="block h-14"
                   />
-                  {/* 用独立的 showChildSelect 控制显隐，与搜索结果数量解耦 */}
-                  {selectedParentId && showChildSelect && (
-                    <>
-                      <span className="relative w-3 h-3 shrink-0 before:absolute mx-1 before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-[#b2bdce]" />
-                      <CategorySelect
-                        value={values.categoryId}
-                        onChange={handleChildCategoryChange}
-                        options={childCategories}
-                        placeholder="选择子分类"
-                        loading={childSearching}
-                        onSearch={handleSearchChildCategories}
-                        className="flex-1"
-                      />
-                    </>
-                  )}
-                </div>
-              </FormField>
-              <div className="mt-12 max-w-xl flex justify-center items-center mx-auto gap-8">
-                <Button variant="default" className="w-full h-11 rounded-full">
-                  预览
-                </Button>
-                <Button
-                  type="submit"
-                  variant="default"
-                  className="w-full h-11 rounded-full"
+                </FormField>
+                <FormField name="content" label={t("form.content")}>
+                  <Editor
+                    value={values.content}
+                    onChange={(value: string) => {
+                      setFieldValues({ content: value });
+                    }}
+                    placeholder={t("form.contentPlaceholder")}
+                    className="min-h-75"
+                  />
+                </FormField>
+                <FormField
+                  name="categoryId"
+                  label={t("form.publishTo")}
+                  className="pt-4"
                 >
-                  发布
-                </Button>
-              </div>
-            </Form>
+                  <div className="flex items-center gap-2">
+                    <CategorySelect
+                      value={selectedParentId}
+                      onChange={handleParentCategoryChange}
+                      options={parentCategories}
+                      placeholder={t("form.selectCategory")}
+                      disabled={categoriesLoading}
+                      loading={parentSearching}
+                      onSearch={handleSearchParentCategories}
+                      className="flex-1"
+                    />
+                    {/* 用独立的 showChildSelect 控制显隐，与搜索结果数量解耦 */}
+                    {selectedParentId && showChildSelect && (
+                      <>
+                        <span className="relative w-3 h-3 shrink-0 before:absolute mx-1 before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-[#b2bdce]" />
+                        <CategorySelect
+                          value={values.categoryId}
+                          onChange={handleChildCategoryChange}
+                          options={childCategories}
+                          placeholder={t("form.selectSubCategory")}
+                          loading={childSearching}
+                          onSearch={handleSearchChildCategories}
+                          className="flex-1"
+                        />
+                      </>
+                    )}
+                  </div>
+                </FormField>
+                <div className="mv-3">
+                  <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t("settings.title")}
+                  </label>
+                  <div className="border border-border p-3 rounded-lg inline-block max-w-100 w-full space-y-2">
+                    <FormField name="requireLogin">
+                      <div className="flex items-center justify-between">
+                        <label className="text-black/65 dark:text-white text-sm">
+                          {t("settings.requireLogin")}
+                        </label>
+                        <Switch
+                          checked={values.requireLogin}
+                          onCheckedChange={(checked) =>
+                            setFieldValues({ requireLogin: checked })
+                          }
+                        />
+                      </div>
+                    </FormField>
+                    <FormField name="requireFollow">
+                      <div className="flex items-center justify-between">
+                        <label className="text-black/65 dark:text-white text-sm">
+                          {t("settings.requireFollow")}
+                        </label>
+                        <Switch
+                          checked={values.requireFollow}
+                          onCheckedChange={(checked) =>
+                            setFieldValues({ requireFollow: checked })
+                          }
+                        />
+                      </div>
+                    </FormField>
+                    <FormField name="requirePayment">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center justify-between w-full">
+                          <label className="text-black/65 dark:text-white text-sm">
+                            {t("settings.requirePayment")}
+                          </label>
+                          <Switch
+                            checked={values.requirePayment}
+                            onCheckedChange={(checked) =>
+                              setFieldValues({ requirePayment: checked })
+                            }
+                          />
+                        </div>
+                        {values.requirePayment && (
+                          <Input
+                            className="h-full justify-self-end"
+                            type="number"
+                            min={1}
+                            step={1}
+                            max={999}
+                            placeholder={t("settings.pricePlaceholder")}
+                            value={values.viewPrice}
+                            onChange={(value) =>
+                              setFieldValues({
+                                viewPrice: Number(value.target.value),
+                              })
+                            }
+                          />
+                        )}
+                      </div>
+                    </FormField>
+                    <FormField name="requireMembership">
+                      <div className="flex items-center justify-between">
+                        <label className="text-black/65 dark:text-white text-sm">
+                          {t("settings.requireMembership")}
+                        </label>
+                        <Switch
+                          checked={values.requireMembership}
+                          onCheckedChange={(checked) =>
+                            setFieldValues({ requireMembership: checked })
+                          }
+                        />
+                      </div>
+                    </FormField>
+                  </div>
+                </div>
+
+                <div className="mt-12 max-w-xl flex justify-center items-center mx-auto gap-8">
+                  <Button
+                    variant="default"
+                    className="w-full h-11 rounded-full"
+                  >
+                    {t("actions.preview")}
+                  </Button>
+                  <Button
+                    type="submit"
+                    loading={isSubmitting}
+                    variant="default"
+                    className="w-full h-11 rounded-full"
+                  >
+                    {isEditMode ? t("actions.update") : t("actions.publish")}
+                  </Button>
+                </div>
+              </Form>
+            )}
           </div>
         </div>
       </div>
@@ -462,7 +732,7 @@ export default function CreatePostPage(props: CreatePostPageProps) {
       <Dialog open={showCoverEditor} onOpenChange={setShowCoverEditor}>
         <DialogContent className="max-w-2xl pt-4!">
           <DialogHeader>
-            <DialogTitle className="text-sm">裁剪封面</DialogTitle>
+            <DialogTitle className="text-sm">{t("cover.crop")}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-4">
             {selectedCoverImage && (
@@ -485,7 +755,7 @@ export default function CreatePostPage(props: CreatePostPageProps) {
                   />
                 </div>
                 <p className="text-xs text-gray-500 text-center">
-                  滚轮缩放 · 拖动调整位置
+                  {t("cover.cropHint")}
                 </p>
                 <div className="flex gap-3 w-full">
                   <Button
@@ -496,7 +766,7 @@ export default function CreatePostPage(props: CreatePostPageProps) {
                     disabled={coverUploading}
                     className="flex-1 rounded-lg h-9"
                   >
-                    取消
+                    {tc("cancel")}
                   </Button>
                   <Button
                     type="button"
@@ -506,7 +776,7 @@ export default function CreatePostPage(props: CreatePostPageProps) {
                     loading={coverUploading}
                     className="flex-1 rounded-lg h-9"
                   >
-                    确定
+                    {tc("confirm")}
                   </Button>
                 </div>
               </>

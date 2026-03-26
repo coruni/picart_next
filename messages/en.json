@@ -289,5 +289,44 @@
       "percent": "{percent}%"
     },
     "placeholder": "Enter content here"
+  },
+  "createPost": {
+    "title": "Create Post",
+    "editTitle": "Edit Post",
+    "cover": {
+      "upload": "Upload Cover",
+      "uploadButton": "Cover Upload",
+      "preview": "Cover Preview",
+      "crop": "Crop Cover",
+      "cropHint": "Scroll to zoom · Drag to reposition"
+    },
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "Enter title",
+      "titleRequired": "Please enter post title",
+      "titleMinLength": "Title must be at least 4 characters",
+      "titleMaxLength": "Title must be at most 200 characters",
+      "content": "Content",
+      "contentPlaceholder": "Enter post content",
+      "contentRequired": "Please enter post content",
+      "publishTo": "Publish to",
+      "selectCategory": "Select category",
+      "selectSubCategory": "Select subcategory",
+      "categoryRequired": "Please select a category"
+    },
+    "settings": {
+      "title": "Publish Settings",
+      "requireLogin": "Require Login",
+      "requireFollow": "Require Follow",
+      "requirePayment": "Require Payment",
+      "requireMembership": "Require Membership",
+      "pricePlaceholder": "Enter price"
+    },
+    "actions": {
+      "preview": "Preview",
+      "publish": "Publish",
+      "update": "Update"
+    },
+    "loading": "Loading..."
   }
 }

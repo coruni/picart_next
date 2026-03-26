@@ -289,5 +289,44 @@
       "percent": "{percent}%"
     },
     "placeholder": "请输入内容"
+  },
+  "createPost": {
+    "title": "发布帖子",
+    "editTitle": "编辑帖子",
+    "cover": {
+      "upload": "上传封面",
+      "uploadButton": "封面上传",
+      "preview": "封面预览",
+      "crop": "裁剪封面",
+      "cropHint": "滚轮缩放 · 拖动调整位置"
+    },
+    "form": {
+      "title": "标题",
+      "titlePlaceholder": "请输入标题",
+      "titleRequired": "请输入帖子标题",
+      "titleMinLength": "标题至少4个字符",
+      "titleMaxLength": "标题最长200个字符",
+      "content": "内容",
+      "contentPlaceholder": "请输入帖子内容",
+      "contentRequired": "请输入帖子内容",
+      "publishTo": "发布至",
+      "selectCategory": "选择分类",
+      "selectSubCategory": "选择子分类",
+      "categoryRequired": "请选择帖子分类"
+    },
+    "settings": {
+      "title": "发布设置",
+      "requireLogin": "需要登录",
+      "requireFollow": "需要关注",
+      "requirePayment": "需要付费",
+      "requireMembership": "需要会员",
+      "pricePlaceholder": "请输入价格"
+    },
+    "actions": {
+      "preview": "预览",
+      "publish": "发布",
+      "update": "更新"
+    },
+    "loading": "加载中..."
   }
 }
