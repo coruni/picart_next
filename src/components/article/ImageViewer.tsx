@@ -60,7 +60,6 @@ export function ImageViewer({
       border: none;
       border-radius: 999px 0 0 999px;
       color: #1f2937;
-      box-shadow: -4px 8px 18px rgba(0, 0, 0, 0.18);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -143,6 +142,26 @@ export function ImageViewer({
   const getCurrentIndex = useCallback(() => {
     const viewer = viewerRef.current as Viewer & { index?: number };
     return typeof viewer?.index === "number" ? viewer.index : 0;
+  }, []);
+
+  const openViewerInstance = useCallback((index: number) => {
+    pendingIndexRef.current = index;
+
+    requestAnimationFrame(() => {
+      setViewerMounted(true);
+
+      if (!viewerRef.current) return;
+
+      requestAnimationFrame(() => {
+        if (!viewerRef.current) return;
+
+        if (!isShownRef.current) {
+          viewerRef.current.show();
+        } else {
+          viewerRef.current.view(index);
+        }
+      });
+    });
   }, []);
 
   const applyCanvasLayout = useCallback(() => {
@@ -558,6 +577,10 @@ export function ImageViewer({
       },
     });
 
+    if (visible) {
+      openViewerInstance(pendingIndexRef.current ?? initialIndex);
+    }
+
     return () => {
       if (viewerRef.current) {
         viewerRef.current.destroy();
@@ -565,31 +588,27 @@ export function ImageViewer({
       }
       isShownRef.current = false;
     };
-  }, [images, alt, initialIndex, setupCustomUI, applyCanvasLayout, updateIndexDisplay]);
+  }, [
+    images,
+    alt,
+    initialIndex,
+    openViewerInstance,
+    setupCustomUI,
+    applyCanvasLayout,
+    updateIndexDisplay,
+    visible,
+  ]);
 
   useEffect(() => {
     const viewer = viewerRef.current;
     if (!viewer) return;
 
     if (visible) {
-      pendingIndexRef.current = initialIndex;
-      setViewerMounted(true);
-
-      requestAnimationFrame(() => {
-        if (!viewerRef.current) return;
-        requestAnimationFrame(() => {
-          if (!viewerRef.current) return;
-          if (!isShownRef.current) {
-            viewerRef.current.show();
-          } else {
-            viewerRef.current.view(initialIndex);
-          }
-        });
-      });
+      openViewerInstance(initialIndex);
     } else if (isShownRef.current) {
       viewer.hide();
     }
-  }, [visible, initialIndex]);
+  }, [visible, initialIndex, openViewerInstance]);
 
   useEffect(() => {
     if (!visible || !isShownRef.current) return;

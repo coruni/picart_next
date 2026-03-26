@@ -15,13 +15,17 @@ import {
   configControllerGetPublicConfigs,
   userControllerGetProfile,
 } from "@/api";
-import { initializeInterceptors } from "@/runtime.config";
+import {
+  clearServerRequestContext,
+  initializeInterceptors,
+  setServerRequestDeviceId,
+  setServerRequestToken,
+} from "@/runtime.config";
 import type { UserProfile } from "@/types";
 
 const TOKEN_COOKIE_NAME = "auth-token";
 const DEVICE_ID_COOKIE_NAME = "device_fingerprint";
 
-// 生成 UUID v4
 function generateUUID(): string {
   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
@@ -30,7 +34,6 @@ function generateUUID(): string {
   });
 }
 
-// 动态生成元数据
 export async function generateMetadata({
   params,
 }: {
@@ -58,61 +61,61 @@ export default async function LocaleLayout({
   }
 
   const messages = await getMessages();
-
-  // 获取服务端的 token，用于初始化客户端状态
   const initialToken = await getServerCookie(TOKEN_COOKIE_NAME);
 
-  // 确保设备ID存在（服务端生成，确保SSR和客户端一致）
   let deviceId = await getServerCookie(DEVICE_ID_COOKIE_NAME);
   if (!deviceId) {
-    // 服务端生成设备ID并设置到cookie
     deviceId = generateUUID();
     await setServerCookie(DEVICE_ID_COOKIE_NAME, deviceId, {
-      maxAge: 60 * 60 * 24 * 365 * 10, // 10年
+      maxAge: 60 * 60 * 24 * 365 * 10,
       path: "/",
       sameSite: "lax",
     });
   }
 
-  // 获取分类（公开接口，不需要认证）
-  const category = await categoryControllerFindAll({
-    query: { limit: 100 },
-    cache: "no-store",
-  });
+  setServerRequestToken(initialToken);
+  setServerRequestDeviceId(deviceId);
 
-  // 获取网站配置（公开接口）
-  const { data } = await configControllerGetPublicConfigs();
-  const config = data?.data!;
-
-  // 如果有 token，在服务端获取用户资料
-  // 拦截器会自动从 cookie 读取 token 和设备ID
+  let category;
+  let config = null;
   let initialUser: UserProfile | null = null;
-  await initializeInterceptors();
 
-  if (initialToken) {
-    try {
-      // 调用 API，拦截器会自动添加 Authorization header
-      const response = await userControllerGetProfile();
-      initialUser = response?.data?.data || null;
-    } catch {
-      // 如果获取失败，客户端会处理（可能是 token 过期）
+  try {
+    await initializeInterceptors();
+
+    category = await categoryControllerFindAll({
+      query: { limit: 100 },
+      cache: "no-store",
+    });
+
+    const { data } = await configControllerGetPublicConfigs();
+    config = data?.data ?? null;
+
+    if (initialToken) {
+      try {
+        const response = await userControllerGetProfile();
+        initialUser = response?.data?.data || null;
+      } catch {
+        // Ignore auth fetch failure here; client will reconcile state later.
+      }
     }
+  } finally {
+    clearServerRequestContext();
   }
+
   return (
     <>
       <NextTopLoader color="#6680ff" showSpinner={false} />
       <NextIntlClientProvider messages={messages}>
-        {/* 设备指纹初始化 */}
         <DeviceFingerprintProvider />
 
-        {/* 用户状态同步 */}
         <UserStateProvider
           initialToken={initialToken}
           initialUser={initialUser}
           initialConfig={config}
         >
           <Header categories={category.data?.data.data} />
-          <div className="flex flex-col flex-1 min-h-screen">{children}</div>
+          <div className="flex flex-1 flex-col min-h-screen">{children}</div>
           <NotificationContainer />
         </UserStateProvider>
       </NextIntlClientProvider>
