@@ -15,12 +15,6 @@ import {
   configControllerGetPublicConfigs,
   userControllerGetProfile,
 } from "@/api";
-import {
-  clearServerRequestContext,
-  initializeInterceptors,
-  setServerRequestDeviceId,
-  setServerRequestToken,
-} from "@/runtime.config";
 import type { UserProfile } from "@/types";
 
 const TOKEN_COOKIE_NAME = "auth-token";
@@ -73,34 +67,34 @@ export default async function LocaleLayout({
     });
   }
 
-  setServerRequestToken(initialToken);
-  setServerRequestDeviceId(deviceId);
+  const requestHeaders = new Headers();
+  if (initialToken) {
+    requestHeaders.set("Authorization", `Bearer ${initialToken}`);
+  }
+  if (deviceId) {
+    requestHeaders.set("Device-Id", deviceId);
+  }
 
-  let category;
-  let config = null;
+  const category = await categoryControllerFindAll({
+    query: { limit: 100 },
+    cache: "no-store",
+    headers: requestHeaders,
+  });
+  const { data } = await configControllerGetPublicConfigs({
+    headers: requestHeaders,
+  });
+  const config = data?.data ?? null;
   let initialUser: UserProfile | null = null;
 
-  try {
-    await initializeInterceptors();
-
-    category = await categoryControllerFindAll({
-      query: { limit: 100 },
-      cache: "no-store",
-    });
-
-    const { data } = await configControllerGetPublicConfigs();
-    config = data?.data ?? null;
-
-    if (initialToken) {
-      try {
-        const response = await userControllerGetProfile();
-        initialUser = response?.data?.data || null;
-      } catch {
-        // Ignore auth fetch failure here; client will reconcile state later.
-      }
+  if (initialToken) {
+    try {
+      const response = await userControllerGetProfile({
+        headers: requestHeaders,
+      });
+      initialUser = response?.data?.data || null;
+    } catch {
+      // Ignore auth fetch failure here; client will reconcile state later.
     }
-  } finally {
-    clearServerRequestContext();
   }
 
   return (

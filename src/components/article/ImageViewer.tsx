@@ -49,7 +49,11 @@ export function ImageViewer({
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [viewerMounted, setViewerMounted] = useState(visible);
   const totalImages = images.length;
-  const panelToggleStyles = `
+  const customViewerStyles = `
+    .viewer-transition {
+      transition: all 0.15s !important;
+    }
+
     .custom-panel-toggle-btn {
       position: absolute;
       top: 20px;
@@ -693,7 +697,7 @@ export function ImageViewer({
           visibility: viewerMounted ? "visible" : "hidden",
         }}
       >
-        <style>{panelToggleStyles}</style>
+        <style>{customViewerStyles}</style>
         <div
           ref={viewerContainerRef}
           className="relative flex-1"
