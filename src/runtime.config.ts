@@ -1,57 +1,9 @@
 import type { CreateClientConfig } from "./api/client.gen";
-import { getCookie } from "./lib/cookies";
-import { useDeviceStore } from "./stores/useDeviceStore";
-import { useUserStore } from "./stores/useUserStore";
-
-const TOKEN_COOKIE_NAME = "auth-token";
-const DEVICE_ID_COOKIE_NAME = "device_fingerprint";
-
-async function getAuthToken(): Promise<string | null> {
-  if (typeof window !== "undefined") {
-    const storeToken = useUserStore.getState().token;
-    if (storeToken) return storeToken;
-    return getCookie(TOKEN_COOKIE_NAME);
-  }
-
-  try {
-    const { getServerCookie } = await import("./lib/server-cookies");
-    const cookieToken = await getServerCookie(TOKEN_COOKIE_NAME);
-    if (cookieToken) return cookieToken;
-  } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.warn("Failed to get auth token from cookie on server:", error);
-    }
-  }
-
-  return null;
-}
-
-async function getDeviceId(): Promise<string | null> {
-  if (typeof window !== "undefined") {
-    const storeDeviceId = useDeviceStore.getState().deviceId;
-    if (storeDeviceId) return storeDeviceId;
-
-    const cookieDeviceId = getCookie(DEVICE_ID_COOKIE_NAME);
-    if (cookieDeviceId) {
-      useDeviceStore.getState().setDeviceId(cookieDeviceId);
-      return cookieDeviceId;
-    }
-
-    return null;
-  }
-
-  try {
-    const { getServerCookie } = await import("./lib/server-cookies");
-    const cookieDeviceId = await getServerCookie(DEVICE_ID_COOKIE_NAME);
-    if (cookieDeviceId) return cookieDeviceId;
-  } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.warn("Failed to get device ID from cookie on server:", error);
-    }
-  }
-
-  return null;
-}
+import {
+  buildAuthHeaders,
+  getExplicitAuthHeaders,
+  getRequestAuthState,
+} from "./lib/request-auth";
 
 export const createClientConfig: CreateClientConfig = (config) => ({
   ...config,
@@ -69,40 +21,22 @@ export function initializeInterceptors(): Promise<void> {
     .then(({ client }) => {
       client.interceptors.request.use(async (request) => {
         try {
-          const token = await getAuthToken();
-          const deviceId = await getDeviceId();
-
-          if (!request.headers) {
-            request.headers = new Headers();
-          }
-
-          const headers =
-            request.headers instanceof Headers
-              ? request.headers
-              : new Headers(request.headers as HeadersInit);
-
-          if (deviceId) {
-            headers.set("Device-Id", deviceId);
-          }
-
-          if (token) {
-            headers.set("Authorization", `Bearer ${token}`);
-          }
-
+          const { token, deviceId } = await getRequestAuthState();
+          const headers = await buildAuthHeaders(request.headers as HeadersInit);
           request.headers = headers;
 
           if (process.env.NODE_ENV === "development") {
             const fullUrl = (request.baseUrl || "") + request.url;
-            console.log("API Request:", {
+            const explicitHeaders = getExplicitAuthHeaders(headers);
+            console.log("[auth][interceptor] request", {
               url: fullUrl,
               path: request.url,
               method: request.method || "GET",
-              headers: request.headers
-                ? Object.fromEntries(request.headers.entries())
-                : {},
-              body: request.serializedBody || request.body || null,
               hasToken: !!token,
+              tokenPreview: token ? `${token.slice(0, 12)}...` : null,
               deviceId: deviceId || "none",
+              authorizationHeader: explicitHeaders.Authorization,
+              deviceIdHeader: explicitHeaders["Device-Id"],
               isServer: typeof window === "undefined",
             });
           }
@@ -114,13 +48,12 @@ export function initializeInterceptors(): Promise<void> {
       client.interceptors.response.use(async (response) => response);
 
       client.interceptors.error.use(async (error, response) => {
-        if (response?.status === 401 && typeof window !== "undefined") {
-          console.warn("Unauthorized request, clearing user state");
-
-          const { useUserStore } = await import("@/stores/useUserStore");
-          useUserStore.getState().logout();
-
-          throw new Error("Unauthorized");
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[auth][interceptor] response error", {
+            status: response?.status ?? null,
+            isServer: typeof window === "undefined",
+            error,
+          });
         }
 
         throw error;

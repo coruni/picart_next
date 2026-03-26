@@ -1,5 +1,5 @@
-import { articleControllerFindByAuthor } from "@/api";
 import { ArticleListClient } from "@/components/account/ArticleList.client";
+import { serverApi } from "@/lib/server-api";
 import { ArticleList } from "@/types";
 
 export default async function AccountHomePage({
@@ -8,7 +8,7 @@ export default async function AccountHomePage({
   params: Promise<{ id: string; locale: string }>;
 }) {
   const { id } = await params;
-  const { data } = await articleControllerFindByAuthor({
+  const { data } = await serverApi.articleControllerFindByAuthor({
     path: {
       id: id,
     },

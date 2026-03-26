@@ -1,5 +1,5 @@
-import { articleControllerFindAll, categoryControllerFindAll } from "@/api";
 import { ChannelArticleListClient } from "@/components/channel/ChannelArticleList.client";
+import { serverApi } from "@/lib/server-api";
 import { redirect } from "next/navigation";
 
 export default async function ChannelPage({
@@ -10,7 +10,7 @@ export default async function ChannelPage({
     const { slug, locale } = await params;
 
     // 获取所有频道
-    const { data: categoryData } = await categoryControllerFindAll({
+    const { data: categoryData } = await serverApi.categoryControllerFindAll({
         query: { page: 1, limit: 100 },
         
     });
@@ -84,7 +84,7 @@ export default async function ChannelPage({
     }
 
     // 显示子分类的文章列表
-    const { data } = await articleControllerFindAll({
+    const { data } = await serverApi.articleControllerFindAll({
         query: {
             page: 1,
             limit: 10,

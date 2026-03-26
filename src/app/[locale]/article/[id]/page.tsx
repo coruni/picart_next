@@ -1,4 +1,3 @@
-import { articleControllerFindOne } from "@/api";
 import {
   ArticleAuthor,
   ImageGallery,
@@ -13,6 +12,7 @@ import { Forward, Hash } from "lucide-react";
 import { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { serverApi } from "@/lib/server-api";
 
 type ArticleDetailPageProps = {
   params: Promise<{
@@ -33,7 +33,7 @@ export async function generateMetadata({
   const { id, locale } = await params;
 
   // 获取文章数据用于生成 metadata
-  const { data } = await articleControllerFindOne({
+  const { data } = await serverApi.articleControllerFindOne({
     path: { id },
   });
   const article = data?.data;
@@ -44,7 +44,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
   const { id } = await props.params;
 
   // 请求文章详情
-  const { data } = await articleControllerFindOne({
+  const { data } = await serverApi.articleControllerFindOne({
     path: { id },
   });
   const article = data?.data;

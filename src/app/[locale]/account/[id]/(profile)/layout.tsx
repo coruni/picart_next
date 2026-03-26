@@ -1,12 +1,12 @@
 import { ReactNode } from "react";
 import Image from "next/image";
-import { userControllerFindOne } from "@/api";
 import { notFound } from "next/navigation";
 
 import { AccountInfo, AccountTabs } from "@/components/account";
 import { Metadata } from "next";
 import { generateAuthorMetadata } from "@/lib";
 import { Sidebar } from "@/components/sidebar/Sidebar";
+import { serverApi } from "@/lib/server-api";
 interface AccountLayoutProps {
   children: ReactNode;
   params: Promise<{ id: string; locale: string }>;
@@ -18,8 +18,11 @@ export async function generateMetadata({
   params: Promise<{ locale: string; id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const { data } = await userControllerFindOne({ path: { id } });
-  return generateAuthorMetadata(data?.data!);
+  const { data } = await serverApi.userControllerFindOne({ path: { id } });
+  if (!data?.data) {
+    notFound();
+  }
+  return generateAuthorMetadata(data.data);
 }
 
 export default async function AccountLayout({
@@ -28,7 +31,7 @@ export default async function AccountLayout({
 }: AccountLayoutProps) {
   const { id } = await params;
   // 请求用户数据
-  const { data } = await userControllerFindOne({ path: { id } });
+  const { data } = await serverApi.userControllerFindOne({ path: { id } });
   const user = data?.data;
   if (!user) {
     notFound();

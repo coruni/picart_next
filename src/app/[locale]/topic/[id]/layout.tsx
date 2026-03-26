@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
 import Image from "next/image";
-import { tagControllerFindOne } from "@/api";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { generateTagMetadata } from "@/lib/seo";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { TopicInfo, TopicTabs } from "@/components/topic";
+import { serverApi } from "@/lib/server-api";
 interface TopicDetailLayoutProps {
     children: ReactNode;
     params: Promise<{ id: string; locale: string }>;
@@ -17,7 +17,7 @@ export async function generateMetadata({
     params: Promise<{ locale: string, id: string }>;
 }): Promise<Metadata> {
     const { id, locale } = await params;
-    const { data } = await tagControllerFindOne({ path: { id } });
+    const { data } = await serverApi.tagControllerFindOne({ path: { id } });
 
     if (!data?.data) {
         return {
@@ -31,7 +31,7 @@ export async function generateMetadata({
 export default async function TopicDetailLayout({ children, params }: TopicDetailLayoutProps) {
     const { id } = await params;
     // 请求用户数据
-    const { data } = await tagControllerFindOne({ path: { id } })
+    const { data } = await serverApi.tagControllerFindOne({ path: { id } })
     const tag = data?.data;
     if (!tag) {
         notFound();

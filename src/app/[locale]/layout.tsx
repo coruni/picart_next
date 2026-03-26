@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { unstable_noStore as noStore } from "next/cache";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { routing } from "@/i18n/routing";
@@ -8,25 +9,19 @@ import { NotificationContainer } from "@/components/shared";
 import { generateSiteMetadata } from "@/lib/seo";
 import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
 import { UserStateProvider } from "@/components/providers/UserStateProvider";
-import { getServerCookie, setServerCookie } from "@/lib/server-cookies";
-import NextTopLoader from "nextjs-toploader";
+import { getServerCookie } from "@/lib/server-cookies";
 import {
-  categoryControllerFindAll,
-  configControllerGetPublicConfigs,
-  userControllerGetProfile,
-} from "@/api";
+  buildAuthHeaders,
+  DEVICE_ID_COOKIE_NAME,
+  getAuthDebugSnapshot,
+  TOKEN_COOKIE_NAME,
+} from "@/lib/request-auth";
+import { serverApi } from "@/lib/server-api";
+import NextTopLoader from "nextjs-toploader";
 import type { UserProfile } from "@/types";
 
-const TOKEN_COOKIE_NAME = "auth-token";
-const DEVICE_ID_COOKIE_NAME = "device_fingerprint";
-
-function generateUUID(): string {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export async function generateMetadata({
   params,
@@ -48,6 +43,8 @@ export default async function LocaleLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
+  noStore();
+
   const { locale } = await params;
 
   if (!routing.locales.includes(locale as "zh" | "en")) {
@@ -55,46 +52,102 @@ export default async function LocaleLayout({
   }
 
   const messages = await getMessages();
-  const initialToken = await getServerCookie(TOKEN_COOKIE_NAME);
+  const [initialToken, deviceId, requestHeaders] = await Promise.all([
+    getServerCookie(TOKEN_COOKIE_NAME),
+    getServerCookie(DEVICE_ID_COOKIE_NAME),
+    buildAuthHeaders(),
+  ]);
 
-  let deviceId = await getServerCookie(DEVICE_ID_COOKIE_NAME);
-  if (!deviceId) {
-    deviceId = generateUUID();
-    await setServerCookie(DEVICE_ID_COOKIE_NAME, deviceId, {
-      maxAge: 60 * 60 * 24 * 365 * 10,
-      path: "/",
-      sameSite: "lax",
+  if (process.env.NODE_ENV === "development") {
+    console.log("[auth][layout] SSR cookie snapshot", {
+      hasInitialToken: !!initialToken,
+      initialTokenPreview: initialToken ? `${initialToken.slice(0, 12)}...` : null,
+      deviceId,
+      locale,
+      dynamic,
+    });
+
+    console.log("[auth][layout] SSR request headers snapshot", {
+      ...getAuthDebugSnapshot(requestHeaders),
+      rawCookieTokenPreview: initialToken ? `${initialToken.slice(0, 12)}...` : null,
+      rawCookieDeviceId: deviceId,
     });
   }
 
-  const requestHeaders = new Headers();
-  if (initialToken) {
-    requestHeaders.set("Authorization", `Bearer ${initialToken}`);
+  if (process.env.NODE_ENV === "development") {
+    console.log("[auth][layout] category request start", {
+      ...getAuthDebugSnapshot(requestHeaders),
+    });
   }
-  if (deviceId) {
-    requestHeaders.set("Device-Id", deviceId);
-  }
-
-  const category = await categoryControllerFindAll({
+  const category = await serverApi.categoryControllerFindAll({
     query: { limit: 100 },
     cache: "no-store",
-    headers: requestHeaders,
+    next: { revalidate: 0 },
   });
-  const { data } = await configControllerGetPublicConfigs({
-    headers: requestHeaders,
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("[auth][layout] category request end", {
+      status: category.response.status,
+      ...getAuthDebugSnapshot(requestHeaders),
+    });
+  }
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("[auth][layout] public-config request start", {
+      ...getAuthDebugSnapshot(requestHeaders),
+    });
+  }
+  const { data } = await serverApi.configControllerGetPublicConfigs({
+    cache: "no-store",
+    next: { revalidate: 0 },
   });
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("[auth][layout] public-config request end", {
+      ...getAuthDebugSnapshot(requestHeaders),
+    });
+  }
   const config = data?.data ?? null;
   let initialUser: UserProfile | null = null;
 
   if (initialToken) {
     try {
-      const response = await userControllerGetProfile({
-        headers: requestHeaders,
+      if (process.env.NODE_ENV === "development") {
+        console.log("[auth][layout] profile request start", {
+          ...getAuthDebugSnapshot(requestHeaders),
+          tokenPreview: initialToken ? `${initialToken.slice(0, 12)}...` : null,
+          deviceId,
+        });
+      }
+
+      const response = await serverApi.userControllerGetProfile({
+        cache: "no-store",
+        next: { revalidate: 0 },
       });
       initialUser = response?.data?.data || null;
-    } catch {
-      // Ignore auth fetch failure here; client will reconcile state later.
+
+      if (process.env.NODE_ENV === "development") {
+        console.log("[auth][layout] profile fetch result", {
+          status: response.response.status,
+          hasInitialUser: !!initialUser,
+          userId: initialUser?.id ?? null,
+          ...getAuthDebugSnapshot(requestHeaders),
+        });
+      }
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn("[auth][layout] profile fetch failed", {
+          hasInitialToken: !!initialToken,
+          deviceId,
+          ...getAuthDebugSnapshot(requestHeaders),
+          error,
+        });
+      }
     }
+  } else if (process.env.NODE_ENV === "development") {
+    console.log("[auth][layout] skipped profile fetch because token is missing", {
+      deviceId,
+    });
   }
 
   return (

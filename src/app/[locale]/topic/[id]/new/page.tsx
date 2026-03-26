@@ -1,4 +1,4 @@
-import { articleControllerFindAll } from "@/api";
+import { serverApi } from "@/lib/server-api";
 import { TopicArticleListClient } from "@/components/topic/TopicArticleList.client";
 type TopicDetailNewPageProps = {
   params: Promise<{
@@ -13,9 +13,9 @@ type TopicDetailNewPageProps = {
 export default async function TopicDetailNewPage(
   props: TopicDetailNewPageProps,
 ) {
-  const { locale, id } = await props.params;
+  const { id } = await props.params;
   // 请求首次数据
-  const { data } = await articleControllerFindAll({
+  const { data } = await serverApi.articleControllerFindAll({
     query: {
       page: 1,
       limit: 10,

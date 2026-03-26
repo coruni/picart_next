@@ -1,5 +1,5 @@
-import { articleControllerGetFavoritedArticles } from "@/api";
 import { FavoriteArticleList } from "@/components/account/FavoriteArticleList.client";
+import { serverApi } from "@/lib/server-api";
 
 
 export default async function AccountFavoritePage({
@@ -9,7 +9,7 @@ export default async function AccountFavoritePage({
 }) {
     const { id } = await params;
     // 加载首屏评论数据 
-    const { data } = await articleControllerGetFavoritedArticles({
+    const { data } = await serverApi.articleControllerGetFavoritedArticles({
         query: {
             userId: Number(id),
             page: 1,
@@ -21,7 +21,7 @@ export default async function AccountFavoritePage({
             initArticles={data?.data.data || []}
             showFollow={false}
             initPage={2}
-            initTotal={data?.data.meta.total!}
+            initTotal={data?.data.meta.total || 0}
             id={id} />
     )
 }

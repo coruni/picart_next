@@ -1,9 +1,9 @@
-import { tagControllerFindAll } from "@/api";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { TagListClient } from "@/components/topic/TopicList.client";
 import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 import { generateTopicMetadata } from "@/lib/seo";
+import { serverApi } from "@/lib/server-api";
 
 // 动态生成元数据
 export async function generateMetadata({
@@ -19,7 +19,7 @@ export default async function TopicPage() {
     const t = await getTranslations("topicPage");
     
     // 请求初始tag
-    const { data } = await tagControllerFindAll({
+    const { data } = await serverApi.tagControllerFindAll({
         query: {
             page: 1,
             limit: 10

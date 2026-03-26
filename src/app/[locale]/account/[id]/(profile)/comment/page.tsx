@@ -1,5 +1,5 @@
-import { commentControllerGetUserComments } from "@/api";
 import { CommentListClient } from "@/components/account/CommentList.client";
+import { serverApi } from "@/lib/server-api";
 
 
 export default async function AccountCommentPage({
@@ -9,7 +9,7 @@ export default async function AccountCommentPage({
 }) {
     const { id } = await params;
     // 加载首屏评论数据 
-    const { data } = await commentControllerGetUserComments({
+    const { data } = await serverApi.commentControllerGetUserComments({
         path: { userId: id }
     })
     return (

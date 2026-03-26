@@ -1,5 +1,5 @@
-import { userControllerFindOne } from "@/api";
 import { ProfileEditForm } from "@/components/account/ProfileEditForm.client";
+import { serverApi } from "@/lib/server-api";
 import { notFound } from "next/navigation";
 
 export default async function AccountEditPage({
@@ -8,7 +8,7 @@ export default async function AccountEditPage({
   params: Promise<{ id: string; locale: string }>;
 }) {
   const { id, locale } = await params;
-  const { data } = await userControllerFindOne({ path: { id } });
+  const { data } = await serverApi.userControllerFindOne({ path: { id } });
 
   if (!data?.data) {
     notFound();

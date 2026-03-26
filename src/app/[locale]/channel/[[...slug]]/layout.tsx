@@ -1,13 +1,10 @@
-import {
-  categoryControllerFindAll,
-  configControllerGetPublicConfigs,
-} from "@/api";
 import { ReactNode } from "react";
 import Image from "next/image";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { ChannelTabs } from "@/components/channel/ChannelTabs";
 import { ChannelNav } from "@/components/channel/ChannelNav";
 import { generateSiteMetadata } from "@/lib/seo";
+import { serverApi } from "@/lib/server-api";
 
 interface ChannelLayoutProps {
   children: ReactNode;
@@ -25,7 +22,7 @@ export async function generateMetadata({ params }: ChannelLayoutProps) {
   const pid = slug[0];
 
   // 获取分类列表
-  const { data } = await categoryControllerFindAll({
+  const { data } = await serverApi.categoryControllerFindAll({
     query: { page: 1, limit: 100 },
   });
   const currentChannel = data?.data.data.find(
@@ -37,7 +34,7 @@ export async function generateMetadata({ params }: ChannelLayoutProps) {
   }
 
   // 获取公共配置
-  const config = await configControllerGetPublicConfigs();
+  const config = await serverApi.configControllerGetPublicConfigs();
   const siteName = config?.data?.data.site_name || "PicArt";
 
   // 返回主分类的 SEO
@@ -93,7 +90,7 @@ export default async function ChannelLayout({
   const pid = slug[0];
 
   // 获取分类列表
-  const { data } = await categoryControllerFindAll({
+  const { data } = await serverApi.categoryControllerFindAll({
     query: { page: 1, limit: 100 },
   });
   const currentChannel = data?.data.data.find(
