@@ -53,7 +53,7 @@ export const renderToolbar = ({
   onImageUpload,
 }: RenderToolbarOptions) => {
   const toolbar = document.createElement("div");
-  toolbar.className = "ql-toolbar ql-snow flex items-center bg-border!";
+  toolbar.className = "ql-toolbar ql-snow top-header sticky z-20 flex items-center bg-border! shadow-sm";
 
   // 关闭所有下拉菜单
   const closeAllDropdowns = () => {
@@ -539,39 +539,8 @@ export const renderToolbar = ({
 
   toolbar.appendChild(row6);
 
-  // 插入 toolbar
   const editorContainer = container.querySelector(".editor-container");
   if (editorContainer) {
     container.insertBefore(toolbar, editorContainer);
-
-    // 获取 toolbar 的初始位置
-    const toolbarTop = toolbar.offsetTop;
-
-    // 监听滚动，让 toolbar 固定在视口上方 60px
-    window.addEventListener("scroll", () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      if (scrollTop > toolbarTop) {
-        // 获取容器的宽度和左边距
-        const containerWidth = container.offsetWidth;
-        const containerLeft =
-          container.getBoundingClientRect().left + window.scrollX;
-
-        toolbar.style.position = "fixed";
-        toolbar.style.top = "60px";
-        toolbar.style.zIndex = "20";
-        toolbar.style.left = `${containerLeft}px`;
-        toolbar.style.width = `${containerWidth}px`;
-        toolbar.style.background = "var(--muted)";
-        toolbar.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
-      } else {
-        toolbar.style.position = "relative";
-        toolbar.style.top = "auto";
-        toolbar.style.zIndex = "auto";
-        toolbar.style.left = "auto";
-        toolbar.style.width = "auto";
-        toolbar.style.background = "";
-        toolbar.style.boxShadow = "";
-      }
-    });
   }
 };
