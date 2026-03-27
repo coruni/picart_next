@@ -20,7 +20,6 @@ type ImageGalleryProps = {
 
 export function ImageGallery({ images, alt = "Gallery image" }: ImageGalleryProps) {
     const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
-    const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
     const [viewerVisible, setViewerVisible] = useState(false);
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -103,7 +102,6 @@ export function ImageGallery({ images, alt = "Gallery image" }: ImageGalleryProp
                 {/* 主图 Swiper - 下方，高度自适应 */}
                 <div className="w-full overflow-hidden rounded-xl">
                     <Swiper
-                        onSwiper={setMainSwiper}
                         modules={[Thumbs]}
                         thumbs={{
                             swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null

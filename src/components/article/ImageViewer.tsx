@@ -50,6 +50,13 @@ export function ImageViewer({
   const [viewerMounted, setViewerMounted] = useState(visible);
   const totalImages = images.length;
   const isMobileViewport = () => window.innerWidth < 768;
+  const getSafeIndex = useCallback(
+    (index: number) => {
+      if (totalImages <= 0) return 0;
+      return Math.min(Math.max(index, 0), totalImages - 1);
+    },
+    [totalImages],
+  );
   const customViewerStyles = `
     .viewer-transition {
       transition: all 0.15s !important;
@@ -161,7 +168,8 @@ export function ImageViewer({
   }, []);
 
   const openViewerInstance = useCallback((index: number) => {
-    pendingIndexRef.current = index;
+    const safeIndex = getSafeIndex(index);
+    pendingIndexRef.current = safeIndex;
 
     requestAnimationFrame(() => {
       setViewerMounted(true);
@@ -174,11 +182,11 @@ export function ImageViewer({
         if (!isShownRef.current) {
           viewerRef.current.show();
         } else {
-          viewerRef.current.view(index);
+          viewerRef.current.view(safeIndex);
         }
       });
     });
-  }, []);
+  }, [getSafeIndex]);
 
   const applyCanvasLayout = useCallback(() => {
     const container = viewerContainerRef.current;
@@ -187,9 +195,10 @@ export function ImageViewer({
     const canvas = container.querySelector(".viewer-canvas") as HTMLElement | null;
     if (!canvas) return;
 
-    const leftOffset = 130;
-    const rightOffset = isMobileViewport()
-      ? 16
+    const isMobile = isMobileViewport();
+    const leftOffset = isMobile ? 24 : 130;
+    const rightOffset = isMobile
+      ? 24
       : panelExpandedRef.current
         ? 486
         : 96;
@@ -199,6 +208,27 @@ export function ImageViewer({
       right: `${rightOffset}px`,
       width: "auto",
     });
+  }, []);
+
+  const applyNavigationButtonLayout = useCallback(() => {
+    const container = viewerContainerRef.current;
+    if (!container) return;
+
+    const offset = isMobileViewport() ? "24px" : "112px";
+    const prevButton = container.querySelector(
+      ".custom-prev-btn",
+    ) as HTMLButtonElement | null;
+    const nextButton = container.querySelector(
+      ".custom-next-btn",
+    ) as HTMLButtonElement | null;
+
+    if (prevButton) {
+      prevButton.style.left = offset;
+    }
+
+    if (nextButton) {
+      nextButton.style.right = offset;
+    }
   }, []);
 
   const updateIndexDisplay = useCallback(
@@ -221,7 +251,7 @@ export function ImageViewer({
       thumbnails.forEach((thumb, i) => {
         const el = thumb as HTMLElement;
         if (i === index) {
-          el.style.borderColor = "#3b82f6";
+          el.style.borderColor = "var(--color-primary)";
           el.style.opacity = "1";
         } else {
           el.style.borderColor = "rgba(255, 255, 255, 0.3)";
@@ -305,6 +335,7 @@ export function ImageViewer({
     const container = viewerContainerRef.current;
 
     applyCanvasLayout();
+    applyNavigationButtonLayout();
 
     if (!container.querySelector(".custom-close-btn")) {
       const closeButton = document.createElement("button");
@@ -476,7 +507,7 @@ export function ImageViewer({
           overflow: "hidden",
           border: "2px solid",
           borderColor:
-            idx === currentIndex ? "#3b82f6" : "rgba(255, 255, 255, 0.3)",
+            idx === currentIndex ? "var(--color-primary)" : "rgba(255, 255, 255, 0.3)",
           opacity: idx === currentIndex ? "1" : "0.6",
           transition: "all 0.2s",
           boxSizing: "border-box",
@@ -551,6 +582,7 @@ export function ImageViewer({
   }, [
     alt,
     applyCanvasLayout,
+    applyNavigationButtonLayout,
     getCurrentIndex,
     images,
     syncPanelToggleButton,
@@ -609,11 +641,12 @@ export function ImageViewer({
         applyCanvasLayout();
 
         const index = pendingIndexRef.current ?? initialIndex;
+        const safeIndex = getSafeIndex(index);
 
         requestAnimationFrame(() => {
           if (!viewerRef.current) return;
-          viewerRef.current.view(index);
-          updateIndexDisplay(index);
+          viewerRef.current.view(safeIndex);
+          updateIndexDisplay(safeIndex);
         });
       },
 
@@ -626,7 +659,7 @@ export function ImageViewer({
       },
 
       view(event) {
-        const index = event.detail.index;
+        const index = getSafeIndex(event.detail.index);
         pendingIndexRef.current = index;
         updateIndexDisplay(index);
         onChangeRef.current?.(index);
@@ -648,6 +681,7 @@ export function ImageViewer({
     disposeViewerInstance,
     destroyViewerInstance,
     applyCanvasLayout,
+    getSafeIndex,
     updateIndexDisplay,
   ]);
 
@@ -661,6 +695,7 @@ export function ImageViewer({
     if (!visible || !isShownRef.current) return;
 
     applyCanvasLayout();
+    applyNavigationButtonLayout();
     syncPanelToggleButton();
 
     const panelEl = panelRef.current;
@@ -686,8 +721,39 @@ export function ImageViewer({
     panelExpanded,
     visible,
     applyCanvasLayout,
+    applyNavigationButtonLayout,
     getCurrentIndex,
     syncPanelToggleButton,
+    updateIndexDisplay,
+  ]);
+
+  useEffect(() => {
+    if (!visible || !viewerRef.current) return;
+
+    const handleResize = () => {
+      applyCanvasLayout();
+      applyNavigationButtonLayout();
+
+      const currentIndex = getSafeIndex(getCurrentIndex());
+      requestAnimationFrame(() => {
+        viewerRef.current?.view(currentIndex);
+        updateIndexDisplay(currentIndex);
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.visualViewport?.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.visualViewport?.removeEventListener("resize", handleResize);
+    };
+  }, [
+    visible,
+    applyCanvasLayout,
+    applyNavigationButtonLayout,
+    getCurrentIndex,
+    getSafeIndex,
     updateIndexDisplay,
   ]);
 
