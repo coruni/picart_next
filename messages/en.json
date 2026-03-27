@@ -331,5 +331,18 @@
       "update": "Update"
     },
     "loading": "Loading..."
+  },
+  "imageViewer": {
+    "panelTitle": "Image Details",
+    "collapsePanel": "Collapse panel",
+    "expandPanel": "Expand panel",
+    "currentImage": "Current image",
+    "zoomRatio": "Zoom ratio",
+    "prev": "Previous image",
+    "next": "Next image",
+    "zoomOut": "Zoom out",
+    "zoomIn": "Zoom in",
+    "fitWidth": "Fit width",
+    "rotateLeft90": "Rotate left 90°"
   }
 }

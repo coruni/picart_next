@@ -51,6 +51,17 @@ type SetupViewerCustomUIOptions = {
   syncPanelToggleButton: () => void;
   syncToolbarState: () => void;
   setPanelExpanded: Dispatch<SetStateAction<boolean>>;
+  enableSidePanel: boolean;
+  labels: {
+    currentImage: string;
+    zoomRatio: string;
+    prev: string;
+    next: string;
+    zoomOut: string;
+    zoomIn: string;
+    fitWidth: string;
+    rotateLeft90: string;
+  };
 };
 
 export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
@@ -68,6 +79,8 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     syncPanelToggleButton,
     syncToolbarState,
     setPanelExpanded,
+    enableSidePanel,
+    labels,
   } = options;
 
   applyCanvasLayout();
@@ -111,7 +124,7 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     container.appendChild(closeButton);
   }
 
-  if (!container.querySelector(".custom-panel-toggle-btn")) {
+  if (enableSidePanel && !container.querySelector(".custom-panel-toggle-btn")) {
     const panelToggleBtn = document.createElement("button");
     panelToggleBtn.className = "custom-panel-toggle-btn";
 
@@ -126,7 +139,9 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     container.appendChild(panelToggleBtn);
   }
 
-  syncPanelToggleButton();
+  if (enableSidePanel) {
+    syncPanelToggleButton();
+  }
   syncToolbarState();
 
   if (!container.querySelector(".custom-prev-btn")) {
@@ -311,18 +326,18 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
 
     const indexDisplay = document.createElement("div");
     indexDisplay.className = "custom-toolbar-value custom-index-display";
-    indexDisplay.dataset.tooltip = "当前图片";
+    indexDisplay.dataset.tooltip = labels.currentImage;
     indexDisplay.innerHTML = `<span>1/${totalImages}</span>`;
 
     const zoomDisplay = document.createElement("div");
     zoomDisplay.className = "custom-toolbar-value custom-zoom-display";
-    zoomDisplay.dataset.tooltip = "缩放比例";
+    zoomDisplay.dataset.tooltip = labels.zoomRatio;
     zoomDisplay.innerHTML = `<span>${getZoomPercentage()}</span>`;
 
     toolbar.appendChild(
       createToolbarButton(
         "custom-toolbar-prev",
-        "上一张",
+        labels.prev,
         renderIcon(ChevronLeft, "", 18),
         () => viewer.prev(),
       ),
@@ -331,7 +346,7 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     toolbar.appendChild(
       createToolbarButton(
         "custom-toolbar-next",
-        "下一张",
+        labels.next,
         renderIcon(ChevronRight, "", 18),
         () => viewer.next(),
       ),
@@ -339,7 +354,7 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     toolbar.appendChild(
       createToolbarButton(
         "custom-toolbar-zoom-out",
-        "缩小",
+        labels.zoomOut,
         renderIcon(Minus, "", 18),
         () => viewer.zoom(-0.1),
       ),
@@ -348,7 +363,7 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     toolbar.appendChild(
       createToolbarButton(
         "custom-toolbar-zoom-in",
-        "放大",
+        labels.zoomIn,
         renderIcon(Plus, "", 18),
         () => viewer.zoom(0.1),
       ),
@@ -356,7 +371,7 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     toolbar.appendChild(
       createToolbarButton(
         "custom-toolbar-one-to-one",
-        "定宽",
+        labels.fitWidth,
         renderIcon(Square, "", 16),
         () => {
           const currentViewer = viewer as Viewer & {
@@ -369,7 +384,7 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     toolbar.appendChild(
       createToolbarButton(
         "custom-flip-btn",
-        "左转90°",
+        labels.rotateLeft90,
         renderIcon(RotateCcwSquare, "", 18),
         () => viewer.rotate(-90),
       ),

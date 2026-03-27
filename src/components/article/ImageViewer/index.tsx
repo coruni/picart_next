@@ -7,8 +7,10 @@ import ReactDOMServer from "react-dom/server";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
+import { useTranslations } from "next-intl";
 import { customViewerStyles } from "./imageViewerStyles";
 import { cleanupViewerCustomUI, setupViewerCustomUI } from "./imageViewerUI";
+import { cn } from "@/lib";
 
 type ImageViewerProps = {
   images: string[];
@@ -17,6 +19,7 @@ type ImageViewerProps = {
   onClose: () => void;
   onChange?: (index: number) => void;
   alt?: string;
+  enableSidePanel?: boolean;
 };
 
 const renderIcon = (
@@ -36,7 +39,9 @@ export function ImageViewer({
   onClose,
   onChange,
   alt = "Image",
+  enableSidePanel = true,
 }: ImageViewerProps) {
+  const t = useTranslations("imageViewer");
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerContainerRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -107,19 +112,25 @@ export function ImageViewer({
     const container = viewerContainerRef.current;
     if (!container) return;
 
-    const canvas = container.querySelector(".viewer-canvas") as HTMLElement | null;
+    const canvas = container.querySelector(
+      ".viewer-canvas",
+    ) as HTMLElement | null;
     if (!canvas) return;
 
     const isMobile = isMobileViewport();
     const leftOffset = isMobile ? 24 : 130;
-    const rightOffset = isMobile ? 24 : panelExpandedRef.current ? 486 : 96;
+    const rightOffset = isMobile
+      ? 24
+      : enableSidePanel && panelExpandedRef.current
+        ? 486
+        : 96;
 
     Object.assign(canvas.style, {
       left: `${leftOffset}px`,
       right: `${rightOffset}px`,
       width: "auto",
     });
-  }, []);
+  }, [enableSidePanel]);
 
   const applyNavigationButtonLayout = useCallback(() => {
     const container = viewerContainerRef.current;
@@ -150,7 +161,9 @@ export function ImageViewer({
         indexDisplay.textContent = `${index + 1}/${totalImages}`;
       }
 
-      const thumbnails = viewerContainer.querySelectorAll(".custom-thumbnail-item");
+      const thumbnails = viewerContainer.querySelectorAll(
+        ".custom-thumbnail-item",
+      );
       thumbnails.forEach((thumb, i) => {
         const el = thumb as HTMLElement;
         if (i === index) {
@@ -196,6 +209,8 @@ export function ImageViewer({
   }, [getZoomPercentage]);
 
   const syncPanelToggleButton = useCallback(() => {
+    if (!enableSidePanel) return;
+
     const container = viewerContainerRef.current;
     if (!container) return;
 
@@ -210,8 +225,11 @@ export function ImageViewer({
       "",
       18,
     );
-    panelToggleBtn.setAttribute("aria-label", panelExpandedRef.current ? "Collapse panel" : "Expand panel");
-  }, []);
+    panelToggleBtn.setAttribute(
+      "aria-label",
+      panelExpandedRef.current ? t("collapsePanel") : t("expandPanel"),
+    );
+  }, [enableSidePanel, t]);
 
   const cleanupCustomUI = useCallback(() => {
     const container = viewerContainerRef.current;
@@ -254,6 +272,17 @@ export function ImageViewer({
       syncPanelToggleButton,
       syncToolbarState,
       setPanelExpanded,
+      enableSidePanel,
+      labels: {
+        currentImage: t("currentImage"),
+        zoomRatio: t("zoomRatio"),
+        prev: t("prev"),
+        next: t("next"),
+        zoomOut: t("zoomOut"),
+        zoomIn: t("zoomIn"),
+        fitWidth: t("fitWidth"),
+        rotateLeft90: t("rotateLeft90"),
+      },
     });
   }, [
     images,
@@ -266,7 +295,15 @@ export function ImageViewer({
     updateIndexDisplay,
     syncPanelToggleButton,
     syncToolbarState,
+    enableSidePanel,
+    t,
   ]);
+
+  useEffect(() => {
+    if (enableSidePanel) return;
+    panelExpandedRef.current = false;
+    setPanelExpanded(false);
+  }, [enableSidePanel]);
 
   useEffect(() => {
     if (!visible) {
@@ -371,6 +408,7 @@ export function ImageViewer({
   }, [visible, initialIndex, openViewerInstance]);
 
   useEffect(() => {
+    if (!enableSidePanel) return;
     if (!visible || !isShownRef.current) return;
 
     applyCanvasLayout();
@@ -397,6 +435,7 @@ export function ImageViewer({
       panelEl.removeEventListener("transitionend", handleTransitionEnd);
     };
   }, [
+    enableSidePanel,
     panelExpanded,
     visible,
     applyCanvasLayout,
@@ -465,22 +504,24 @@ export function ImageViewer({
           id="left-panel"
         />
 
-        <div
-          ref={panelRef}
-          className="custom-panel relative flex h-full shrink-0 flex-col overflow-hidden bg-card transition-[width] duration-300"
-          id="right-panel"
-          style={{ width: panelExpanded ? "390px" : "0" }}
-        >
-          <div className="border-b border-white/10 p-4">
-            <h3 className="text-lg font-medium text-white"></h3>
+        {enableSidePanel ? (
+          <div
+            ref={panelRef}
+            className={cn(
+              "custom-panel relative flex h-full shrink-0 flex-col overflow-hidden bg-card transition-[width] duration-300",
+              panelExpanded ? "w-97.5" : "w-0",
+            )}
+            id="right-panel"
+          >
+            <div className="border-b border-white/10 p-4">
+              <h3 className="text-lg font-medium text-white">{t("panelTitle")}</h3>
+            </div>
+            <div className="flex-1 overflow-auto p-4 text-white">
+              {/* panel content */}
+            </div>
           </div>
-          <div className="flex-1 overflow-auto p-4 text-white">
-            {/* panel content */}
-          </div>
-        </div>
+        ) : null}
       </div>
     </>
   );
 }
-
-

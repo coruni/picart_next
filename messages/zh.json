@@ -330,5 +330,18 @@
       "update": "更新"
     },
     "loading": "加载中..."
+  },
+  "imageViewer": {
+    "panelTitle": "图片详情",
+    "collapsePanel": "收起面板",
+    "expandPanel": "展开面板",
+    "currentImage": "当前图片",
+    "zoomRatio": "缩放比例",
+    "prev": "上一张",
+    "next": "下一张",
+    "zoomOut": "缩小",
+    "zoomIn": "放大",
+    "fitWidth": "1:1(定宽)",
+    "rotateLeft90": "向左旋转 90°"
   }
 }
