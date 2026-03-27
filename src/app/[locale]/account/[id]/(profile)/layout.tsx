@@ -65,7 +65,7 @@ export default async function AccountLayout({
         <div className="page-container pt-4!">
           <div className="left-container">
             {/* Tabs 导航 */}
-            <div className="px-8 h-14 flex items-center border-b border-border sticky top-[110px] bg-card z-5 rounded-t-xl">
+            <div className="top-header-tabs px-8 h-14 flex items-center border-b border-border sticky bg-card z-5 rounded-t-xl">
               <AccountTabs />
             </div>
             {children}

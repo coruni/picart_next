@@ -104,7 +104,7 @@ export default async function ChannelLayout({
   return (
     <>
       {/* 背景 */}
-      <div className="fixed top-15 h-101 w-full z-0">
+      <div className="top-header fixed h-101 w-full z-0">
         <Image
           quality={95}
           src={
@@ -132,7 +132,7 @@ export default async function ChannelLayout({
       <div className="mt-60 w-full z-10 relative dark:bg-gray-800">
         <div className="page-container">
           <div className="left-container">
-            <div className="px-10 h-14 flex items-center border-b border-border sticky top-15 bg-card z-5 rounded-t-xl">
+            <div className="top-header px-10 h-14 flex items-center border-b border-border sticky bg-card z-5 rounded-t-xl">
               <ChannelTabs parentId={pid}>
                 {currentChannel.children}
               </ChannelTabs>

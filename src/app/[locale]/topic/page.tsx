@@ -30,7 +30,7 @@ export default async function TopicPage() {
     return (
         <div className="page-container">
             <div className="left-container">
-                <div className="px-4 h-14 flex items-center border-b rounded-t-xl border-border sticky top-[50px] bg-white dark:bg-gray-800 z-15">
+                <div className="top-header px-4 h-14 flex items-center border-b rounded-t-xl border-border sticky bg-white dark:bg-gray-800 z-15">
                     <div className="h-full flex-1 flex items-center">
                         <span className="font-bold text-base pr-6">
                             {t("recommendedTopics")}

@@ -46,7 +46,7 @@ export const TopicInfo = ({ tag, isFollowed: initialIsFollowed }: TopicInfoProps
     };
 
     return (
-        <div className="px-10 z-10 sticky top-15 bg-card border-t-border border-t">
+        <div className="top-header px-10 z-10 sticky bg-card border-t-border border-t">
             <div className="flex items-center h-14 space-x-4">
                 {/* 头像 */}
                 <div className={cn(

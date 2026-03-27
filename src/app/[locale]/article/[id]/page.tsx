@@ -62,7 +62,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
     <div className="page-container">
       <div className="left-container ">
         {/* 顶部header */}
-        <div className="px-4 h-14 flex items-center border-b  rounded-t-xl border-border sticky top-[50px] bg-white dark:bg-gray-800 z-15">
+        <div className="top-header px-4 h-14 flex items-center border-b rounded-t-xl border-border sticky bg-white dark:bg-gray-800 z-15">
           <div className="h-full flex-1 flex items-center">
             <span className="font-bold text-base pr-6">帖子详情页</span>
           </div>
@@ -94,7 +94,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             </h1>
           </div>
           {/* 作者信息 */}
-          <div className="mt-4 h-14 sticky top-24.75 z-10 bg-white dark:bg-gray-800">
+          <div className="top-header-tabs mt-4 h-14 sticky z-10 bg-white dark:bg-gray-800">
             <ArticleAuthor
               author={article?.author}
               createdAt={article?.createdAt}

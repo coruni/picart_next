@@ -52,7 +52,7 @@ export function ChannelNav({ channels, currentId }: ChannelNavProps) {
 
   return (
     <div
-      className={`fixed top-15 w-full h-25 bg-linear-to-b from-[#000000D9] to-transparent transition-transform duration-300 ${
+      className={`top-header fixed w-full h-25 bg-linear-to-b from-[#000000D9] to-transparent transition-transform duration-300 ${
         isHidden ? "-translate-y-full" : "translate-y-0"
       }`}
     >

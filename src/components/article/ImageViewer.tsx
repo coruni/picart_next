@@ -49,6 +49,7 @@ export function ImageViewer({
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [viewerMounted, setViewerMounted] = useState(visible);
   const totalImages = images.length;
+  const isMobileViewport = () => window.innerWidth < 768;
   const customViewerStyles = `
     .viewer-transition {
       transition: all 0.15s !important;
@@ -129,6 +130,17 @@ export function ImageViewer({
       );
       transform: rotate(180deg);
     }
+
+    @media (max-width: 767px) {
+      .custom-thumbnail-column {
+        display: none !important;
+      }
+
+      .custom-panel,
+      .custom-panel-toggle-btn {
+        display: none !important;
+      }
+    }
   `;
 
   useEffect(() => {
@@ -176,7 +188,11 @@ export function ImageViewer({
     if (!canvas) return;
 
     const leftOffset = 130;
-    const rightOffset = panelExpandedRef.current ? 486 : 96;
+    const rightOffset = isMobileViewport()
+      ? 16
+      : panelExpandedRef.current
+        ? 486
+        : 96;
 
     Object.assign(canvas.style, {
       left: `${leftOffset}px`,
@@ -298,7 +314,7 @@ export function ImageViewer({
       Object.assign(closeButton.style, {
         position: "absolute",
         top: "20px",
-        right: "112px",
+        left: "20px",
         width: "44px",
         height: "44px",
         backgroundColor: "rgba(0, 0, 0, 0.5)",
