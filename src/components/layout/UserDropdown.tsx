@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { Link } from "@/i18n/routing";
 import {
@@ -17,6 +19,7 @@ import { Switch } from "@/components/ui/Switch";
 import { MODAL_IDS, openLoginDialog } from "@/lib/modal-helpers";
 import { UserLoginDialog } from "./UserLoginDialog";
 import { Avatar } from "../ui/Avatar";
+import { GuardedLink } from "@/components/shared/GuardedLink";
 
 export function UserDropdown() {
   const t = useTranslations("common");
@@ -26,12 +29,10 @@ export function UserDropdown() {
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const user = useUserStore((state) => state.user);
   const logout = useUserStore((state) => state.logout);
-
   const modalStore = useModalStore();
 
   const handleLogout = async () => {
     logout();
-    // 强制刷新页面，确保服务端重新渲染
     window.location.reload();
   };
 
@@ -41,32 +42,29 @@ export function UserDropdown() {
 
   return (
     <>
-      <div className="relative group">
-        <div className="flex items-center justify-center shrink-0 rounded-full cursor-pointer bg-primary/20 hover:ring-2 hover:ring-primary transition-all">
+      <div className="group relative">
+        <div className="flex shrink-0 cursor-pointer items-center justify-center rounded-full bg-primary/20 transition-all hover:ring-2 hover:ring-primary">
           <Avatar
             bordered
             url={user?.avatar}
             frameUrl={user?.equippedDecorations?.AVATAR_FRAME?.imageUrl}
             className="size-10"
-          ></Avatar>
+          />
         </div>
 
-        {/* Hover 面板 */}
-        <div className="absolute right-0 mt-2 min-w-90 bg-card rounded-xl shadow-lg border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-          {/* 我的信息 - 仅登录后显示 */}
+        <div className="invisible absolute right-0 z-50 mt-2 min-w-90 rounded-xl border border-border bg-card opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
           {isAuthenticated && (
             <>
-              <h3 className="text-lg font-bold text-foreground px-3 py-4">
+              <h3 className="px-3 py-4 text-lg font-bold text-foreground">
                 {tHeader("myInfo")}
               </h3>
               <div className="p-1">
-                {/* 个人主页 */}
                 <Link
                   href={`/account/${user?.id}`}
-                  className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1"
+                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center shrink-0">
+                    <div className="flex shrink-0 items-center justify-center">
                       <User className="size-5" />
                     </div>
                     <span className="text-sm font-medium">
@@ -77,14 +75,13 @@ export function UserDropdown() {
                 </Link>
               </div>
 
-              {/* 信息管理 */}
               <div className="p-1">
-                <Link
+                <GuardedLink
                   href="/profile/messages"
-                  className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1"
+                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center shrink-0">
+                    <div className="flex shrink-0 items-center justify-center">
                       <MessageCircle className="size-5" />
                     </div>
                     <span className="text-sm font-medium">
@@ -92,17 +89,16 @@ export function UserDropdown() {
                     </span>
                   </div>
                   <ChevronRight className="size-4" />
-                </Link>
+                </GuardedLink>
               </div>
 
-              {/* 隐私设置 */}
               <div className="p-1">
-                <Link
+                <GuardedLink
                   href="/profile/privacy"
-                  className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1"
+                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center shrink-0">
+                    <div className="flex shrink-0 items-center justify-center">
                       <Lock className="size-5" />
                     </div>
                     <span className="text-sm font-medium">
@@ -110,17 +106,16 @@ export function UserDropdown() {
                     </span>
                   </div>
                   <ChevronRight className="size-4" />
-                </Link>
+                </GuardedLink>
               </div>
 
-              {/* 屏蔽用户管理 */}
               <div className="p-1">
-                <Link
+                <GuardedLink
                   href="/profile/blocked-users"
-                  className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1"
+                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center shrink-0">
+                    <div className="flex shrink-0 items-center justify-center">
                       <UserRoundX className="size-5" />
                     </div>
                     <span className="text-sm font-medium">
@@ -128,23 +123,22 @@ export function UserDropdown() {
                     </span>
                   </div>
                   <ChevronRight className="size-4" />
-                </Link>
+                </GuardedLink>
               </div>
             </>
           )}
 
-          {/* 系统设置标题 */}
-          <h3 className="text-lg font-bold text-foreground px-3 py-4">
+          <h3 className="px-3 py-4 text-lg font-bold text-foreground">
             {tHeader("systemSettings")}
           </h3>
+
           <div className="p-1">
-            {/* 切换语言 */}
             <Link
               href="#"
-              className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1"
+              className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
             >
               <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center shrink-0">
+                <div className="flex shrink-0 items-center justify-center">
                   <Globe className="size-5" />
                 </div>
                 <span className="text-sm font-medium">
@@ -158,14 +152,13 @@ export function UserDropdown() {
             </Link>
           </div>
 
-          {/* 外观设置 */}
           <div className="p-1">
             <Link
               href="#"
-              className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1"
+              className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
             >
               <div className="flex items-center gap-3">
-                <div className="rounded-full flex items-center justify-center shrink-0">
+                <div className="flex shrink-0 items-center justify-center rounded-full">
                   <Moon className="size-5" />
                 </div>
                 <span className="text-sm font-medium">
@@ -179,11 +172,10 @@ export function UserDropdown() {
             </Link>
           </div>
 
-          {/* 自动翻译推荐内容 */}
           <div className="p-1">
-            <div className="flex items-center h-10 justify-between px-2 text-gray-500 hover:bg-primary/15 hover:text-primary rounded-lg transition-colors mb-1">
+            <div className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary">
               <div className="flex items-center gap-3">
-                <div className="rounded-full flex items-center justify-center shrink-0">
+                <div className="flex shrink-0 items-center justify-center rounded-full">
                   <svg
                     className="size-5"
                     fill="none"
@@ -209,15 +201,13 @@ export function UserDropdown() {
             </div>
           </div>
 
-          {/* 分隔线 */}
-          <div className="border-t border-border my-2"></div>
+          <div className="my-2 border-t border-border" />
 
-          {/* 登录/退出按钮 */}
-          <div className="pb-2 px-1">
+          <div className="px-1 pb-2">
             {isAuthenticated ? (
               <button
                 onClick={handleLogout}
-                className="flex items-center cursor-pointer text-gray-500 gap-2 px-2 h-10 w-full hover:bg-primary/15  hover:text-primary rounded-lg transition-colors"
+                className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
               >
                 <Power className="size-5" />
                 <span className="text-sm font-medium">{t("logout")}</span>
@@ -225,7 +215,7 @@ export function UserDropdown() {
             ) : (
               <button
                 onClick={openLoginDialog}
-                className="flex items-center cursor-pointer  w-full text-gray-500 gap-2 px-2 h-10 hover:bg-primary/15 hover:text-primary  rounded-lg transition-colors"
+                className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
               >
                 <LogIn className="size-5" />
                 <span className="text-sm font-medium">{t("login")}</span>

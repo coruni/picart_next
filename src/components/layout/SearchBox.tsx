@@ -38,6 +38,7 @@ interface SearchBoxProps {
   scrolled?: boolean;
   placeholder?: string;
   className?: string;
+  mobileVisible?: boolean;
 }
 
 export function SearchBox({
@@ -46,6 +47,7 @@ export function SearchBox({
   scrolled = false,
   placeholder,
   className,
+  mobileVisible = false,
 }: SearchBoxProps) {
   const t = useTranslations("common");
   const router = useRouter();
@@ -192,7 +194,8 @@ export function SearchBox({
   return (
     <div
       className={cn(
-        "flex-1 items-center justify-center hidden md:flex",
+        "flex-1 items-center justify-center",
+        mobileVisible ? "flex md:hidden" : "hidden md:flex",
         className,
       )}
     >

@@ -8,6 +8,7 @@ import { Header } from "@/components/layout/Header";
 import { NotificationContainer } from "@/components/shared";
 import { generateSiteMetadata } from "@/lib/seo";
 import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
+import { AuthRouteGuard } from "@/components/providers/AuthRouteGuard";
 import { UserStateProvider } from "@/components/providers/UserStateProvider";
 import { getServerCookie } from "@/lib/server-cookies";
 import {
@@ -161,6 +162,7 @@ export default async function LocaleLayout({
           initialUser={initialUser}
           initialConfig={config}
         >
+          <AuthRouteGuard />
           <Header categories={category.data?.data.data} />
           <div className="flex flex-1 flex-col min-h-screen">{children}</div>
           <NotificationContainer />

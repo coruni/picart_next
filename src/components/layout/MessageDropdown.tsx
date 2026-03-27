@@ -1,18 +1,17 @@
 "use client";
-import { useState, useEffect } from "react";
-import { EmptyState } from "@/components/shared";
+
+import { useEffect, useState } from "react";
 import { BrushCleaning, MessageCircle, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useUserStore } from "@/stores";
+import { messageControllerFindAll, messageControllerMarkAllAsRead } from "@/api";
+import { EmptyState } from "@/components/shared";
 import { Button } from "@/components/ui/Button";
-import { MessageList } from "@/types";
-import {
-  messageControllerFindAll,
-  messageControllerMarkAllAsRead,
-} from "@/api";
+import { GuardedLink } from "@/components/shared/GuardedLink";
 import { openLoginDialog } from "@/lib/modal-helpers";
-import { Link } from "@/i18n/routing";
+import { useUserStore } from "@/stores";
+import { MessageList } from "@/types";
 import { cn } from "@/lib";
+
 export function MessageDropdown({
   isTransparentBgPage,
   scrolled,
@@ -21,27 +20,22 @@ export function MessageDropdown({
   scrolled?: boolean;
 }) {
   const tHeader = useTranslations("header");
-  const [isHydrated, setIsHydrated] = useState(false);
   const [messages, setMessages] = useState<MessageList>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
-  // 使用 selector 获取响应式状态
+  const [page] = useState(1);
+  const [limit] = useState(10);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
 
   useEffect(() => {
-    setIsHydrated(true);
-  }, []);
+    setMessages([]);
+  }, [isAuthenticated]);
 
-  // 获取消息列表
   const fetchMessages = async () => {
     if (!isAuthenticated || isLoading) return;
 
     setIsLoading(true);
     try {
-      // TODO: 调用 API 获取消息列表
       const { data } = await messageControllerFindAll({
         query: {
           page,
@@ -57,40 +51,35 @@ export function MessageDropdown({
     }
   };
 
-  // 鼠标悬停时加载数据
   const handleMouseEnter = () => {
     if (isAuthenticated && messages.length === 0) {
-      fetchMessages();
+      void fetchMessages();
     }
   };
 
   const handleCleanMessage = async () => {
     await messageControllerMarkAllAsRead();
-    setPage(1);
-    fetchMessages();
+    await fetchMessages();
   };
 
   return (
-    <div className="relative group" onMouseEnter={handleMouseEnter}>
+    <div className="group relative" onMouseEnter={handleMouseEnter}>
       <div
         className={cn(
-          "flex items-center justify-center hover:bg-gray-100",
-          "dark:hover:bg-gray-800 rounded-full p-2 cursor-pointer",
-          "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors",
+          "flex cursor-pointer items-center justify-center rounded-full p-2 transition-colors hover:bg-gray-100",
+          "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white",
           isTransparentBgPage && !scrolled && "text-white",
         )}
       >
         <MessageCircle className="size-5" />
-        {/* 未读消息徽章 */}
         {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-error-500 rounded-full"></span>
+          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-error-500" />
         )}
       </div>
 
-      {/* Hover 面板 */}
-      <div className="absolute right-0 mt-2 min-w-lg w-full bg-card rounded-xl shadow-lg border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-        <div className="p-4 flex items-center justify-between">
-          <h3 className="font-semibold text-foreground flex-1">
+      <div className="invisible absolute right-0 z-50 mt-2 w-full min-w-lg rounded-xl border border-border bg-card opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
+        <div className="flex items-center justify-between p-4">
+          <h3 className="flex-1 font-semibold text-foreground">
             {tHeader("messages")}
           </h3>
           {isAuthenticated && (
@@ -102,9 +91,9 @@ export function MessageDropdown({
               >
                 <BrushCleaning size={18} />
               </button>
-              <Link href="/setting/notification" title="通知设置">
+              <GuardedLink href="/setting/notification" title="通知设置">
                 <Settings size={18} />
-              </Link>
+              </GuardedLink>
             </div>
           )}
         </div>
@@ -118,30 +107,30 @@ export function MessageDropdown({
                 </div>
               ) : messages.length > 0 ? (
                 messages.map((message) => (
-                  <Link
+                  <GuardedLink
                     key={message.id}
                     href={`/messages/${message.id}`}
-                    className="flex items-start gap-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
-                    <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center shrink-0">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900">
                       <span className="text-sm font-semibold text-primary-600 dark:text-primary-400">
                         {message.id}
                       </span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="text-sm font-medium text-foreground truncate">
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-1 flex items-center justify-between">
+                        <p className="truncate text-sm font-medium text-foreground">
                           {message.id}
                         </p>
                         <span className="text-xs text-muted-foreground">
                           {message.createdAt}
                         </span>
                       </div>
-                      <p className="text-sm text-muted-foreground truncate">
+                      <p className="truncate text-sm text-muted-foreground">
                         {message.content}
                       </p>
                     </div>
-                  </Link>
+                  </GuardedLink>
                 ))
               ) : (
                 <div className="px-4 py-8 text-center text-sm text-muted-foreground">
@@ -149,13 +138,13 @@ export function MessageDropdown({
                 </div>
               )}
             </div>
-            <div className="p-3 border-t border-border">
-              <Link
+            <div className="border-t border-border p-3">
+              <GuardedLink
                 href="/messages"
-                className="block text-center text-sm text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
+                className="block text-center text-sm font-medium text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300"
               >
                 {tHeader("viewAllMessages")}
-              </Link>
+              </GuardedLink>
             </div>
           </>
         ) : (

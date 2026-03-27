@@ -7,3 +7,4 @@ export { ArticleListClient } from "./ArticleListClient";
 export { EmptyState } from "./EmptyState";
 export { DropdownMenu } from "./DropdownMenu";
 export type { MenuItem } from "./DropdownMenu";
+export { GuardedLink } from "./GuardedLink";

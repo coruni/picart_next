@@ -15,6 +15,7 @@ import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { SearchBox } from "./SearchBox";
 import { Avatar } from "../ui/Avatar";
 import { openLoginDialog } from "@/lib/modal-helpers";
+import { GuardedLink } from "@/components/shared/GuardedLink";
 
 type HeaderProps = {
   categories?: CategoryList;
@@ -48,7 +49,7 @@ export function Header({ categories }: HeaderProps) {
       </div>
       <div className="absolute right-0 z-50 mt-2 invisible w-auto min-w-xs rounded-xl border border-border bg-card opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
         <div className="space-y-2 p-3">
-          <Link
+          <GuardedLink
             href="/create/post"
             className="group/item flex items-center gap-3 rounded-lg bg-[#F6F9FB] px-4 py-2 whitespace-nowrap transition-colors hover:bg-primary/15 hover:text-primary dark:bg-[#242734]"
           >
@@ -59,8 +60,8 @@ export function Header({ categories }: HeaderProps) {
               {tHeader("create.article")}
             </span>
             <ChevronRight className="size-4 transition-colors" />
-          </Link>
-          <Link
+          </GuardedLink>
+          <GuardedLink
             href="/create/image"
             className="group/item flex items-center gap-3 rounded-lg bg-[#F6F9FB] px-4 py-2 whitespace-nowrap transition-colors hover:bg-primary/15 hover:text-primary dark:bg-[#242734]"
           >
@@ -83,8 +84,8 @@ export function Header({ categories }: HeaderProps) {
               {tHeader("create.image")}
             </span>
             <ChevronRight className="size-4 transition-colors" />
-          </Link>
-          <Link
+          </GuardedLink>
+          <GuardedLink
             href="/create/video"
             className="group/item flex items-center gap-3 rounded-lg bg-[#F6F9FB] px-4 py-2 whitespace-nowrap transition-colors hover:bg-primary/15 hover:text-primary dark:bg-[#242734]"
           >
@@ -107,7 +108,7 @@ export function Header({ categories }: HeaderProps) {
               {tHeader("create.video")}
             </span>
             <ChevronRight className="size-4 transition-colors" />
-          </Link>
+          </GuardedLink>
         </div>
       </div>
     </div>
@@ -126,12 +127,12 @@ export function Header({ categories }: HeaderProps) {
 
   const renderMobileActions = () => (
     <div className="flex items-center gap-2">
-      <Link href="/create/post" className={actionButtonClassName}>
+      <GuardedLink href="/create/post" className={actionButtonClassName}>
         <PenIcon className="size-5" />
-      </Link>
-      <Link href="/messages" className={actionButtonClassName}>
+      </GuardedLink>
+      <GuardedLink href="/messages" className={actionButtonClassName}>
         <MessageCircle className="size-5" />
-      </Link>
+      </GuardedLink>
       {isAuthenticated && user ? (
         <Link
           href={`/account/${user.id}`}
@@ -201,12 +202,30 @@ export function Header({ categories }: HeaderProps) {
             <div className="shrink-0 md:hidden">{renderMobileActions()}</div>
           </div>
 
-          <HeaderTabs
-            categories={categories ?? []}
-            labelClassName={
-              isTransparentBgPage && !scrolled ? "text-white" : undefined
-            }
-          />
+          <div className="flex items-center gap-2 md:hidden">
+            <HeaderTabs
+              categories={categories ?? []}
+              labelClassName={
+                isTransparentBgPage && !scrolled ? "text-white" : undefined
+              }
+            />
+            <SearchBox
+              categories={categories}
+              isAccountPage={isTransparentBgPage}
+              scrolled={scrolled}
+              mobileVisible
+              className="flex-1"
+            />
+          </div>
+
+          <div className="hidden md:block">
+            <HeaderTabs
+              categories={categories ?? []}
+              labelClassName={
+                isTransparentBgPage && !scrolled ? "text-white" : undefined
+              }
+            />
+          </div>
 
           <SearchBox
             categories={categories}
