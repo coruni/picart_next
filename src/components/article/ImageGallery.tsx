@@ -73,7 +73,7 @@ export function ImageGallery({ images, alt = "Gallery image" }: ImageGalleryProp
         <>
             <div className="w-full space-y-2">
                 {/* 缩略图 Swiper - 上方，横向滚动 */}
-                <div className="max-w-[calc(920px-48px)] box-content overflow-hidden">
+                <div className="max-w-218 box-content overflow-hidden">
                     <Swiper
                         onSwiper={setThumbsSwiper}
                         modules={[FreeMode, Thumbs]}
@@ -121,7 +121,7 @@ export function ImageGallery({ images, alt = "Gallery image" }: ImageGalleryProp
                                         width={0}
                                         quality={95}
                                         height={0}
-                                        className="w-full h-auto object-cover block max-h-[1066px]"
+                                        className="w-full h-auto object-cover block max-h-266.5"
                                         alt={`${alt} ${index + 1}`}
                                         sizes="(max-width: 1280px) 100vw, 1920px"
                                         priority={index === 0}

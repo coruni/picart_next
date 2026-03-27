@@ -125,7 +125,11 @@ body {
 }
 
 .viewer-toolbar ul{
-  @apply mb-5! bg-[#000000d9] rounded-xl px-3 py-2  gap-2 inline-flex!
+  @apply mb-5! bg-[#000000d9] rounded-xl px-3! py-2!  gap-2 inline-flex!
+}
+
+.viewer-toolbar ul li {
+  @apply focus:outline-0
 }
 
 .viewer-backdrop {
@@ -135,27 +139,7 @@ body {
 
 
 
-.viewer-prev {
-  order:1
-}
-.custom-index-display{
-  order:2
-}
-.viewer-next{
-  order:3
-}
-.viewer-zoom-in{
-  order:4
-}
-.viewer-zoom-out{
-  order:6
-}
-.viewer-rotate-left{
-  order:7
-}
-.viewer-one-to-one{
-  order:8
-}
+
 
 /* Quill 自定义字号 class 样式 */
 .ql-editor .ql-size-12px { font-size: 12px; }

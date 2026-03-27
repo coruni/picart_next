@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { CommentCard } from "@/components/comment";
-import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {  CommentList, UserCommentList } from "@/types";
 import { commentControllerGetUserComments } from "@/api";
+import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
+import { InfiniteScrollStatus } from "@/components/shared";
 
 type CommentListClientProps = {
   initPage: number;
@@ -45,7 +46,6 @@ export const CommentListClient = ({
 
   // Intersection Observer ref
   const observerRef = useRef<HTMLDivElement>(null);
-  const observerInstanceRef = useRef<IntersectionObserver | null>(null);
 
   // Load more comments function
   const loadMoreComments = useCallback(async () => {
@@ -92,42 +92,15 @@ export const CommentListClient = ({
     }
   }, [loading, hasMore, page, comments.length, initTotal, pageSize, t]);
 
-  // Set up Intersection Observer
-  useEffect(() => {
-    if (!observerRef.current || !hasMore) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting && !loading) {
-          loadMoreComments();
-        }
-      },
-      {
-        root: null,
-        rootMargin: "100px", // Trigger 100px before the element comes into view
-        threshold: 0.1,
+  useInfiniteScrollObserver({
+    targetRef: observerRef,
+    enabled: hasMore,
+    onIntersect: () => {
+      if (!loading) {
+        loadMoreComments();
       }
-    );
-
-    observerInstanceRef.current = observer;
-    observer.observe(observerRef.current);
-
-    return () => {
-      if (observerInstanceRef.current) {
-        observerInstanceRef.current.disconnect();
-      }
-    };
-  }, [loadMoreComments, hasMore, loading]);
-
-  // Cleanup observer on unmount
-  useEffect(() => {
-    return () => {
-      if (observerInstanceRef.current) {
-        observerInstanceRef.current.disconnect();
-      }
-    };
-  }, []);
+    },
+  });
 
   // Handle comment like
   const handleLikeComment = (commentId: number) => {
@@ -151,51 +124,23 @@ export const CommentListClient = ({
         />
       ))}
 
-      {/* Loading indicator and observer target */}
-      {hasMore && (
-        <div ref={observerRef} className="flex items-center justify-center py-8">
-          {loading ? (
-            <div className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin text-primary" />
-              <span className="text-secondary text-sm">{t("loading")}</span>
-            </div>
-          ) : (
-            <div className="text-foreground text-sm">{t("loadMore")}</div>
-          )}
-        </div>
-      )}
-
-      {/* Error state */}
-      {error && (
-        <div className="flex items-center justify-center py-4">
-          <div className="text-center">
-            <p className="text-red-500 mb-2">{error}</p>
-            <button
-              onClick={loadMoreComments}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-              disabled={loading}
-            >
-              {t("retry")}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* End of list indicator */}
-      {!hasMore && comments.length > 0 && (
-        <div className="flex items-center justify-center py-8">
-          <div className="text-muted-foreground text-sm">{t("allLoaded")}</div>
-        </div>
-      )}
-
-      {/* Empty state */}
-      {!hasMore && comments.length === 0 && (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center text-muted-foreground">
-            <p>{t("noComments")}</p>
-          </div>
-        </div>
-      )}
+      <InfiniteScrollStatus
+        observerRef={observerRef}
+        hasMore={hasMore}
+        loading={loading}
+        error={error}
+        isEmpty={comments.length === 0}
+        onRetry={loadMoreComments}
+        loadingText={t("loading")}
+        idleText={t("loadMore")}
+        retryText={t("retry")}
+        allLoadedText={t("allLoaded")}
+        emptyText={t("noComments")}
+        loadingClassName="text-secondary"
+        idleTextClassName="text-foreground"
+        endClassName="text-muted-foreground"
+        emptyClassName="text-muted-foreground"
+      />
     </div>
   );
 };

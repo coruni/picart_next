@@ -3,9 +3,10 @@
 import { ArticleList } from "@/types";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { ArticleCard } from "@/components/article";
-import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
+import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
+import { InfiniteScrollStatus } from "./InfiniteScrollStatus";
 
 type ArticleListClientProps = {
     initArticles: ArticleList;
@@ -104,7 +105,6 @@ export const ArticleListClient = ({
 
     // Intersection Observer ref
     const observerRef = useRef<HTMLDivElement>(null);
-    const observerInstanceRef = useRef<IntersectionObserver | null>(null);
     
     // 保存状态到 sessionStorage
     useEffect(() => {
@@ -205,42 +205,15 @@ export const ArticleListClient = ({
         }
     }, [loading, hasMore, page, articles.length, initTotal, fetchArticles, fetchParams, pageSize, t]);
 
-    // Set up Intersection Observer
-    useEffect(() => {
-        if (!observerRef.current || !hasMore) return;
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-                const [entry] = entries;
-                if (entry.isIntersecting && !loading) {
-                    loadMoreArticles();
-                }
-            },
-            {
-                root: null,
-                rootMargin: "100px", // Trigger 100px before the element comes into view
-                threshold: 0.1,
+    useInfiniteScrollObserver({
+        targetRef: observerRef,
+        enabled: hasMore,
+        onIntersect: () => {
+            if (!loading) {
+                loadMoreArticles();
             }
-        );
-
-        observerInstanceRef.current = observer;
-        observer.observe(observerRef.current);
-
-        return () => {
-            if (observerInstanceRef.current) {
-                observerInstanceRef.current.disconnect();
-            }
-        };
-    }, [loadMoreArticles, hasMore, loading]);
-
-    // Cleanup observer on unmount
-    useEffect(() => {
-        return () => {
-            if (observerInstanceRef.current) {
-                observerInstanceRef.current.disconnect();
-            }
-        };
-    }, []);
+        },
+    });
 
     return (
         <div className="space-y-4">
@@ -249,51 +222,23 @@ export const ArticleListClient = ({
                 <ArticleCard article={article} key={article.id} showFollow={showFollow} />
             ))}
 
-            {/* Loading indicator and observer target */}
-            {hasMore && (
-                <div ref={observerRef} className="flex items-center justify-center py-8">
-                    {loading ? (
-                        <div className="flex items-center gap-2">
-                            <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                            <span className="text-secondary text-sm">{t("loading")}</span>
-                        </div>
-                    ) : (
-                        <div className="text-secondary text-sm">{t("loadMore")}</div>
-                    )}
-                </div>
-            )}
-
-            {/* Error state */}
-            {error && (
-                <div className="flex items-center justify-center py-4">
-                    <div className="text-center">
-                        <p className="text-red-500 mb-2">{error}</p>
-                        <button
-                            onClick={loadMoreArticles}
-                            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-                            disabled={loading}
-                        >
-                            {t("retry")}
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* End of list indicator */}
-            {!hasMore && articles.length > 0 && (
-                <div className="flex items-center justify-center py-8">
-                    <div className="text-secondary text-sm">{t("allLoaded")}</div>
-                </div>
-            )}
-
-            {/* Empty state */}
-            {!hasMore && articles.length === 0 && (
-                <div className="flex items-center justify-center py-12">
-                    <div className="text-center text-muted-foreground">
-                        <p>{t("noArticles")}</p>
-                    </div>
-                </div>
-            )}
+            <InfiniteScrollStatus
+                observerRef={observerRef}
+                hasMore={hasMore}
+                loading={loading}
+                error={error}
+                isEmpty={articles.length === 0}
+                onRetry={loadMoreArticles}
+                loadingText={t("loading")}
+                idleText={t("loadMore")}
+                retryText={t("retry")}
+                allLoadedText={t("allLoaded")}
+                emptyText={t("noArticles")}
+                loadingClassName="text-secondary"
+                idleTextClassName="text-secondary"
+                endClassName="text-secondary"
+                emptyClassName="text-muted-foreground"
+            />
         </div>
     );
 };

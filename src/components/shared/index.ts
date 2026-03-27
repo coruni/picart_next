@@ -5,6 +5,7 @@ export { NavigationTabs } from "./NavigationTabs";
 export type { TabItem } from "./NavigationTabs";
 export { ArticleListClient } from "./ArticleListClient";
 export { EmptyState } from "./EmptyState";
+export { InfiniteScrollStatus } from "./InfiniteScrollStatus";
 export { DropdownMenu } from "./DropdownMenu";
 export type { MenuItem } from "./DropdownMenu";
 export { GuardedLink } from "./GuardedLink";
