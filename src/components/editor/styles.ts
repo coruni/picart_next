@@ -346,23 +346,6 @@ export const quillOverrideStyles = `
   .ql-image-caption:empty:focus::before {
     color: #bbb;
   }
-  .ql-editor .ql-emoji-embed {
-    display: inline-flex;
-    vertical-align: text-bottom;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    margin: 0 2px;
-    user-select: none;
-  }
-  .ql-editor .ql-emoji-embed__img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    pointer-events: none;
-    -webkit-user-drag: none;
-  }
   .emoji-panel-dropdown {
     width: min(600px, calc(100vw - 32px)) !important;
     overflow: hidden !important;

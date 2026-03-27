@@ -344,5 +344,11 @@
     "zoomIn": "Zoom in",
     "fitWidth": "Fit width",
     "rotateLeft90": "Rotate left 90°"
+  },
+  "imageGallery": {
+    "clickToView": "Click to view",
+    "scrollThumbnailsLeft": "Scroll thumbnails left",
+    "scrollThumbnailsRight": "Scroll thumbnails right",
+    "viewFullImage": "View full image"
   }
 }

@@ -142,6 +142,201 @@ body {
 
 
 /* Quill 自定义字号 class 样式 */
+.ql-editor {
+  color: color-mix(in srgb, var(--foreground) 86%, transparent);
+  font-size: 16px;
+  line-height: 1.78;
+  letter-spacing: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  text-rendering: optimizeLegibility;
+}
+
+.ql-editor > * + * {
+  margin-top: 0.58rem;
+}
+
+.ql-editor p {
+  margin: 0;
+}
+
+.ql-editor p + p {
+  margin-top: 0.5rem;
+}
+
+.ql-editor h1,
+.ql-editor h2,
+.ql-editor h3,
+.ql-editor h4 {
+  margin: 0.95em 0 0.28em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.32;
+  color: color-mix(in srgb, var(--foreground) 96%, transparent);
+}
+
+.ql-editor h1 { font-size: clamp(1.7rem, 3.2vw, 2.05rem); }
+.ql-editor h2 { font-size: clamp(1.4rem, 2.4vw, 1.65rem); }
+.ql-editor h3 { font-size: clamp(1.18rem, 2vw, 1.32rem); }
+.ql-editor h4 { font-size: 1.05rem; }
+
+.ql-editor h1 + p,
+.ql-editor h2 + p,
+.ql-editor h3 + p,
+.ql-editor h4 + p {
+  margin-top: 0.2rem;
+}
+
+.ql-editor strong {
+  font-weight: 600;
+  color: color-mix(in srgb, var(--foreground) 100%, transparent);
+}
+
+.ql-editor em {
+  font-style: italic;
+}
+
+.ql-editor s {
+  text-decoration: line-through;
+}
+
+.ql-editor u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ql-editor a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+
+.ql-editor a:hover {
+  opacity: 0.82;
+}
+
+.ql-editor ul,
+.ql-editor ol {
+  margin: 0.58rem 0;
+  padding-left: 1.35rem;
+}
+
+.ql-editor ul {
+  list-style: disc;
+}
+
+.ql-editor ol {
+  list-style: decimal;
+}
+
+.ql-editor li {
+  margin: 0.22rem 0;
+  padding-left: 0.05rem;
+}
+
+.ql-editor li::marker {
+  color: color-mix(in srgb, var(--foreground) 54%, transparent);
+}
+
+.ql-editor blockquote {
+  margin: 0.72rem 0;
+  padding: 0.7rem 0.95rem;
+  border-left: 3px solid color-mix(in srgb, var(--foreground) 16%, transparent);
+  background: color-mix(in srgb, var(--foreground) 3%, transparent);
+  color: color-mix(in srgb, var(--foreground) 74%, transparent);
+  border-radius: 0 10px 10px 0;
+}
+
+.ql-editor pre {
+  margin: 0.78rem 0;
+  padding: 0.85rem 1rem;
+  overflow-x: auto;
+  border: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+  box-shadow: none;
+  color: color-mix(in srgb, var(--foreground) 88%, transparent);
+  font-size: 0.88rem;
+  line-height: 1.72;
+}
+
+.ql-editor code {
+  padding: 0.08rem 0.38rem;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+  font-size: 0.88em;
+}
+
+.ql-editor pre code {
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  color: inherit;
+}
+
+.ql-editor hr {
+  margin: 0.9rem 0;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent);
+  opacity: 1;
+}
+
+.ql-editor .ql-image-wrapper > img.ql-image,
+.ql-editor video {
+  max-width: 100%;
+  height: auto;
+}
+
+.ql-editor .ql-image-wrapper > img.ql-image {
+  margin: 0.18rem 0;
+  border-radius: 12px;
+}
+
+.ql-editor .ql-image-wrapper {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.ql-editor .ql-image-wrapper .ql-image {
+  display: block;
+}
+
+.ql-editor table {
+  width: 100%;
+  margin: 0.78rem 0;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--color-card) 98%, transparent);
+}
+
+.ql-editor th,
+.ql-editor td {
+  padding: 0.62rem 0.78rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent);
+  text-align: left;
+  vertical-align: top;
+}
+
+.ql-editor th {
+  font-weight: 600;
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+}
+
+.ql-editor .ql-align-center {
+  text-align: center;
+}
+
+.ql-editor .ql-align-right {
+  text-align: right;
+}
+
+.ql-editor .ql-align-justify {
+  text-align: justify;
+}
+
 .ql-editor .ql-size-12px { font-size: 12px; }
 .ql-editor .ql-size-14px { font-size: 14px; }
 .ql-editor .ql-size-16px { font-size: 16px; }
@@ -149,6 +344,42 @@ body {
 .ql-editor .ql-size-20px { font-size: 20px; }
 .ql-editor .ql-size-24px { font-size: 24px; }
 .ql-editor .ql-size-32px { font-size: 32px; }
+
+.ql-emoji-embed {
+  display: inline-flex;
+  vertical-align: text-bottom;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  max-width: 32px;
+  max-height: 32px;
+  line-height: 32px;
+  margin: 0 2px;
+  overflow: hidden;
+  flex: 0 0 32px;
+  user-select: none;
+}
+
+.ql-emoji-embed__img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  max-width: 32px;
+  max-height: 32px;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.article-summary-html img.ql-emoji-embed__img {
+  display: inline-block !important;
+  vertical-align: middle;
+}
 
 
 /*图片自定义样式*/

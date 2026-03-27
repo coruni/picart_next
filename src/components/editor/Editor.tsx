@@ -31,6 +31,7 @@ import {
   Button,
   uploadControllerUploadFile,
 } from "./types";
+import { prepareRichTextHtmlForEditor, sanitizeRichTextHtml } from "@/lib";
 
 // 注册自定义字号
 SizeClass.whitelist = ["12px", "14px", "16px", "18px", "20px", "24px", "32px"];
@@ -69,6 +70,39 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     );
     const quillRef = useRef<Quill | null>(null);
     const uploadAbortControllerRef = useRef<AbortController | null>(null);
+    const lastSyncedValueRef = useRef("");
+
+    const emitSanitizedContent = (root: HTMLElement) => {
+      const html = sanitizeRichTextHtml(root.innerHTML || "");
+      lastSyncedValueRef.current = html;
+      onChange?.(html);
+    };
+
+    const ensureImageCaptions = (root: HTMLElement) => {
+      const wrappers = root.querySelectorAll(".ql-image-wrapper");
+
+      wrappers.forEach((wrapper) => {
+        const imageWrapper = wrapper as HTMLElement;
+        const img = imageWrapper.querySelector("img.ql-image, img");
+        if (!img) return;
+
+        let caption = imageWrapper.querySelector(
+          ".ql-image-caption",
+        ) as HTMLParagraphElement | null;
+
+        if (!caption) {
+          caption = document.createElement("p");
+          caption.className = "ql-image-caption";
+          caption.setAttribute("contenteditable", "true");
+          caption.setAttribute("data-placeholder", "添加图片说明...");
+          imageWrapper.appendChild(caption);
+        }
+
+        if (!caption.textContent?.trim()) {
+          caption.textContent = img.getAttribute("alt") || "";
+        }
+      });
+    };
 
     // 初始化 Quill
     useEffect(() => {
@@ -316,13 +350,16 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         // 设置初始值
         if (value) {
-          quill.root.innerHTML = value;
+          const preparedValue = prepareRichTextHtmlForEditor(value);
+          quill.root.innerHTML = preparedValue;
+          ensureImageCaptions(quill.root);
+          lastSyncedValueRef.current = sanitizeRichTextHtml(preparedValue);
         }
 
         // 监听内容变化
         quill.on("text-change", () => {
-          const html = quill.root.innerHTML || "";
-          onChange?.(html);
+          ensureImageCaptions(quill.root);
+          emitSanitizedContent(quill.root);
         });
 
         // 键盘快捷键：Ctrl+C 复制图片
@@ -374,6 +411,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 } else {
                   img.removeAttribute("alt");
                 }
+                emitSanitizedContent(quill.root);
               }
             }
           }
@@ -418,6 +456,19 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         document.addEventListener("link-edit", handleLinkEdit);
       }
     }, [ref, placeholder, readOnly, onChange, value]);
+
+    useEffect(() => {
+      const quill = quillRef.current;
+      if (!quill) return;
+
+      const nextValue = value || "";
+      if (nextValue === lastSyncedValueRef.current) return;
+
+      const preparedValue = prepareRichTextHtmlForEditor(nextValue);
+      quill.root.innerHTML = preparedValue;
+      ensureImageCaptions(quill.root);
+      lastSyncedValueRef.current = sanitizeRichTextHtml(preparedValue);
+    }, [value]);
 
     // 点击外部关闭下拉菜单
     useEffect(() => {

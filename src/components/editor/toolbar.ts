@@ -3,8 +3,6 @@ import { renderIcon, fontSizes, colorPalette, icons } from "./constants";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import {
   emojiControllerFindAll,
-  emojiControllerGetFavorites,
-  emojiControllerGetRecent,
   emojiControllerIncrementUseCount,
 } from "@/api/sdk.gen";
 
@@ -79,7 +77,6 @@ export const renderToolbar = ({
 
   let emojiPanelInitialized = false;
   let activeEmojiTabKey = "all";
-  const emojiCache = new Map<string, EmojiRecord[]>();
   let groupedEmojiList: EmojiGroup[] = [];
   let emojiTabs: EmojiTab[] = [{ key: "all", label: "All" }];
 
@@ -96,18 +93,6 @@ export const renderToolbar = ({
     closeAllDropdowns();
     const dropdown = document.getElementById(dropdownId);
     dropdown?.classList.toggle("hidden");
-  };
-
-  const normalizeResponseData = (response: unknown) => {
-    const payload = (response as { data?: { data?: unknown } })?.data?.data;
-    if (Array.isArray(payload)) return payload;
-    if (Array.isArray((payload as { data?: unknown[] })?.data)) {
-      return (payload as { data?: unknown[] }).data ?? [];
-    }
-    if (Array.isArray((response as { data?: unknown[] })?.data)) {
-      return (response as { data?: unknown[] }).data ?? [];
-    }
-    return [];
   };
 
   const normalizeEmojiRecord = (item: unknown): EmojiRecord | null => {
@@ -133,30 +118,37 @@ export const renderToolbar = ({
     };
   };
 
-  const normalizeEmojiGroups = (response: unknown) => {
+  const normalizeEmojiGroups = (response: unknown): EmojiGroup[] => {
     const payload = (response as { data?: { data?: unknown } })?.data?.data as
       | { groups?: unknown[] }
       | undefined;
     const groups = Array.isArray(payload?.groups) ? payload.groups : [];
+    const normalizedGroups: EmojiGroup[] = [];
 
-    return groups
-      .map((group) => {
-        const raw = group as {
-          name?: string;
-          count?: number;
-          items?: unknown[];
-        };
-        if (!raw.name || !Array.isArray(raw.items)) return null;
+    groups.forEach((group) => {
+      const raw = group as {
+        name?: string;
+        count?: number;
+        items?: unknown[];
+      };
+      if (!raw.name || !Array.isArray(raw.items)) return;
 
-        return {
-          name: raw.name,
-          count: raw.count,
-          items: raw.items
-            .map(normalizeEmojiRecord)
-            .filter((item): item is EmojiRecord => Boolean(item)),
-        };
-      })
-      .filter((group): group is EmojiGroup => Boolean(group));
+      const items = raw.items.reduce<EmojiRecord[]>((acc, item) => {
+        const normalized = normalizeEmojiRecord(item);
+        if (normalized) {
+          acc.push(normalized);
+        }
+        return acc;
+      }, []);
+
+      normalizedGroups.push({
+        name: raw.name,
+        count: raw.count,
+        items,
+      });
+    });
+
+    return normalizedGroups;
   };
 
   const fetchEmojiListByTab = async (tabKey: string) => {
@@ -168,31 +160,7 @@ export const renderToolbar = ({
     if (localGroup) {
       return localGroup.items;
     }
-
-    if (emojiCache.has(tabKey)) {
-      return emojiCache.get(tabKey) ?? [];
-    }
-
-    let response: unknown;
-    if (tabKey === "recent") {
-      response = await emojiControllerGetRecent({ query: { limit: 80 } });
-    } else if (tabKey === "favorites") {
-      response = await emojiControllerGetFavorites({
-        query: { page: 1, limit: 80 },
-      });
-    } else if (tabKey === "popular") {
-      response = await emojiControllerGetPopular({ query: { limit: 80 } });
-    } else {
-      response = await emojiControllerFindAll({
-        query: { category: tabKey, page: 1, limit: 100 },
-      });
-    }
-
-    const list = normalizeResponseData(response)
-      .map(normalizeEmojiRecord)
-      .filter((item): item is EmojiRecord => Boolean(item));
-    emojiCache.set(tabKey, list);
-    return list;
+    return [];
   };
 
   const fetchEmojiTabs = async () => {

@@ -41,9 +41,17 @@ export class CustomImageBlot extends BlockEmbed {
     return node;
   }
 
-  static value(domNode: HTMLElement): string {
+  static value(domNode: HTMLElement): ImageValue {
     const img = domNode.querySelector("img");
-    return img ? img.getAttribute("src") || "" : "";
+    const caption = domNode.querySelector(".ql-image-caption");
+
+    return {
+      src: img?.getAttribute("src") || "",
+      alt:
+        img?.getAttribute("alt") ||
+        caption?.textContent?.trim() ||
+        undefined,
+    };
   }
 
   static formats(domNode: HTMLElement): Record<string, unknown> {

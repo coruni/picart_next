@@ -343,5 +343,11 @@
     "zoomIn": "放大",
     "fitWidth": "1:1(定宽)",
     "rotateLeft90": "向左旋转 90°"
+  },
+  "imageGallery": {
+    "clickToView": "点击查看",
+    "scrollThumbnailsLeft": "向左滚动缩略图",
+    "scrollThumbnailsRight": "向右滚动缩略图",
+    "viewFullImage": "查看完整图片"
   }
 }

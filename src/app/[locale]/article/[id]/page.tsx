@@ -7,7 +7,7 @@ import {
 } from "@/components/article";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Link } from "@/i18n/routing";
-import { generateArticleMetadata } from "@/lib";
+import { generateArticleMetadata, prepareRichTextHtmlForDisplay } from "@/lib";
 import { Forward, Hash } from "lucide-react";
 import { Metadata } from "next";
 import Image from "next/image";
@@ -53,10 +53,12 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
   }
   // 过滤js注入
   const content =
-    article?.content?.replace(
-      /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-      "",
-    ) || "";
+    prepareRichTextHtmlForDisplay(
+      article?.content?.replace(
+        /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+        "",
+      ) || "",
+    );
 
   return (
     <div className="page-container">
@@ -108,7 +110,10 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             </div>
             {/* 内容 */}
             {content && (
-              <div dangerouslySetInnerHTML={{ __html: content }}></div>
+              <div
+                className="ql-editor px-0!"
+                dangerouslySetInnerHTML={{ __html: content }}
+              ></div>
             )}
           </div>
         </section>
