@@ -76,7 +76,8 @@
     "loggingIn": "Logging in...",
     "needHelp": "Need Help",
     "registerNow": "Register Now",
-    "loginFailed": "Login Failed"
+    "loginFailed": "Login Failed",
+    "passwordError": "Incorrect account or password"
   },
   "register": {
     "title": "Register Account",

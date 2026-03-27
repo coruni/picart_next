@@ -30,6 +30,25 @@ type ResetPasswordData = {
     code: string;
 }
 
+function extractApiMessage(error: unknown): string | null {
+    if (!error) {
+        return null;
+    }
+
+    if (typeof error === "string") {
+        return error;
+    }
+
+    if (typeof error === "object") {
+        const maybeMessage = (error as { message?: unknown }).message;
+        if (typeof maybeMessage === "string") {
+            return maybeMessage;
+        }
+    }
+
+    return null;
+}
+
 export function UserLoginDialog() {
     const t = useTranslations("login");
     const tReg = useTranslations("register");
@@ -39,6 +58,7 @@ export function UserLoginDialog() {
     const [mode, setMode] = useState<"login" | "register" | "reset">("login");
     const [isSendingCode, setIsSendingCode] = useState(false);
     const [countdown, setCountdown] = useState(0);
+    const [loginError, setLoginError] = useState("");
 
     const loginDialogOpen = useModalStore((state) => state.isOpen(MODAL_IDS.LOGIN));
     const closeModal = useModalStore((state) => state.closeModal);
@@ -50,6 +70,20 @@ export function UserLoginDialog() {
 
     // 是否需要邮箱验证
     const needEmailVerification = siteConfig?.user_email_verification === true;
+
+    const getLoginErrorMessage = (error: unknown) => {
+        const message = extractApiMessage(error);
+
+        if (message === "response.error.passwordError") {
+            return "账号或密码错误";
+        }
+
+        if (message && !message.startsWith("response.error.")) {
+            return message;
+        }
+
+        return t("loginFailed");
+    };
 
     // 登录表单
     const loginForm = useForm<LoginFormData>({
@@ -67,15 +101,26 @@ export function UserLoginDialog() {
         },
         async onSubmit(values) {
             setIsSubmitting(true);
+            setLoginError("");
             try {
-                const { data } = await userControllerLogin({
-                    body: loginForm.values
-                })
+                const { data, error } = await userControllerLogin({
+                    body: values
+                });
+
+                if (error || !data?.data?.token) {
+                    const message = getLoginErrorMessage(error);
+                    setLoginError(message);
+                    return;
+                }
+
                 setToken(data?.data.token || "");
                 setUser(Object.assign({}, data?.data, { token: undefined, refreshToken: undefined }));
                 window.location.reload();
             } catch (error) {
+                const message = getLoginErrorMessage(error);
+                setLoginError(message);
                 console.error(t("loginFailed"), error);
+            } finally {
                 setIsSubmitting(false);
             }
         },
@@ -246,6 +291,7 @@ export function UserLoginDialog() {
             registerForm.reset();
             resetForm.reset();
             setIsSubmitting(false);
+            setLoginError("");
             setMode("login");
             setCountdown(0);
         }
@@ -256,6 +302,7 @@ export function UserLoginDialog() {
         loginForm.reset();
         resetForm.reset();
         setIsSubmitting(false);
+        setLoginError("");
     };
 
     const switchToLogin = () => {
@@ -263,6 +310,7 @@ export function UserLoginDialog() {
         registerForm.reset();
         resetForm.reset();
         setIsSubmitting(false);
+        setLoginError("");
     };
 
     const switchToReset = () => {
@@ -270,6 +318,7 @@ export function UserLoginDialog() {
         loginForm.reset();
         registerForm.reset();
         setIsSubmitting(false);
+        setLoginError("");
     };
 
     if (!loginDialogOpen) {
@@ -315,6 +364,11 @@ export function UserLoginDialog() {
                                     fullWidth
                                 />
                             </FormField>
+                            {loginError && (
+                                <p className="text-sm text-red-500 dark:text-red-400">
+                                    {loginError}
+                                </p>
+                            )}
                             <div className="mt-12">
                                 <Button
                                     size="lg"

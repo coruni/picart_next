@@ -82,7 +82,6 @@ export default async function LocaleLayout({
   }
   const category = await serverApi.categoryControllerFindAll({
     query: { limit: 100 },
-    cache: "no-store",
     next: { revalidate: 0 },
   });
 
@@ -99,7 +98,6 @@ export default async function LocaleLayout({
     });
   }
   const { data } = await serverApi.configControllerGetPublicConfigs({
-    cache: "no-store",
     next: { revalidate: 0 },
   });
 
@@ -122,7 +120,6 @@ export default async function LocaleLayout({
       }
 
       const response = await serverApi.userControllerGetProfile({
-        cache: "no-store",
         next: { revalidate: 0 },
       });
       initialUser = response?.data?.data || null;
