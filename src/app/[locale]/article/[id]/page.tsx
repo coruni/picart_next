@@ -1,5 +1,6 @@
 import {
   ArticleAuthor,
+  ArticleRichContent,
   ImageGallery,
   ArticleMenu,
   ReactionStats,
@@ -105,16 +106,21 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           {/* 文章信息 */}
           <div className="mt-4 px-6">
             {/* 图册 */}
-            <div className="flex relative overflow-hidden">
-              <ImageGallery images={article?.images || []} />
-            </div>
-            {/* 内容 */}
-            {content && (
-              <div
-                className="ql-editor px-0!"
-                dangerouslySetInnerHTML={{ __html: content }}
-              ></div>
+            {article?.type === "image" && (
+              <div className="flex relative overflow-hidden">
+                <ImageGallery images={article?.images || []} />
+              </div>
             )}
+            {/* 内容 */}
+            {content &&
+              (article?.type === "image" ? (
+                <div
+                  className="ql-editor px-0!"
+                  dangerouslySetInnerHTML={{ __html: content }}
+                ></div>
+              ) : (
+                <ArticleRichContent html={content} />
+              ))}
           </div>
         </section>
         {/* 底部信息 */}
