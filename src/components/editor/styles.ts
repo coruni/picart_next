@@ -70,6 +70,136 @@ export const quillOverrideStyles = `
     opacity: 1;
     visibility: visible;
   }
+  .ql-toolbar .emoji-dropdown-wrapper {
+    position: relative;
+  }
+  .ql-toolbar .emoji-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0px;
+    z-index: 80;
+    width: min(50vw, 500px);
+    height: 320px;
+    background: #f7f8fb;
+    border: 1px solid #e6e9f2;
+    border-radius: 20px;
+    box-shadow: 0 18px 46px rgba(17, 24, 39, 0.16);
+    overflow: hidden;
+  }
+  .ql-toolbar .emoji-panel.hidden {
+    display: none !important;
+  }
+  .ql-toolbar .emoji-panel button {
+    padding: 0 !important;
+  }
+  .ql-toolbar .emoji-panel-header {
+    display: grid;
+    grid-template-columns: 56px 1fr 40px 40px;
+    align-items: center;
+    column-gap: 8px;
+    height: 48px;
+    padding: 0 12px;
+    border-bottom: 1px solid #e6e9f2;
+    background: #eef1f7;
+  }
+  .ql-toolbar .emoji-header-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 24px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .ql-toolbar .emoji-header-btn:hover {
+    background: rgba(148, 163, 184, 0.16);
+    color: #64748b;
+  }
+  .ql-toolbar .emoji-header-add {
+    border: 1px solid #d3dae7;
+    color: #94a3b8;
+    font-size: 24px;
+  }
+  .ql-toolbar .emoji-tabs-scroll {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .ql-toolbar .emoji-tabs-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .ql-toolbar .emoji-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: max-content;
+  }
+  .ql-toolbar .emoji-tab-btn {
+    width: 24px !important;
+    height: 24px !important;
+    border: none;
+    border-radius: 14px;
+    background: transparent;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ql-toolbar .emoji-tab-btn:hover,
+  .ql-toolbar .emoji-tab-btn.is-active {
+    background: #fff;
+  }
+  .ql-toolbar .emoji-panel-body {
+    height: calc(100% - 50px);
+    overflow-y: auto;
+    padding: 18px 18px 24px;
+    scrollbar-width: thin;
+  }
+  .ql-toolbar .emoji-section {
+    margin-bottom: 18px;
+  }
+  .ql-toolbar .emoji-section-title {
+    margin: 0 0 12px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #334155;
+  }
+  .ql-toolbar .emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(24px, 24px));
+    justify-content: start;
+    gap: 8px;
+  }
+  .ql-toolbar .emoji-panel .emoji-item-btn {
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    min-height: 24px !important;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+  }
+  .ql-toolbar .emoji-item-btn:hover {
+    background: #ffffff;
+    transform: translateY(-1px);
+  }
+  .ql-toolbar .emoji-empty {
+    color: #94a3b8;
+    font-size: 13px;
+    padding: 8px 4px;
+  }
   /* 下拉菜单打开时隐藏按钮tooltip */
   .ql-toolbar .tooltip-wrapper:has([id^="dropdown-"]:not(.hidden)):hover .tooltip {
     opacity: 0 !important;

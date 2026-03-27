@@ -52,6 +52,47 @@ export const renderToolbar = ({
   onLinkClick,
   onImageUpload,
 }: RenderToolbarOptions) => {
+  const emojiCategories = [
+    {
+      id: "smileys",
+      icon: "🙂",
+      emojis: [
+        "😀",
+        "😄",
+        "😁",
+        "😆",
+        "😊",
+        "😍",
+        "🥳",
+        "😎",
+        "🤔",
+        "😭",
+        "😡",
+        "🥲",
+      ],
+    },
+    {
+      id: "gesture",
+      icon: "🤟",
+      emojis: ["❤️", "💔", "💕", "👍", "👎", "👏", "🙌", "🤝", "🙏", "💪"],
+    },
+    {
+      id: "animal",
+      icon: "🐱",
+      emojis: ["🐶", "🐱", "🐹", "🐰", "🦊", "🐼", "🐨", "🦁", "🐷", "🐸"],
+    },
+    {
+      id: "food",
+      icon: "🍰",
+      emojis: ["🍔", "🍟", "🍕", "🌮", "🍜", "🍩", "🍫", "🍿", "🧋", "🍰"],
+    },
+    {
+      id: "party",
+      icon: "🎉",
+      emojis: ["🎉", "🎊", "✨", "🎁", "🎈", "🎵", "🔥", "⭐", "💫", "🌈"],
+    },
+  ] as const;
+
   const toolbar = document.createElement("div");
   toolbar.className = "ql-toolbar ql-snow top-header sticky z-20 flex items-center bg-border! shadow-sm";
 
@@ -65,9 +106,14 @@ export const renderToolbar = ({
   // 切换指定下拉菜单（先关闭其他下拉菜单）
   const toggleDropdown = (dropdownId: string, e: Event) => {
     e.stopPropagation();
-    closeAllDropdowns();
     const dropdown = document.getElementById(dropdownId);
-    dropdown?.classList.toggle("hidden");
+    if (!dropdown) return;
+
+    const shouldOpen = dropdown.classList.contains("hidden");
+    closeAllDropdowns();
+    if (shouldOpen) {
+      dropdown.classList.remove("hidden");
+    }
   };
 
   // 创建带tooltip的按钮
@@ -182,6 +228,165 @@ export const renderToolbar = ({
     return dropdownContainer;
   };
 
+  const insertEmoji = (emoji: string) => {
+    const range = quill.getSelection(true);
+    const index = range?.index ?? quill.getLength();
+    quill.insertText(index, emoji, "user");
+    quill.setSelection(index + emoji.length, 0, "user");
+  };
+
+  const getRecentEmojis = () => {
+    try {
+      const value = localStorage.getItem("editor_recent_emojis");
+      if (!value) return [] as string[];
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed.slice(0, 16) : [];
+    } catch {
+      return [] as string[];
+    }
+  };
+
+  const setRecentEmojis = (list: string[]) => {
+    try {
+      localStorage.setItem("editor_recent_emojis", JSON.stringify(list.slice(0, 16)));
+    } catch {
+      // ignore quota or unavailable storage
+    }
+  };
+
+  const buildEmojiPanel = () => {
+    const panel = document.createElement("div");
+    panel.id = "dropdown-emoji";
+    panel.className = "emoji-panel hidden";
+
+    const header = document.createElement("div");
+    header.className = "emoji-panel-header";
+
+    const addButton = document.createElement("button");
+    addButton.type = "button";
+    addButton.className = "emoji-header-btn emoji-header-add";
+    addButton.textContent = "+";
+    header.appendChild(addButton);
+
+    const tabsScroller = document.createElement("div");
+    tabsScroller.className = "emoji-tabs-scroll";
+
+    const tabs = document.createElement("div");
+    tabs.className = "emoji-tabs";
+
+    emojiCategories.forEach((category, index) => {
+      const tab = document.createElement("button");
+      tab.type = "button";
+      tab.className = `emoji-tab-btn h-8 ${index === 0 ? "is-active" : ""}`;
+      tab.textContent = category.icon;
+      tab.dataset.category = category.id;
+      tab.onclick = () => {
+        tabs.querySelectorAll(".emoji-tab-btn").forEach((node) => {
+          node.classList.remove("is-active");
+        });
+        tab.classList.add("is-active");
+        const target = panel.querySelector(
+          `[data-emoji-section="${category.id}"]`,
+        ) as HTMLElement | null;
+        if (target) {
+          target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      };
+      tabs.appendChild(tab);
+    });
+
+    tabsScroller.appendChild(tabs);
+    header.appendChild(tabsScroller);
+
+    const prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.className = "emoji-header-btn";
+    prevBtn.textContent = "‹";
+    prevBtn.onclick = () => {
+      tabsScroller.scrollBy({ left: -180, behavior: "smooth" });
+    };
+    header.appendChild(prevBtn);
+
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "emoji-header-btn";
+    nextBtn.textContent = "›";
+    nextBtn.onclick = () => {
+      tabsScroller.scrollBy({ left: 180, behavior: "smooth" });
+    };
+    header.appendChild(nextBtn);
+
+    const body = document.createElement("div");
+    body.className = "emoji-panel-body";
+
+    const createSection = (title: string, dataSection?: string) => {
+      const section = document.createElement("section");
+      section.className = "emoji-section";
+      if (dataSection) {
+        section.dataset.emojiSection = dataSection;
+      }
+      const heading = document.createElement("h4");
+      heading.className = "emoji-section-title";
+      heading.textContent = title;
+      section.appendChild(heading);
+      const grid = document.createElement("div");
+      grid.className = "emoji-grid";
+      section.appendChild(grid);
+      return { section, grid };
+    };
+
+    const { section: recentSection, grid: recentGrid } = createSection("最近使用");
+    const allSectionWrap = document.createElement("section");
+    allSectionWrap.className = "emoji-section";
+    const allTitle = document.createElement("h4");
+    allTitle.className = "emoji-section-title";
+    allTitle.textContent = "全部";
+    allSectionWrap.appendChild(allTitle);
+
+    const appendEmojiButton = (grid: HTMLElement, emoji: string) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "emoji-item-btn";
+      button.textContent = emoji;
+      button.onclick = () => {
+        insertEmoji(emoji);
+        const recent = getRecentEmojis();
+        const nextRecent = [emoji, ...recent.filter((item) => item !== emoji)];
+        setRecentEmojis(nextRecent);
+        renderRecentGrid();
+      };
+      grid.appendChild(button);
+    };
+
+    const renderRecentGrid = () => {
+      recentGrid.innerHTML = "";
+      const recent = getRecentEmojis();
+      if (recent.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "emoji-empty";
+        empty.textContent = "暂无最近使用";
+        recentGrid.appendChild(empty);
+        return;
+      }
+
+      recent.forEach((emoji) => appendEmojiButton(recentGrid, emoji));
+    };
+
+    emojiCategories.forEach((category) => {
+      const { section, grid } = createSection(category.icon, category.id);
+      category.emojis.forEach((emoji) => appendEmojiButton(grid, emoji));
+      allSectionWrap.appendChild(section);
+    });
+
+    renderRecentGrid();
+
+    body.appendChild(recentSection);
+    body.appendChild(allSectionWrap);
+    panel.appendChild(header);
+    panel.appendChild(body);
+    return panel;
+  };
+
   // 第一行：undo redo | emoji image video more
   const row1 = document.createElement("div");
   row1.className = "ql-formats flex! items-center gap-3";
@@ -211,14 +416,14 @@ export const renderToolbar = ({
   emojiBtn.className = "ql-emoji";
   emojiBtn.type = "button";
   emojiBtn.innerHTML = renderIcon(Smile);
-  emojiBtn.onclick = () => {
-    const emoji = prompt(t("emojiPrompt"));
-    if (emoji) {
-      const range = quill.getSelection();
-      quill.insertText(range?.index || 0, emoji);
-    }
+  const emojiWrapper = createTooltipButton(emojiBtn, t("emoji"));
+  emojiWrapper.classList.add("emoji-dropdown-wrapper");
+  const emojiPanel = buildEmojiPanel();
+  emojiWrapper.appendChild(emojiPanel);
+  emojiBtn.onclick = (e) => {
+    toggleDropdown("dropdown-emoji", e);
   };
-  row1.appendChild(createTooltipButton(emojiBtn, t("emoji")));
+  row1.appendChild(emojiWrapper);
 
   const imageBtn = document.createElement("button");
   imageBtn.className = "ql-image";
@@ -261,7 +466,7 @@ export const renderToolbar = ({
   moreOptions.forEach(({ name, label, Icon }) => {
     const item = document.createElement("button");
     item.className =
-      "w-full! hover:bg-primary/20! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary!  transition-colors";
+      "w-full! hover:bg-primary/15! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary!  transition-colors text-nowrap";
     item.type = "button";
     item.innerHTML = `${Icon ? renderIcon(Icon, "w-4 h-4!") : ""}<span>${label}</span>`;
     if (name === "link") {
