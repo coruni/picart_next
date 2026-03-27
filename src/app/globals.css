@@ -117,8 +117,7 @@ body {
 
 /*  Viewer 自定义样式 */
 .viewer-canvas {
-  left: 130px !important;
-  right: 130px !important;
+  @apply md:left-32.5! md:right-32.5!
 }
 
 .viewer-container{
