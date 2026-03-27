@@ -1,5 +1,4 @@
 import { BlotSpec, Action } from "@enzedonline/quill-blot-formatter2";
-import type BlotFormatter from "@enzedonline/quill-blot-formatter2";
 import { EditLinkAction, RemoveLinkAction } from "./actions";
 
 export class CustomLinkSpec extends BlotSpec {
@@ -21,34 +20,35 @@ export class CustomLinkSpec extends BlotSpec {
     const link = target.closest("a");
 
     if (this.formatter.enabled && link && this.formatter.quill.root.contains(link)) {
+      const isSameActiveLink =
+        this.formatter.currentSpec === this && this.link === link;
+      if (isSameActiveLink) {
+        this.applyOverlayStyles();
+        return;
+      }
+
       e.stopImmediatePropagation();
       e.preventDefault();
       this.link = link;
       this.formatter.show(this);
+      requestAnimationFrame(() => {
+        this.applyOverlayStyles();
+      });
     }
   };
 
-  getOverlayElement = (): HTMLElement | null => {
-    const overlay = super.getOverlayElement();
-    if (overlay) {
-      // 强制 overlay 不跟随链接宽度
-      Object.assign(overlay.style, {
-        width: "auto",
-        minWidth: "0",
-        maxWidth: "none",
-      });
-      // 强制 toolbar 固定宽度
-      requestAnimationFrame(() => {
-        const toolbar = overlay.querySelector(".blot-formatter__toolbar") as HTMLElement;
-        if (toolbar) {
-          Object.assign(toolbar.style, {
-            width: "auto",
-            minWidth: "auto",
-          });
-        }
+  applyOverlayStyles = () => {
+    const toolbar = this.formatter.overlay?.querySelector(
+      ".blot-formatter__toolbar",
+    ) as HTMLElement | null;
+    if (toolbar) {
+      Object.assign(toolbar.style, {
+        display: "inline-flex",
+        width: "max-content",
+        minWidth: "max-content",
+        maxWidth: "max-content",
       });
     }
-    return overlay;
   };
 
   getActions = (): Array<Action> => {

@@ -259,22 +259,21 @@ export const quillOverrideStyles = `
     border: none !important;
     background: transparent !important;
     box-shadow: none !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    left: auto !important;
-    right: auto !important;
+    overflow: visible !important;
   }
   /* 强制 toolbar 宽度固定 */
   .blot-formatter__toolbar {
-    position: relative !important;
+    position: absolute !important;
+    top: 0 !important;
+    display: inline-flex !important;
     flex-wrap: nowrap !important;
-    width: auto !important;
-    min-width: auto !important;
-    max-width: none !important;
-    transform: translateX(-50%) !important;
+    width: max-content !important;
+    min-width: max-content !important;
+    max-width: max-content !important;
+    transform: translate(-50%, calc(-100% - 8px)) !important;
     left: 50% !important;
     margin-left: 0 !important;
+    z-index: 2 !important;
   }
   .blot-formatter__toolbar::after {
     content: '' !important;

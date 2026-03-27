@@ -97,7 +97,6 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 mainStyle: {
                   position: "absolute",
                   top: "0px",
-                  right: "50%",
                   left: "50%",
                   transform: "translate(-50%, -50%)",
                   display: "inline-flex",
@@ -107,7 +106,8 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                   background: "rgba(0, 0, 0, 0.85)",
                   borderRadius: "8px",
                   whiteSpace: "nowrap",
-                  minWidth: "auto",
+                  width: "max-content",
+                  minWidth: "max-content",
                 },
                 buttonStyle: {
                   display: "flex",
@@ -483,6 +483,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       savedSelection.current = null;
     };
 
+    const modalContentClassName = "max-w-2xl pt-4!";
+    const modalBodyClassName = "space-y-4 py-4";
+    const modalActionsClassName = "flex justify-center gap-8";
+    const modalCancelButtonClassName =
+      "rounded-full bg-[#EDF1F7] hover:bg-[#8592A3] text-muted";
+    const modalConfirmButtonClassName = "rounded-full";
+
     return (
       <>
         <style dangerouslySetInnerHTML={{ __html: quillOverrideStyles }} />
@@ -504,12 +511,20 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           <div ref={containerRef} />
 
           {/* Video Modal */}
-          <Dialog open={showVideoModal} onOpenChange={setShowVideoModal}>
-            <DialogContent className="max-w-2xl pt-4!">
+          <Dialog
+            open={showVideoModal}
+            onOpenChange={(open) => {
+              setShowVideoModal(open);
+              if (!open) {
+                setVideoUrl("");
+              }
+            }}
+          >
+            <DialogContent className={modalContentClassName}>
               <DialogHeader>
                 <DialogTitle className="text-sm">{t("modal.insertVideo")}</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 py-4">
+              <div className={modalBodyClassName}>
                 <Input
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
@@ -519,14 +534,22 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     if (e.key === "Enter") handleInsertVideo();
                   }}
                 />
-                <div className="flex justify-end gap-2">
+                <div className={modalActionsClassName}>
                   <Button
-                    variant="ghost"
-                    onClick={() => setShowVideoModal(false)}
+                    variant="default"
+                    className={modalCancelButtonClassName}
+                    onClick={() => {
+                      setShowVideoModal(false);
+                      setVideoUrl("");
+                    }}
                   >
                     {t("toolbar.cancel")}
                   </Button>
-                  <Button variant="primary" onClick={handleInsertVideo}>
+                  <Button
+                    variant="default"
+                    className={modalConfirmButtonClassName}
+                    onClick={handleInsertVideo}
+                  >
                     {t("toolbar.insert")}
                   </Button>
                 </div>
@@ -546,11 +569,11 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               }
             }}
           >
-            <DialogContent className="max-w-2xl pt-4!">
+            <DialogContent className={modalContentClassName}>
               <DialogHeader>
                 <DialogTitle className="text-sm">{t("modal.insertLink")}</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 py-4">
+              <div className={modalBodyClassName}>
                 <Input
                   value={linkText}
                   onChange={(e) => setLinkText(e.target.value)}
@@ -566,7 +589,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     if (e.key === "Enter") handleInsertLink();
                   }}
                 />
-                <div className="flex justify-center gap-8">
+                <div className={modalActionsClassName}>
                   <Button
                     variant="default"
                     onClick={() => {
@@ -575,13 +598,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                       setLinkText("");
                       savedSelection.current = null;
                     }}
-                    className="rounded-full bg-[#EDF1F7] hover:bg-[#8592A3] text-muted"
+                    className={modalCancelButtonClassName}
                   >
                     {t("toolbar.cancel")}
                   </Button>
                   <Button
                     variant="default"
-                    className="rounded-full"
+                    className={modalConfirmButtonClassName}
                     onClick={handleInsertLink}
                   >
                     {t("toolbar.confirm")}
