@@ -12928,7 +12928,7 @@ export type EmojiControllerFindAllData = {
         'Device-Type'?: string;
     };
     path?: never;
-    query?: {
+    query: {
         /**
          * 页码
          */
@@ -12973,13 +12973,50 @@ export type EmojiControllerFindAllData = {
          * 排序方向
          */
         sortOrder?: 'ASC' | 'DESC';
+        /**
+         * 聚合
+         */
+        grouped: boolean;
     };
     url: '/emoji';
 };
 
 export type EmojiControllerFindAllResponses = {
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            groups: Array<{
+                name?: string;
+                count?: number;
+                items?: Array<{
+                    id?: number;
+                    name?: string;
+                    url?: string;
+                    code?: string;
+                    type?: string;
+                    userId?: unknown;
+                    category?: string;
+                    tags?: string;
+                    useCount?: number;
+                    isPublic?: boolean;
+                    status?: string;
+                    width?: number;
+                    height?: number;
+                    fileSize?: number;
+                    mimeType?: string;
+                    createdAt?: string;
+                    updatedAt?: string;
+                    user?: unknown;
+                }>;
+            }>;
+            groupCount: number;
+            total: number;
+        };
+    };
 };
+
+export type EmojiControllerFindAllResponse = EmojiControllerFindAllResponses[keyof EmojiControllerFindAllResponses];
 
 export type EmojiControllerCreateData = {
     body: CreateEmojiDto;
@@ -12995,8 +13032,36 @@ export type EmojiControllerCreateData = {
 };
 
 export type EmojiControllerCreateResponses = {
-    201: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+            data: {
+                id: number;
+                name: string;
+                url: string;
+                code: string;
+                type: string;
+                userId: unknown;
+                category: string;
+                tags: string;
+                useCount: number;
+                isPublic: boolean;
+                status: string;
+                width: number;
+                height: number;
+                fileSize: number;
+                mimeType: string;
+                createdAt: string;
+                updatedAt: string;
+            };
+        };
+    };
 };
+
+export type EmojiControllerCreateResponse = EmojiControllerCreateResponses[keyof EmojiControllerCreateResponses];
 
 export type EmojiControllerRemoveData = {
     body?: never;
@@ -13104,8 +13169,17 @@ export type EmojiControllerGetCategoriesData = {
 };
 
 export type EmojiControllerGetCategoriesResponses = {
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: Array<{
+            category?: string;
+            count?: string;
+        }>;
+    };
 };
+
+export type EmojiControllerGetCategoriesResponse = EmojiControllerGetCategoriesResponses[keyof EmojiControllerGetCategoriesResponses];
 
 export type EmojiControllerGetPopularData = {
     body?: never;

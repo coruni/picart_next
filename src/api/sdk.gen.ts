@@ -1998,7 +1998,7 @@ export const pointsControllerGetUserBalance = <ThrowOnError extends boolean = fa
 /**
  * 获取表情列表
  */
-export const emojiControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<EmojiControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<EmojiControllerFindAllResponses, unknown, ThrowOnError>({ url: '/emoji', ...options });
+export const emojiControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<EmojiControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<EmojiControllerFindAllResponses, unknown, ThrowOnError>({ url: '/emoji', ...options });
 
 /**
  * 创建表情

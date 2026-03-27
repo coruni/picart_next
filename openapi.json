@@ -38705,6 +38705,16 @@
             }
           },
           {
+            "name": "grouped",
+            "in": "query",
+            "description": "聚合",
+            "required": true,
+            "example": "true",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "description": "",
@@ -38750,6 +38760,118 @@
         "responses": {
           "200": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "groups": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "count": {
+                                "type": "integer"
+                              },
+                              "items": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer"
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "code": {
+                                      "type": "string"
+                                    },
+                                    "type": {
+                                      "type": "string"
+                                    },
+                                    "userId": {
+                                      "type": "null"
+                                    },
+                                    "category": {
+                                      "type": "string"
+                                    },
+                                    "tags": {
+                                      "type": "string"
+                                    },
+                                    "useCount": {
+                                      "type": "integer"
+                                    },
+                                    "isPublic": {
+                                      "type": "boolean"
+                                    },
+                                    "status": {
+                                      "type": "string"
+                                    },
+                                    "width": {
+                                      "type": "integer"
+                                    },
+                                    "height": {
+                                      "type": "integer"
+                                    },
+                                    "fileSize": {
+                                      "type": "integer"
+                                    },
+                                    "mimeType": {
+                                      "type": "string"
+                                    },
+                                    "createdAt": {
+                                      "type": "string"
+                                    },
+                                    "updatedAt": {
+                                      "type": "string"
+                                    },
+                                    "user": {
+                                      "type": "null"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "groupCount": {
+                          "type": "integer"
+                        },
+                        "total": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "groups",
+                        "groupCount",
+                        "total"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           }
         },
@@ -38820,6 +38942,117 @@
         "responses": {
           "201": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "url": {
+                              "type": "string"
+                            },
+                            "code": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string"
+                            },
+                            "userId": {
+                              "type": "null"
+                            },
+                            "category": {
+                              "type": "string"
+                            },
+                            "tags": {
+                              "type": "string"
+                            },
+                            "useCount": {
+                              "type": "integer"
+                            },
+                            "isPublic": {
+                              "type": "boolean"
+                            },
+                            "status": {
+                              "type": "string"
+                            },
+                            "width": {
+                              "type": "integer"
+                            },
+                            "height": {
+                              "type": "integer"
+                            },
+                            "fileSize": {
+                              "type": "integer"
+                            },
+                            "mimeType": {
+                              "type": "string"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "url",
+                            "code",
+                            "type",
+                            "userId",
+                            "category",
+                            "tags",
+                            "useCount",
+                            "isPublic",
+                            "status",
+                            "width",
+                            "height",
+                            "fileSize",
+                            "mimeType",
+                            "createdAt",
+                            "updatedAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "success",
+                        "message",
+                        "data"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           }
         },
@@ -39205,6 +39438,40 @@
         "responses": {
           "200": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "category": {
+                            "type": "string"
+                          },
+                          "count": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           }
         },

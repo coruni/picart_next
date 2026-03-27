@@ -379,6 +379,10 @@ body {
 .article-summary-html img.ql-emoji-embed__img {
   display: inline-block !important;
   vertical-align: middle;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
 }
 
 
