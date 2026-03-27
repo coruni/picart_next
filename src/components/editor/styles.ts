@@ -346,5 +346,102 @@ export const quillOverrideStyles = `
   .ql-image-caption:empty:focus::before {
     color: #bbb;
   }
+  .ql-editor .ql-emoji-embed {
+    display: inline-flex;
+    vertical-align: text-bottom;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: 0 2px;
+    user-select: none;
+  }
+  .ql-editor .ql-emoji-embed__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    -webkit-user-drag: none;
+  }
+  .emoji-panel-dropdown {
+    width: min(600px, calc(100vw - 32px)) !important;
+    overflow: hidden !important;
+  }
+  .emoji-panel-tabs {
+    height: 46px !important;
+    display: grid !important;
+    grid-template-columns: 28px minmax(0, 1fr) 28px;
+    align-items: center;
+    gap: 8px;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .emoji-panel-tabs::-webkit-scrollbar {
+    display: none !important;
+  }
+  .emoji-panel-tabs-viewport {
+    min-width: 0;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  .emoji-panel-tabs-viewport::-webkit-scrollbar {
+    display: none !important;
+  }
+  .emoji-panel-nav {
+    flex-shrink: 0 !important;
+  }
+  .emoji-panel-tab {
+  display: inline-flex !important;
+    flex: 0 0 auto !important;
+    height:38px !important;
+    width:54px !important;
+    border:none !important;
+    border-radius: 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+  }
+  .emoji-panel-tab[data-active="true"] {
+    background: var(--color-card) !important;
+    border-color: color-mix(in srgb, var(--primary) 28%, transparent) !important;
+  }
+  .emoji-panel-tab-image {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+  .emoji-panel-tab-emoji,
+  .emoji-panel-tab-fallback {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    background: var(--muted);
+    color: var(--foreground);
+  }
+  .emoji-panel-list {
+    height: 256px !important;
+    grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+    scrollbar-width: thin;
+  }
+  .emoji-panel-item img {
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .emoji-panel-state {
+    grid-column: 1 / -1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8592a3;
+    font-size: 13px;
+  }
 
 `;

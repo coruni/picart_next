@@ -1,11 +1,12 @@
 import Quill from "quill";
+import { renderIcon, fontSizes, colorPalette, icons } from "./constants";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import {
-  renderIcon,
-  fontSizes,
-  colorPalette,
-  icons,
-} from "./constants";
-import { X } from "lucide-react";
+  emojiControllerFindAll,
+  emojiControllerGetFavorites,
+  emojiControllerGetRecent,
+  emojiControllerIncrementUseCount,
+} from "@/api/sdk.gen";
 
 const {
   Undo2,
@@ -44,6 +45,26 @@ interface RenderToolbarOptions {
   onImageUpload: () => void;
 }
 
+type EmojiRecord = {
+  id: string;
+  name: string;
+  url: string;
+  code?: string;
+  category?: string;
+};
+
+type EmojiTab = {
+  key: string;
+  label: string;
+  icon?: string;
+};
+
+type EmojiGroup = {
+  name: string;
+  items: EmojiRecord[];
+  count?: number;
+};
+
 export const renderToolbar = ({
   quill,
   container,
@@ -53,7 +74,14 @@ export const renderToolbar = ({
   onImageUpload,
 }: RenderToolbarOptions) => {
   const toolbar = document.createElement("div");
-  toolbar.className = "ql-toolbar ql-snow top-header sticky z-20 flex items-center bg-border! shadow-sm";
+  toolbar.className =
+    "ql-toolbar ql-snow top-header sticky z-20 flex items-center bg-border! shadow-sm";
+
+  let emojiPanelInitialized = false;
+  let activeEmojiTabKey = "all";
+  const emojiCache = new Map<string, EmojiRecord[]>();
+  let groupedEmojiList: EmojiGroup[] = [];
+  let emojiTabs: EmojiTab[] = [{ key: "all", label: "All" }];
 
   // 关闭所有下拉菜单
   const closeAllDropdowns = () => {
@@ -68,6 +96,148 @@ export const renderToolbar = ({
     closeAllDropdowns();
     const dropdown = document.getElementById(dropdownId);
     dropdown?.classList.toggle("hidden");
+  };
+
+  const normalizeResponseData = (response: unknown) => {
+    const payload = (response as { data?: { data?: unknown } })?.data?.data;
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray((payload as { data?: unknown[] })?.data)) {
+      return (payload as { data?: unknown[] }).data ?? [];
+    }
+    if (Array.isArray((response as { data?: unknown[] })?.data)) {
+      return (response as { data?: unknown[] }).data ?? [];
+    }
+    return [];
+  };
+
+  const normalizeEmojiRecord = (item: unknown): EmojiRecord | null => {
+    const raw = item as {
+      id?: string | number;
+      _id?: string | number;
+      name?: string;
+      url?: string;
+      imageUrl?: string;
+      code?: string;
+      category?: string;
+    };
+    const url = raw.url || raw.imageUrl;
+    if (!url) return null;
+    const id = String(raw.id ?? raw._id ?? url);
+
+    return {
+      id,
+      name: raw.name || raw.code || "emoji",
+      url,
+      code: raw.code,
+      category: raw.category,
+    };
+  };
+
+  const normalizeEmojiGroups = (response: unknown) => {
+    const payload = (response as { data?: { data?: unknown } })?.data?.data as
+      | { groups?: unknown[] }
+      | undefined;
+    const groups = Array.isArray(payload?.groups) ? payload.groups : [];
+
+    return groups
+      .map((group) => {
+        const raw = group as {
+          name?: string;
+          count?: number;
+          items?: unknown[];
+        };
+        if (!raw.name || !Array.isArray(raw.items)) return null;
+
+        return {
+          name: raw.name,
+          count: raw.count,
+          items: raw.items
+            .map(normalizeEmojiRecord)
+            .filter((item): item is EmojiRecord => Boolean(item)),
+        };
+      })
+      .filter((group): group is EmojiGroup => Boolean(group));
+  };
+
+  const fetchEmojiListByTab = async (tabKey: string) => {
+    if (tabKey === "all") {
+      return groupedEmojiList.flatMap((group) => group.items);
+    }
+
+    const localGroup = groupedEmojiList.find((group) => group.name === tabKey);
+    if (localGroup) {
+      return localGroup.items;
+    }
+
+    if (emojiCache.has(tabKey)) {
+      return emojiCache.get(tabKey) ?? [];
+    }
+
+    let response: unknown;
+    if (tabKey === "recent") {
+      response = await emojiControllerGetRecent({ query: { limit: 80 } });
+    } else if (tabKey === "favorites") {
+      response = await emojiControllerGetFavorites({
+        query: { page: 1, limit: 80 },
+      });
+    } else if (tabKey === "popular") {
+      response = await emojiControllerGetPopular({ query: { limit: 80 } });
+    } else {
+      response = await emojiControllerFindAll({
+        query: { category: tabKey, page: 1, limit: 100 },
+      });
+    }
+
+    const list = normalizeResponseData(response)
+      .map(normalizeEmojiRecord)
+      .filter((item): item is EmojiRecord => Boolean(item));
+    emojiCache.set(tabKey, list);
+    return list;
+  };
+
+  const fetchEmojiTabs = async () => {
+    try {
+      const response = await emojiControllerFindAll({
+        query: {
+          page: 1,
+          limit: 100,
+          grouped: true,
+        },
+      });
+      groupedEmojiList = normalizeEmojiGroups(response);
+
+      emojiTabs = [
+        { key: "all", label: "All" },
+        ...groupedEmojiList.map((group) => ({
+          key: group.name,
+          label: group.name,
+          icon: group.items[0]?.url,
+        })),
+      ];
+    } catch (error) {
+      console.error("Failed to load emoji tabs:", error);
+    }
+  };
+
+  const insertEmoji = async (emoji: EmojiRecord) => {
+    const selection = quill.getSelection(true);
+    const index = selection?.index ?? quill.getLength();
+    if (!emoji.url) return;
+
+    quill.insertEmbed(
+      index,
+      "emoji",
+      { src: emoji.url, alt: emoji.name, name: emoji.name },
+      "user",
+    );
+    quill.insertText(index + 1, " ", "user");
+    quill.setSelection(index + 2, 0, "silent");
+
+    try {
+      await emojiControllerIncrementUseCount({ path: { id: emoji.id } });
+    } catch (error) {
+      console.error("Failed to update emoji usage:", error);
+    }
   };
 
   // 创建带tooltip的按钮
@@ -182,6 +352,164 @@ export const renderToolbar = ({
     return dropdownContainer;
   };
 
+  const createEmojiPanelDropdown = (triggerBtn: HTMLButtonElement) => {
+    const dropdownContainer = document.createElement("div");
+    dropdownContainer.className = "relative inline-flex tooltip-wrapper";
+
+    const dropdown = document.createElement("div");
+    dropdown.className =
+      "emoji-panel-dropdown absolute top-full left-0 z-50 mt-3 hidden w-full max-w-[600px] min-w-[360px] rounded-2xl border border-border bg-card shadow-xl";
+    dropdown.id = "dropdown-emoji-panel";
+
+    const tabs = document.createElement("div");
+    tabs.className =
+      "emoji-panel-tabs flex h-[46px] items-center gap-2 overflow-x-auto border-b border-border px-3 bg-border rounded-t-xl";
+
+    const tabsViewport = document.createElement("div");
+    tabsViewport.className =
+      "emoji-panel-tabs-viewport flex h-[46px] items-center gap-2 overflow-x-auto px-1";
+
+    const list = document.createElement("div");
+    list.className =
+      "emoji-panel-list grid h-[256px] grid-cols-8 content-start gap-2 overflow-y-auto px-3 py-3";  
+
+    const prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.className =
+      "emoji-panel-nav flex h-7! w-7! items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors hover:bg-card!";
+    prevBtn.innerHTML = renderIcon(ChevronLeft, "w-4 h-4", 16);
+
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className =
+      "emoji-panel-nav flex h-7! w-7! items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors hover:bg-card!";
+    nextBtn.innerHTML = renderIcon(ChevronRight, "w-4 h-4", 16);
+
+    const renderTabIcon = (tab: EmojiTab) => {
+      if (!tab.icon) {
+        return `<span class="emoji-panel-tab-fallback">${tab.label.slice(0, 1)}</span>`;
+      }
+      if (tab.icon.startsWith("/") || tab.icon.startsWith("http")) {
+        return `<img src="${tab.icon}" alt="${tab.label}" class="emoji-panel-tab-image" />`;
+      }
+      return `<span class="emoji-panel-tab-emoji">${tab.icon}</span>`;
+    };
+
+    const renderEmojiState = (text: string) => {
+      list.innerHTML = `<div class="emoji-panel-state">${text}</div>`;
+    };
+
+    const renderEmojiList = (items: EmojiRecord[]) => {
+      if (!items.length) {
+        renderEmojiState("No emoji");
+        return;
+      }
+
+      list.innerHTML = "";
+      items.forEach((emoji) => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className =
+          "emoji-panel-item flex h-12! w-12! items-center justify-center rounded-xl border border-transparent bg-transparent p-1 transition-all hover:border-border hover:bg-accent";
+        item.title = emoji.name;
+        item.innerHTML = `<img src="${emoji.url}" alt="${emoji.name}" class="max-h-full max-w-full object-contain" loading="lazy" />`;
+        item.onclick = async () => {
+          await insertEmoji(emoji);
+          dropdown.classList.add("hidden");
+        };
+        list.appendChild(item);
+      });
+    };
+
+    const setActiveTab = async (tabKey: string) => {
+      activeEmojiTabKey = tabKey;
+      tabsViewport
+        .querySelectorAll<HTMLButtonElement>("[data-emoji-tab]")
+        .forEach((button) => {
+          const isActive = button.dataset.emojiTab === tabKey;
+          button.dataset.active = isActive ? "true" : "false";
+        });
+
+      renderEmojiState("Loading...");
+      try {
+        const items = await fetchEmojiListByTab(tabKey);
+        renderEmojiList(items);
+      } catch (error) {
+        console.error("Failed to load emoji list:", error);
+        renderEmojiState("Load failed");
+      }
+    };
+
+    const renderTabs = () => {
+      tabsViewport.innerHTML = "";
+      emojiTabs.forEach((tab) => {
+        const tabBtn = document.createElement("button");
+        tabBtn.type = "button";
+        tabBtn.className =
+          "emoji-panel-tab flex h-8 items-center justify-center rounded-xl px-2 transition-colors hover:bg-card!";
+        tabBtn.dataset.emojiTab = tab.key;
+        tabBtn.dataset.active =
+          tab.key === activeEmojiTabKey ? "true" : "false";
+        tabBtn.title = tab.label;
+        tabBtn.innerHTML = renderTabIcon(tab);
+        tabBtn.onclick = () => {
+          void setActiveTab(tab.key);
+        };
+        tabsViewport.appendChild(tabBtn);
+      });
+    };
+
+    const scrollTabs = (direction: "prev" | "next") => {
+      const amount = 180;
+      tabsViewport.scrollBy({
+        left: direction === "next" ? amount : -amount,
+        behavior: "smooth",
+      });
+    };
+
+    prevBtn.onclick = () => scrollTabs("prev");
+    nextBtn.onclick = () => scrollTabs("next");
+
+    triggerBtn.onclick = async (e) => {
+      e.stopPropagation();
+      const isHidden = dropdown.classList.contains("hidden");
+      closeAllDropdowns();
+
+      if (!isHidden) {
+        dropdown.classList.add("hidden");
+        return;
+      }
+
+      dropdown.classList.remove("hidden");
+
+      if (!emojiPanelInitialized) {
+        emojiPanelInitialized = true;
+        renderEmojiState("Loading...");
+        await fetchEmojiTabs();
+        renderTabs();
+        await setActiveTab(activeEmojiTabKey);
+        return;
+      }
+
+      await setActiveTab(activeEmojiTabKey);
+    };
+
+    tabs.appendChild(prevBtn);
+    tabs.appendChild(tabsViewport);
+    tabs.appendChild(nextBtn);
+    dropdown.appendChild(tabs);
+    dropdown.appendChild(list);
+    dropdownContainer.appendChild(triggerBtn);
+    dropdownContainer.appendChild(dropdown);
+
+    const tooltip = document.createElement("span");
+    tooltip.className = "tooltip";
+    tooltip.textContent = t("emoji");
+    dropdownContainer.appendChild(tooltip);
+
+    return dropdownContainer;
+  };
+
   // 第一行：undo redo | emoji image video more
   const row1 = document.createElement("div");
   row1.className = "ql-formats flex! items-center gap-3";
@@ -211,14 +539,7 @@ export const renderToolbar = ({
   emojiBtn.className = "ql-emoji";
   emojiBtn.type = "button";
   emojiBtn.innerHTML = renderIcon(Smile);
-  emojiBtn.onclick = () => {
-    const emoji = prompt(t("emojiPrompt"));
-    if (emoji) {
-      const range = quill.getSelection();
-      quill.insertText(range?.index || 0, emoji);
-    }
-  };
-  row1.appendChild(createTooltipButton(emojiBtn, t("emoji")));
+  row1.appendChild(createEmojiPanelDropdown(emojiBtn));
 
   const imageBtn = document.createElement("button");
   imageBtn.className = "ql-image";
@@ -382,9 +703,14 @@ export const renderToolbar = ({
   };
 
   // 创建颜色下拉
-  const colorDropdown = createColorDropdown(colorBtn, t("textColor"), "textColor", (color) => {
-    quill.format("color", color);
-  });
+  const colorDropdown = createColorDropdown(
+    colorBtn,
+    t("textColor"),
+    "textColor",
+    (color) => {
+      quill.format("color", color);
+    },
+  );
 
   const bgColorDropdown = createColorDropdown(
     bgColorBtn,

@@ -11,6 +11,7 @@ import { BlotSpec } from "@enzedonline/quill-blot-formatter2";
 import "@enzedonline/quill-blot-formatter2/dist/css/quill-blot-formatter2.css";
 
 import { CustomImageBlot } from "./blots/CustomImageBlot";
+import { CustomEmojiBlot } from "./blots/CustomEmojiBlot";
 import { CustomImageSpec } from "./CustomImageSpec";
 import { CustomLinkSpec } from "./CustomLinkSpec";
 import {
@@ -38,6 +39,7 @@ Quill.register(SizeStyle, true);
 Quill.register(SizeClass, true);
 Quill.register("modules/blotFormatter2", QuillBlotFormatter2);
 Quill.register({ "formats/image": CustomImageBlot }, true);
+Quill.register({ "formats/emoji": CustomEmojiBlot }, true);
 
 /**
  * 富文本编辑器组件

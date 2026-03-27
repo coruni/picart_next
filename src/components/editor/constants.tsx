@@ -68,6 +68,7 @@ export const defaultFormats = [
   "list",
   "link",
   "image",
+  "emoji",
   "video",
   "align",
   "color",
