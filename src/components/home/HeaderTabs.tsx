@@ -125,6 +125,7 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
                                   alt={channel.name}
                                   width={32}
                                   height={32}
+                                  loading="eager"
                                   sizes="32px"
                                   className="h-full w-full object-cover"
                                 />

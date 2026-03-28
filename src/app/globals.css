@@ -393,3 +393,9 @@ body {
 .ql-image-selected{
   @apply outline-2! outline-primary! rounded-xl! outline-offset-2!
 }
+
+
+.ql-image-wrapper {
+  display: block !important;
+  justify-self: center;
+}

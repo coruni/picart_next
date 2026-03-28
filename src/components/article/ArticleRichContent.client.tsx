@@ -26,6 +26,9 @@ export function ArticleRichContent({ html }: ArticleRichContentProps) {
     imageNodes.forEach((img, index) => {
       img.dataset.viewerIndex = String(index);
       img.style.cursor = "zoom-in";
+      img.loading = index === 0 ? "eager" : "lazy";
+      img.fetchPriority = index === 0 ? "high" : "auto";
+      img.decoding = "async";
     });
 
     setImages(

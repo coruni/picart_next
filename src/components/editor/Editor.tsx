@@ -33,6 +33,36 @@ import {
 } from "./types";
 import { prepareRichTextHtmlForEditor, sanitizeRichTextHtml } from "@/lib";
 
+const CODE_BLOCK_HINT_REGEX =
+  /(^\s{2,}|\t)|[{}[\];]|=>|<\/?[a-z][\s\S]*?>|^\s*(const|let|var|function|class|import|export|if|else|for|while|switch|try|catch|return|def|public|private|async|await)\b/m;
+
+const normalizeClipboardText = (value: string) =>
+  value.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+const escapeHtml = (value: string) =>
+  value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+const shouldPasteAsCodeBlock = (plainText: string, htmlText: string) => {
+  const normalized = normalizeClipboardText(plainText).trimEnd();
+  if (!normalized.includes("\n")) return false;
+
+  if (/<(pre|code)\b/i.test(htmlText)) return true;
+
+  const nonEmptyLines = normalized
+    .split("\n")
+    .filter((line) => line.trim().length > 0);
+
+  if (nonEmptyLines.length < 2) return false;
+
+  return (
+    nonEmptyLines.some((line) => /^\s{2,}|\t/.test(line)) ||
+    CODE_BLOCK_HINT_REGEX.test(normalized)
+  );
+};
+
 // 注册自定义字号
 SizeClass.whitelist = ["12px", "14px", "16px", "18px", "20px", "24px", "32px"];
 SizeStyle.whitelist = ["12px", "14px", "16px", "18px", "20px", "24px", "32px"];
@@ -396,6 +426,32 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         };
 
         quill.root.addEventListener("keydown", handleKeyDown);
+
+        const handlePaste = (e: ClipboardEvent) => {
+          const clipboardData = e.clipboardData;
+          if (!clipboardData) return;
+
+          const plainText = clipboardData.getData("text/plain");
+          const htmlText = clipboardData.getData("text/html");
+          if (!plainText || !shouldPasteAsCodeBlock(plainText, htmlText)) return;
+
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+
+          const normalizedText = normalizeClipboardText(plainText);
+          const selection = quill.getSelection(true);
+          const index = selection?.index ?? quill.getLength();
+
+          if (selection?.length) {
+            quill.deleteText(index, selection.length, "user");
+          }
+
+          const codeHtml = `<pre>${escapeHtml(normalizedText)}</pre>`;
+          quill.clipboard.dangerouslyPasteHTML(index, codeHtml, "user");
+        };
+
+        quill.root.addEventListener("paste", handlePaste, true);
 
         // 监听图片 caption 输入，同步到 alt 属性
         const handleCaptionInput = (e: Event) => {

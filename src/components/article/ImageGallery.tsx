@@ -115,6 +115,7 @@ export function ImageGallery({
                     src={image}
                     fill
                     quality={95}
+                    loading="eager"
                     sizes="(max-width: 768px) 100px, 128px"
                     className="object-cover"
                     alt={`${alt} thumbnail ${index + 1}`}
@@ -152,6 +153,8 @@ export function ImageGallery({
                     width={0}
                     quality={95}
                     height={0}
+                    loading="eager"
+                    fetchPriority={index === 0 ? "high" : "auto"}
                     className="block max-h-266.5 h-auto w-full object-cover"
                     alt={`${alt} ${index + 1}`}
                     sizes="(max-width: 1280px) 100vw, 1920px"

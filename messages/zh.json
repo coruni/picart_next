@@ -197,7 +197,8 @@
     "members": "成员数",
     "recommendUsers": "推荐用户",
     "viewMore": "查看更多",
-    "loadError": "加载失败"
+    "loadError": "加载失败",
+    "authorInfo": "作者信息"
   },
   "time": {
     "justNow": "刚刚",
@@ -236,8 +237,8 @@
       "descriptionPlaceholder": "介绍一下自己吧",
       "save": "保存",
       "saving": "保存中...",
-      "cancel":"取消",
-      "confirm":"确认",
+      "cancel": "取消",
+      "confirm": "确认",
       "updateSuccess": "资料更新成功",
       "updateFailed": "资料更新失败",
       "cropAvatar": "裁剪头像",

@@ -198,7 +198,8 @@
     "members": "members",
     "recommendUsers": "Recommended Users",
     "viewMore": "View More",
-    "loadError": "Failed to load"
+    "loadError": "Failed to load",
+    "authorInfo": "Author Info"
   },
   "time": {
     "justNow": "just now",
@@ -237,8 +238,8 @@
       "descriptionPlaceholder": "Tell us about yourself",
       "save": "Save",
       "saving": "Saving...",
-      "cancel":"Cancel",
-      "confirm":"Confirm",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
       "updateSuccess": "Profile updated successfully",
       "updateFailed": "Failed to update profile",
       "cropAvatar": "Crop Avatar",

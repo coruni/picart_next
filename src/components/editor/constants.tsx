@@ -65,6 +65,8 @@ export const defaultFormats = [
   "italic",
   "underline",
   "strike",
+  "code",
+  "code-block",
   "list",
   "link",
   "image",

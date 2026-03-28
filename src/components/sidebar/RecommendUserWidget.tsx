@@ -1,4 +1,5 @@
 "use server";
+
 import { userControllerFindAll } from "@/api";
 import { UserList } from "@/types";
 import { Avatar } from "../ui/Avatar";
@@ -22,14 +23,13 @@ export const RecommendUserWidget = async () => {
     users = data?.data?.data || [];
   } catch (error) {
     console.error("Failed to fetch users:", error);
-    // 返回空的组件或错误状态
     return (
       <section className="py-4 px-2 bg-card rounded-xl">
         <div className=" text-ellipsis line-clamp-1 overflow-hidden leading-6 font-medium mb-3 px-2">
           <span>{t("recommendUsers")}</span>
         </div>
         <div className="text-center py-4 text-muted-foreground text-sm">
-          {t("loadError", { defaultValue: "加载失败" })}
+          {t("loadError")}
         </div>
       </section>
     );
@@ -53,7 +53,6 @@ export const RecommendUserWidget = async () => {
             <Plus size={16} strokeWidth={3} />
           </FollowButtonWithStatus>
         </div>
-        {/* 显示图片 */}
         <div className="grid grid-cols-3 gap-2 pb-2">
           {user.articles?.map((article) => (
             <div
@@ -70,7 +69,6 @@ export const RecommendUserWidget = async () => {
             </div>
           ))}
         </div>
-        {/* 底部 */}
         <div
           className="px-4 flex items-center justify-center h-12 w-full bg-no-repeat"
           style={{
@@ -80,12 +78,13 @@ export const RecommendUserWidget = async () => {
           }}
         >
           <span className="text-sm line-clamp-1 wrap-break-word text-black/65 flex-1 text-center">
-            不知道写什么 先放着吧
+            {t("quickPost")}
           </span>
         </div>
       </Link>
     );
   };
+
   return (
     <section className="py-4 px-2 bg-card rounded-xl">
       <div className=" text-ellipsis line-clamp-1 overflow-hidden leading-6 font-semibold mb-3 px-2">
@@ -94,7 +93,7 @@ export const RecommendUserWidget = async () => {
       {users.map((user) => userCard(user))}
       <div className="px-2 mt-2">
         <span className="text-sm text-primary hover:text-primary/80 cursor-pointer">
-          {t("viewMore", { defaultValue: "查看更多" })}
+          {t("viewMore")}
         </span>
       </div>
     </section>

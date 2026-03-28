@@ -83,6 +83,8 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               <Image
                 src={article?.cover}
                 fill
+                loading="eager"
+                fetchPriority="high"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 quality={95}
                 className="object-cover"

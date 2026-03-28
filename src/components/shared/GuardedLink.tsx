@@ -28,7 +28,19 @@ export function GuardedLink({
     openLoginDialog();
   };
 
+  const shouldIgnoreNavigation = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.defaultPrevented) return true;
+    const target = event.target;
+    if (!(target instanceof Element)) return false;
+    return !!target.closest('[data-guarded-link-ignore="true"]');
+  };
+
   const handleClickCapture = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (shouldIgnoreNavigation(event)) {
+      event.preventDefault();
+      return;
+    }
+
     if (requiresAuth && !isAuthenticated) {
       blockNavigation(event);
       return;
@@ -38,6 +50,15 @@ export function GuardedLink({
   };
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (shouldIgnoreNavigation(event)) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.nativeEvent.stopImmediatePropagation?.();
+      loader.done(true);
+      loader.remove();
+      return;
+    }
+
     if (requiresAuth && !isAuthenticated) {
       blockNavigation(event);
       return;
