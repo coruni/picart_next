@@ -52,7 +52,7 @@ export function ImageGallery({
             className="transition-transform group-hover:scale-105 object-cover"
             alt={alt}
             sizes="(max-width: 1280px) 100vw, 1280px"
-            priority
+            preload
           />
           <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/10">
             <div className="flex items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-white opacity-0 transition-opacity group-hover:opacity-100">
