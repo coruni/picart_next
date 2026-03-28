@@ -16,7 +16,7 @@ export function isProtectedPath(pathname: string) {
 type HrefLike =
   | string
   | {
-      pathname?: string;
+      pathname?: string | null;
     }
   | null
   | undefined;

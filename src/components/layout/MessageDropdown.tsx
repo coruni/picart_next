@@ -61,7 +61,7 @@ export function MessageDropdown({
   };
 
   const handleCleanMessage = async () => {
-    await messageControllerMarkAllAsRead();
+    await messageControllerMarkAllAsRead({ body: {} });
     await fetchMessages();
   };
 

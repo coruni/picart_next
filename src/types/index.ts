@@ -1,15 +1,12 @@
-/**
+﻿/**
  * 通用类型定义
- * 从生成的 API 类型中导出常用类型
+ * - 先导出 `api.ts` 中按领域整理的类型。
+ * - 再基于响应类型提取业务常用数据结构。
  */
 
-// 重新导出所有 API 类型
+// 重新导出所有 API 相关类型
 export * from "./api";
 
-// 从生成的 API 类型中导出常用基础类型
-
-
-// 导入响应类型用于提取数据类型
 import type {
   UserControllerGetProfileResponse,
   UserControllerFindAllResponse,
@@ -31,8 +28,8 @@ import type {
   CategoryControllerFindOneResponse,
   TagControllerFindAllResponse,
   TagControllerFindOneResponse,
-  FavoriteControllerFindAllResponse,
-  FavoriteControllerFindOneResponse,
+  FavoriteControllerFindAllResponses,
+  FavoriteControllerFindOneResponses,
   DecorationControllerFindAllResponse,
   DecorationControllerFindOneResponse,
   DecorationControllerGetMyDecorationsResponse,
@@ -49,9 +46,9 @@ import type {
   BannerControllerFindAllResponse,
   BannerControllerFindOneResponse,
   BannerControllerFindActiveResponse,
-  ReportControllerFindAllResponse,
-  ReportControllerFindOneResponse,
-  ReportControllerGetStatisticsResponse,
+  ReportControllerFindAllResponses,
+  ReportControllerFindOneResponses,
+  ReportControllerGetStatisticsResponses,
   UserControllerFindOneResponse,
   ArticleControllerFindByAuthorResponse,
   CommentControllerFindAllCommentsResponses,
@@ -59,79 +56,81 @@ import type {
   CommentControllerGetUserCommentsResponse,
 } from "@/api/types.gen";
 
-// ==================== 从响应类型中提取数据类型 ====================
+type FirstResponse<T> = T[keyof T];
 
-// 用户相关数据类型
+// ==================== 基于响应提取的数据类型 ====================
+
+// 用户
 export type UserProfile = NonNullable<UserControllerGetProfileResponse["data"]>;
-export type UserList = NonNullable<UserControllerFindAllResponse["data"]['data']>;
+export type UserList = NonNullable<UserControllerFindAllResponse["data"]["data"]>;
 export type UserDetail = NonNullable<UserControllerFindOneResponse["data"]>;
 export type LoginResult = NonNullable<UserControllerLoginResponse["data"]>;
 export type RegisterResult = NonNullable<UserControllerRegisterUserResponse["data"]>;
-export type WalletBalance = NonNullable<UserControllerGetWalletBalanceResponse["data"]['data']>;
-export type WalletTransactions = NonNullable<UserControllerGetWalletTransactionsResponse["data"]['data']>;
+export type WalletBalance = NonNullable<UserControllerGetWalletBalanceResponse["data"]["data"]>;
+export type WalletTransactions = NonNullable<UserControllerGetWalletTransactionsResponse["data"]["data"]>;
 export type UserConfigData = NonNullable<UserControllerGetUserConfigResponse["data"]>;
 
-// 文章相关数据类型
-export type ArticleList = NonNullable<ArticleControllerFindAllResponse["data"]['data']>;
-export type ArticleUserList = NonNullable<ArticleControllerFindByAuthorResponse['data']['data']>
+// 文章
+export type ArticleList = NonNullable<ArticleControllerFindAllResponse["data"]["data"]>;
+export type ArticleUserList = NonNullable<ArticleControllerFindByAuthorResponse["data"]["data"]>;
 export type ArticleDetail = NonNullable<ArticleControllerFindOneResponse["data"]>;
-export type ArticleSearchResult = NonNullable<ArticleControllerSearchResponse["data"]['data']>;
-export type ArticleRecommendations = NonNullable<ArticleControllerFindRecommendationsResponse["data"]['data']>;
+export type ArticleSearchResult = NonNullable<ArticleControllerSearchResponse["data"]["data"]>;
+export type ArticleRecommendations = NonNullable<ArticleControllerFindRecommendationsResponse["data"]["data"]>;
 export type BrowseHistory = NonNullable<ArticleControllerGetBrowseHistoryResponse["data"]>;
 
-// 角色和权限数据类型
-export type RoleList = NonNullable<RoleControllerFindAllResponse["data"]['data']>;
+// 角色与权限
+export type RoleList = NonNullable<RoleControllerFindAllResponse["data"]["data"]>;
 export type RoleDetail = NonNullable<RoleControllerFindOneResponse["data"]>;
-export type RolePaginated = NonNullable<RoleControllerFindWithPaginationResponse["data"]['data']>;
+export type RolePaginated = NonNullable<RoleControllerFindWithPaginationResponse["data"]["data"]>;
 export type PermissionList = PermissionControllerFindAllResponse;
 
-// 分类和标签数据类型
-export type CategoryList = NonNullable<CategoryControllerFindAllResponse["data"]['data']>;
+// 分类与标签
+export type CategoryList = NonNullable<CategoryControllerFindAllResponse["data"]["data"]>;
 export type CategoryDetail = NonNullable<CategoryControllerFindOneResponse["data"]>;
-export type TagList = NonNullable<TagControllerFindAllResponse["data"]['data']>;
+export type TagList = NonNullable<TagControllerFindAllResponse["data"]["data"]>;
 export type TagDetail = NonNullable<TagControllerFindOneResponse["data"]>;
 
-// 收藏相关数据类型
-export type FavoriteList = NonNullable<FavoriteControllerFindAllResponse["data"]['data']>;
-export type FavoriteDetail = NonNullable<FavoriteControllerFindOneResponse["data"]>;
+// 收藏
+export type FavoriteList = FirstResponse<FavoriteControllerFindAllResponses>;
+export type FavoriteDetail = FirstResponse<FavoriteControllerFindOneResponses>;
 
-// 装饰相关数据类型
-export type DecorationList = NonNullable<DecorationControllerFindAllResponse["data"]['data']>;
+// 装饰
+export type DecorationList = NonNullable<DecorationControllerFindAllResponse["data"]["data"]>;
 export type DecorationDetail = NonNullable<DecorationControllerFindOneResponse["data"]>;
-export type MyDecorations = NonNullable<DecorationControllerGetMyDecorationsResponse["data"]['data']>;
+export type MyDecorations = NonNullable<DecorationControllerGetMyDecorationsResponse["data"]["data"]>;
 export type CurrentDecorations = NonNullable<DecorationControllerGetCurrentDecorationsResponse["data"]>;
 
-// 消息相关数据类型
-export type MessageList = NonNullable<MessageControllerFindAllResponse["data"]['data']>;
+// 消息
+export type MessageList = NonNullable<MessageControllerFindAllResponse["data"]["data"]>;
 export type MessageDetail = NonNullable<MessageControllerFindOneResponse["data"]>;
 export type UnreadCount = NonNullable<MessageControllerGetUnreadCountResponse["data"]>;
 
-// 配置相关数据类型
-export type ConfigList = NonNullable<ConfigControllerFindAllResponse["data"]['data']>;
-export type ConfigByGroup = NonNullable<ConfigControllerFindByGroupResponse["data"]['data']>;
+// 配置
+export type ConfigList = NonNullable<ConfigControllerFindAllResponse["data"]["data"]>;
+export type ConfigByGroup = NonNullable<ConfigControllerFindByGroupResponse["data"]["data"]>;
 export type PublicConfigs = NonNullable<ConfigControllerGetPublicConfigsResponse["data"]>;
 export type AdvertisementConfig = NonNullable<ConfigControllerGetAdvertisementConfigResponse["data"]>;
 
-// 上传相关数据类型
+// 上传
 export type UploadList = UploadControllerFindAllResponse;
 export type UploadResultData = UploadControllerUploadFileResponse;
 
-// Banner 相关数据类型
-export type BannerList = NonNullable<BannerControllerFindAllResponse["data"]['data']>;
+// Banner
+export type BannerList = NonNullable<BannerControllerFindAllResponse["data"]["data"]>;
 export type BannerDetail = NonNullable<BannerControllerFindOneResponse["data"]>;
 export type ActiveBanners = NonNullable<BannerControllerFindActiveResponse["data"]>;
 
-// 举报相关数据类型
-export type ReportList = NonNullable<ReportControllerFindAllResponse["data"]['data']>;
-export type ReportDetail = NonNullable<ReportControllerFindOneResponse["data"]>;
-export type ReportStatistics = NonNullable<ReportControllerGetStatisticsResponse["data"]>;
+// 举报
+export type ReportList = FirstResponse<ReportControllerFindAllResponses>;
+export type ReportDetail = FirstResponse<ReportControllerFindOneResponses>;
+export type ReportStatistics = FirstResponse<ReportControllerGetStatisticsResponses>;
 
-// 评论相关数据类型
-export type AllComments = NonNullable<CommentControllerFindAllResponse["data"]['data']>;
-export type CommentList = NonNullable<CommentControllerGetUserCommentsResponse["data"]['data']>;
-export type UserCommentList = NonNullable<CommentControllerGetUserCommentsResponse["data"]['data']>;
+// 评论
+export type AllComments = NonNullable<CommentControllerFindAllResponse["data"]["data"]>;
+export type CommentList = NonNullable<CommentControllerGetUserCommentsResponse["data"]["data"]>;
+export type UserCommentList = NonNullable<CommentControllerGetUserCommentsResponse["data"]["data"]>;
 
-// ==================== 自定义通用类型 ====================
+// ==================== 通用结构类型 ====================
 
 // 分页参数
 export interface PaginationParams {
@@ -139,7 +138,7 @@ export interface PaginationParams {
   pageSize: number;
 }
 
-// 分页响应（通用）
+// 通用分页响应
 export interface PaginationResponse<T> {
   list: T[];
   total: number;
@@ -148,7 +147,7 @@ export interface PaginationResponse<T> {
   totalPages: number;
 }
 
-// 用户信息（扩展的用户类型，用于本地状态）
+// 本地用户信息（扩展）
 export interface User {
   id: string;
   username: string;
@@ -168,7 +167,7 @@ export interface FieldError {
   message: string;
 }
 
-// 选项类型
+// 通用选项
 export interface Option<T = string> {
   label: string;
   value: T;
@@ -184,7 +183,7 @@ export interface MenuItem {
   children?: MenuItem[];
 }
 
-// 文件上传状态
+// 上传文件状态
 export interface UploadFile {
   uid: string;
   name: string;
@@ -211,7 +210,7 @@ export interface SortParams {
   order: "asc" | "desc";
 }
 
-// 筛选参数
+// 过滤参数
 export interface FilterParams {
   [key: string]: any;
 }

@@ -133,9 +133,8 @@ export const Select = ({
           )}
         >
           {options.map((option) => (
-            <div className="m-1">
+            <div className="m-1" key={option.value}>
               <button
-                key={option.value}
                 type="button"
                 onClick={() => handleSelect(option.value)}
                 className={cn(

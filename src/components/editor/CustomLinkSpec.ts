@@ -29,7 +29,9 @@ export class CustomLinkSpec extends BlotSpec {
   };
 
   getOverlayElement = (): HTMLElement | null => {
-    const overlay = super.getOverlayElement();
+    const overlay = (BlotSpec.prototype.getOverlayElement as (
+      this: CustomLinkSpec,
+    ) => HTMLElement | null).call(this);
     if (overlay) {
       // 强制 overlay 不跟随链接宽度
       Object.assign(overlay.style, {
