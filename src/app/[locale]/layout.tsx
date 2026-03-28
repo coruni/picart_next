@@ -21,9 +21,7 @@ import {
   getAuthDebugSnapshot,
   TOKEN_COOKIE_NAME,
 } from "@/lib/request-auth";
-import { serverApi } from "@/lib/server-api";
 import NextTopLoader from "nextjs-toploader";
-import type { UserProfile } from "@/types";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -104,44 +102,11 @@ export default async function LocaleLayout({
       ...getAuthDebugSnapshot(requestHeaders),
     });
   }
-  let initialUser: UserProfile | null = null;
-
-  if (initialToken) {
-    try {
-      if (process.env.NODE_ENV === "development") {
-        console.log("[auth][layout] profile request start", {
-          ...getAuthDebugSnapshot(requestHeaders),
-          tokenPreview: initialToken ? `${initialToken.slice(0, 12)}...` : null,
-          deviceId,
-        });
-      }
-
-      const response = await serverApi.userControllerGetProfile({
-        next: { revalidate: 0 },
-      });
-      initialUser = response?.data?.data || null;
-
-      if (process.env.NODE_ENV === "development") {
-        console.log("[auth][layout] profile fetch result", {
-          status: response.response.status,
-          hasInitialUser: !!initialUser,
-          userId: initialUser?.id ?? null,
-          ...getAuthDebugSnapshot(requestHeaders),
-        });
-      }
-    } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.warn("[auth][layout] profile fetch failed", {
-          hasInitialToken: !!initialToken,
-          deviceId,
-          ...getAuthDebugSnapshot(requestHeaders),
-          error,
-        });
-      }
-    }
-  } else if (process.env.NODE_ENV === "development") {
-    console.log("[auth][layout] skipped profile fetch because token is missing", {
+  if (process.env.NODE_ENV === "development") {
+    console.log("[auth][layout] profile fetch deferred to client", {
+      hasInitialToken: !!initialToken,
       deviceId,
+      ...getAuthDebugSnapshot(requestHeaders),
     });
   }
 
@@ -153,7 +118,7 @@ export default async function LocaleLayout({
 
         <UserStateProvider
           initialToken={initialToken}
-          initialUser={initialUser}
+          initialUser={null}
           initialConfig={config}
         >
           <AuthRouteGuard />
