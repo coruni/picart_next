@@ -23,11 +23,11 @@ import {
   articleControllerFindOne,
   articleControllerUpdate,
 } from "@/api";
-import Image from "next/image";
 import { cn } from "@/lib";
 import { Edit, Trash2, Loader2 } from "lucide-react";
 import { Switch } from "@/components/ui/Switch";
 import { useTranslations } from "next-intl";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 
 type CreatePostFormData = {
   cover: string;
@@ -536,7 +536,7 @@ export default function CreatePostPage(props: CreatePostPageProps) {
                   >
                     {values.cover ? (
                       <div className="relative w-full aspect-21/9">
-                        <Image
+                        <ImageWithFallback
                           fill
                           src={values.cover}
                           alt={t("cover.preview")}

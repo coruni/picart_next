@@ -11,10 +11,10 @@ import { Link } from "@/i18n/routing";
 import { generateArticleMetadata, prepareRichTextHtmlForDisplay } from "@/lib";
 import { Forward, Hash } from "lucide-react";
 import { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { serverApi } from "@/lib/server-api";
 import { getTranslations } from "next-intl/server";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 
 type ArticleDetailPageProps = {
   params: Promise<{
@@ -76,7 +76,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
         <section className="relative">
           {article?.cover && (
             <div className="relative w-full h-80 md:h-120">
-              <Image
+              <ImageWithFallback
                 src={article?.cover}
                 fill
                 loading="eager"
@@ -101,8 +101,11 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           </div>
           <div className="mt-4 px-6">
             {article?.type === "image" && (
-              <div className="flex relative overflow-hidden">
-                <ImageGallery images={article?.images || []} />
+              <div className="relative w-full min-w-0 overflow-hidden">
+                <ImageGallery
+                  images={article?.images || []}
+                  alt={article?.title || ""}
+                />
               </div>
             )}
             {content &&

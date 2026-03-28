@@ -1,12 +1,13 @@
 ﻿"use client";
 
-import { useState } from "react";
-import type { ArticleDetail, ArticleList } from "@/types";
-import Image from "next/image";
+import { DropdownMenu, MenuItem } from "@/components/shared";
+import { GuardedLink } from "@/components/shared/GuardedLink";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Avatar } from "@/components/ui/Avatar";
-import { cn, formatRelativeTime, prepareRichTextHtmlForSummary } from "@/lib";
-import { useTranslations } from "next-intl";
 import { FollowButtonWithStatus } from "@/components/ui/FollowButtonWithStatus";
+import { Link } from "@/i18n/routing";
+import { cn, formatRelativeTime, prepareRichTextHtmlForSummary } from "@/lib";
+import type { ArticleDetail, ArticleList } from "@/types";
 import {
   EllipsisVertical,
   Eye,
@@ -16,11 +17,10 @@ import {
   HeartCrack,
   MessageCircleMore,
 } from "lucide-react";
-import { Link } from "@/i18n/routing";
-import { DropdownMenu, MenuItem } from "@/components/shared";
-import { ReactionPanel } from "./ReactionPanel.client";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { ImageViewer } from "./ImageViewer";
-import { GuardedLink } from "@/components/shared/GuardedLink";
+import { ReactionPanel } from "./ReactionPanel.client";
 
 type Article = ArticleList[number] | ArticleDetail;
 type ArticleCardProps = {
@@ -28,7 +28,10 @@ type ArticleCardProps = {
   showFollow: boolean;
 };
 
-export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) => {
+export const ArticleCard = ({
+  article,
+  showFollow = true,
+}: ArticleCardProps) => {
   const t = useTranslations("time");
   const tCard = useTranslations("articleCard");
   const [viewerVisible, setViewerVisible] = useState(false);
@@ -72,18 +75,18 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
     if (article.cover) {
       return (
         <div
-          className="mt-3 rounded-xl overflow-hidden w-62/100 relative"
+          className="mt-3 rounded-xl overflow-hidden w-62/100 min-w-56 min-h-32.5 relative"
           style={{ paddingTop: "35%" }}
         >
-          <Image
+          <ImageWithFallback
             src={article.cover}
             alt={article?.title || "cover"}
             fill
-            quality={95}
+            quality={75}
             loading="eager"
             fetchPriority="high"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="absolute inset-0 object-cover"
+            className="object-cover"
           />
           <div className="absolute bottom-2 right-2 w-6 h-4 bg-[#00000099] rounded-full flex items-center justify-center text-white">
             <FileImage size={12} strokeWidth={3} />
@@ -98,12 +101,15 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
 
     if (imageCount === 1) {
       return (
-        <div className="mt-3 rounded-xl overflow-hidden w-1/2 relative">
+        <div
+          className="mt-3 rounded-xl overflow-hidden w-62/100 min-w-56 min-h-32.5 relative"
+          style={{ paddingTop: "35%" }}
+        >
           <div
             role="button"
             tabIndex={0}
             data-guarded-link-ignore="true"
-            className="block w-full text-left cursor-zoom-in"
+            className="absolute inset-0 cursor-zoom-in"
             onClick={(e) => {
               stopLinkNavigationEvent(e);
               openImageViewer(0);
@@ -115,16 +121,15 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
               openImageViewer(0);
             }}
           >
-            <Image
+            <ImageWithFallback
               src={previewImages[0]}
               alt={article?.title || "image"}
-              width={0}
-              quality={95}
-              height={0}
+              fill
+              quality={75}
               loading="eager"
               fetchPriority="high"
               sizes="50vw"
-              className="w-full h-auto object-cover"
+              className="object-cover"
             />
           </div>
         </div>
@@ -140,7 +145,9 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
               role="button"
               tabIndex={0}
               data-guarded-link-ignore="true"
-              className="rounded-xl overflow-hidden w-31/100 relative aspect-square cursor-zoom-in"
+              className="rounded-xl overflow-hidden w-31/100 relative cursor-zoom-in"
+              style={{ paddingTop: "31%" }}
+              // ✅ paddingTop 与 width 相同百分比 → 正方形
               onClick={(e) => {
                 stopLinkNavigationEvent(e);
                 openImageViewer(idx);
@@ -152,15 +159,13 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
                 openImageViewer(idx);
               }}
             >
-              <Image
+              <ImageWithFallback
                 src={img}
                 alt={`${article?.title || "image"} ${idx + 1}`}
-                width={0}
-                height={0}
-                quality={95}
-                loading="eager"
+                fill
+                quality={75}
                 sizes="31vw"
-                className="w-full h-auto object-cover"
+                className="object-cover"
               />
             </div>
           ))}
@@ -179,7 +184,9 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
             role="button"
             tabIndex={0}
             data-guarded-link-ignore="true"
-            className="rounded-xl overflow-hidden w-1/5 relative aspect-square inline-block cursor-zoom-in"
+            className="rounded-xl overflow-hidden w-1/5 relative cursor-zoom-in"
+            style={{ paddingTop: "20%" }}
+            // ✅ paddingTop 与 width 相同百分比 → 正方形
             onClick={(e) => {
               stopLinkNavigationEvent(e);
               openImageViewer(idx);
@@ -191,15 +198,13 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
               openImageViewer(idx);
             }}
           >
-            <Image
+            <ImageWithFallback
               src={img}
               alt={`${article?.title || "image"} ${idx + 1}`}
-              width={0}
-              height={0}
-              quality={95}
-              loading="eager"
+              fill
+              quality={75}
               sizes="20vw"
-              className="w-full h-full object-cover"
+              className="object-cover"
             />
             {idx === 2 && remainingCount > 0 && (
               <div className="absolute bg-black/60 flex items-center justify-center bottom-2 right-2 rounded-full px-2 gap-1 text-white text-sm leading-3.5">
@@ -212,7 +217,6 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
       </div>
     );
   };
-
   return (
     <article className="p-6 border-border border-b">
       <div className="flex items-center">
@@ -221,13 +225,21 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
             <Avatar
               className={cn("size-12")}
               url={article.author?.avatar}
-              frameUrl={article.author?.equippedDecorations?.AVATAR_FRAME?.imageUrl}
+              frameUrl={
+                article.author?.equippedDecorations?.AVATAR_FRAME?.imageUrl
+              }
             />
           </Link>
           <div className="ml-3 flex flex-col flex-1">
-            <Link href={`/account/${article?.author?.id}`} className=" flex items-center leading-5">
+            <Link
+              href={`/account/${article?.author?.id}`}
+              className=" flex items-center leading-5"
+            >
               <span className="font-bold hover:text-primary">
-                {(article?.author?.nickname || article?.author?.username) as string}
+                {
+                  (article?.author?.nickname ||
+                    article?.author?.username) as string
+                }
               </span>
             </Link>
             <div className="mt-1 leading-4">
@@ -239,7 +251,10 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
           </div>
           {showFollow && (
             <div className="ml-3 flex items-center w-auto">
-              <FollowButtonWithStatus author={article.author} className="min-w-22" />
+              <FollowButtonWithStatus
+                author={article.author}
+                className="min-w-22"
+              />
             </div>
           )}
         </div>
@@ -311,7 +326,7 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
         </div>
       </div>
 
-      {previewImages.length > 0 && (
+      {viewerVisible && previewImages.length > 0 && (
         <ImageViewer
           images={previewImages}
           initialIndex={viewerIndex}

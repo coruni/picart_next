@@ -57,7 +57,7 @@ export function ArticleRichContent({ html }: ArticleRichContentProps) {
         className="ql-editor px-0!"
         dangerouslySetInnerHTML={{ __html: html }}
       />
-      {images.length > 0 && (
+      {viewerVisible && images.length > 0 && (
         <ImageViewer
           images={images}
           initialIndex={activeIndex}

@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { generateTagMetadata } from "@/lib/seo";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { TopicInfo, TopicTabs } from "@/components/topic";
 import { serverApi } from "@/lib/server-api";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 interface TopicDetailLayoutProps {
     children: ReactNode;
     params: Promise<{ id: string; locale: string }>;
@@ -42,7 +42,7 @@ export default async function TopicDetailLayout({ children, params }: TopicDetai
             {/* 背景 */}
             <div className="fixed h-75 w-full z-0">
                 <div className="absolute top-0 left-0 w-full z-2 bg-linear-to-b from-[#00000066] to-transparent h-20" />
-                <Image quality={95} src={tag.background || tag.avatar || '/placeholder/topic_placeholder.png'} fill alt={`${tag.name} background image`} className="w-full h-full object-cover" />
+                <ImageWithFallback quality={95} src={tag.background || tag.avatar || '/placeholder/topic_placeholder.png'} fill alt={`${tag.name} background image`} className="w-full h-full object-cover" />
                 <div className="absolute bottom-0 left-0 w-full z-2 bg-linear-to-t from-[#00000066] to-transparent h-25" />
             </div>
 

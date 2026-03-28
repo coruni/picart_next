@@ -56,8 +56,8 @@
     "appearanceSettings": "外观设置",
     "autoTranslate": "自动翻译推荐内容",
     "followSystem": "跟随系统",
-    "currentLanguage": "????",
-    "authorInfo": "????"
+    "currentLanguage": "简体中文",
+    "authorInfo": "作者信息"
   },
   "form": {
     "email": "邮箱",
@@ -294,7 +294,7 @@
       "percent": "{percent}%"
     },
     "placeholder": "请输入内容",
-    "imageCaptionPlaceholder": "??????..."
+    "imageCaptionPlaceholder": "添加图片说明..."
   },
   "createPost": {
     "title": "发布帖子",
@@ -355,132 +355,132 @@
     "viewFullImage": "查看完整图片"
   },
   "feedTabs": {
-    "follow": "??",
-    "recommend": "??",
-    "activity": "??"
+    "follow": "关注",
+    "recommend": "推荐",
+    "activity": "动态"
   },
   "messageDropdown": {
-    "cleanMessages": "????",
-    "notificationSettings": "????",
-    "noMessages": "????"
+    "cleanMessages": "全部标记为已读",
+    "notificationSettings": "消息通知设置",
+    "noMessages": "暂无消息"
   },
   "articleDetail": {
-    "pageTitle": "?????",
-    "repostable": "???"
+    "pageTitle": "帖子详情",
+    "repostable": "允许转载"
   },
   "articleCard": {
-    "dislikeContent": "????????",
-    "more": "??"
+    "dislikeContent": "我不喜欢这类内容",
+    "more": "更多"
   },
   "articleMenu": {
-    "reportReason": "????????",
-    "reportSubmitted": "?????",
-    "reportFailed": "??????????",
-    "blockRecorded": "?????????????????????",
-    "dislikeRecorded": "?????????",
-    "editPost": "????",
-    "reportPost": "????",
-    "blockUser": "????",
-    "dislikeType": "????????",
-    "moreActions": "????"
+    "reportReason": "帖子内容需要审核",
+    "reportSubmitted": "举报已提交",
+    "reportFailed": "举报失败，请稍后重试",
+    "blockRecorded": "已记录拉黑操作，后续可接入真实逻辑",
+    "dislikeRecorded": "已记录你的内容偏好",
+    "editPost": "编辑帖子",
+    "reportPost": "举报帖子",
+    "blockUser": "拉黑用户",
+    "dislikeType": "我不喜欢这类内容",
+    "moreActions": "更多操作"
   },
   "categorySelect": {
-    "placeholder": "????",
-    "searchPlaceholder": "????...",
-    "noMatched": "????????",
-    "noCategories": "????"
+    "placeholder": "选择分类",
+    "searchPlaceholder": "搜索分类...",
+    "noMatched": "没有匹配的分类",
+    "noCategories": "暂无分类"
   },
   "accountTabs": {
-    "article": "??",
-    "comment": "??",
-    "favorite": "??",
-    "tag": "??"
+    "article": "帖子",
+    "comment": "评论",
+    "favorite": "收藏",
+    "tag": "话题"
   },
   "themeSwitcher": {
-    "light": "??",
-    "dark": "??",
-    "system": "????"
+    "light": "浅色",
+    "dark": "深色",
+    "system": "跟随系统"
   },
   "topicInfo": {
-    "posts": "???",
-    "members": "???"
+    "posts": "帖子",
+    "members": "成员"
   },
   "avatarFrameDialog": {
-    "title": "?????",
-    "empty": "?????",
-    "loading": "???...",
-    "allLoaded": "?????",
-    "duration": "????:",
-    "permanent": "????",
-    "canDirectEquip": "?????",
-    "notOwned": "???",
-    "unequip": "????",
-    "equip": "??",
-    "get": "??",
-    "selectHint": "?????????",
-    "expired": "???",
-    "expireToday": "????",
-    "expireInDays": "{days}????"
+    "title": "更换头像框",
+    "empty": "暂无头像框",
+    "loading": "加载中...",
+    "allLoaded": "已全部加载",
+    "duration": "时长：",
+    "permanent": "永久",
+    "canDirectEquip": "可直接装备",
+    "notOwned": "未拥有",
+    "unequip": "卸下",
+    "equip": "装备",
+    "get": "获取",
+    "selectHint": "在左侧选择一个头像框进行预览",
+    "expired": "已过期",
+    "expireToday": "今天过期",
+    "expireInDays": "{days}天后过期"
   },
   "decorationPage": {
-    "title": "?????",
+    "title": "我的装扮",
     "types": {
-      "avatarFrame": "???",
-      "emoji": "???",
-      "commentBubble": "????"
+      "avatarFrame": "头像框",
+      "emoji": "表情",
+      "commentBubble": "评论气泡"
     },
     "rarity": {
-      "common": "??",
-      "rare": "??",
-      "epic": "??",
-      "legendary": "??"
+      "common": "普通",
+      "rare": "稀有",
+      "epic": "史诗",
+      "legendary": "传说"
     },
-    "series": "??",
-    "expireAt": "??",
-    "permanent": "??",
-    "ownedHint": "???10???????",
-    "emptyByType": "??{type}"
+    "series": "系列",
+    "expireAt": "到期",
+    "permanent": "永久",
+    "ownedHint": "已拥有 10 件，查看更多",
+    "emptyByType": "暂无{type}"
   },
   "channelPage": {
-    "noChannels": "????",
-    "noSubchannels": "????????"
+    "noChannels": "暂无频道",
+    "noSubchannels": "该频道暂无子分类"
   },
   "accountInfo": {
-    "posts": "??",
-    "following": "??",
-    "followers": "??",
-    "likes": "??",
-    "edit": "??",
-    "editProfile": "????",
-    "editBackground": "????"
+    "posts": "帖子",
+    "following": "关注",
+    "followers": "粉丝",
+    "likes": "点赞",
+    "edit": "编辑",
+    "editProfile": "编辑资料",
+    "editBackground": "更换背景"
   },
   "emptyState": {
-    "message": "????",
-    "buttonText": "???"
+    "message": "暂无内容",
+    "buttonText": "去登录"
   },
   "reactionPanel": {
-    "like": "?",
-    "love": "?",
-    "haha": "??",
-    "wow": "?",
-    "sad": "??",
-    "angry": "??",
-    "dislike": "?"
+    "like": "赞",
+    "love": "爱心",
+    "haha": "哈哈",
+    "wow": "哇",
+    "sad": "难过",
+    "angry": "生气",
+    "dislike": "踩"
   },
   "dropdownMenu": {
-    "more": "??"
+    "more": "更多"
   },
   "searchBox": {
     "hotSearches": [
-      "??",
-      "??",
-      "??",
-      "????",
-      "???"
+      "签到",
+      "原神",
+      "崩坏",
+      "星穹铁道",
+      "绝区零"
     ]
   },
   "languageSwitcher": {
-    "zh": "??",
-    "en": "??"
+    "zh": "中文",
+    "en": "English"
   }
 }

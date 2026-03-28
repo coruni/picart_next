@@ -1,10 +1,10 @@
 ﻿import { ReactNode } from "react";
-import Image from "next/image";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { ChannelTabs } from "@/components/channel/ChannelTabs";
 import { ChannelNav } from "@/components/channel/ChannelNav";
 import { generateSiteMetadata } from "@/lib/seo";
 import { serverApi } from "@/lib/server-api";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 
 interface ChannelLayoutProps {
   children: ReactNode;
@@ -98,7 +98,7 @@ export default async function ChannelLayout({
   return (
     <>
       <div className="top-header fixed h-101 w-full z-0">
-        <Image
+        <ImageWithFallback
           quality={95}
           src={
             currentChannel?.background ||
@@ -108,7 +108,7 @@ export default async function ChannelLayout({
           fill
           alt={`${currentChannel?.name} background image`}
           className="w-full h-full object-cover"
-        />
+          />
         <div
           className="absolute bottom-0 left-0 w-full z-2 h-70"
           style={{

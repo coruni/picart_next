@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
 import { CheckCircle2Icon, ChevronRight, Clock } from "lucide-react";
 import { decorationControllerGetMyDecorations } from "@/api/sdk.gen";
 import type { DecorationControllerGetMyDecorationsResponse } from "@/api/types.gen";
@@ -10,6 +9,7 @@ import { useModalStore } from "@/stores/useModalStore";
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { UserAvatarFarmeDialog } from "@/components/layout/UserAvatarFarmeDialog";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 
 type DecorationType = "AVATAR_FRAME" | "EMOJI" | "COMMENT_BUBBLE";
 
@@ -98,7 +98,7 @@ export default function AccountDecorationPage() {
                   src={decoration.decoration.imageUrl}
                   alt={decoration.decoration.name}
                   className="object-cover p-4"
-                ></Image>
+                />
                 {decoration.isUsing && (
                   <div className=" absolute top-2 right-2">
                     <CheckCircle2Icon size={16} className="text-primary" />
