@@ -1,4 +1,4 @@
-import {
+﻿import {
   ArticleAuthor,
   ArticleRichContent,
   ImageGallery,
@@ -14,6 +14,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { serverApi } from "@/lib/server-api";
+import { getTranslations } from "next-intl/server";
 
 type ArticleDetailPageProps = {
   params: Promise<{
@@ -25,7 +26,6 @@ type ArticleDetailPageProps = {
   }>;
 };
 
-// 动态生成元数据
 export async function generateMetadata({
   params,
 }: {
@@ -33,7 +33,6 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id, locale } = await params;
 
-  // 获取文章数据用于生成 metadata
   const { data } = await serverApi.articleControllerFindOne({
     path: { id },
   });
@@ -43,8 +42,8 @@ export async function generateMetadata({
 
 export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
   const { id } = await props.params;
+  const t = await getTranslations("articleDetail");
 
-  // 请求文章详情
   const { data } = await serverApi.articleControllerFindOne({
     path: { id },
   });
@@ -52,22 +51,20 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
   if (!article) {
     notFound();
   }
-  // 过滤js注入
-  const content =
-    prepareRichTextHtmlForDisplay(
-      article?.content?.replace(
-        /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-        "",
-      ) || "",
-    );
+
+  const content = prepareRichTextHtmlForDisplay(
+    article?.content?.replace(
+      /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+      "",
+    ) || "",
+  );
 
   return (
     <div className="page-container">
       <div className="left-container ">
-        {/* 顶部header */}
         <div className="top-header px-4 h-14 flex items-center border-b rounded-t-xl border-border sticky bg-white dark:bg-gray-800 z-15">
           <div className="h-full flex-1 flex items-center">
-            <span className="font-bold text-base pr-6">帖子详情页</span>
+            <span className="font-bold text-base pr-6">{t("pageTitle")}</span>
           </div>
           <div className="ml-4">
             <ArticleMenu
@@ -77,7 +74,6 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           </div>
         </div>
         <section className="relative">
-          {/* 封面区域 */}
           {article?.cover && (
             <div className="relative w-full h-80 md:h-120">
               <Image
@@ -92,28 +88,23 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               />
             </div>
           )}
-          {/* 标题 */}
           <div className="px-6 pt-4 mt-1">
             <h1 className="text-[22px] wrap-break-word font-bold">
               {article?.title}
             </h1>
           </div>
-          {/* 作者信息 */}
           <div className="top-header-tabs mt-4 h-14 sticky z-10 bg-white dark:bg-gray-800">
             <ArticleAuthor
               author={article?.author}
               createdAt={article?.createdAt}
             />
           </div>
-          {/* 文章信息 */}
           <div className="mt-4 px-6">
-            {/* 图册 */}
             {article?.type === "image" && (
               <div className="flex relative overflow-hidden">
                 <ImageGallery images={article?.images || []} />
               </div>
             )}
-            {/* 内容 */}
             {content &&
               (article?.type === "image" ? (
                 <div
@@ -125,20 +116,17 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               ))}
           </div>
         </section>
-        {/* 底部信息 */}
         <div className="px-6 mt-4">
-          {/* 来自哪个分类 */}
           <div className="text-secondary text-xs leading-4 ">
             <span>
-              {article?.category?.parent?.name} • {article?.category?.name}
+              {article?.category?.parent?.name} - {article?.category?.name}
             </span>
           </div>
 
           <div className="mt-2 flex items-center space-x-1 text-secondary text-xs leading-4">
             <Forward size={16} />
-            <span>可转载</span>
+            <span>{t("repostable")}</span>
           </div>
-          {/* 标签 */}
           {article.tags?.length > 0 && (
             <div className="mt-2 flex items-center flex-wrap gap-2">
               {article.tags?.map((tag) => (
@@ -158,7 +146,6 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             initialUserReaction={article.userReaction}
             initialStats={article?.reactionStats || {}}
           />
-          {/* 操作栏 */}
           <ArticleActions
             articleId={article.id!}
             commentCount={article.commentCount!}

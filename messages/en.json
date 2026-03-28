@@ -55,7 +55,9 @@
     "switchLanguage": "Switch Language",
     "appearanceSettings": "Appearance Settings",
     "autoTranslate": "Auto-translate recommended content",
-    "followSystem": "Follow System"
+    "followSystem": "Follow System",
+    "currentLanguage": "Simplified Chinese",
+    "authorInfo": "Author Info"
   },
   "form": {
     "email": "Email",
@@ -292,7 +294,8 @@
       "uploadFailed": "Upload failed",
       "percent": "{percent}%"
     },
-    "placeholder": "Enter content here"
+    "placeholder": "Enter content here",
+    "imageCaptionPlaceholder": "Add image caption..."
   },
   "createPost": {
     "title": "Create Post",
@@ -351,5 +354,134 @@
     "scrollThumbnailsLeft": "Scroll thumbnails left",
     "scrollThumbnailsRight": "Scroll thumbnails right",
     "viewFullImage": "View full image"
+  },
+  "feedTabs": {
+    "follow": "Following",
+    "recommend": "Recommend",
+    "activity": "Activity"
+  },
+  "messageDropdown": {
+    "cleanMessages": "Mark all as read",
+    "notificationSettings": "Notification settings",
+    "noMessages": "No messages"
+  },
+  "articleDetail": {
+    "pageTitle": "Post Detail",
+    "repostable": "Repost allowed"
+  },
+  "articleCard": {
+    "dislikeContent": "I dislike this content",
+    "more": "More"
+  },
+  "articleMenu": {
+    "reportReason": "Post content requires review",
+    "reportSubmitted": "Report submitted",
+    "reportFailed": "Report failed, please try again later",
+    "blockRecorded": "Block action recorded. You can connect real logic later.",
+    "dislikeRecorded": "Your content preference has been recorded",
+    "editPost": "Edit Post",
+    "reportPost": "Report Post",
+    "blockUser": "Block User",
+    "dislikeType": "I dislike this type of content",
+    "moreActions": "More Actions"
+  },
+  "categorySelect": {
+    "placeholder": "Select category",
+    "searchPlaceholder": "Search category...",
+    "noMatched": "No matching categories",
+    "noCategories": "No categories"
+  },
+  "accountTabs": {
+    "article": "Posts",
+    "comment": "Comments",
+    "favorite": "Favorites",
+    "tag": "Topics"
+  },
+  "themeSwitcher": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "topicInfo": {
+    "posts": "Posts",
+    "members": "Members"
+  },
+  "avatarFrameDialog": {
+    "title": "Change Avatar Frame",
+    "empty": "No avatar frames",
+    "loading": "Loading...",
+    "allLoaded": "All loaded",
+    "duration": "Duration:",
+    "permanent": "Permanent",
+    "canDirectEquip": "Can equip directly",
+    "notOwned": "Not owned",
+    "unequip": "Unequip",
+    "equip": "Equip",
+    "get": "Get",
+    "selectHint": "Select an avatar frame on the left for preview",
+    "expired": "Expired",
+    "expireToday": "Expires today",
+    "expireInDays": "Expires in {days} days"
+  },
+  "decorationPage": {
+    "title": "My Decorations",
+    "types": {
+      "avatarFrame": "Avatar Frame",
+      "emoji": "Emoji",
+      "commentBubble": "Comment Bubble"
+    },
+    "rarity": {
+      "common": "Common",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    },
+    "series": "Series",
+    "expireAt": "expires",
+    "permanent": "Permanent",
+    "ownedHint": "Owned 10 items, view more",
+    "emptyByType": "No {type}"
+  },
+  "channelPage": {
+    "noChannels": "No channels yet",
+    "noSubchannels": "This channel has no sub-categories"
+  },
+  "accountInfo": {
+    "posts": "Posts",
+    "following": "Following",
+    "followers": "Followers",
+    "likes": "Likes",
+    "edit": "Edit",
+    "editProfile": "Edit Profile",
+    "editBackground": "Change Background"
+  },
+  "emptyState": {
+    "message": "No content yet",
+    "buttonText": "Go login"
+  },
+  "reactionPanel": {
+    "like": "Like",
+    "love": "Love",
+    "haha": "Haha",
+    "wow": "Wow",
+    "sad": "Sad",
+    "angry": "Angry",
+    "dislike": "Dislike"
+  },
+  "dropdownMenu": {
+    "more": "More"
+  },
+  "searchBox": {
+    "hotSearches": [
+      "Check in",
+      "Genshin",
+      "Honkai",
+      "Star Rail",
+      "ZZZ"
+    ]
+  },
+  "languageSwitcher": {
+    "zh": "Chinese",
+    "en": "English"
   }
 }

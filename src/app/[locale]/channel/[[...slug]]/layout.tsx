@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+﻿import { ReactNode } from "react";
 import Image from "next/image";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { ChannelTabs } from "@/components/channel/ChannelTabs";
@@ -14,14 +14,12 @@ interface ChannelLayoutProps {
 export async function generateMetadata({ params }: ChannelLayoutProps) {
   const { slug, locale } = await params;
 
-  // 如果没有 slug 或者 slug 为空，返回默认 SEO
   if (!slug || slug.length === 0) {
     return generateSiteMetadata(locale);
   }
 
   const pid = slug[0];
 
-  // 获取分类列表
   const { data } = await serverApi.categoryControllerFindAll({
     query: { page: 1, limit: 100 },
   });
@@ -33,25 +31,23 @@ export async function generateMetadata({ params }: ChannelLayoutProps) {
     return generateSiteMetadata(locale);
   }
 
-  // 获取公共配置
   const config = await serverApi.configControllerGetPublicConfigs();
   const siteName = config?.data?.data.site_name || "PicArt";
 
-  // 返回主分类的 SEO
   const title = currentChannel.name;
   const description =
     currentChannel.description ||
-    `${currentChannel.articleCount || 0} 篇文章 · ${currentChannel.followCount || 0} 人关注`;
+    `${currentChannel.articleCount || 0} posts · ${currentChannel.followCount || 0} followers`;
 
   return {
-    title: title,
-    description: description,
+    title,
+    description,
     openGraph: {
       type: "website",
-      locale: locale,
-      siteName: siteName,
-      title: title,
-      description: description,
+      locale,
+      siteName,
+      title,
+      description,
       images:
         currentChannel.cover || currentChannel.avatar
           ? [
@@ -66,8 +62,8 @@ export async function generateMetadata({ params }: ChannelLayoutProps) {
     },
     twitter: {
       card: "summary_large_image",
-      title: title,
-      description: description,
+      title,
+      description,
       images:
         currentChannel.cover || currentChannel.avatar
           ? [currentChannel.cover || currentChannel.avatar]
@@ -82,14 +78,12 @@ export default async function ChannelLayout({
 }: ChannelLayoutProps) {
   const { slug } = await params;
 
-  // 如果没有 slug 或者 slug 为空，不显示背景
   if (!slug || slug.length === 0) {
     return <>{children}</>;
   }
 
   const pid = slug[0];
 
-  // 获取分类列表
   const { data } = await serverApi.categoryControllerFindAll({
     query: { page: 1, limit: 100 },
   });
@@ -103,7 +97,6 @@ export default async function ChannelLayout({
 
   return (
     <>
-      {/* 背景 */}
       <div className="top-header fixed h-101 w-full z-0">
         <Image
           quality={95}
@@ -125,17 +118,13 @@ export default async function ChannelLayout({
         />
       </div>
 
-      {/* 频道切换 */}
       <ChannelNav channels={data?.data.data || []} currentId={Number(pid)} />
 
-      {/* 页面内容 */}
       <div className="mt-60 w-full z-10 relative dark:bg-gray-800">
         <div className="page-container">
           <div className="left-container">
             <div className="top-header px-10 h-14 flex items-center border-b border-border sticky bg-card z-5 rounded-t-xl">
-              <ChannelTabs parentId={pid}>
-                {currentChannel.children}
-              </ChannelTabs>
+              <ChannelTabs parentId={pid}>{currentChannel.children}</ChannelTabs>
             </div>
             {children}
           </div>

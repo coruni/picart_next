@@ -1,9 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useAppStore } from "@/stores";
+import { useTranslations } from "next-intl";
 
 export function ThemeSwitcher() {
   const { theme, setTheme } = useAppStore();
+  const t = useTranslations("themeSwitcher");
 
   return (
     <select
@@ -11,9 +13,9 @@ export function ThemeSwitcher() {
       onChange={(e) => setTheme(e.target.value as "light" | "dark" | "system")}
       className="px-3 py-2 border rounded-md bg-white dark:bg-gray-800"
     >
-      <option value="light">浅色</option>
-      <option value="dark">深色</option>
-      <option value="system">跟随系统</option>
+      <option value="light">{t("light")}</option>
+      <option value="dark">{t("dark")}</option>
+      <option value="system">{t("system")}</option>
     </select>
   );
 }

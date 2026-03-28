@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { Link } from "@/i18n/routing";
@@ -16,7 +16,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useUserStore, useModalStore } from "@/stores";
 import { Switch } from "@/components/ui/Switch";
-import { MODAL_IDS, openLoginDialog } from "@/lib/modal-helpers";
+import { MODAL_IDS } from "@/lib/modal-helpers";
 import { UserLoginDialog } from "./UserLoginDialog";
 import { Avatar } from "../ui/Avatar";
 import { GuardedLink } from "@/components/shared/GuardedLink";
@@ -56,7 +56,7 @@ export function UserDropdown() {
           {isAuthenticated && (
             <>
               <h3 className="px-3 py-4 text-lg font-bold text-foreground">
-                {tHeader("myInfo")}
+                {tHeader("authorInfo")}
               </h3>
               <div className="p-1">
                 <Link
@@ -146,7 +146,7 @@ export function UserDropdown() {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">简体中文</span>
+                <span className="text-sm text-muted-foreground">{tHeader("currentLanguage")}</span>
                 <ChevronRight className="size-4" />
               </div>
             </Link>
@@ -214,7 +214,7 @@ export function UserDropdown() {
               </button>
             ) : (
               <button
-                onClick={openLoginDialog}
+                onClick={handleLoginDialogOpen}
                 className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
               >
                 <LogIn className="size-5" />
@@ -228,3 +228,4 @@ export function UserDropdown() {
     </>
   );
 }
+

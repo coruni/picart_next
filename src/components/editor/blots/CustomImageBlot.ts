@@ -1,12 +1,12 @@
-import Quill from "quill";
+﻿import Quill from "quill";
 
-// 图片值类型
+// 鍥剧墖鍊肩被鍨?
 export interface ImageValue {
   src: string;
   alt?: string;
 }
 
-// 自定义 Image Blot - 用 div 包裹 img，支持 alt 标题
+// 鑷畾涔?Image Blot - 鐢?div 鍖呰９ img锛屾敮鎸?alt 鏍囬
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const BlockEmbed = Quill.import("blots/block/embed") as any;
 
@@ -30,11 +30,11 @@ export class CustomImageBlot extends BlockEmbed {
     }
     node.appendChild(img);
 
-    // 创建可编辑 caption (p 标签)
+    // 鍒涘缓鍙紪杈?caption (p 鏍囩)
     const caption = document.createElement("p");
     caption.classList.add("ql-image-caption");
     caption.setAttribute("contenteditable", "true");
-    caption.setAttribute("data-placeholder", "添加图片说明...");
+    caption.setAttribute("data-placeholder", "Add image caption...");
     caption.textContent = alt;
     node.appendChild(caption);
 
@@ -97,3 +97,4 @@ export class CustomImageBlot extends BlockEmbed {
     super.format(name, value);
   }
 }
+

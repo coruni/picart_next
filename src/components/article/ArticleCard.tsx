@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import type { ArticleDetail, ArticleList } from "@/types";
@@ -30,6 +30,7 @@ type ArticleCardProps = {
 
 export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) => {
   const t = useTranslations("time");
+  const tCard = useTranslations("articleCard");
   const [viewerVisible, setViewerVisible] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
 
@@ -44,10 +45,9 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
 
   const menuItems: MenuItem[] = [
     {
-      label: "我不喜欢这个内容",
+      label: tCard("dislikeContent"),
       icon: <HeartCrack size={20} />,
       onClick: () => {
-        // TODO: 处理"不喜欢"逻辑
         console.log("dislike", article.id);
       },
     },
@@ -232,7 +232,7 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
             </Link>
             <div className="mt-1 leading-4">
               <span className="text-xs text-secondary ">
-                {formatRelativeTime(article.createdAt!, t)} {" • "}
+                {formatRelativeTime(article.createdAt!, t)} {" - "}
                 {article?.category?.name}
               </span>
             </div>
@@ -251,7 +251,7 @@ export const ArticleCard = ({ article, showFollow = true }: ArticleCardProps) =>
             />
           }
           items={menuItems}
-          title="更多"
+          title={tCard("more")}
           position="right"
           className="ml-2"
         />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Dialog, DialogContent } from "../ui/Dialog";
 import { useAppStore, useModalStore, useUserStore } from "@/stores";
@@ -64,18 +64,18 @@ export function UserLoginDialog() {
     const closeModal = useModalStore((state) => state.closeModal);
     const siteConfig = useAppStore((state) => state.siteConfig);
 
-    // 使用 selector 获取响应式方法
+    // 浣跨敤 selector 鑾峰彇鍝嶅簲寮忔柟娉?
     const setToken = useUserStore((state) => state.setToken);
     const setUser = useUserStore((state) => state.setUser);
 
-    // 是否需要邮箱验证
+    // 鏄惁闇€瑕侀偖绠遍獙璇?
     const needEmailVerification = siteConfig?.user_email_verification === true;
 
     const getLoginErrorMessage = (error: unknown) => {
         const message = extractApiMessage(error);
 
         if (message === "response.error.passwordError") {
-            return "账号或密码错误";
+            return t("passwordError");
         }
 
         if (message && !message.startsWith("response.error.")) {
@@ -85,7 +85,7 @@ export function UserLoginDialog() {
         return t("loginFailed");
     };
 
-    // 登录表单
+    // 鐧诲綍琛ㄥ崟
     const loginForm = useForm<LoginFormData>({
         initialValues: {
             account: "",
@@ -126,7 +126,7 @@ export function UserLoginDialog() {
         },
     });
 
-    // 注册表单
+    // 娉ㄥ唽琛ㄥ崟
     const registerForm = useForm<RegisterFormData>({
         initialValues: {
             username: "",
@@ -193,7 +193,7 @@ export function UserLoginDialog() {
         },
     });
 
-    // 重置密码表单
+    // 閲嶇疆瀵嗙爜琛ㄥ崟
     const resetForm = useForm<ResetPasswordData>({
         initialValues: {
             email: "",
@@ -241,7 +241,7 @@ export function UserLoginDialog() {
                     }
                 });
 
-                // 重置成功，切换回登录模式
+                // 閲嶇疆鎴愬姛锛屽垏鎹㈠洖鐧诲綍妯″紡
                 alert(tReset("resetSuccess"));
                 setMode("login");
                 resetForm.reset();
@@ -253,7 +253,7 @@ export function UserLoginDialog() {
         },
     });
 
-    // 发送验证码
+    // 鍙戦€侀獙璇佺爜
     const handleSendCode = async (email: string) => {
         if (!email) {
             return;
@@ -265,7 +265,7 @@ export function UserLoginDialog() {
                 body: { email, type: 'reset_password' }
             });
 
-            // 开始倒计时
+            // 寮€濮嬪€掕鏃?
             setCountdown(60);
             const timer = setInterval(() => {
                 setCountdown((prev) => {
@@ -278,7 +278,7 @@ export function UserLoginDialog() {
             }, 1000);
         } catch (error) {
             setCountdown(0)
-            console.error("发送验证码失败:", error);
+            console.error("Failed to send verification code:", error);
         } finally {
             setIsSendingCode(false);
         }
@@ -335,7 +335,7 @@ export function UserLoginDialog() {
                     <div className="w-50 h-14 mx-auto relative -mt-2 bg-cover bg-center" style={{ backgroundImage: `url(/placeholder/loginLogo.png)` }}>
                     </div>
 
-                    {/* 标题 */}
+                    {/* 鏍囬 */}
                     <div className="my-6 text-center text-2xl font-semibold">
                         <span>
                             {mode === "login" && t("title")}
@@ -344,7 +344,7 @@ export function UserLoginDialog() {
                         </span>
                     </div>
 
-                    {/* 登录表单 */}
+                    {/* 鐧诲綍琛ㄥ崟 */}
                     {mode === "login" && (
                         <Form errors={loginForm.errors} onSubmit={loginForm.handleSubmit} touched={loginForm.touched}>
                             <FormField name="account" floating>
@@ -407,7 +407,7 @@ export function UserLoginDialog() {
                         </Form>
                     )}
 
-                    {/* 注册表单 */}
+                    {/* 娉ㄥ唽琛ㄥ崟 */}
                     {mode === "register" && (
                         <Form errors={registerForm.errors} onSubmit={registerForm.handleSubmit} touched={registerForm.touched}>
                             <FormField name="username" floating>
@@ -514,7 +514,7 @@ export function UserLoginDialog() {
                         </Form>
                     )}
 
-                    {/* 重置密码表单 */}
+                    {/* 閲嶇疆瀵嗙爜琛ㄥ崟 */}
                     {mode === "reset" && (
                         <Form errors={resetForm.errors} onSubmit={resetForm.handleSubmit} touched={resetForm.touched}>
                             <FormField name="email" floating>
@@ -604,3 +604,5 @@ export function UserLoginDialog() {
         </Dialog>
     );
 }
+
+

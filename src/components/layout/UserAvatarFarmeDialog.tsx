@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { useModalStore } from "@/stores/useModalStore";
@@ -13,8 +13,12 @@ import { Button } from "../ui/Button";
 import { Avatar } from "../ui/Avatar";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { InfiniteScrollStatus } from "@/components/shared";
+import { useTranslations } from "next-intl";
 
-function formatExpireTime(timestamp: number | string | undefined): string {
+function formatExpireTime(
+  timestamp: number | string | undefined,
+  t: (key: string, params?: Record<string, string | number>) => string,
+): string {
   if (!timestamp) return "";
 
   const date = new Date(
@@ -26,15 +30,15 @@ function formatExpireTime(timestamp: number | string | undefined): string {
   );
 
   if (diffDays < 0) {
-    return "已过期";
+    return t("expired");
   }
 
   if (diffDays === 0) {
-    return "今天过期";
+    return t("expireToday");
   }
 
   if (diffDays <= 30) {
-    return `${diffDays}天后过期`;
+    return t("expireInDays", { days: diffDays });
   }
 
   return date.toLocaleDateString("zh-CN", {
@@ -47,6 +51,7 @@ function formatExpireTime(timestamp: number | string | undefined): string {
 type AvatarFrame = DecorationControllerFindAllResponse["data"]["data"][0];
 
 export function UserAvatarFarmeDialog() {
+  const t = useTranslations("avatarFrameDialog");
   const avatarFrameDialogOpen = useModalStore((state) =>
     state.isOpen(MODAL_IDS.AVATAR_FRAME),
   );
@@ -132,14 +137,14 @@ export function UserAvatarFarmeDialog() {
     <Dialog open={avatarFrameDialogOpen} onOpenChange={handleDialogClose}>
       <DialogContent className="max-w-2xl rounded-2xl p-0">
         <DialogHeader className="mb-0 border border-border px-6 py-4 text-sm font-semibold">
-          修改头像框
+          {t("title")}
         </DialogHeader>
 
         <div className="flex h-125">
           <div ref={scrollContainerRef} className="flex-1 overflow-auto px-4">
             {avatarFrames.length === 0 && !isLoading ? (
               <div className="flex h-full items-center justify-center text-muted-foreground">
-                暂无头像框
+                {t("empty")}
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-3 py-4 sm:grid-cols-3">
@@ -179,8 +184,8 @@ export function UserAvatarFarmeDialog() {
               hasMore={hasMore}
               loading={isLoading}
               isEmpty={avatarFrames.length === 0}
-              loadingText="加载中..."
-              allLoadedText="已加载全部"
+              loadingText={t("loading")}
+              allLoadedText={t("allLoaded")}
               containerClassName="py-4"
               loadingClassName="text-secondary"
               endClassName="py-4 text-secondary"
@@ -190,44 +195,35 @@ export function UserAvatarFarmeDialog() {
           <div className="flex flex-1 flex-col items-center border-l border-border p-4">
             {selectedFrame ? (
               <>
-                <Avatar
-                  className="size-20"
-                  frameUrl={selectedFrame.imageUrl!}
-                ></Avatar>
+                <Avatar className="size-20" frameUrl={selectedFrame.imageUrl!}></Avatar>
 
-                <p className="mt-4 text-center font-medium">
-                  {selectedFrame.name}
-                </p>
+                <p className="mt-4 text-center font-medium">{selectedFrame.name}</p>
 
                 <div className="mt-auto flex w-full items-center justify-between">
                   <div className="flex flex-col">
-                    <p className="text-xs font-semibold text-secondary">
-                      使用期限:
-                    </p>
+                    <p className="text-xs font-semibold text-secondary">{t("duration")}</p>
                     <span className="text-xs">
                       {selectedFrame.isOwned
                         ? selectedFrame.userIsPermanent
-                          ? "永久有效"
-                          : formatExpireTime(selectedFrame.userExpiresAt)
+                          ? t("permanent")
+                          : formatExpireTime(selectedFrame.userExpiresAt, t)
                         : selectedFrame.canDirectEquip
-                          ? "可直接装备"
-                          : "未拥有"}
+                          ? t("canDirectEquip")
+                          : t("notOwned")}
                     </span>
                   </div>
 
                   <Button className="min-w-18 rounded-full">
                     {selectedFrame.isUsing
-                      ? "取消佩戴"
+                      ? t("unequip")
                       : selectedFrame.isOwned
-                        ? "佩戴"
-                        : "获取"}
+                        ? t("equip")
+                        : t("get")}
                   </Button>
                 </div>
               </>
             ) : (
-              <div className="text-sm text-muted-foreground">
-                选择左侧头像框预览
-              </div>
+              <div className="text-sm text-muted-foreground">{t("selectHint")}</div>
             )}
           </div>
         </div>

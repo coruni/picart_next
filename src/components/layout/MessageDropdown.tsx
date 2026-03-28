@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { BrushCleaning, MessageCircle, Settings } from "lucide-react";
@@ -20,6 +20,9 @@ export function MessageDropdown({
   scrolled?: boolean;
 }) {
   const tHeader = useTranslations("header");
+  const tCommon = useTranslations("common");
+  const tSidebar = useTranslations("sidebar");
+  const tMsg = useTranslations("messageDropdown");
   const [messages, setMessages] = useState<MessageList>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -87,11 +90,14 @@ export function MessageDropdown({
               <button
                 className="cursor-pointer"
                 onClick={handleCleanMessage}
-                title="清空消息"
+                title={tMsg("cleanMessages")}
               >
                 <BrushCleaning size={18} />
               </button>
-              <GuardedLink href="/setting/notification" title="通知设置">
+              <GuardedLink
+                href="/setting/notification"
+                title={tMsg("notificationSettings")}
+              >
                 <Settings size={18} />
               </GuardedLink>
             </div>
@@ -103,7 +109,7 @@ export function MessageDropdown({
             <div className="max-h-96 overflow-y-auto">
               {isLoading ? (
                 <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                  加载中...
+                  {tCommon("loading")}
                 </div>
               ) : messages.length > 0 ? (
                 messages.map((message) => (
@@ -134,7 +140,7 @@ export function MessageDropdown({
                 ))
               ) : (
                 <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                  暂无消息
+                  {tMsg("noMessages")}
                 </div>
               )}
             </div>
@@ -149,11 +155,11 @@ export function MessageDropdown({
           </>
         ) : (
           <EmptyState
-            message="登录查看更多精彩内容"
-            buttonText="去登录"
+            message={tSidebar("loginPrompt")}
+            buttonText={tSidebar("login")}
             customButton={
               <Button className="rounded-full" onClick={openLoginDialog}>
-                去登录
+                {tSidebar("login")}
               </Button>
             }
           />

@@ -1,4 +1,4 @@
-import { Action, ToolbarButton } from "@enzedonline/quill-blot-formatter2";
+﻿import { Action, ToolbarButton } from "@enzedonline/quill-blot-formatter2";
 import type BlotFormatter from "@enzedonline/quill-blot-formatter2";
 import { uploadControllerUploadFile } from "@/api/sdk.gen";
 
@@ -44,7 +44,7 @@ export class ReplaceAction extends Action {
           img.src = response.data.data[0].url;
         }
       } catch (error) {
-        console.error("上传失败:", error);
+      console.error("Upload failed:", error);
       }
     };
   };

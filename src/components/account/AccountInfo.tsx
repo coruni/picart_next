@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import {
@@ -16,12 +16,14 @@ import { GuardedLink } from "@/components/shared/GuardedLink";
 import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
 import { BackgroundEditor } from "./BackgroundEditor.client";
+import { useTranslations } from "next-intl";
 
 type AccountInfoProps = {
   user: UserDetail;
 };
 
 export const AccountInfo = ({ user }: AccountInfoProps) => {
+  const t = useTranslations("accountInfo");
   const router = useAuthNavigation();
   const scrolled = useScrollThreshold(240, true);
   const localUserId = useUserStore((state) => state.user)?.id;
@@ -51,22 +53,22 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
             <div className="flex h-full flex-1 items-center">
               <div className="flex cursor-pointer items-center hover:text-primary">
                 <span className="text-[22px]">{user?.articleCount || 0}</span>
-                <span className="ml-1 text-sm text-secondary">帖子</span>
+                <span className="ml-1 text-sm text-secondary">{t("posts")}</span>
                 <span className="mx-3 text-[#eceff4]">/</span>
               </div>
               <div className="flex cursor-pointer items-center hover:text-primary">
                 <span className="text-[22px]">{user.followingCount || 0}</span>
-                <span className="ml-1 text-sm text-secondary">关注</span>
+                <span className="ml-1 text-sm text-secondary">{t("following")}</span>
                 <span className="mx-3 text-[#eceff4]">/</span>
               </div>
               <div className="flex cursor-pointer items-center hover:text-primary">
                 <span className="text-[22px]">{user.followerCount || 0}</span>
-                <span className="ml-1 text-sm text-secondary">粉丝</span>
+                <span className="ml-1 text-sm text-secondary">{t("followers")}</span>
                 <span className="mx-3 text-[#eceff4]">/</span>
               </div>
               <div className="flex cursor-pointer items-center hover:text-primary">
                 <span className="text-[22px]">0</span>
-                <span className="ml-1 text-sm text-secondary">获赞</span>
+                <span className="ml-1 text-sm text-secondary">{t("likes")}</span>
               </div>
             </div>
 
@@ -124,7 +126,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                         : "bg-gray-50 text-foreground dark:bg-[#242734]",
                     )}
                   >
-                    编辑
+                    {t("edit")}
                     <ChevronDown
                       size={16}
                       className="transition group-hover/edit:rotate-180"
@@ -136,13 +138,13 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                       className="flex cursor-pointer items-center gap-2 rounded-xl p-2 text-sm transition-colors hover:bg-primary/15 hover:text-primary"
                       href={`/account/${user.id}/edit`}
                     >
-                      <span>编辑资料</span>
+                      <span>{t("editProfile")}</span>
                     </GuardedLink>
                     <div
                       className="flex cursor-pointer items-center gap-2 rounded-xl p-2 text-sm transition-colors hover:bg-primary/15 hover:text-primary"
                       onClick={() => setShowBackgroundEditor(true)}
                     >
-                      <span>修改背景</span>
+                      <span>{t("editBackground")}</span>
                     </div>
                   </div>
                 </div>

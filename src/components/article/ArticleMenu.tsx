@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { DropdownMenu, MenuItem } from "@/components/shared";
 import { openLoginDialog } from "@/lib/modal-helpers";
@@ -12,6 +12,7 @@ import {
   PencilLine,
   ShieldAlert,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type ArticleMenuProps = {
   articleId: string;
@@ -24,6 +25,7 @@ export function ArticleMenu({
   authorId,
   isOwner: isOwnerProp = false,
 }: ArticleMenuProps) {
+  const t = useTranslations("articleMenu");
   const router = useRouter();
   const currentUser = useUserStore((state) => state.user);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
@@ -47,26 +49,26 @@ export function ArticleMenu({
         body: {
           type: "ARTICLE",
           category: "INAPPROPRIATE",
-          reason: "帖子内容需要审核",
+          reason: t("reportReason"),
           reportedArticleId: Number(articleId),
           reportedUserId: authorId ? Number(authorId) : undefined,
         },
       });
-      addNotification("success", "举报已提交");
+      addNotification("success", t("reportSubmitted"));
     } catch (error) {
       console.error("Failed to report article:", error);
-      addNotification("error", "举报失败，请稍后重试");
+      addNotification("error", t("reportFailed"));
     }
   };
 
   const handleBlockUser = () => {
     if (!requireAuth()) return;
-    addNotification("info", "已记录屏蔽该用户的操作，后续可接入正式功能");
+    addNotification("info", t("blockRecorded"));
   };
 
   const handleDislikeContent = () => {
     if (!requireAuth()) return;
-    addNotification("info", "已记录你的内容偏好");
+    addNotification("info", t("dislikeRecorded"));
   };
 
   const handleEditArticle = () => {
@@ -77,25 +79,25 @@ export function ArticleMenu({
   const menuItems: MenuItem[] = isOwner
     ? [
         {
-          label: "编辑帖子",
+          label: t("editPost"),
           icon: <PencilLine size={18} />,
           onClick: handleEditArticle,
         },
       ]
     : [
         {
-          label: "举报帖子",
+          label: t("reportPost"),
           icon: <ShieldAlert size={18} />,
           onClick: () => void handleReportArticle(),
           className: "text-red-500",
         },
         {
-          label: "屏蔽用户",
+          label: t("blockUser"),
           icon: <Ban size={18} />,
           onClick: handleBlockUser,
         },
         {
-          label: "我不喜欢这类内容",
+          label: t("dislikeType"),
           icon: <FileWarning size={18} />,
           onClick: handleDislikeContent,
         },
@@ -109,7 +111,7 @@ export function ArticleMenu({
         </button>
       }
       items={menuItems}
-      title="更多操作"
+      title={t("moreActions")}
       position="right"
     />
   );

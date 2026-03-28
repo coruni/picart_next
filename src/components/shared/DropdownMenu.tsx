@@ -1,8 +1,9 @@
-"use client";
+﻿"use client";
 
 import { ReactNode, useRef, useState } from "react";
 import { useClickOutside } from "@/hooks";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export type MenuItem = {
   label: string;
@@ -13,44 +14,26 @@ export type MenuItem = {
 };
 
 type DropdownMenuProps = {
-  /**
-   * 触发按钮
-   */
   trigger: ReactNode;
-  /**
-   * 菜单项
-   */
   items: MenuItem[];
-  /**
-   * 菜单标题
-   */
   title?: string;
-  /**
-   * 菜单位置
-   */
   position?: "left" | "right";
-  /**
-   * 容器类名
-   */
   className?: string;
-  /**
-   * 菜单类名
-   */
   menuClassName?: string;
 };
 
 export function DropdownMenu({
   trigger,
   items,
-  title = "更多",
+  title,
   position = "right",
   className,
   menuClassName,
 }: DropdownMenuProps) {
+  const t = useTranslations("dropdownMenu");
   const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement | any>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  // 点击外部关闭菜单
   useClickOutside(menuRef, () => setIsOpen(false));
 
   const handleItemClick = (item: MenuItem) => {
@@ -61,8 +44,7 @@ export function DropdownMenu({
 
   return (
     <div className={cn("relative", className)} ref={menuRef}>
-      {/* 触发按钮 */}
-      <div 
+      <div
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -72,13 +54,12 @@ export function DropdownMenu({
         {trigger}
       </div>
 
-      {/* 下拉菜单 */}
       {isOpen && (
         <div
           className={cn(
             "absolute top-8 rounded-xl drop-shadow-xl bg-card min-w-50 z-10",
             position === "right" ? "right-0" : "left-0",
-            menuClassName
+            menuClassName,
           )}
           onClick={(e) => {
             e.preventDefault();
@@ -86,14 +67,12 @@ export function DropdownMenu({
           }}
         >
           <div className="p-2">
-            {/* 标题 */}
-            {title && (
+            {(title ?? t("more")) && (
               <div className="px-2 font-medium mb-1">
-                <span>{title}</span>
+                <span>{title ?? t("more")}</span>
               </div>
             )}
 
-            {/* 菜单项 */}
             {items.map((item, index) => (
               <div
                 key={index}
@@ -102,7 +81,7 @@ export function DropdownMenu({
                   item.disabled
                     ? "opacity-50 cursor-not-allowed"
                     : "hover:bg-primary/15 group hover:text-primary",
-                  item.className
+                  item.className,
                 )}
                 onClick={() => handleItemClick(item)}
               >
@@ -120,3 +99,4 @@ export function DropdownMenu({
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -154,13 +154,13 @@ export const BackgroundEditor = ({
           >
             <div className="pl-6 bg-linear-to-b from-black/60 to-transparent">
               <h2 className="leading-12 text-white text-sm font-semibold">
-                修改背景图
+                {t("cropBackground")}
               </h2>
             </div>
             <div className="absolute bottom-0 left-0 w-full">
               <div className="bg-card h-9 px-6 w-full relative flex items-end">
                 {" "}
-                {/* 使用 flex 对齐 */}
+                {/* 浣跨敤 flex 瀵归綈 */}
                 <Avatar
                   url={user?.avatar}
                   className="absolute bottom-0 size-20"
@@ -245,3 +245,4 @@ export const BackgroundEditor = ({
     </Dialog>
   );
 };
+

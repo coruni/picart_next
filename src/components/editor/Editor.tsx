@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -63,7 +63,7 @@ const shouldPasteAsCodeBlock = (plainText: string, htmlText: string) => {
   );
 };
 
-// 注册自定义字号
+// 娉ㄥ唽鑷畾涔夊瓧鍙?
 SizeClass.whitelist = ["12px", "14px", "16px", "18px", "20px", "24px", "32px"];
 SizeStyle.whitelist = ["12px", "14px", "16px", "18px", "20px", "24px", "32px"];
 Quill.register(SizeStyle, true);
@@ -73,8 +73,8 @@ Quill.register({ "formats/image": CustomImageBlot }, true);
 Quill.register({ "formats/emoji": CustomEmojiBlot }, true);
 
 /**
- * 富文本编辑器组件
- * 基于 Quill.js
+ * 瀵屾枃鏈紪杈戝櫒缁勪欢
+ * 鍩轰簬 Quill.js
  */
 export const Editor = forwardRef<Quill | null, EditorProps>(
   (
@@ -124,7 +124,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           caption = document.createElement("p");
           caption.className = "ql-image-caption";
           caption.setAttribute("contenteditable", "true");
-          caption.setAttribute("data-placeholder", "添加图片说明...");
+          caption.setAttribute("data-placeholder", t("imageCaptionPlaceholder"));
           imageWrapper.appendChild(caption);
         }
 
@@ -134,13 +134,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       });
     };
 
-    // 初始化 Quill
+    // 鍒濆鍖?Quill
     useEffect(() => {
       if (!containerRef.current) return;
 
       const container = containerRef.current;
 
-      // 创建 editor 容器
+      // 鍒涘缓 editor 瀹瑰櫒
       const editorContainer = container.querySelector(".editor-container");
       if (!editorContainer) {
         const div = document.createElement("div");
@@ -217,7 +217,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quillRef.current = quill;
 
-        // 渲染自定义 toolbar
+        // 娓叉煋鑷畾涔?toolbar
         renderToolbar({
           quill,
           container,
@@ -242,7 +242,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             setShowLinkModal(true);
           },
           onImageUpload: () => {
-            // 图片上传处理
+            // 鍥剧墖涓婁紶澶勭悊
             const input = document.createElement("input");
             input.type = "file";
             input.accept = "image/*";
@@ -255,27 +255,27 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               const selection = quill.getSelection();
               const startIndex = selection?.index || 0;
 
-              // 为每个文件创建上传占位符并上传
+              // 涓烘瘡涓枃浠跺垱寤轰笂浼犲崰浣嶇骞朵笂浼?
               for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const currentIndex = startIndex + i;
 
-                // 创建本地预览 URL
-                // 转换为 base64 占位
+                // 鍒涘缓鏈湴棰勮 URL
+                // 杞崲涓?base64 鍗犱綅
                 const base64 = await new Promise<string>((resolve) => {
                   const reader = new FileReader();
                   reader.onload = (e) => resolve(e.target?.result as string);
                   reader.readAsDataURL(file);
                 });
 
-                // 插入带有上传状态的图片
+                // 鎻掑叆甯︽湁涓婁紶鐘舵€佺殑鍥剧墖
                 quill.insertEmbed(currentIndex, "image", base64);
                 quill.setSelection(currentIndex + 1, 0);
 
-                // 延迟一下确保 DOM 已更新
+                // 寤惰繜涓€涓嬬‘淇?DOM 宸叉洿鏂?
                 await new Promise((resolve) => setTimeout(resolve, 50));
 
-                // 找到刚插入的图片（CustomImageBlot 会创建 div.ql-image-wrapper > img.ql-image）
+                // 鎵惧埌鍒氭彃鍏ョ殑鍥剧墖锛圕ustomImageBlot 浼氬垱寤?div.ql-image-wrapper > img.ql-image锛?
                 const wrappers = quill.root.querySelectorAll("div.ql-image-wrapper");
                 let targetWrapper: HTMLDivElement | null = null;
                 let targetImg: HTMLImageElement | null = null;
@@ -290,11 +290,11 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 }
 
                 if (targetWrapper && targetImg) {
-                  // 设置 wrapper 为相对定位，以便显示遮罩
+                  // 璁剧疆 wrapper 涓虹浉瀵瑰畾浣嶏紝浠ヤ究鏄剧ず閬僵
                   targetWrapper.style.position = "relative";
                   targetWrapper.style.display = "inline-block";
 
-                  // 创建遮罩
+                  // 鍒涘缓閬僵
                   const overlay = document.createElement("div");
                   overlay.className = "image-upload-overlay";
                   overlay.innerHTML = `
@@ -309,10 +309,10 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     </div>
                   `;
 
-                  // 将遮罩添加到 wrapper 中
+                  // 灏嗛伄缃╂坊鍔犲埌 wrapper 涓?
                   targetWrapper.appendChild(overlay);
 
-                  // 取消按钮
+                  // 鍙栨秷鎸夐挳
                   const cancelBtn = overlay.querySelector(
                     ".cancel-btn",
                   ) as HTMLButtonElement;
@@ -325,7 +325,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     quill.deleteText(currentIndex, 1);
                   };
 
-                  // 上传图片
+                  // 涓婁紶鍥剧墖
                   const progressText = overlay.querySelector(
                     ".progress-text",
                   ) as HTMLSpanElement;
@@ -349,18 +349,18 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                       targetImg.dataset.uploaded = "true";
                     }
 
-                    // 更新进度
+                    // 鏇存柊杩涘害
                     progressText.textContent = "100%";
                   } catch (error) {
                     if ((error as Error).name === "AbortError") {
                       continue;
                     }
-                    console.error("上传失败:", error);
+                    console.error("Upload failed:", error);
                     overlay.remove();
                     quill.deleteText(currentIndex, 1);
                     continue;
                   } finally {
-                    // 移除遮罩
+                    // 绉婚櫎閬僵
                     overlay.remove();
                   }
                 }
@@ -369,7 +369,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           },
         });
 
-        // 暴露 quill 实例
+        // 鏆撮湶 quill 瀹炰緥
         if (ref) {
           if (typeof ref === "function") {
             ref(quill);
@@ -378,7 +378,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           }
         }
 
-        // 设置初始值
+        // 璁剧疆鍒濆鍊?
         if (value) {
           const preparedValue = prepareRichTextHtmlForEditor(value);
           quill.root.innerHTML = preparedValue;
@@ -386,30 +386,30 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           lastSyncedValueRef.current = sanitizeRichTextHtml(preparedValue);
         }
 
-        // 监听内容变化
+        // 鐩戝惉鍐呭鍙樺寲
         quill.on("text-change", () => {
           ensureImageCaptions(quill.root);
           emitSanitizedContent(quill.root);
         });
 
-        // 键盘快捷键：Ctrl+C 复制图片
+        // 閿洏蹇嵎閿細Ctrl+C 澶嶅埗鍥剧墖
         const handleKeyDown = (e: KeyboardEvent) => {
           if ((e.ctrlKey || e.metaKey) && e.key === "c") {
-            // 检查是否有选中的图片 blot
+            // 妫€鏌ユ槸鍚︽湁閫変腑鐨勫浘鐗?blot
             const selection = quill.getSelection();
             if (selection && selection.length > 0) {
               const delta = quill.getContents(selection.index, selection.length);
-              // 检查是否包含图片
+              // 妫€鏌ユ槸鍚﹀寘鍚浘鐗?
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const hasImage = delta.ops.some((op: any) => op.insert && typeof op.insert === "object" && "image" in op.insert);
               if (hasImage) {
-                // 存储到全局变量
+                // 瀛樺偍鍒板叏灞€鍙橀噺
                 (window as any).__quillClipboardImage = delta;
               }
             }
           }
 
-          // Ctrl+V 粘贴图片
+          // Ctrl+V 绮樿创鍥剧墖
           if ((e.ctrlKey || e.metaKey) && e.key === "v") {
             const clipImage = (window as any).__quillClipboardImage;
             if (clipImage) {
@@ -453,7 +453,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quill.root.addEventListener("paste", handlePaste, true);
 
-        // 监听图片 caption 输入，同步到 alt 属性
+        // 鐩戝惉鍥剧墖 caption 杈撳叆锛屽悓姝ュ埌 alt 灞炴€?
         const handleCaptionInput = (e: Event) => {
           const target = e.target as HTMLElement;
           if (target.classList.contains("ql-image-caption")) {
@@ -475,14 +475,14 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quill.root.addEventListener("input", handleCaptionInput);
 
-        // 阻止 caption 上的键盘事件冒泡到 Quill
+        // 闃绘 caption 涓婄殑閿洏浜嬩欢鍐掓场鍒?Quill
         const handleCaptionKeyDown = (e: KeyboardEvent) => {
           const target = e.target as HTMLElement;
           if (target.classList.contains("ql-image-caption")) {
-            // 允许基本的编辑操作
+            // 鍏佽鍩烘湰鐨勭紪杈戞搷浣?
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
-              // 移动光标到图片后面
+              // 绉诲姩鍏夋爣鍒板浘鐗囧悗闈?
               const wrapper = target.closest(".ql-image-wrapper");
               if (wrapper) {
                 const blot = quill.scroll.find(wrapper);
@@ -492,7 +492,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 }
               }
             }
-            // 阻止删除键删除图片本身
+            // 闃绘鍒犻櫎閿垹闄ゅ浘鐗囨湰韬?
             if (e.key === "Backspace" && target.textContent === "") {
               e.preventDefault();
             }
@@ -501,7 +501,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quill.root.addEventListener("keydown", handleCaptionKeyDown, true);
 
-        // 监听 link-edit 事件（由 blotFormatter2 的 EditLinkAction 触发）
+        // 鐩戝惉 link-edit 浜嬩欢锛堢敱 blotFormatter2 鐨?EditLinkAction 瑙﹀彂锛?
         const handleLinkEdit = (e: Event) => {
           const customEvent = e as CustomEvent<{ href: string; text: string }>;
           const { href, text } = customEvent.detail;
@@ -526,18 +526,18 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       lastSyncedValueRef.current = sanitizeRichTextHtml(preparedValue);
     }, [value]);
 
-    // 点击外部关闭下拉菜单
+    // 鐐瑰嚮澶栭儴鍏抽棴涓嬫媺鑿滃崟
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
         const target = e.target as HTMLElement;
-        // 找到 toolbar 容器
+        // 鎵惧埌 toolbar 瀹瑰櫒
         const toolbar = containerRef.current?.querySelector(".ql-toolbar");
         if (!toolbar) return;
 
-        // 检查点击是否在 toolbar 内
+        // 妫€鏌ョ偣鍑绘槸鍚﹀湪 toolbar 鍐?
         const isInsideToolbar = toolbar.contains(target);
 
-        // 如果点击在 toolbar 外部，关闭所有下拉菜单
+        // 濡傛灉鐐瑰嚮鍦?toolbar 澶栭儴锛屽叧闂墍鏈変笅鎷夎彍鍗?
         if (!isInsideToolbar) {
           const dropdowns = toolbar.querySelectorAll('[id^="dropdown-"]');
           dropdowns.forEach((dropdown) => {
@@ -550,7 +550,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       return () => document.removeEventListener("click", handleClickOutside);
     }, []);
 
-    // 插入视频的处理函数
+    // 鎻掑叆瑙嗛鐨勫鐞嗗嚱鏁?
     const handleInsertVideo = () => {
       const quill = quillRef.current;
       if (quill && videoUrl) {
@@ -561,13 +561,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       setVideoUrl("");
     };
 
-    // 插入链接的处理函数
+    // 鎻掑叆閾炬帴鐨勫鐞嗗嚱鏁?
     const handleInsertLink = () => {
       const quill = quillRef.current;
       if (quill && linkUrl) {
         const selection = savedSelection.current || quill.getSelection();
         if (selection) {
-          // 如果有选中的文字，直接添加链接
+          // 濡傛灉鏈夐€変腑鐨勬枃瀛楋紝鐩存帴娣诲姞閾炬帴
           if (selection.length > 0) {
             quill.formatText(
               selection.index,
@@ -576,11 +576,11 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               linkUrl,
             );
           } else if (linkText) {
-            // 如果没有选中文字但有链接文字，插入新链接
+            // 濡傛灉娌℃湁閫変腑鏂囧瓧浣嗘湁閾炬帴鏂囧瓧锛屾彃鍏ユ柊閾炬帴
             quill.insertText(selection.index, linkText, "link", linkUrl);
             quill.setSelection(selection.index + linkText.length, 0);
           } else {
-            // 如果都没有，用链接地址作为文字
+            // 濡傛灉閮芥病鏈夛紝鐢ㄩ摼鎺ュ湴鍧€浣滀负鏂囧瓧
             quill.insertText(selection.index, linkUrl, "link", linkUrl);
             quill.setSelection(selection.index + linkUrl.length, 0);
           }
@@ -706,3 +706,4 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 );
 
 Editor.displayName = "Editor";
+

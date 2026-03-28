@@ -1,23 +1,17 @@
-"use client";
+﻿"use client";
 
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Search, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
-/**
- * 分类选项接口
- */
 export type CategoryOption = {
   value: string;
   label: string;
   avatar?: string;
-  
 };
 
-/**
- * 分类选择组件属性
- */
 type CategorySelectProps = {
   value: string;
   onChange: (value: string) => void;
@@ -29,44 +23,24 @@ type CategorySelectProps = {
   onSearch?: (query: string) => void;
 };
 
-/**
- * 分类选择组件
- * 支持头像显示和后端搜索功能
- */
 export const CategorySelect = ({
   value,
   onChange,
   options,
-  placeholder = "选择分类",
+  placeholder,
   className,
   disabled = false,
   loading = false,
   onSearch,
 }: CategorySelectProps) => {
+  const t = useTranslations("categorySelect");
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // 用 ref 存储选中的选项，防止搜索后丢失
-  const selectedOptionRef = useRef<CategoryOption | null>(null);
+  const selectedOption = options.find((opt) => opt.value === value);
 
-  // 从 options 中查找选中项，或使用缓存的选中项
-  // 如果 options 中没有找到匹配的，但 ref 中有值，也需要保留（搜索后列表变化的情况）
-  const foundInOptions = options.find((opt) => opt.value === value);
-
-  // 始终保持 ref 更新，特别是当 value 存在时
-  if (value && selectedOptionRef.current?.value !== value) {
-    // 如果 ref 中没有当前值，尝试从 props 找到
-    const found = options.find((opt) => opt.value === value);
-    if (found) {
-      selectedOptionRef.current = found;
-    }
-  }
-
-  const selectedOption = foundInOptions || selectedOptionRef.current;
-
-  // 点击外部关闭
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -80,7 +54,6 @@ export const CategorySelect = ({
 
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      // 打开时聚焦搜索框
       setTimeout(() => inputRef.current?.focus(), 0);
     }
 
@@ -89,7 +62,6 @@ export const CategorySelect = ({
     };
   }, [isOpen]);
 
-  // 防抖搜索 - 只在搜索词非空时触发
   useEffect(() => {
     if (!onSearch || !searchQuery.trim()) return;
 
@@ -101,8 +73,6 @@ export const CategorySelect = ({
   }, [searchQuery, onSearch]);
 
   const handleSelect = (option: CategoryOption) => {
-    // 更新缓存的选中项
-    selectedOptionRef.current = option;
     onChange(option.value);
     setIsOpen(false);
     setSearchQuery("");
@@ -110,7 +80,6 @@ export const CategorySelect = ({
 
   return (
     <div ref={containerRef} className={cn("relative", className)}>
-      {/* 触发按钮 */}
       <button
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
@@ -136,7 +105,7 @@ export const CategorySelect = ({
             />
           )}
           <span className={cn("truncate", !selectedOption && "text-gray-400")}>
-            {selectedOption ? selectedOption.label : placeholder}
+            {selectedOption ? selectedOption.label : placeholder || t("placeholder")}
           </span>
         </div>
         <ChevronDown
@@ -147,7 +116,6 @@ export const CategorySelect = ({
         />
       </button>
 
-      {/* 下拉面板 */}
       {isOpen && (
         <div
           className={cn(
@@ -158,7 +126,6 @@ export const CategorySelect = ({
             "overflow-hidden",
           )}
         >
-          {/* 搜索框 */}
           <div className="p-2 border-b border-border">
             <div className="relative">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -167,7 +134,7 @@ export const CategorySelect = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="搜索分类..."
+                placeholder={t("searchPlaceholder")}
                 className={cn(
                   "w-full h-8 pl-8 pr-3 text-sm",
                   "rounded-md border border-border",
@@ -181,11 +148,10 @@ export const CategorySelect = ({
             </div>
           </div>
 
-          {/* 选项列表 */}
           <div className="max-h-100 overflow-auto py-2 px-2">
             {options.length === 0 ? (
               <div className="px-3 py-2 text-sm text-muted-foreground text-center">
-                {searchQuery ? "未找到匹配的分类" : "暂无分类"}
+                {searchQuery ? t("noMatched") : t("noCategories")}
               </div>
             ) : (
               options.map((option) => (
