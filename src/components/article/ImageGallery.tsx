@@ -78,7 +78,7 @@ export function ImageGallery({
   return (
     <>
       <div className="w-full space-y-2">
-        <div className="relative max-w-218 box-content overflow-hidden">
+        <div className="relative mx-auto w-full max-w-218 overflow-hidden">
           <button
             type="button"
             aria-label={t("scrollThumbnailsLeft")}
@@ -102,7 +102,7 @@ export function ImageGallery({
             onReachBeginning={syncThumbNavState}
             onReachEnd={syncThumbNavState}
             onFromEdge={syncThumbNavState}
-            className="thumbs-swiper max-w-full overflow-visible!"
+            className="thumbs-swiper w-full max-w-full overflow-visible!"
           >
             {images.map((image, index) => (
               <SwiperSlide
