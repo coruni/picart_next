@@ -2,12 +2,12 @@
 
 import { userControllerFindAll } from "@/api";
 import { UserList } from "@/types";
+import { Plus } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import Image from "next/image";
+import { GuardedLink } from "../shared";
 import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
-import { Plus } from "lucide-react";
-import Image from "next/image";
-import { getTranslations } from "next-intl/server";
-import { Link } from "@/i18n/routing";
 
 export const RecommendUserWidget = async () => {
   const t = await getTranslations("sidebar");
@@ -37,7 +37,7 @@ export const RecommendUserWidget = async () => {
 
   const userCard = (user: UserList[number]) => {
     return (
-      <Link
+      <GuardedLink
         href={`/account/${user.id}`}
         className="px-2 cursor-pointer block hover:bg-primary/15 rounded-xl pb-5"
         key={user.id}
@@ -81,7 +81,7 @@ export const RecommendUserWidget = async () => {
             {t("quickPost")}
           </span>
         </div>
-      </Link>
+      </GuardedLink>
     );
   };
 

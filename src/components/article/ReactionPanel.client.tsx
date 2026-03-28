@@ -1,19 +1,19 @@
 ﻿"use client";
 
-import { useState, useRef } from "react";
+import { articleControllerLike } from "@/api";
+import { useClickOutside } from "@/hooks";
+import { cn } from "@/lib";
 import {
-  ThumbsUp,
+  Angry,
+  Frown,
   Heart,
   Laugh,
   Sparkles,
-  Frown,
-  Angry,
   ThumbsDown,
+  ThumbsUp,
 } from "lucide-react";
-import { cn } from "@/lib";
-import { useClickOutside } from "@/hooks";
-import { articleControllerLike } from "@/api";
 import { useTranslations } from "next-intl";
+import { useRef, useState } from "react";
 
 type ReactionType =
   | "like"
@@ -54,13 +54,48 @@ export const ReactionPanel = ({
 }: ReactionPanelProps) => {
   const t = useTranslations("reactionPanel");
   const REACTIONS = [
-    { type: "like" as ReactionType, icon: ThumbsUp, label: t("like"), color: "text-blue-500" },
-    { type: "love" as ReactionType, icon: Heart, label: t("love"), color: "text-red-500" },
-    { type: "haha" as ReactionType, icon: Laugh, label: t("haha"), color: "text-yellow-500" },
-    { type: "wow" as ReactionType, icon: Sparkles, label: t("wow"), color: "text-purple-500" },
-    { type: "sad" as ReactionType, icon: Frown, label: t("sad"), color: "text-gray-500" },
-    { type: "angry" as ReactionType, icon: Angry, label: t("angry"), color: "text-orange-500" },
-    { type: "dislike" as ReactionType, icon: ThumbsDown, label: t("dislike"), color: "text-gray-400" },
+    {
+      type: "like" as ReactionType,
+      icon: ThumbsUp,
+      label: t("like"),
+      color: "text-primary",
+    },
+    {
+      type: "love" as ReactionType,
+      icon: Heart,
+      label: t("love"),
+      color: "text-red-500",
+    },
+    {
+      type: "haha" as ReactionType,
+      icon: Laugh,
+      label: t("haha"),
+      color: "text-yellow-500",
+    },
+    {
+      type: "wow" as ReactionType,
+      icon: Sparkles,
+      label: t("wow"),
+      color: "text-purple-500",
+    },
+    {
+      type: "sad" as ReactionType,
+      icon: Frown,
+      label: t("sad"),
+      color: "text-gray-500",
+    },
+    {
+      type: "angry" as ReactionType,
+      icon: Angry,
+      label: t("angry"),
+      color: "text-orange-500",
+    },
+    {
+      type: "dislike" as ReactionType,
+      icon: ThumbsDown,
+      label: t("dislike"),
+      color: "text-gray-400",
+    },
   ];
 
   const [isOpen, setIsOpen] = useState(false);
@@ -106,7 +141,10 @@ export const ReactionPanel = ({
     }
   };
 
-  const totalReactions = Object.values(stats).reduce((sum, count) => sum + count, 0);
+  const totalReactions = Object.values(stats).reduce(
+    (sum, count) => sum + count,
+    0,
+  );
 
   const CurrentReactionIcon = currentReaction
     ? REACTIONS.find((r) => r.type === currentReaction)?.icon
@@ -120,12 +158,14 @@ export const ReactionPanel = ({
     <div className="relative" ref={panelRef}>
       <div
         className={cn(
-          "flex items-center cursor-pointer hover:text-primary transition-colors",
+          "flex items-center cursor-pointer text-secondary hover:text-primary transition-colors",
           currentReaction && currentReactionColor,
         )}
         onClick={() => setIsOpen(!isOpen)}
       >
-        {CurrentReactionIcon && <CurrentReactionIcon size={20} className="text-secondary" />}
+        {CurrentReactionIcon && (
+          <CurrentReactionIcon size={20} />
+        )}
         {showCount && <span className="ml-2 text-xs">{totalReactions}</span>}
       </div>
 
@@ -156,7 +196,7 @@ export const ReactionPanel = ({
                       isActive ? reaction.color : "text-secondary",
                     )}
                   />
-                  <span className="text-xs mt-1 text-secondary">{count}</span>
+                  <span className="text-xs mt-1">{count}</span>
                 </button>
               );
             })}
@@ -166,4 +206,3 @@ export const ReactionPanel = ({
     </div>
   );
 };
-
