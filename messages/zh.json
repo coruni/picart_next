@@ -335,6 +335,16 @@
     },
     "loading": "加载中..."
   },
+  "createImage": {
+    "title": "发布图片",
+    "editTitle": "编辑图片",
+    "form": {
+      "images": "图片",
+      "imagesPlaceholder": "选择图片",
+      "imagesRequired": "请至少上传一张图片",
+      "imagesHint": "支持批量上传，多选即可一次添加多张图片"
+    }
+  },
   "imageViewer": {
     "panelTitle": "图片详情",
     "collapsePanel": "收起面板",
@@ -389,6 +399,20 @@
     "searchPlaceholder": "搜索分类...",
     "noMatched": "没有匹配的分类",
     "noCategories": "暂无分类"
+  },
+  "tagSelect": {
+    "label": "选择话题",
+    "placeholder": "选择话题",
+    "searchPlaceholder": "搜索话题...",
+    "noMatched": "没有匹配的话题",
+    "noTags": "暂无话题",
+    "loading": "加载中...",
+    "loadMore": "滚动加载更多",
+    "allLoaded": "已加载全部话题",
+    "createTopic": "创建话题：{name}",
+    "recommended": "推荐话题",
+    "removeSelected": "删除已选话题",
+    "clearAll": "全部清除"
   },
   "accountTabs": {
     "article": "帖子",

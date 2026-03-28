@@ -1,20 +1,20 @@
 ﻿import {
+  ArticleActions,
   ArticleAuthor,
+  ArticleMenu,
   ArticleRichContent,
   ImageGallery,
-  ArticleMenu,
   ReactionStats,
-  ArticleActions,
 } from "@/components/article";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Link } from "@/i18n/routing";
 import { generateArticleMetadata, prepareRichTextHtmlForDisplay } from "@/lib";
+import { serverApi } from "@/lib/server-api";
 import { Forward, Hash } from "lucide-react";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { serverApi } from "@/lib/server-api";
 import { getTranslations } from "next-intl/server";
-import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
+import { notFound } from "next/navigation";
 
 type ArticleDetailPageProps = {
   params: Promise<{
@@ -70,6 +70,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             <ArticleMenu
               articleId={id}
               authorId={article?.author?.id?.toString() || ""}
+              articleType={article?.type}
             />
           </div>
         </div>
@@ -110,10 +111,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             )}
             {content &&
               (article?.type === "image" ? (
-                <div
-                  className="ql-editor px-0!"
-                  dangerouslySetInnerHTML={{ __html: content }}
-                ></div>
+                <div className="mt-2">{article.content}</div>
               ) : (
                 <ArticleRichContent html={content} />
               ))}

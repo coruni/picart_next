@@ -467,3 +467,49 @@ export async function generateCreatePostMetadata(
     },
   };
 }
+
+/**
+ * Generate create image metadata.
+ */
+export async function generateCreateImageMetadata(
+  locale: string = "zh",
+): Promise<Metadata> {
+  const config = await getPublicConfig();
+  const siteName = config?.site_name || "PicArt";
+  const path = "/create/image";
+
+  const keywords = splitKeywords([
+    config?.site_keywords,
+    config?.seo_long_tail_keywords,
+  ]);
+
+  const title = locale === "zh" ? "发布图片" : "Create Image";
+  const description =
+    locale === "zh"
+      ? "发布你的图片内容，与他人分享你的创作"
+      : "Create an image post and share your work with others";
+
+  return {
+    title,
+    description,
+    keywords: keywords.length > 0 ? keywords : undefined,
+    alternates: buildLocalizedAlternates(locale, path),
+    robots: {
+      index: false,
+      follow: false,
+    },
+    openGraph: {
+      type: "website",
+      locale,
+      siteName,
+      url: getLocalizedPath(locale, path),
+      title,
+      description,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
+  };
+}

@@ -3,7 +3,7 @@
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { ChevronLeft, ChevronRight, Fullscreen } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Swiper as SwiperType } from "swiper";
 import { FreeMode, Thumbs } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -27,11 +27,32 @@ export function ImageGallery({
   const [activeIndex, setActiveIndex] = useState(0);
   const [thumbCanScrollPrev, setThumbCanScrollPrev] = useState(false);
   const [thumbCanScrollNext, setThumbCanScrollNext] = useState(false);
+  const [thumbHasOverflow, setThumbHasOverflow] = useState(false);
 
   const syncThumbNavState = (swiper: SwiperType) => {
     setThumbCanScrollPrev(!swiper.isBeginning);
     setThumbCanScrollNext(!swiper.isEnd);
   };
+
+  useEffect(() => {
+    if (!thumbsSwiper || thumbsSwiper.destroyed) return;
+
+    const updateOverflow = () => {
+      const wrapperWidth = thumbsSwiper.wrapperEl?.scrollWidth || 0;
+      const containerWidth =
+        thumbsSwiper.el?.clientWidth || thumbsSwiper.width || 0;
+      setThumbHasOverflow(wrapperWidth > containerWidth + 1);
+    };
+
+    updateOverflow();
+    thumbsSwiper.on("resize", updateOverflow);
+    thumbsSwiper.on("update", updateOverflow);
+
+    return () => {
+      thumbsSwiper.off("resize", updateOverflow);
+      thumbsSwiper.off("update", updateOverflow);
+    };
+  }, [thumbsSwiper]);
 
   if (!images || !Array.isArray(images) || images.length === 0) return null;
 
@@ -78,15 +99,17 @@ export function ImageGallery({
     <>
       <div className="w-full min-w-0 space-y-2">
         <div className="relative mx-auto w-full min-w-0 overflow-hidden">
-          <button
-            type="button"
-            aria-label={t("scrollThumbnailsLeft")}
-            className="absolute left-2 top-1/2 z-8 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 disabled:pointer-events-none disabled:opacity-35"
-            onClick={() => thumbsSwiper?.slidePrev()}
-            disabled={!thumbCanScrollPrev}
-          >
-            <ChevronLeft size={18} />
-          </button>
+          {thumbHasOverflow && (
+            <button
+              type="button"
+              aria-label={t("scrollThumbnailsLeft")}
+              className="absolute left-2 top-1/2 z-8 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 disabled:pointer-events-none disabled:opacity-35"
+              onClick={() => thumbsSwiper?.slidePrev()}
+              disabled={!thumbCanScrollPrev}
+            >
+              <ChevronLeft size={18} />
+            </button>
+          )}
           <Swiper
             onSwiper={(swiper) => {
               setThumbsSwiper(swiper);
@@ -123,15 +146,17 @@ export function ImageGallery({
               </SwiperSlide>
             ))}
           </Swiper>
-          <button
-            type="button"
-            aria-label={t("scrollThumbnailsRight")}
-            className="absolute right-2 top-1/2 z-8 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 disabled:pointer-events-none disabled:opacity-35"
-            onClick={() => thumbsSwiper?.slideNext()}
-            disabled={!thumbCanScrollNext}
-          >
-            <ChevronRight size={18} />
-          </button>
+          {thumbHasOverflow && (
+            <button
+              type="button"
+              aria-label={t("scrollThumbnailsRight")}
+              className="absolute right-2 top-1/2 z-8 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 disabled:pointer-events-none disabled:opacity-35"
+              onClick={() => thumbsSwiper?.slideNext()}
+              disabled={!thumbCanScrollNext}
+            >
+              <ChevronRight size={18} />
+            </button>
+          )}
         </div>
 
         <div className="w-full min-w-0 overflow-hidden rounded-xl">

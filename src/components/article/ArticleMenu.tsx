@@ -17,12 +17,14 @@ import { useTranslations } from "next-intl";
 type ArticleMenuProps = {
   articleId: string;
   authorId: string;
+  articleType?: string;
   isOwner?: boolean;
 };
 
 export function ArticleMenu({
   articleId,
   authorId,
+  articleType,
   isOwner: isOwnerProp = false,
 }: ArticleMenuProps) {
   const t = useTranslations("articleMenu");
@@ -73,7 +75,11 @@ export function ArticleMenu({
 
   const handleEditArticle = () => {
     if (!isOwner) return;
-    router.push(`/create/post?articleId=${articleId}`);
+    const editPath =
+      articleType === "image"
+        ? `/create/image?articleId=${articleId}`
+        : `/create/post?articleId=${articleId}`;
+    router.push(editPath);
   };
 
   const menuItems: MenuItem[] = isOwner

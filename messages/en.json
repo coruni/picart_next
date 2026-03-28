@@ -336,6 +336,16 @@
     },
     "loading": "Loading..."
   },
+  "createImage": {
+    "title": "Create Image",
+    "editTitle": "Edit Image",
+    "form": {
+      "images": "Images",
+      "imagesPlaceholder": "Select images",
+      "imagesRequired": "Please upload at least one image",
+      "imagesHint": "Batch upload is supported. Select multiple files at once."
+    }
+  },
   "imageViewer": {
     "panelTitle": "Image Details",
     "collapsePanel": "Collapse panel",
@@ -390,6 +400,20 @@
     "searchPlaceholder": "Search category...",
     "noMatched": "No matching categories",
     "noCategories": "No categories"
+  },
+  "tagSelect": {
+    "label": "Select topic",
+    "placeholder": "Select topic",
+    "searchPlaceholder": "Search topics...",
+    "noMatched": "No matching topics",
+    "noTags": "No topics",
+    "loading": "Loading...",
+    "loadMore": "Scroll to load more",
+    "allLoaded": "All topics loaded",
+    "createTopic": "Create topic: {name}",
+    "recommended": "Recommended topics",
+    "removeSelected": "Remove selected topic",
+    "clearAll": "Clear all"
   },
   "accountTabs": {
     "article": "Posts",

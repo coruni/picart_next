@@ -1,42 +1,34 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { useForm } from "@/hooks/useForm";
-import AvatarEditor from "react-avatar-editor";
-import { Form, FormField } from "@/components/ui/Form";
-import { Input } from "@/components/ui/Input";
-import { Editor } from "@/components/ui/Editor";
-import { Button } from "@/components/ui/Button";
-import { useRouter } from "@/i18n/routing";
-import { useSearchParams } from "next/navigation";
-import { CategorySelect, CategoryOption } from "@/components/ui/CategorySelect";
-import { TagSelect } from "@/components/ui/TagSelect";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/Dialog";
-import {
-  uploadControllerUploadFile,
-  categoryControllerFindAll,
   articleControllerCreate,
   articleControllerFindOne,
   articleControllerUpdate,
+  categoryControllerFindAll,
+  uploadControllerUploadFile,
 } from "@/api";
-import { cn } from "@/lib";
-import { Edit, Trash2, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { CategoryOption, CategorySelect } from "@/components/ui/CategorySelect";
+import { Form, FormField } from "@/components/ui/Form";
+import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
+import { TagSelect } from "@/components/ui/TagSelect";
+import { useForm } from "@/hooks/useForm";
+import { useRouter } from "@/i18n/routing";
+import { cn } from "@/lib";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
-type CreatePostFormData = {
-  cover: string;
+type CreateImageFormData = {
   title: string;
   content: string;
   categoryId: string;
   tagIds: string[];
   tagNames: string[];
+  images: string[];
   requireFollow: boolean;
   requirePayment: boolean;
   requireMembership: boolean;
@@ -44,42 +36,84 @@ type CreatePostFormData = {
   requireLogin: boolean;
   viewPrice: number;
   sort: number;
-  type: "mixed" | "image";
+  type: "image";
 };
 
-type CreatePostPageProps = {
-  params: Promise<{
-    locale: string;
-    articleId: string;
-  }>;
+const normalizeImageList = (value: unknown): string[] => {
+  if (Array.isArray(value)) {
+    return value
+      .filter((item): item is string => typeof item === "string" && !!item)
+      .map((item) => item.trim().replace(/^[\s"'[\]]+|[\s"'[\]]+$/g, ""));
+  }
+
+  if (typeof value !== "string" || !value.trim()) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return parsed
+        .filter((item): item is string => typeof item === "string" && !!item)
+        .map((item) => item.trim().replace(/^[\s"'[\]]+|[\s"'[\]]+$/g, ""));
+    }
+  } catch {
+    // fallback to comma-separated strings
+  }
+
+  return value
+    .split(",")
+    .map((item) => item.trim().replace(/^[\s"'[\]]+|[\s"'[\]]+$/g, ""))
+    .filter(Boolean);
 };
+
+const sanitizeImageUrl = (value: string) =>
+  value.trim().replace(/^[\s"'[\]]+|[\s"'[\]]+$/g, "");
 
 const toNumericTagIds = (value: string[]) =>
   value
     .map((item) => Number(item))
     .filter((item) => Number.isFinite(item));
 
-export default function CreatePostPage(_props: CreatePostPageProps) {
+async function uploadImagesBatch(files: File[]): Promise<string[]> {
+  if (files.length === 0) return [];
+
+  const { data } = await uploadControllerUploadFile({
+    bodySerializer: () => {
+      const formData = new FormData();
+      files.forEach((file) => {
+        formData.append("file", file);
+      });
+      return formData;
+    },
+    headers: {
+      "Content-Type": null,
+    },
+    body: { file: files[0] },
+  });
+
+  return (data?.data || [])
+    .map((item) => sanitizeImageUrl(item.url || ""))
+    .filter(Boolean);
+}
+
+export default function CreateImagePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const articleId = searchParams.get("articleId");
   const isEditMode = !!articleId;
 
-  const t = useTranslations("createPost");
-  const tc = useTranslations("common");
+  const tPost = useTranslations("createPost");
+  const tImage = useTranslations("createImage");
   const tTag = useTranslations("tagSelect");
-  const coverEditorRef = useRef<AvatarEditor>(null);
-
   // Article loading state for edit mode
   const [articleLoading, setArticleLoading] = useState(isEditMode);
 
-  // Cover editor states
-  const [showCoverEditor, setShowCoverEditor] = useState(false);
-  const [selectedCoverImage, setSelectedCoverImage] = useState<File | null>(
+  const [imagesUploading, setImagesUploading] = useState(false);
+  const [isImageDropping, setIsImageDropping] = useState(false);
+  const [draggingImageIndex, setDraggingImageIndex] = useState<number | null>(
     null,
   );
-  const [coverScale, setCoverScale] = useState(1);
-  const [coverUploading, setCoverUploading] = useState(false);
 
   // Category states
   const [parentCategories, setParentCategories] = useState<CategoryOption[]>(
@@ -104,9 +138,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   const parentSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // 用 ref 跟踪请求序号，丢弃过期响应（防止竞态）
   const childSearchSeqRef = useRef(0);
@@ -125,14 +157,14 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     isSubmitting,
     handleSubmit,
     setFieldValues,
-  } = useForm<CreatePostFormData>({
+  } = useForm<CreateImageFormData>({
     initialValues: {
-      cover: "",
       title: "",
       content: "",
       categoryId: "",
       tagIds: [],
       tagNames: [],
+      images: [],
       requireLogin: false,
       requireFollow: false,
       requirePayment: false,
@@ -140,31 +172,39 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       listRequireLogin: false,
       viewPrice: 0,
       sort: 0,
-      type: "mixed",
+      type: "image",
     },
     validationRules: {
       title: {
-        required: t("form.titleRequired"),
-        minLength: { value: 4, message: t("form.titleMinLength") },
-        maxLength: { value: 200, message: t("form.titleMaxLength") },
+        required: tPost("form.titleRequired"),
+        minLength: { value: 4, message: tPost("form.titleMinLength") },
+        maxLength: { value: 200, message: tPost("form.titleMaxLength") },
       },
-      content: { required: t("form.contentRequired") },
-      categoryId: { required: t("form.categoryRequired") },
+      content: { required: tPost("form.contentRequired") },
+      categoryId: { required: tPost("form.categoryRequired") },
+      images: {
+        validate: (value) =>
+          Array.isArray(value) && value.length > 0
+            ? true
+            : tImage("form.imagesRequired"),
+      },
     },
     async onSubmit(values) {
       const body = {
         ...values,
         categoryId: Number(values.categoryId),
         sort: 0,
-        type: "mixed" as const,
+        type: "image" as const,
         tagIds: toNumericTagIds(values.tagIds),
         tagNames: values.tagNames,
+        images: values.images.map(sanitizeImageUrl),
+        content: values.content,
       } as unknown as Parameters<typeof articleControllerCreate>[0]["body"];
 
       if (isEditMode && articleId) {
         await articleControllerUpdate({
           path: { id: articleId },
-          body,
+          body: body as Parameters<typeof articleControllerUpdate>[0]["body"],
         });
       } else {
         await articleControllerCreate({ body });
@@ -190,14 +230,16 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         });
         const article = response.data?.data;
         if (article) {
+          const imageList = normalizeImageList(article.images);
+
           // Set form values
           setFieldValues({
-            cover: article.cover || "",
             title: article.title || "",
             content: article.content || "",
             categoryId: String(article.category.id || ""),
             tagIds: article.tags?.map((tag) => String(tag.id)) || [],
             tagNames: [],
+            images: imageList,
             requireLogin: article.requireLogin || false,
             requireFollow: article.requireFollow || false,
             requirePayment: article.requirePayment || false,
@@ -205,7 +247,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
             listRequireLogin: article.listRequireLogin || false,
             viewPrice: Number(article.viewPrice) || 0,
             sort: article.sort || 0,
-            type: (article.type as "mixed" | "image") || "mixed",
+            type: "image",
           });
           setInitialTagOptions(
             article.tags?.map((tag) => ({
@@ -281,7 +323,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       }
     };
     fetchArticle();
-  }, [isEditMode, articleId, setFieldValues]);
+  }, [articleId, isEditMode, setFieldValues]);
 
   // Fetch categories on mount
   useEffect(() => {
@@ -471,62 +513,62 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     }, 300);
   };
 
-  // Cover handlers
-  const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setSelectedCoverImage(file);
-    setShowCoverEditor(true);
-    setCoverScale(1);
-    e.target.value = "";
-  };
+  const handleImagesUpload = async (files: File[]) => {
+    if (files.length === 0) return;
 
-  const handleCoverWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const newScale = Math.min(Math.max(coverScale - e.deltaY * 0.001, 1), 3);
-    setCoverScale(newScale);
-  };
-
-  const handleSaveCover = async () => {
-    if (!coverEditorRef.current || !selectedCoverImage) return;
-    setCoverUploading(true);
+    setImagesUploading(true);
     try {
-      const canvas = coverEditorRef.current.getImageScaledToCanvas();
-      const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => {
-          resolve(blob!);
-        }, "image/png");
-      });
-      const croppedFile = new File([blob], selectedCoverImage.name, {
-        type: "image/png",
-      });
-      const { data } = await uploadControllerUploadFile({
-        bodySerializer: (body) => {
-          const formData = new FormData();
-          formData.append("file", body.file);
-          return formData;
-        },
-        headers: {
-          "Content-Type": null,
-        },
-        body: { file: croppedFile },
-      });
-      if (data?.data?.[0]) {
-        setFieldValues({ cover: data.data[0].url! });
-        setShowCoverEditor(false);
-        setSelectedCoverImage(null);
+      const uploadedUrls = await uploadImagesBatch(files);
+
+      if (uploadedUrls.length > 0) {
+        const mergedImages = Array.from(
+          new Set([...values.images, ...uploadedUrls]),
+        );
+        setFieldValues({
+          images: mergedImages,
+        });
       }
     } catch (error) {
-      console.error("Failed to upload cover:", error);
+      console.error("Failed to upload images:", error);
     } finally {
-      setCoverUploading(false);
+      setImagesUploading(false);
     }
   };
 
-  const handleCancelCoverEdit = () => {
-    setShowCoverEditor(false);
-    setSelectedCoverImage(null);
-    setCoverScale(1);
+  const handleImagesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    await handleImagesUpload(files);
+    e.target.value = "";
+  };
+
+  const handleImageDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsImageDropping(false);
+    const files = Array.from(e.dataTransfer.files || []).filter((file) =>
+      file.type.startsWith("image/"),
+    );
+    await handleImagesUpload(files);
+  };
+
+  const removeImage = (index: number) => {
+    const nextImages = values.images.filter(
+      (_, currentIndex) => currentIndex !== index,
+    );
+    setFieldValues({
+      images: nextImages,
+    });
+    setDraggingImageIndex(null);
+  };
+
+  const moveImage = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
+    const nextImages = [...values.images];
+    const [movedImage] = nextImages.splice(fromIndex, 1);
+    nextImages.splice(toIndex, 0, movedImage);
+    setFieldValues({
+      images: nextImages,
+    });
   };
 
   return (
@@ -535,7 +577,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         <div className="px-6 h-14 flex items-center border-b border-border">
           <div className="h-full flex-1 flex items-center">
             <span className="font-bold text-base pr-6">
-              {isEditMode ? t("editTitle") : t("title")}
+              {isEditMode ? tImage("editTitle") : tImage("title")}
             </span>
           </div>
         </div>
@@ -544,100 +586,154 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
             {articleLoading ? (
               <div className="flex items-center justify-center py-20">
                 <Loader2 className="size-8 animate-spin text-primary" />
-                <span className="ml-2 text-primary">{t("loading")}</span>
+                <span className="ml-2 text-primary">{tPost("loading")}</span>
               </div>
             ) : (
               <Form errors={errors} onSubmit={handleSubmit} touched={touched}>
-                <FormField
-                  name="cover"
-                  label={values.cover ? "" : t("cover.upload")}
-                  className={cn(!values.cover && "pt-4")}
-                >
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleCoverChange}
-                    className="hidden"
-                    id="cover-upload"
-                  />
-                  <div
-                    className={cn(
-                      "flex items-center gap-4",
-                      values.cover && "-mx-6",
-                    )}
-                  >
-                    {values.cover ? (
-                      <div className="relative w-full aspect-21/9">
-                        <ImageWithFallback
-                          fill
-                          src={values.cover}
-                          alt={t("cover.preview")}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute right-6 bottom-4 flex items-center space-x-6">
-                          <label
-                            htmlFor="cover-upload"
-                            className={cn(
-                              "bg-black/65 text-white font-semibold group hover:bg-primary rounded-full",
-                              "flex items-center justify-center p-2 cursor-pointer",
-                              "outline-0 border-0 focus:outline-0",
-                            )}
-                          >
-                            <Edit size={16} />
-                          </label>
-                          <button
-                            className={cn(
-                              "bg-black/65 text-white font-semibold group hover:bg-primary rounded-full",
-                              "flex items-center justify-center p-2 cursor-pointer",
-                              "outline-0 border-0 focus:outline-0",
-                            )}
-                            onClick={() => setFieldValues({ cover: "" })}
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div>
-                        <label
-                          htmlFor="cover-upload"
-                          className={cn(
-                            "text-sm cursor-pointer px-4 py-2 text-primary border-primary border rounded-md",
-                            "hover:bg-primary hover:text-white",
-                          )}
-                        >
-                          {t("cover.uploadButton")}
-                        </label>
-                      </div>
-                    )}
-                  </div>
-                </FormField>
-                <FormField name="title" label={t("form.title")}>
+                <FormField name="title" label={tPost("form.title")}>
                   <Input
                     name="title"
                     maxLength={200}
                     onChange={handleChange("title")}
                     onBlur={handleBlur("title")}
                     value={values.title}
-                    placeholder={t("form.titlePlaceholder")}
+                    placeholder={tPost("form.titlePlaceholder")}
                     fullWidth
                     showMaxLength
                     className="block h-14"
                   />
                 </FormField>
-                <FormField name="content" label={t("form.content")}>
-                  <Editor
+                <FormField name="content" label={tPost("form.content")}>
+                  <textarea
                     value={values.content}
-                    onChange={(value: string) => {
-                      setFieldValues({ content: value });
-                    }}
-                    placeholder={t("form.contentPlaceholder")}
-                    className="min-h-75"
+                    onChange={handleChange("content")}
+                    onBlur={handleBlur("content")}
+                    placeholder={tPost("form.contentPlaceholder")}
+                    className={cn(
+                      "min-h-40 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm",
+                      "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+                      "focus:ring-offset-0 outline-none focus:outline-none",
+                      "transition-colors duration-200",
+                      "focus:ring-primary focus:border-primary hover:border-primary",
+                    )}
                   />
                 </FormField>
                 <FormField
+                  name="images"
+                  label={tImage("form.images")}
+                  className="pt-2"
+                >
+                  <p className="mb-2 text-xs text-secondary">
+                    {tImage("form.imagesHint")}
+                  </p>
+                  <div className="space-y-3">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImagesChange}
+                      className="hidden"
+                      id="image-upload"
+                    />
+                    <div
+                      onDragOver={(event) => {
+                        event.preventDefault();
+                        setIsImageDropping(true);
+                      }}
+                      onDragLeave={() => setIsImageDropping(false)}
+                      onDrop={handleImageDrop}
+                      className={cn(
+                        "rounded-xl border-2 border-dashed p-4 transition-colors",
+                        isImageDropping
+                          ? "border-primary bg-primary/5"
+                          : "border-border bg-card/40",
+                      )}
+                    >
+                      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+                        {values.images.length > 0 &&
+                          values.images.map((image: string, index: number) => (
+                            <div
+                              key={`${image}-${index}`}
+                              draggable
+                              onDragStart={(event) => {
+                                event.dataTransfer.effectAllowed = "move";
+                                event.dataTransfer.setData(
+                                  "text/plain",
+                                  String(index),
+                                );
+                                setDraggingImageIndex(index);
+                              }}
+                              onDragEnd={() => setDraggingImageIndex(null)}
+                              onDragOver={(event) => {
+                                event.preventDefault();
+                                event.dataTransfer.dropEffect = "move";
+                              }}
+                              onDrop={(event) => {
+                                event.preventDefault();
+                                const fromIndex = Number(
+                                  event.dataTransfer.getData("text/plain"),
+                                );
+                                if (Number.isNaN(fromIndex)) return;
+                                moveImage(fromIndex, index);
+                                setDraggingImageIndex(null);
+                              }}
+                              className={cn(
+                                "relative aspect-square overflow-hidden rounded-xl border border-border transition-transform",
+                                draggingImageIndex === index &&
+                                  "scale-[0.98] opacity-70",
+                              )}
+                            >
+                              <Image
+                                src={image}
+                                alt={`${values.title || tImage("title")} ${index + 1}`}
+                                fill
+                                sizes="(max-width: 768px) 50vw, 33vw"
+                                className="object-cover"
+                              />
+                              <div className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white">
+                                #{index + 1}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => removeImage(index)}
+                                className="absolute right-2 top-2 flex size-6 cursor-pointer items-center justify-center rounded-full bg-black/65 text-white hover:bg-primary"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        {imagesUploading && (
+                          <div className="relative aspect-square overflow-hidden rounded-xl border border-border bg-muted/40">
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/70 backdrop-blur-[1px]">
+                              <Loader2 className="size-5 animate-spin text-primary" />
+                              <span className="text-xs text-secondary">
+                                {tPost("loading")}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+                        <label
+                          htmlFor="image-upload"
+                          className={cn(
+                            "relative flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border text-xs",
+                            "border-border  bg-[#b2bdce] dark:bg-black text-white",
+                            "transition-colors",
+                            imagesUploading &&
+                              "pointer-events-none opacity-70 hover:bg-transparent",
+                          )}
+                        >
+                          <Plus className="size-6" />
+                          {imagesUploading
+                            ? tPost("loading")
+                            : tImage("form.imagesPlaceholder")}
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </FormField>
+                <FormField
                   name="categoryId"
-                  label={t("form.publishTo")}
+                  label={tPost("form.publishTo")}
                   className="pt-4"
                 >
                   <div className="flex items-center gap-2">
@@ -645,7 +741,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                       value={selectedParentId}
                       onChange={handleParentCategoryChange}
                       options={parentCategories}
-                      placeholder={t("form.selectCategory")}
+                      placeholder={tPost("form.selectCategory")}
                       disabled={categoriesLoading}
                       loading={parentSearching}
                       onSearch={handleSearchParentCategories}
@@ -659,7 +755,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                           value={values.categoryId}
                           onChange={handleChildCategoryChange}
                           options={childCategories}
-                          placeholder={t("form.selectSubCategory")}
+                          placeholder={tPost("form.selectSubCategory")}
                           loading={childSearching}
                           onSearch={handleSearchChildCategories}
                           className="flex-1"
@@ -682,13 +778,13 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                 </FormField>
                 <div className="mv-3">
                   <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t("settings.title")}
+                    {tPost("settings.title")}
                   </label>
                   <div className="border border-border p-3 rounded-lg inline-block max-w-100 w-full space-y-2">
                     <FormField name="requireLogin">
                       <div className="flex items-center justify-between">
                         <label className="text-black/65 dark:text-white text-sm">
-                          {t("settings.requireLogin")}
+                          {tPost("settings.requireLogin")}
                         </label>
                         <Switch
                           checked={values.requireLogin}
@@ -701,7 +797,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                     <FormField name="requireFollow">
                       <div className="flex items-center justify-between">
                         <label className="text-black/65 dark:text-white text-sm">
-                          {t("settings.requireFollow")}
+                          {tPost("settings.requireFollow")}
                         </label>
                         <Switch
                           checked={values.requireFollow}
@@ -715,7 +811,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center justify-between w-full">
                           <label className="text-black/65 dark:text-white text-sm">
-                            {t("settings.requirePayment")}
+                            {tPost("settings.requirePayment")}
                           </label>
                           <Switch
                             checked={values.requirePayment}
@@ -731,7 +827,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                             min={1}
                             step={1}
                             max={999}
-                            placeholder={t("settings.pricePlaceholder")}
+                            placeholder={tPost("settings.pricePlaceholder")}
                             value={values.viewPrice}
                             onChange={(value) =>
                               setFieldValues({
@@ -745,7 +841,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                     <FormField name="requireMembership">
                       <div className="flex items-center justify-between">
                         <label className="text-black/65 dark:text-white text-sm">
-                          {t("settings.requireMembership")}
+                          {tPost("settings.requireMembership")}
                         </label>
                         <Switch
                           checked={values.requireMembership}
@@ -763,7 +859,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                     variant="default"
                     className="w-full h-11 rounded-full"
                   >
-                    {t("actions.preview")}
+                    {tPost("actions.preview")}
                   </Button>
                   <Button
                     type="submit"
@@ -771,7 +867,9 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                     variant="default"
                     className="w-full h-11 rounded-full"
                   >
-                    {isEditMode ? t("actions.update") : t("actions.publish")}
+                    {isEditMode
+                      ? tPost("actions.update")
+                      : tPost("actions.publish")}
                   </Button>
                 </div>
               </Form>
@@ -779,63 +877,6 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           </div>
         </div>
       </div>
-
-      {/* Cover Editor Modal */}
-      <Dialog open={showCoverEditor} onOpenChange={setShowCoverEditor}>
-        <DialogContent className="max-w-2xl pt-4!">
-          <DialogHeader>
-            <DialogTitle className="text-sm">{t("cover.crop")}</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col gap-4 py-4">
-            {selectedCoverImage && (
-              <>
-                <div
-                  className="w-full aspect-21/9 overflow-hidden cursor-move touch-none"
-                  onWheel={handleCoverWheel}
-                >
-                  <AvatarEditor
-                    ref={coverEditorRef}
-                    image={selectedCoverImage}
-                    width={840}
-                    height={360}
-                    border={20}
-                    borderRadius={0}
-                    color={[0, 0, 0, 0.6]}
-                    scale={coverScale}
-                    rotate={0}
-                    style={{ width: "100%", height: "100%" }}
-                  />
-                </div>
-                <p className="text-xs text-gray-500 text-center">
-                  {t("cover.cropHint")}
-                </p>
-                <div className="flex gap-3 w-full">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="md"
-                    onClick={handleCancelCoverEdit}
-                    disabled={coverUploading}
-                    className="flex-1 rounded-lg h-9"
-                  >
-                    {tc("cancel")}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="default"
-                    size="md"
-                    onClick={handleSaveCover}
-                    loading={coverUploading}
-                    className="flex-1 rounded-lg h-9"
-                  >
-                    {tc("confirm")}
-                  </Button>
-                </div>
-              </>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
