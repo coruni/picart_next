@@ -4,6 +4,8 @@
   --background: #f5f6fb;
   --foreground: #171717;
   --header-height: 60px;
+  --font-geist-sans: Arial, Helvetica, sans-serif;
+  --font-geist-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 ::-webkit-scrollbar {
@@ -89,7 +91,7 @@ body {
 }
 
 .left-container {
-  @apply bg-card  rounded-xl flex-1 max-w-full;
+  @apply bg-card rounded-xl flex-1 max-w-full min-w-0;
 }
 
 .right-container {
@@ -106,6 +108,7 @@ body {
   width: 100% !important;
   height: 100% !important;
 }
+
 
 
 .thumbs-swiper .swiper-slide-thumb-active .relative {

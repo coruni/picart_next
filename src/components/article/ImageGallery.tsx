@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { FreeMode, Thumbs } from "swiper/modules";
-import type { Swiper as SwiperType } from "swiper";
-import Image from "next/image";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { ChevronLeft, ChevronRight, Fullscreen } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import type { Swiper as SwiperType } from "swiper";
+import { FreeMode, Thumbs } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { ImageViewer } from "./ImageViewer";
 
 import "swiper/css";
@@ -39,18 +39,17 @@ export function ImageGallery({
     return (
       <>
         <div
-          className="relative w-full cursor-pointer overflow-hidden rounded-xl group"
+          className="relative w-full cursor-pointer overflow-hidden rounded-xl group aspect-[4/3]"
           onClick={() => {
             setActiveIndex(0);
             setViewerVisible(true);
           }}
         >
-          <Image
+          <ImageWithFallback
             src={images[0]}
-            width={1280}
+            fill
             quality={95}
-            height={800}
-            className="h-auto w-full transition-transform group-hover:scale-105"
+            className="transition-transform group-hover:scale-105 object-cover"
             alt={alt}
             sizes="(max-width: 1280px) 100vw, 1280px"
             priority
@@ -77,8 +76,8 @@ export function ImageGallery({
 
   return (
     <>
-      <div className="w-full space-y-2">
-        <div className="relative mx-auto w-full max-w-218 overflow-hidden">
+      <div className="w-full min-w-0 space-y-2">
+        <div className="relative mx-auto w-full min-w-0 overflow-hidden">
           <button
             type="button"
             aria-label={t("scrollThumbnailsLeft")}
@@ -102,7 +101,7 @@ export function ImageGallery({
             onReachBeginning={syncThumbNavState}
             onReachEnd={syncThumbNavState}
             onFromEdge={syncThumbNavState}
-            className="thumbs-swiper w-full max-w-full overflow-visible!"
+            className="thumbs-swiper w-full min-w-0 max-w-full overflow-hidden!"
           >
             {images.map((image, index) => (
               <SwiperSlide
@@ -111,7 +110,7 @@ export function ImageGallery({
                 className="shrink-0"
               >
                 <div className="relative h-full w-full cursor-pointer overflow-hidden rounded-lg border-2 border-gray-200 transition-colors hover:border-blue-500">
-                  <Image
+                  <ImageWithFallback
                     src={image}
                     fill
                     quality={95}
@@ -135,34 +134,42 @@ export function ImageGallery({
           </button>
         </div>
 
-        <div className="w-full overflow-hidden rounded-xl">
+        <div className="w-full min-w-0 overflow-hidden rounded-xl">
           <Swiper
             modules={[Thumbs]}
             thumbs={{
-              swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+              swiper:
+                thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
             }}
             autoHeight
             className="main-swiper w-full"
             onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
           >
             {images.map((image, index) => (
-              <SwiperSlide key={`main-${index}`} className="relative h-auto! group">
-                <div className="cursor-pointer" onClick={() => setViewerVisible(true)}>
-                  <Image
+              <SwiperSlide
+                key={`main-${index}`}
+                className="relative h-auto! group"
+              >
+                <div
+                  className="relative max-h-226 cursor-pointer overflow-hidden"
+                  onClick={() => setViewerVisible(true)}
+                >
+                  <ImageWithFallback
                     src={image}
                     width={0}
-                    quality={95}
                     height={0}
+                    quality={95}
                     loading="eager"
                     fetchPriority={index === 0 ? "high" : "auto"}
-                    className="block max-h-266.5 h-auto w-full object-cover"
+                    className="object-cover"
                     alt={`${alt} ${index + 1}`}
                     sizes="(max-width: 1280px) 100vw, 1920px"
-                    priority={index === 0}
                     onLoad={(e) => {
                       const img = e.currentTarget;
                       const slide = img.closest(".swiper-slide");
-                      const indicator = slide?.querySelector(".overflow-indicator");
+                      const indicator = slide?.querySelector(
+                        ".overflow-indicator",
+                      );
                       if (indicator && img.naturalHeight > 1066) {
                         indicator.classList.remove("hidden");
                       }
@@ -178,13 +185,15 @@ export function ImageGallery({
           </Swiper>
         </div>
       </div>
-      <ImageViewer
-        images={images}
-        initialIndex={activeIndex}
-        visible={viewerVisible}
-        onClose={() => setViewerVisible(false)}
-        alt={alt}
-      />
+      {viewerVisible && (
+        <ImageViewer
+          images={images}
+          initialIndex={activeIndex}
+          visible={viewerVisible}
+          onClose={() => setViewerVisible(false)}
+          alt={alt}
+        />
+      )}
     </>
   );
 }
