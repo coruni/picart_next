@@ -159,7 +159,7 @@ export function ImageGallery({
                     width={0}
                     height={0}
                     quality={95}
-                    loading="eager"
+                    loading={index === 0 ? "eager" : "lazy"}
                     fetchPriority={index === 0 ? "high" : "auto"}
                     className="object-cover"
                     alt={`${alt} ${index + 1}`}

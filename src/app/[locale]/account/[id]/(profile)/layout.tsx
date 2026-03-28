@@ -3,10 +3,10 @@ import { notFound } from "next/navigation";
 
 import { AccountInfo, AccountTabs } from "@/components/account";
 import { Metadata } from "next";
+import Image from "next/image";
 import { generateAuthorMetadata } from "@/lib";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { serverApi } from "@/lib/server-api";
-import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 interface AccountLayoutProps {
   children: ReactNode;
   params: Promise<{ id: string; locale: string }>;
@@ -42,8 +42,8 @@ export default async function AccountLayout({
       {/* 背景 */}
       <div className="fixed h-75 w-full z-0 box-border">
         <div className="absolute top-0 left-0 w-full z-2 bg-linear-to-b from-[#00000066] to-transparent h-20" />
-        {user.background &&(
-          <ImageWithFallback
+        {user.background && (
+          <Image
             quality={95}
             src={user.background}
             fill

@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib";
 import Image, { type ImageProps } from "next/image";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const DEFAULT_PLACEHOLDER = "/placeholder/image_placeholder.webp";
 const DEFAULT_ERROR = "/placeholder/image_error.webp";
@@ -32,74 +32,26 @@ export function ImageWithFallback({
     "loading",
   );
   const wrapperRef = useRef<HTMLSpanElement | null>(null);
-  const activeImgRef = useRef<HTMLImageElement | null>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setStatus("loading");
   }, [src]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
-    let rafId = 0;
-    let stopped = false;
-
-    const detachActiveImg = () => {
-      if (!activeImgRef.current) return;
-      activeImgRef.current.removeEventListener("load", handleNativeLoad);
-      activeImgRef.current.removeEventListener("error", handleDomError);
-      activeImgRef.current = null;
-    };
-
-    const syncLoadedState = (img?: HTMLImageElement | null) => {
-      const target = img ?? activeImgRef.current;
-      if (!target) return;
-      if (target.complete && target.naturalWidth > 0) {
+    const rafId = requestAnimationFrame(() => {
+      const img = wrapper.querySelector("img") as HTMLImageElement | null;
+      if (img?.complete && img.naturalWidth > 0) {
         setStatus("loaded");
       }
-    };
-
-    const handleDomError = () => {
-      setStatus("error");
-    };
-
-    const handleNativeLoad = (event: Event) => {
-      syncLoadedState(event.currentTarget as HTMLImageElement | null);
-    };
-
-    const attachToImage = () => {
-      const img = wrapper.querySelector("img") as HTMLImageElement | null;
-      if (!img) return false;
-
-      if (activeImgRef.current !== img) {
-        detachActiveImg();
-        activeImgRef.current = img;
-        img.addEventListener("load", handleNativeLoad);
-        img.addEventListener("error", handleDomError);
-      }
-
-      syncLoadedState(img);
-      return true;
-    };
-
-    const tryAttach = (attempt = 0) => {
-      if (stopped) return;
-      if (attachToImage()) return;
-
-      if (attempt >= 1) return;
-
-      rafId = requestAnimationFrame(() => tryAttach(attempt + 1));
-    };
-
-    tryAttach();
+    });
 
     return () => {
-      stopped = true;
       cancelAnimationFrame(rafId);
-      detachActiveImg();
     };
-  }, [src, fill, width, height]);
+  }, [src]);
 
   const handleLoad: ImageProps["onLoad"] = (event) => {
     setStatus("loaded");

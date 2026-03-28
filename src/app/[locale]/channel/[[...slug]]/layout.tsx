@@ -2,8 +2,13 @@
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { ChannelTabs } from "@/components/channel/ChannelTabs";
 import { ChannelNav } from "@/components/channel/ChannelNav";
-import { generateSiteMetadata } from "@/lib/seo";
-import { serverApi } from "@/lib/server-api";
+import {
+  buildLocalizedAlternates,
+  generateSiteMetadata,
+  getLocalizedPath,
+  getPublicCategories,
+  getPublicConfig,
+} from "@/lib/seo";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 
 interface ChannelLayoutProps {
@@ -20,10 +25,8 @@ export async function generateMetadata({ params }: ChannelLayoutProps) {
 
   const pid = slug[0];
 
-  const { data } = await serverApi.categoryControllerFindAll({
-    query: { page: 1, limit: 100 },
-  });
-  const currentChannel = data?.data.data.find(
+  const categories = await getPublicCategories();
+  const currentChannel = categories.find(
     (item) => item.id === Number(pid),
   );
 
@@ -31,21 +34,24 @@ export async function generateMetadata({ params }: ChannelLayoutProps) {
     return generateSiteMetadata(locale);
   }
 
-  const config = await serverApi.configControllerGetPublicConfigs();
-  const siteName = config?.data?.data.site_name || "PicArt";
+  const config = await getPublicConfig();
+  const siteName = config?.site_name || "PicArt";
 
   const title = currentChannel.name;
   const description =
     currentChannel.description ||
     `${currentChannel.articleCount || 0} posts · ${currentChannel.followCount || 0} followers`;
+  const path = slug.length > 0 ? `/channel/${slug.join("/")}` : "/channel";
 
   return {
     title,
     description,
+    alternates: buildLocalizedAlternates(locale, path),
     openGraph: {
       type: "website",
       locale,
       siteName,
+      url: getLocalizedPath(locale, path),
       title,
       description,
       images:
@@ -84,10 +90,8 @@ export default async function ChannelLayout({
 
   const pid = slug[0];
 
-  const { data } = await serverApi.categoryControllerFindAll({
-    query: { page: 1, limit: 100 },
-  });
-  const currentChannel = data?.data.data.find(
+  const categories = await getPublicCategories();
+  const currentChannel = categories.find(
     (item) => item.id === Number(pid),
   );
 
@@ -118,7 +122,7 @@ export default async function ChannelLayout({
         />
       </div>
 
-      <ChannelNav channels={data?.data.data || []} currentId={Number(pid)} />
+      <ChannelNav channels={categories} currentId={Number(pid)} />
 
       <div className="mt-60 w-full z-10 relative dark:bg-gray-800">
         <div className="page-container">

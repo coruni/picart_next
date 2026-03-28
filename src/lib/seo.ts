@@ -1,31 +1,100 @@
 import { configControllerGetPublicConfigs } from "@/api";
+import { categoryControllerFindAll } from "@/api";
+import { routing } from "@/i18n/routing";
 import { ArticleDetail, TagDetail, UserDetail } from "@/types";
+import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+function getMetadataBase() {
+  return new URL(APP_URL);
+}
+
+export function getLocalizedPath(locale: string, path: string) {
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  if (locale === routing.defaultLocale) {
+    return normalizedPath;
+  }
+  return `/${locale}${normalizedPath === "/" ? "" : normalizedPath}`;
+}
+
+export function buildLocalizedAlternates(locale: string, path: string) {
+  return {
+    canonical: getLocalizedPath(locale, path),
+    languages: {
+      "zh-CN": getLocalizedPath("zh", path),
+      "en-US": getLocalizedPath("en", path),
+    },
+  };
+}
+
+function splitKeywords(values: Array<string | null | undefined>) {
+  return values
+    .filter(Boolean)
+    .join(", ")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+
 /**
- * 获取公共配置
+ * Get public SEO config.
  */
-export async function getPublicConfig() {
+async function fetchPublicConfig() {
   try {
     const response = await configControllerGetPublicConfigs();
-    if (response.data?.data) {
-      return response.data.data;
-    }
-    return null;
+    return response.data?.data ?? null;
   } catch (error) {
     console.error("Failed to fetch public config:", error);
     return null;
   }
 }
 
+const getPublicConfigCached = unstable_cache(fetchPublicConfig, ["public-config"], {
+  revalidate: 300,
+});
+
+export async function getPublicConfig() {
+  const cached = await getPublicConfigCached();
+
+  if (cached) {
+    return cached;
+  }
+
+  // If the cached value is empty, retry once without cache so we don't keep
+  // serving default SEO after a transient failure.
+  const fresh = await fetchPublicConfig();
+  return fresh ?? cached;
+}
+
+async function fetchPublicCategories() {
+  try {
+    const response = await categoryControllerFindAll({
+      query: { limit: 100 },
+    });
+    return response.data?.data?.data ?? [];
+  } catch (error) {
+    console.error("Failed to fetch public categories:", error);
+    return [];
+  }
+}
+
+export const getPublicCategories = unstable_cache(
+  fetchPublicCategories,
+  ["public-categories"],
+  {
+    revalidate: 300,
+  },
+);
+
 /**
- * 生成网站 SEO 元数据
+ * Generate site metadata.
  */
 export async function generateSiteMetadata(locale: string = "zh"): Promise<Metadata> {
   const config = await getPublicConfig();
 
   if (!config) {
-    // 默认 SEO 配置
     return {
       title: {
         default: "PicArt",
@@ -41,35 +110,20 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
         address: false,
         telephone: false,
       },
-      metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
-      alternates: {
-        canonical: "/",
-        languages: {
-          "zh-CN": "/zh",
-          "en-US": "/en",
-        },
-      },
+      metadataBase: getMetadataBase(),
+      alternates: buildLocalizedAlternates(locale, "/"),
       openGraph: {
         type: "website",
-        locale: locale,
-        url: "/",
+        locale,
+        url: getLocalizedPath(locale, "/"),
         siteName: "PicArt",
         title: "PicArt",
         description: "A modern image sharing platform",
-        images: [
-          {
-            url: "/og-image.png",
-            width: 1200,
-            height: 630,
-            alt: "PicArt",
-          },
-        ],
       },
       twitter: {
         card: "summary_large_image",
         title: "PicArt",
         description: "A modern image sharing platform",
-        images: ["/og-image.png"],
         creator: "@picart",
       },
       robots: {
@@ -92,24 +146,19 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
     };
   }
 
-  // 从 API 配置生成 SEO 元数据
-  const keywords = [
+  const keywords = splitKeywords([
     config.site_keywords,
     config.seo_home_keywords,
     config.seo_long_tail_keywords,
-  ]
-    .filter(Boolean)
-    .join(", ")
-    .split(",")
-    .map((k) => k.trim())
-    .filter(Boolean);
+  ]);
 
   return {
     title: {
-      default: `${config.site_name} | ${config.site_subtitle}` || "PicArt",
+      default: `${config.site_name || "PicArt"} | ${config.site_subtitle || "PicArt"}`,
       template: `%s | ${config.site_name || "PicArt"}`,
     },
-    description: config.site_description || config.site_subtitle || "A modern image sharing platform",
+    description:
+      config.site_description || config.site_subtitle || "A modern image sharing platform",
     keywords: keywords.length > 0 ? keywords : undefined,
     authors: [{ name: config.site_name || "PicArt Team" }],
     creator: config.site_name || "PicArt",
@@ -119,36 +168,32 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
       address: false,
       telephone: false,
     },
-    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
-    alternates: {
-      canonical: "/",
-      languages: {
-        "zh-CN": "/zh",
-        "en-US": "/en",
-      },
-    },
+    metadataBase: getMetadataBase(),
+    alternates: buildLocalizedAlternates(locale, "/"),
     openGraph: {
       type: "website",
-      locale: locale,
-      url: "/",
+      locale,
+      url: getLocalizedPath(locale, "/"),
       siteName: config.site_name || "PicArt",
       title: config.site_name || "PicArt",
-      description: config.site_description || config.site_subtitle || "A modern image sharing platform",
+      description:
+        config.site_description || config.site_subtitle || "A modern image sharing platform",
       images: config.site_logo
         ? [
-          {
-            url: config.site_logo,
-            width: 1200,
-            height: 630,
-            alt: config.site_name || "PicArt",
-          },
-        ]
+            {
+              url: config.site_logo,
+              width: 1200,
+              height: 630,
+              alt: config.site_name || "PicArt",
+            },
+          ]
         : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: config.site_name || "PicArt",
-      description: config.site_description || config.site_subtitle || "A modern image sharing platform",
+      description:
+        config.site_description || config.site_subtitle || "A modern image sharing platform",
       images: config.site_logo ? [config.site_logo] : undefined,
       creator: `@${config.site_name?.toLowerCase() || "picart"}`,
     },
@@ -176,244 +221,249 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
 }
 
 /**
- * 生成文章页面 SEO 元数据
+ * Generate article metadata.
  */
 export async function generateArticleMetadata(
   article: ArticleDetail | undefined | null,
-  locale: string = "zh"
+  locale: string = "zh",
 ): Promise<Metadata> {
   const config = await getPublicConfig();
   const siteName = config?.site_name || "PicArt";
 
-  // 如果文章不存在，返回基本的站点元数据
   if (!article) {
     return generateSiteMetadata(locale);
   }
 
-  const keywords = [
-    ...(article?.tags?.map((tag) => tag.name) || []),
+  const keywords = splitKeywords([
+    ...(article.tags?.map((tag) => tag.name) || []),
     config?.seo_article_page_keywords,
     config?.seo_long_tail_keywords,
-  ]
-    .filter(Boolean)
-    .join(", ")
-    .split(",")
-    .map((k) => k.trim())
-    .filter(Boolean);
+  ]);
+  const path = `/article/${article.id}`;
+  const description = article.summary || config?.site_description || "";
 
   return {
     title: article.title,
-    description: article.summary || config?.site_description || "",
+    description,
     keywords: keywords.length > 0 ? keywords : undefined,
-    authors: article.author ? [{ name: article.author.nickname || article.author.username }] : undefined,
+    authors: article.author
+      ? [{ name: article.author.nickname || article.author.username }]
+      : undefined,
+    alternates: buildLocalizedAlternates(locale, path),
     openGraph: {
       type: "article",
-      locale: locale,
-      siteName: siteName,
+      locale,
+      siteName,
+      url: getLocalizedPath(locale, path),
       title: article.title,
-      description: article.summary || "",
+      description,
       images: article.cover
         ? [
-          {
-            url: article.cover,
-            width: 1200,
-            height: 630,
-            alt: article.title,
-          },
-        ]
+            {
+              url: article.cover,
+              width: 1200,
+              height: 630,
+              alt: article.title,
+            },
+          ]
         : undefined,
       publishedTime: article.createdAt,
     },
     twitter: {
       card: "summary_large_image",
       title: article.title,
-      description: article.summary || "",
+      description,
       images: article.cover ? [article.cover] : undefined,
     },
   };
 }
 
 /**
- * 生成作者页面 SEO 元数据
+ * Generate author metadata.
  */
 export async function generateAuthorMetadata(
   author: UserDetail,
-  locale: string = "zh"
+  locale: string = "zh",
 ): Promise<Metadata> {
   const config = await getPublicConfig();
   const siteName = config?.site_name || "PicArt";
+  const path = `/account/${author.id}`;
 
-  const keywords = [config?.seo_author_page_keywords, config?.seo_long_tail_keywords]
-    .filter(Boolean)
-    .join(", ")
-    .split(",")
-    .map((k) => k.trim())
-    .filter(Boolean);
+  const keywords = splitKeywords([
+    config?.seo_author_page_keywords,
+    config?.seo_long_tail_keywords,
+  ]);
+  const title = author.nickname || author.username;
+  const description = author.description || `${title} personal profile`;
 
   return {
-    title: `${author?.nickname || author?.username}`,
-    description: author.description || `${author?.nickname || author?.nickname} 的个人主页`,
+    title,
+    description,
     keywords: keywords.length > 0 ? keywords : undefined,
+    alternates: buildLocalizedAlternates(locale, path),
     openGraph: {
       type: "profile",
-      locale: locale,
-      siteName: siteName,
-      title: author?.nickname || author?.username,
-      description: author?.description || "",
-      images: author?.avatar
+      locale,
+      siteName,
+      url: getLocalizedPath(locale, path),
+      title,
+      description,
+      images: author.avatar
         ? [
-          {
-            url: author?.avatar,
-            width: 400,
-            height: 400,
-            alt: author?.nickname || author?.username,
-          },
-        ]
+            {
+              url: author.avatar,
+              width: 400,
+              height: 400,
+              alt: title,
+            },
+          ]
         : undefined,
     },
     twitter: {
       card: "summary",
-      title: author.nickname || author.username,
-      description: author.description || "",
+      title,
+      description,
       images: author.avatar ? [author.avatar] : undefined,
     },
   };
 }
 
 /**
- * 生成话题页面 SEO 元数据
+ * Generate topic index metadata.
  */
-export async function generateTopicMetadata(locale: string = "zh"): Promise<Metadata> {
+export async function generateTopicMetadata(
+  locale: string = "zh",
+): Promise<Metadata> {
   const config = await getPublicConfig();
   const siteName = config?.site_name || "PicArt";
+  const path = "/topic";
 
-  const keywords = [
+  const keywords = splitKeywords([
     config?.site_keywords,
     config?.seo_long_tail_keywords,
-  ]
-    .filter(Boolean)
-    .join(", ")
-    .split(",")
-    .map((k) => k.trim())
-    .filter(Boolean);
+  ]);
 
   const title = locale === "zh" ? "推荐话题" : "Recommended Topics";
-  const description = locale === "zh"
-    ? "浏览和关注感兴趣的话题，发现更多精彩内容"
-    : "Browse and follow topics of interest, discover more exciting content";
+  const description =
+    locale === "zh"
+      ? "浏览和关注感兴趣的话题，发现更多精彩内容"
+      : "Browse and follow topics of interest, discover more exciting content";
 
   return {
-    title: title,
-    description: description,
+    title,
+    description,
     keywords: keywords.length > 0 ? keywords : undefined,
+    alternates: buildLocalizedAlternates(locale, path),
     openGraph: {
       type: "website",
-      locale: locale,
-      siteName: siteName,
-      title: title,
-      description: description,
+      locale,
+      siteName,
+      url: getLocalizedPath(locale, path),
+      title,
+      description,
     },
     twitter: {
       card: "summary",
-      title: title,
-      description: description,
+      title,
+      description,
     },
   };
 }
 
 /**
- * 生成话题详情页面 SEO 元数据
+ * Generate topic detail metadata.
  */
 export async function generateTagMetadata(
   tag: TagDetail,
-  locale: string = "zh"
+  locale: string = "zh",
 ): Promise<Metadata> {
   const config = await getPublicConfig();
   const siteName = config?.site_name || "PicArt";
+  const path = `/topic/${tag.id}`;
 
-  const keywords = [
+  const keywords = splitKeywords([
     tag.name,
     config?.site_keywords,
     config?.seo_long_tail_keywords,
-  ]
-    .filter(Boolean)
-    .join(", ")
-    .split(",")
-    .map((k) => k.trim())
-    .filter(Boolean);
-
+  ]);
   const title = `#${tag.name}`;
-  const description = tag.description || `${tag.articleCount || 0} 篇文章 · ${tag.followCount || 0} 人关注`;
+  const description =
+    tag.description || `${tag.articleCount || 0} articles · ${tag.followCount || 0} followers`;
 
   return {
-    title: title,
-    description: description,
+    title,
+    description,
     keywords: keywords.length > 0 ? keywords : undefined,
+    alternates: buildLocalizedAlternates(locale, path),
     openGraph: {
       type: "website",
-      locale: locale,
-      siteName: siteName,
-      title: title,
-      description: description,
+      locale,
+      siteName,
+      url: getLocalizedPath(locale, path),
+      title,
+      description,
       images: tag.cover || tag.avatar
         ? [
-          {
-            url: tag.cover || tag.avatar,
-            width: 1200,
-            height: 630,
-            alt: tag.name,
-          },
-        ]
+            {
+              url: tag.cover || tag.avatar,
+              width: 1200,
+              height: 630,
+              alt: tag.name,
+            },
+          ]
         : undefined,
     },
     twitter: {
       card: "summary_large_image",
-      title: title,
-      description: description,
+      title,
+      description,
       images: tag.cover || tag.avatar ? [tag.cover || tag.avatar] : undefined,
     },
   };
 }
 
-
 /**
- * 生成发布帖子页面 SEO 元数据
+ * Generate create post metadata.
  */
-
-export async function generateCreatePostMetadata(locale: string = "zh"): Promise<Metadata> {
+export async function generateCreatePostMetadata(
+  locale: string = "zh",
+): Promise<Metadata> {
   const config = await getPublicConfig();
   const siteName = config?.site_name || "PicArt";
+  const path = "/create/post";
 
-  const keywords = [
+  const keywords = splitKeywords([
     config?.site_keywords,
     config?.seo_long_tail_keywords,
-  ]
-    .filter(Boolean)
-    .join(", ")
-    .split(",")
-    .map((k) => k.trim())
-    .filter(Boolean);
+  ]);
 
   const title = locale === "zh" ? "发布帖子" : "Create Post";
-  const description = locale === "zh"
-    ? "发布你自己的帖子，与他人分享你的创作"
-    : "Create your own post, share your creativity with others";
+  const description =
+    locale === "zh"
+      ? "发布你的帖子，与他人分享你的创作"
+      : "Create your own post and share your creativity with others";
 
   return {
-    title: title,
-    description: description,
+    title,
+    description,
     keywords: keywords.length > 0 ? keywords : undefined,
+    alternates: buildLocalizedAlternates(locale, path),
+    robots: {
+      index: false,
+      follow: false,
+    },
     openGraph: {
       type: "website",
-      locale: locale,
-      siteName: siteName,
-      title: title,
-      description: description,
+      locale,
+      siteName,
+      url: getLocalizedPath(locale, path),
+      title,
+      description,
     },
     twitter: {
       card: "summary",
-      title: title,
-      description: description,
+      title,
+      description,
     },
   };
 }

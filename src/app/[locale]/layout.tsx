@@ -6,7 +6,11 @@ import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { NotificationContainer } from "@/components/shared";
-import { generateSiteMetadata } from "@/lib/seo";
+import {
+  generateSiteMetadata,
+  getPublicCategories,
+  getPublicConfig,
+} from "@/lib/seo";
 import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
 import { AuthRouteGuard } from "@/components/providers/AuthRouteGuard";
 import { UserStateProvider } from "@/components/providers/UserStateProvider";
@@ -65,7 +69,7 @@ export default async function LocaleLayout({
       initialTokenPreview: initialToken ? `${initialToken.slice(0, 12)}...` : null,
       deviceId,
       locale,
-      dynamic,
+      dynamicMode: "force-dynamic",
     });
 
     console.log("[auth][layout] SSR request headers snapshot", {
@@ -80,14 +84,10 @@ export default async function LocaleLayout({
       ...getAuthDebugSnapshot(requestHeaders),
     });
   }
-  const category = await serverApi.categoryControllerFindAll({
-    query: { limit: 100 },
-    next: { revalidate: 0 },
-  });
+  const categories = await getPublicCategories();
 
   if (process.env.NODE_ENV === "development") {
     console.log("[auth][layout] category request end", {
-      status: category.response.status,
       ...getAuthDebugSnapshot(requestHeaders),
     });
   }
@@ -97,16 +97,13 @@ export default async function LocaleLayout({
       ...getAuthDebugSnapshot(requestHeaders),
     });
   }
-  const { data } = await serverApi.configControllerGetPublicConfigs({
-    next: { revalidate: 0 },
-  });
+  const config = await getPublicConfig();
 
   if (process.env.NODE_ENV === "development") {
     console.log("[auth][layout] public-config request end", {
       ...getAuthDebugSnapshot(requestHeaders),
     });
   }
-  const config = data?.data ?? null;
   let initialUser: UserProfile | null = null;
 
   if (initialToken) {
@@ -160,7 +157,7 @@ export default async function LocaleLayout({
           initialConfig={config}
         >
           <AuthRouteGuard />
-          <Header categories={category.data?.data.data} />
+          <Header categories={categories} />
           <div className="flex flex-1 flex-col min-h-screen">{children}</div>
           <NotificationContainer />
         </UserStateProvider>
