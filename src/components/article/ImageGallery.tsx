@@ -39,7 +39,7 @@ export function ImageGallery({
     return (
       <>
         <div
-          className="relative w-full cursor-pointer overflow-hidden rounded-xl group aspect-[4/3]"
+          className="relative w-full cursor-pointer overflow-hidden rounded-xl group"
           onClick={() => {
             setActiveIndex(0);
             setViewerVisible(true);
@@ -81,7 +81,7 @@ export function ImageGallery({
           <button
             type="button"
             aria-label={t("scrollThumbnailsLeft")}
-            className="absolute left-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 disabled:pointer-events-none disabled:opacity-35"
+            className="absolute left-2 top-1/2 z-8 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 disabled:pointer-events-none disabled:opacity-35"
             onClick={() => thumbsSwiper?.slidePrev()}
             disabled={!thumbCanScrollPrev}
           >
@@ -109,7 +109,7 @@ export function ImageGallery({
                 style={{ width: "128px", height: "128px" }}
                 className="shrink-0"
               >
-                <div className="relative h-full w-full cursor-pointer overflow-hidden rounded-lg border-2 border-gray-200 transition-colors hover:border-blue-500">
+                <div className="relative h-full w-full cursor-pointer overflow-hidden rounded-lg border-2 border-gray-200 transition-colors hover:border-primary">
                   <ImageWithFallback
                     src={image}
                     fill
@@ -126,7 +126,7 @@ export function ImageGallery({
           <button
             type="button"
             aria-label={t("scrollThumbnailsRight")}
-            className="absolute right-2 top-1/2 z-10 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 disabled:pointer-events-none disabled:opacity-35"
+            className="absolute right-2 top-1/2 z-8 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 disabled:pointer-events-none disabled:opacity-35"
             onClick={() => thumbsSwiper?.slideNext()}
             disabled={!thumbCanScrollNext}
           >

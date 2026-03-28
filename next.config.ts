@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "cf-s3.coslark.org" },
       { protocol: "https", hostname: "cf-s3.onecos.cc" },
       { protocol: "https", hostname: "image.acg.lol" },
+      { protocol: "https", hostname: "upload-os-bbs.hoyolab.com" },
       // 生产环境用到的域名逐一加上
     ],
     qualities: [75, 95],
