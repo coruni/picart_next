@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Check, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -101,7 +101,7 @@ export const Select = ({
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         className={cn(
-          "w-full h-10 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer",
+          "w-full h-10 rounded-lg border border-border cursor-pointer",
           "px-3 py-2 text-sm text-left",
           "focus:outline-none focus:ring-primary focus:border-primary",
           "hover:border-primary transition-colors",

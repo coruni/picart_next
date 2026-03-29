@@ -379,7 +379,14 @@
   "messageDropdown": {
     "cleanMessages": "全部标记为已读",
     "notificationSettings": "消息通知设置",
-    "noMessages": "暂无消息"
+    "noMessages": "暂无消息",
+    "untitled": "未命名消息",
+    "tabs": {
+      "all": "全部",
+      "notification": "通知",
+      "private": "私信",
+      "system": "系统"
+    }
   },
   "articleDetail": {
     "pageTitle": "帖子详情",

@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BrushCleaning, MessageCircle, Settings } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { messageControllerFindAll, messageControllerMarkAllAsRead } from "@/api";
@@ -11,6 +11,8 @@ import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { MessageList } from "@/types";
 import { cn } from "@/lib";
+
+type MessageTab = "all" | "notification" | "private" | "system";
 
 export function MessageDropdown({
   isTransparentBgPage,
@@ -24,15 +26,32 @@ export function MessageDropdown({
   const tSidebar = useTranslations("sidebar");
   const tMsg = useTranslations("messageDropdown");
   const [messages, setMessages] = useState<MessageList>([]);
+  const [selectedTab, setSelectedTab] = useState<MessageTab>("all");
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [page] = useState(1);
   const [limit] = useState(10);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
 
+  const tabs: Array<{ value: MessageTab; label: string }> = [
+    { value: "all", label: tMsg("tabs.all") },
+    { value: "notification", label: tMsg("tabs.notification") },
+    { value: "private", label: tMsg("tabs.private") },
+    { value: "system", label: tMsg("tabs.system") },
+  ];
+
   useEffect(() => {
     setMessages([]);
+    setSelectedTab("all");
   }, [isAuthenticated]);
+
+  const filteredMessages = useMemo(() => {
+    if (selectedTab === "all") {
+      return messages;
+    }
+
+    return messages.filter((message) => message.type === selectedTab);
+  }, [messages, selectedTab]);
 
   const fetchMessages = async () => {
     if (!isAuthenticated || isLoading) return;
@@ -45,8 +64,9 @@ export function MessageDropdown({
           limit,
         },
       });
-      setMessages(data?.data.data || []);
-      setUnreadCount(data?.data?.data?.length || 0);
+      const nextMessages = data?.data.data || [];
+      setMessages(nextMessages);
+      setUnreadCount(nextMessages.filter((message) => !message.isRead).length);
     } catch (error) {
       console.error("Failed to fetch messages:", error);
     } finally {
@@ -61,7 +81,9 @@ export function MessageDropdown({
   };
 
   const handleCleanMessage = async () => {
-    await messageControllerMarkAllAsRead({ body: {} });
+    await messageControllerMarkAllAsRead({
+      body: selectedTab === "all" ? {} : { type: selectedTab },
+    });
     await fetchMessages();
   };
 
@@ -107,12 +129,34 @@ export function MessageDropdown({
         {isAuthenticated ? (
           <>
             <div className="max-h-96 overflow-y-auto">
+              <div className="sticky top-0 z-10 border-y border-border bg-card/95 px-4 backdrop-blur">
+                <div className="flex items-center gap-5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.value}
+                      type="button"
+                      onClick={() => setSelectedTab(tab.value)}
+                      className={cn(
+                        "relative shrink-0 pb-3 pt-3 text-sm font-medium transition-colors",
+                        selectedTab === tab.value
+                          ? "text-foreground"
+                          : "text-secondary hover:text-foreground",
+                      )}
+                    >
+                      {tab.label}
+                      {selectedTab === tab.value && (
+                        <span className="absolute bottom-0 left-0 right-0 mx-auto h-1 w-1/2 rounded-full bg-primary" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
               {isLoading ? (
                 <div className="px-4 py-8 text-center text-sm text-muted-foreground">
                   {tCommon("loading")}
                 </div>
-              ) : messages.length > 0 ? (
-                messages.map((message) => (
+              ) : filteredMessages.length > 0 ? (
+                filteredMessages.map((message) => (
                   <GuardedLink
                     key={message.id}
                     href={`/messages/${message.id}`}
@@ -120,13 +164,13 @@ export function MessageDropdown({
                   >
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900">
                       <span className="text-sm font-semibold text-primary-600 dark:text-primary-400">
-                        {message.id}
+                        {message.type?.slice(0, 1)?.toUpperCase() ?? "M"}
                       </span>
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="mb-1 flex items-center justify-between">
                         <p className="truncate text-sm font-medium text-foreground">
-                          {message.id}
+                          {message.title || tMsg("untitled")}
                         </p>
                         <span className="text-xs text-muted-foreground">
                           {message.createdAt}

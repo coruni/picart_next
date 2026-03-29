@@ -85,6 +85,7 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
 
   applyCanvasLayout();
   applyNavigationButtonLayout();
+  const hasMultipleImages = totalImages > 1;
 
   if (!container.querySelector(".custom-close-btn")) {
     const closeButton = document.createElement("button");
@@ -144,7 +145,11 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
   }
   syncToolbarState();
 
-  if (!container.querySelector(".custom-prev-btn")) {
+  if (!hasMultipleImages) {
+    container.querySelectorAll(".custom-prev-btn, .custom-next-btn, .custom-thumbnail-column").forEach((node) => node.remove());
+  }
+
+  if (hasMultipleImages && !container.querySelector(".custom-prev-btn")) {
     const prevButton = document.createElement("button");
     prevButton.className = "custom-prev-btn";
     prevButton.innerHTML = renderIcon(ChevronLeft, "", 28);
@@ -183,7 +188,7 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     container.appendChild(prevButton);
   }
 
-  if (!container.querySelector(".custom-next-btn")) {
+  if (hasMultipleImages && !container.querySelector(".custom-next-btn")) {
     const nextButton = document.createElement("button");
     nextButton.className = "custom-next-btn";
     nextButton.innerHTML = renderIcon(ChevronRight, "", 28);
@@ -222,7 +227,7 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     container.appendChild(nextButton);
   }
 
-  if (!container.querySelector(".custom-thumbnail-column")) {
+  if (hasMultipleImages && !container.querySelector(".custom-thumbnail-column")) {
     const thumbnailColumn = document.createElement("div");
     thumbnailColumn.className = "custom-thumbnail-column";
 
@@ -334,23 +339,27 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     zoomDisplay.dataset.tooltip = labels.zoomRatio;
     zoomDisplay.innerHTML = `<span>${getZoomPercentage()}</span>`;
 
-    toolbar.appendChild(
-      createToolbarButton(
-        "custom-toolbar-prev",
-        labels.prev,
-        renderIcon(ChevronLeft, "", 18),
-        () => viewer.prev(),
-      ),
-    );
+    if (hasMultipleImages) {
+      toolbar.appendChild(
+        createToolbarButton(
+          "custom-toolbar-prev",
+          labels.prev,
+          renderIcon(ChevronLeft, "", 18),
+          () => viewer.prev(),
+        ),
+      );
+    }
     toolbar.appendChild(indexDisplay);
-    toolbar.appendChild(
-      createToolbarButton(
-        "custom-toolbar-next",
-        labels.next,
-        renderIcon(ChevronRight, "", 18),
-        () => viewer.next(),
-      ),
-    );
+    if (hasMultipleImages) {
+      toolbar.appendChild(
+        createToolbarButton(
+          "custom-toolbar-next",
+          labels.next,
+          renderIcon(ChevronRight, "", 18),
+          () => viewer.next(),
+        ),
+      );
+    }
     toolbar.appendChild(
       createToolbarButton(
         "custom-toolbar-zoom-out",

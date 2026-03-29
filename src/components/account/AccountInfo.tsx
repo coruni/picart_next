@@ -29,6 +29,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
   const localUserId = useUserStore((state) => state.user)?.id;
   const isSelf = user.id === localUserId;
   const [showBackgroundEditor, setShowBackgroundEditor] = useState(false);
+  const [showEditMenu, setShowEditMenu] = useState(false);
 
   const handleToDecoration = () => {
     router.push({
@@ -112,7 +113,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
           <div
             className={cn(
               "relative flex min-w-0 items-center gap-2 transition-transform duration-250 ease-out md:gap-3",
-              !scrolled ? "-translate-y-10 md:-translate-y-14" : "",
+              !scrolled ? "-translate-y-12 md:-translate-y-14" : "",
             )}
           >
             {!isSelf ? (
@@ -145,7 +146,13 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                 </button>
 
                 <div className="group/edit relative">
-                  <div
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (isMobile) {
+                        setShowEditMenu((prev) => !prev);
+                      }
+                    }}
                     className={cn(
                       "flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 text-xs text-white hover:text-primary md:h-9 md:gap-2 md:px-4 md:text-sm",
                       !scrolled
@@ -156,12 +163,25 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                     {t("edit")}
                     <ChevronDown
                       size={16}
-                      className="transition group-hover/edit:rotate-180"
+                      className={cn(
+                        "transition md:group-hover/edit:rotate-180",
+                        isMobile && showEditMenu ? "rotate-180" : "",
+                      )}
                     />
-                  </div>
+                  </button>
 
-                  <div className="invisible absolute top-full right-0 z-20 mt-2 w-40 rounded-xl bg-card p-2 opacity-0 drop-shadow-xl transition-all group-hover/edit:visible group-hover/edit:opacity-100">
+                  <div
+                    className={cn(
+                      "absolute top-full right-0 z-20 mt-2 w-40 rounded-xl bg-card p-2 drop-shadow-xl transition-all",
+                      isMobile
+                        ? showEditMenu
+                          ? "visible opacity-100"
+                          : "invisible opacity-0 pointer-events-none"
+                        : "invisible opacity-0 group-hover/edit:visible group-hover/edit:opacity-100",
+                    )}
+                  >
                     <GuardedLink
+                      onClick={() => setShowEditMenu(false)}
                       className="flex cursor-pointer items-center gap-2 rounded-xl p-2 text-sm transition-colors hover:bg-primary/15 hover:text-primary"
                       href={`/account/${user.id}/edit`}
                     >
@@ -169,7 +189,10 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                     </GuardedLink>
                     <div
                       className="flex cursor-pointer items-center gap-2 rounded-xl p-2 text-sm transition-colors hover:bg-primary/15 hover:text-primary"
-                      onClick={() => setShowBackgroundEditor(true)}
+                      onClick={() => {
+                        setShowEditMenu(false);
+                        setShowBackgroundEditor(true);
+                      }}
                     >
                       <span>{t("editBackground")}</span>
                     </div>

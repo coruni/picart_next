@@ -380,7 +380,14 @@
   "messageDropdown": {
     "cleanMessages": "Mark all as read",
     "notificationSettings": "Notification settings",
-    "noMessages": "No messages"
+    "noMessages": "No messages",
+    "untitled": "Untitled message",
+    "tabs": {
+      "all": "All",
+      "notification": "Notifications",
+      "private": "Private",
+      "system": "System"
+    }
   },
   "articleDetail": {
     "pageTitle": "Post Detail",
