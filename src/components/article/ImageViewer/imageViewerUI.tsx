@@ -86,6 +86,9 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
   applyCanvasLayout();
   applyNavigationButtonLayout();
   const hasMultipleImages = totalImages > 1;
+  const isMobileViewport =
+    typeof window !== "undefined" &&
+    window.matchMedia("(max-width: 767px)").matches;
 
   if (!container.querySelector(".custom-close-btn")) {
     const closeButton = document.createElement("button");
@@ -146,10 +149,24 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
   syncToolbarState();
 
   if (!hasMultipleImages) {
-    container.querySelectorAll(".custom-prev-btn, .custom-next-btn, .custom-thumbnail-column").forEach((node) => node.remove());
+    container
+      .querySelectorAll(
+        ".custom-prev-btn, .custom-next-btn, .custom-thumbnail-column",
+      )
+      .forEach((node) => node.remove());
   }
 
-  if (hasMultipleImages && !container.querySelector(".custom-prev-btn")) {
+  if (isMobileViewport) {
+    container
+      .querySelectorAll(".custom-prev-btn, .custom-next-btn")
+      .forEach((node) => node.remove());
+  }
+
+  if (
+    hasMultipleImages &&
+    !isMobileViewport &&
+    !container.querySelector(".custom-prev-btn")
+  ) {
     const prevButton = document.createElement("button");
     prevButton.className = "custom-prev-btn";
     prevButton.innerHTML = renderIcon(ChevronLeft, "", 28);
@@ -188,7 +205,11 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     container.appendChild(prevButton);
   }
 
-  if (hasMultipleImages && !container.querySelector(".custom-next-btn")) {
+  if (
+    hasMultipleImages &&
+    !isMobileViewport &&
+    !container.querySelector(".custom-next-btn")
+  ) {
     const nextButton = document.createElement("button");
     nextButton.className = "custom-next-btn";
     nextButton.innerHTML = renderIcon(ChevronRight, "", 28);
