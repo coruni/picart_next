@@ -11,7 +11,7 @@ export function ThemeSwitcher() {
     <select
       value={theme}
       onChange={(e) => setTheme(e.target.value as "light" | "dark" | "system")}
-      className="px-3 py-2 border rounded-md bg-white dark:bg-gray-800"
+      className="px-3 py-2 border rounded-md bg-white "
     >
       <option value="light">{t("light")}</option>
       <option value="dark">{t("dark")}</option>

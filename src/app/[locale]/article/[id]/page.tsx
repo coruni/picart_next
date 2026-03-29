@@ -63,7 +63,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
   return (
     <div className="page-container">
       <div className="left-container " data-auto-translate-article-detail>
-        <div className="top-header px-4 h-14 flex items-center border-b rounded-t-xl border-border sticky bg-white dark:bg-gray-800 z-15">
+        <div className="top-header px-4 h-14 flex items-center border-b rounded-t-xl border-border sticky bg-card  z-15">
           <div className="h-full flex-1 flex items-center">
             <span className="font-bold text-base pr-6">{t("pageTitle")}</span>
           </div>
@@ -98,7 +98,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               {article?.title}
             </h1>
           </div>
-          <div className="top-header-tabs mt-4 h-14 sticky z-10 bg-white dark:bg-gray-800">
+          <div className="top-header-tabs mt-4 h-14 sticky z-10 bg-card ">
             <ArticleAuthor
               author={article?.author}
               createdAt={article?.createdAt}

@@ -1,11 +1,11 @@
-import { ReactNode } from "react";
-import { notFound } from "next/navigation";
-import { Metadata } from "next";
-import { generateTagMetadata } from "@/lib/seo";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { TopicInfo, TopicTabs } from "@/components/topic";
+import { generateTagMetadata } from "@/lib/seo";
 import { serverApi } from "@/lib/server-api";
-import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
+import { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { ReactNode } from "react";
 interface TopicDetailLayoutProps {
     children: ReactNode;
     params: Promise<{ id: string; locale: string }>;
@@ -47,7 +47,7 @@ export default async function TopicDetailLayout({ children, params }: TopicDetai
             </div>
 
             {/* 页面内容 */}
-            <div className="mt-75 w-full z-10 relative bg-border dark:bg-gray-800">
+            <div className="mt-75 w-full z-10 relative bg-border ">
                 {/* 标签信息 */}
                 <TopicInfo tag={tag} isFollowed={tag.isFollowed} />
                 {/* 子页面内容 */}

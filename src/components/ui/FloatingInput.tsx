@@ -1,7 +1,7 @@
 "use client";
 
-import { forwardRef, useState, type InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
+import { forwardRef, useState, type InputHTMLAttributes } from "react";
 
 /**
  * 浮动标签输入框组件属性接口
@@ -62,7 +62,7 @@ const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
           ref={ref}
           value={value ?? ""}
           className={cn(
-            "peer w-full h-12 rounded-lg border bg-white dark:bg-gray-800 px-3 pt-4 pb-1 text-base",
+            "peer w-full h-12 rounded-lg border bg-white  px-3 pt-4 pb-1 text-base",
             "placeholder:text-transparent",
             "focus:outline-none focus:ring-1 focus:ring-offset-0",
             "disabled:cursor-not-allowed disabled:opacity-50",
@@ -99,3 +99,4 @@ const FloatingInput = forwardRef<HTMLInputElement, FloatingInputProps>(
 FloatingInput.displayName = "FloatingInput";
 
 export { FloatingInput };
+

@@ -1,8 +1,7 @@
 ﻿"use client";
 
+import { routing, usePathname, useRouter } from "@/i18n/routing";
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter, usePathname } from "@/i18n/routing";
-import { routing } from "@/i18n/routing";
 
 export function LanguageSwitcher() {
   const locale = useLocale();
@@ -18,7 +17,7 @@ export function LanguageSwitcher() {
     <select
       value={locale}
       onChange={(e) => handleChange(e.target.value)}
-      className="px-3 py-2 border rounded-md bg-white dark:bg-gray-800"
+      className="px-3 py-2 border rounded-md bg-white "
     >
       {routing.locales.map((loc) => (
         <option key={loc} value={loc}>

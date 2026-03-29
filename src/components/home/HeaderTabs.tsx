@@ -119,19 +119,20 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
                             href={channelHref}
                             className="flex h-10 items-center gap-3 rounded-lg p-1 px-2 transition-colors hover:bg-primary/15 hover:text-primary dark:hover:bg-gray-700"
                           >
-                            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-lg">
+                            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full ring-1 ring-black/5">
                               {channel.avatar ? (
                                 <Image
                                   src={channel.avatar}
                                   alt={channel.name}
                                   width={32}
                                   height={32}
+                                  quality={95}
                                   loading="eager"
-                                  sizes="32px"
-                                  className="h-full w-full object-cover"
+                                  sizes="(max-width: 768px) 32px, 40px"
+                                  className="h-full w-full rounded-full object-cover"
                                 />
                               ) : (
-                                <div className="size-8 bg-primary/15" />
+                                <div className="size-8 rounded-full bg-primary/15" />
                               )}
                             </div>
                             <span className="text-sm font-medium">
