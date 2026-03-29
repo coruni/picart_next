@@ -110,32 +110,6 @@ export function SearchBox({
     [categories],
   );
 
-  useEffect(() => {
-    if (defaultCategoryId == null) {
-      setSelectedCategory(undefined);
-      return;
-    }
-
-    const matchedCategory = menuItems.find(
-      (category) => String(category.id) === String(defaultCategoryId),
-    );
-    setSelectedCategory(matchedCategory);
-  }, [defaultCategoryId, menuItems]);
-
-  // 默认选中第一个分类或“全部”
-  const currentCategory = selectedCategory || {
-    id: 0,
-    name: t("all"),
-    avatar: "/placeholder/menu.png",
-    description: t("searchAll"),
-  };
-  const currentHotSearchKeyword = hotSearches[currentHotSearchIndex] || "";
-  const shouldShowAnimatedPlaceholder =
-    !placeholder && !searchQuery.trim() && Boolean(currentHotSearchKeyword);
-  const effectivePlaceholder = shouldShowAnimatedPlaceholder
-    ? ""
-    : placeholder || t("search");
-
   // 搜索建议（防抖）
   const searchSuggestions = useCallback(
     debounce((query: string) => {
@@ -182,6 +156,55 @@ export function SearchBox({
     }, 500),
     [selectedCategory],
   );
+
+  useEffect(() => {
+    setSearchQuery(defaultValue);
+  }, [defaultValue]);
+
+  useEffect(() => {
+    if (!defaultValue.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    searchSuggestions(defaultValue);
+  }, [defaultValue, searchSuggestions]);
+
+  useEffect(() => {
+    if (defaultCategoryId == null) {
+      setSelectedCategory(undefined);
+      return;
+    }
+
+    const matchedCategory = menuItems.find(
+      (category) => String(category.id) === String(defaultCategoryId),
+    );
+    setSelectedCategory(matchedCategory);
+  }, [defaultCategoryId, menuItems]);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      return;
+    }
+
+    searchSuggestions(searchQuery);
+  }, [searchQuery, searchSuggestions, selectedCategory?.id]);
+
+  // 默认选中第一个分类或“全部”
+  const currentCategory = selectedCategory || {
+    id: 0,
+    name: t("all"),
+    avatar: "/placeholder/menu.png",
+    description: t("searchAll"),
+  };
+  const currentHotSearchKeyword = hotSearches[currentHotSearchIndex] || "";
+  const shouldShowAnimatedPlaceholder =
+    !placeholder && !searchQuery.trim() && Boolean(currentHotSearchKeyword);
+  const effectivePlaceholder = shouldShowAnimatedPlaceholder
+    ? ""
+    : placeholder || t("search");
+
+
 
   // 清空搜索结果
   useEffect(() => {
@@ -327,6 +350,10 @@ export function SearchBox({
   const handleInputFocus = () => {
     setIsSearchPanelOpen(true);
     setIsDropdownOpen(false);
+    // 如果下拉面板已打开且已有数据，不再重复请求
+    if (searchQuery.trim() && !(searchResults.length > 0)) {
+      searchSuggestions(searchQuery);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
