@@ -1,18 +1,13 @@
 ﻿"use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import AvatarEditor from "react-avatar-editor";
+import { uploadControllerUploadFile, userControllerUpdate } from "@/api";
 import { Button } from "@/components/ui/Button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/Dialog";
-import { userControllerUpdate, uploadControllerUploadFile } from "@/api";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/Dialog";
+import { useRouter } from "@/i18n/routing";
 import type { UserDetail } from "@/types";
+import { useTranslations } from "next-intl";
+import { useRef, useState } from "react";
+import AvatarEditor from "react-avatar-editor";
 import { Avatar } from "../ui/Avatar";
 type BackgroundEditorProps = {
   user: UserDetail;
@@ -245,4 +240,3 @@ export const BackgroundEditor = ({
     </Dialog>
   );
 };
-

@@ -1,15 +1,16 @@
 ﻿"use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
-import { useTranslations } from "next-intl";
-import { ChevronDown, Search, Loader2 } from "lucide-react";
-import Image from "next/image";
-import { cn, debounce } from "@/lib/utils";
-import { CategoryList } from "@/types";
-import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { useClickOutside } from "@/hooks/useClickOutside";
-import { useRouter } from "@/i18n/routing";
 import { articleControllerSearch } from "@/api";
+import { useClickOutside } from "@/hooks/useClickOutside";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useRouter } from "@/i18n/routing";
+import { cn, debounce } from "@/lib/utils";
+import { useSearchStore } from "@/stores";
+import { CategoryList } from "@/types";
+import { ChevronDown, Loader2, Search } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 interface SearchResult {
   id: number;
@@ -17,16 +18,28 @@ interface SearchResult {
   cover?: string;
 }
 
-// 楂樹寒鍖归厤鏂囨湰
+export interface SearchBoxParams {
+  q: string;
+  category?: string;
+}
+
+// 高亮匹配文本
 function highlightText(text: string, query: string) {
   if (!query.trim()) return text;
 
-  const regex = new RegExp(`(${query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  const regex = new RegExp(
+    `(${query.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+    "gi",
+  );
   const parts = text.split(regex);
 
   return parts.map((part, index) => {
     if (part.toLowerCase() === query.trim().toLowerCase()) {
-      return <span key={index} className="text-primary">{part}</span>;
+      return (
+        <span key={index} className="text-primary">
+          {part}
+        </span>
+      );
     }
     return part;
   });
@@ -39,6 +52,10 @@ interface SearchBoxProps {
   placeholder?: string;
   className?: string;
   mobileVisible?: boolean;
+  block?: boolean;
+  defaultValue?: string;
+  defaultCategoryId?: string | number;
+  syncSearchStore?: boolean;
 }
 
 export function SearchBox({
@@ -48,6 +65,10 @@ export function SearchBox({
   placeholder,
   className,
   mobileVisible = false,
+  block = false,
+  defaultValue = "",
+  defaultCategoryId,
+  syncSearchStore = false,
 }: SearchBoxProps) {
   const t = useTranslations("common");
   const tSearch = useTranslations("searchBox");
@@ -57,16 +78,18 @@ export function SearchBox({
   >(undefined);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchPanelOpen, setIsSearchPanelOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(defaultValue);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchHistory, setSearchHistory] = useLocalStorage<string[]>(
     "searchHistory",
     [],
   );
+  const setSearchParams = useSearchStore((state) => state.setSearchParams);
 
   const searchBoxRef = useRef<HTMLDivElement>(null!);
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchAbortControllerRef = useRef<AbortController | null>(null);
 
   // Mock hot searches data - in real app this would come from API
   const hotSearches = tSearch.raw("hotSearches") as string[];
@@ -76,10 +99,25 @@ export function SearchBox({
     setIsSearchPanelOpen(false);
   });
 
-  // 鏋勫缓閫夋嫨鑿滃崟 - 杩囨护鎺夋湁閾炬帴鐨勫垎绫伙紝鍙樉绀哄彲鎼滅储鐨勫垎绫?
-  const menuItems = categories?.filter((category) => !category.link) || [];
+  // 构建选择菜单，只显示可搜索的分类
+  const menuItems = useMemo(
+    () => categories?.filter((category) => !category.link) || [],
+    [categories],
+  );
 
-  // 榛樿閫夋嫨绗竴涓垎绫绘垨"鍏ㄩ儴"
+  useEffect(() => {
+    if (defaultCategoryId == null) {
+      setSelectedCategory(undefined);
+      return;
+    }
+
+    const matchedCategory = menuItems.find(
+      (category) => String(category.id) === String(defaultCategoryId),
+    );
+    setSelectedCategory(matchedCategory);
+  }, [defaultCategoryId, menuItems]);
+
+  // 默认选中第一个分类或“全部”
   const currentCategory = selectedCategory || {
     id: 0,
     name: t("all"),
@@ -87,44 +125,76 @@ export function SearchBox({
     description: t("searchAll"),
   };
 
-  // 鎼滅储寤鸿锛堥槻鎶栵級
+  // 搜索建议（防抖）
   const searchSuggestions = useCallback(
     debounce((query: string) => {
       (async () => {
         if (!query.trim()) {
+          searchAbortControllerRef.current?.abort();
+          searchAbortControllerRef.current = null;
+          setIsSearching(false);
           setSearchResults([]);
           return;
         }
+
+        searchAbortControllerRef.current?.abort();
+        const abortController = new AbortController();
+        searchAbortControllerRef.current = abortController;
 
         setIsSearching(true);
         try {
           const response = await articleControllerSearch({
             query: {
               keyword: query.trim(),
-              limit: 3,
+              limit: 6,
               ...(selectedCategory?.id && { categoryId: selectedCategory.id }),
             },
+            signal: abortController.signal,
           });
+          if (searchAbortControllerRef.current !== abortController) {
+            return;
+          }
           setSearchResults(response?.data?.data?.data || []);
         } catch (error) {
+          if (abortController.signal.aborted) {
+            return;
+          }
           console.error("Search error:", error);
           setSearchResults([]);
         } finally {
-          setIsSearching(false);
+          if (searchAbortControllerRef.current === abortController) {
+            searchAbortControllerRef.current = null;
+            setIsSearching(false);
+          }
         }
       })();
-    }, 300),
+    }, 500),
     [selectedCategory],
   );
 
-  // 娓呯┖鎼滅储缁撴灉
+  // 清空搜索结果
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
     }
   }, [searchQuery]);
 
-  // 璺宠浆鍒版悳绱㈤〉闈?
+  useEffect(() => {
+    if (!syncSearchStore) return;
+
+    setSearchParams({
+      q: searchQuery.trim(),
+      ...(selectedCategory?.id && { category: String(selectedCategory.id) }),
+    });
+  }, [searchQuery, selectedCategory, setSearchParams, syncSearchStore]);
+
+  useEffect(() => {
+    return () => {
+      searchAbortControllerRef.current?.abort();
+    };
+  }, []);
+
+  // 跳转到搜索页面
   const goToSearchPage = useCallback(
     (query: string) => {
       if (!query.trim()) return;
@@ -136,7 +206,7 @@ export function SearchBox({
       ].slice(0, 10);
       setSearchHistory(newHistory);
 
-      // 璺宠浆鍒版悳绱㈤〉闈?
+      // 跳转到搜索页面
       const params = new URLSearchParams({ q: query.trim() });
       if (selectedCategory?.id) {
         params.set("category", String(selectedCategory.id));
@@ -147,7 +217,7 @@ export function SearchBox({
     [router, searchHistory, setSearchHistory, selectedCategory],
   );
 
-  // 璺宠浆鍒版枃绔犺鎯?
+  // 跳转到文章详情
   const goToArticle = useCallback(
     (articleId: number) => {
       router.push(`/article/${articleId}`);
@@ -205,13 +275,14 @@ export function SearchBox({
         className={cn(
           "relative group max-w-md h-9 w-full p-1 rounded-full transition-all flex items-center",
           "focus-within:ring-1 focus-within:ring-primary",
-          // 鏅€氶〉闈㈡牱寮?
+          block ? "w-full max-w-full" : "max-w-md",
+          // 普通页面样式
           (!isAccountPage || scrolled) && [
             "bg-[#f1f4f9] border border-border dark:bg-[#343746]",
             "hover:bg-card hover:border-primary hover:ring-1 hover:ring-primary",
             "focus-within:bg-card",
           ],
-          // Account 椤甸潰鏈粴鍔ㄦ椂鐨勯€忔槑鏍峰紡
+          // Account 页面未滚动时的透明样式
           isAccountPage &&
             !scrolled && [
               "bg-[#00000066] border border-[#ffffff66]",
@@ -220,7 +291,7 @@ export function SearchBox({
             ],
         )}
       >
-        {/* 閫夋嫨鑿滃崟 */}
+        {/* 选择菜单 */}
         <div className="flex items-center h-full">
           <button
             onClick={() => {
@@ -269,7 +340,7 @@ export function SearchBox({
           ></span>
         </div>
 
-        {/* 鎼滅储杈撳叆妗?*/}
+        {/* 搜索输入框 */}
         <input
           ref={inputRef}
           type="text"
@@ -282,12 +353,12 @@ export function SearchBox({
             "w-full h-full rounded-full transition-all px-2 bg-transparent border-none",
             "placeholder:text-secondary placeholder:text-xs text-xs text-black/80",
             "focus:outline-none",
-            // Account 椤甸潰鏈粴鍔ㄦ椂鐨勯€忔槑鏍峰紡
+            // Account 页面未滚动时的透明样式
             isAccountPage && !scrolled && ["placeholder:text-white/70"],
           )}
         />
 
-        {/* 鎼滅储鎸夐挳 */}
+        {/* 搜索按钮 */}
         <button
           onClick={() => searchQuery.trim() && handleSearch(searchQuery)}
           className={cn(
@@ -305,13 +376,13 @@ export function SearchBox({
           )}
         </button>
 
-        {/* 鎼滅储闈㈡澘 */}
+        {/* 搜索面板 */}
         {isSearchPanelOpen && (
           <div className="absolute top-full left-0 mt-2 w-full bg-card border border-border rounded-xl shadow-lg z-50 max-h-96 overflow-hidden">
             <div className="p-4">
               {!searchQuery ? (
                 <>
-                  {/* 鍘嗗彶鎼滅储 */}
+                  {/* 历史搜索 */}
                   {searchHistory.length > 0 && (
                     <div className="mb-6">
                       <div className="flex items-center justify-between mb-3">
@@ -338,7 +409,7 @@ export function SearchBox({
                       </div>
                     </div>
                   )}
-                  {/* 鐑棬鎼滅储 */}
+                  {/* 热门搜索 */}
                   <div>
                     <h3 className="text-sm font-medium text-foreground mb-3">
                       {t("hotSearches")}
@@ -355,7 +426,7 @@ export function SearchBox({
                       ))}
                     </div>
                   </div>
-                  {/* 鏃犳悳绱㈠巻鍙叉椂鐨勬彁绀?*/}
+                  {/* 没有搜索历史时的提示 */}
                   {searchHistory.length === 0 && (
                     <div className="text-center py-8">
                       <p className="text-sm text-muted-foreground">
@@ -366,7 +437,7 @@ export function SearchBox({
                 </>
               ) : (
                 <>
-                  {/* 鎼滅储寤鸿 */}
+                  {/* 搜索建议 */}
                   {isSearching ? (
                     <div className="flex items-center justify-center py-8">
                       <Loader2
@@ -387,7 +458,7 @@ export function SearchBox({
                           </span>
                         </button>
                       ))}
-                      {/* 鏌ョ湅鏇村 */}
+                      {/* 查看更多 */}
                       <button
                         onClick={() => goToSearchPage(searchQuery)}
                         className="w-full text-center py-2 text-sm text-primary hover:underline"
@@ -408,19 +479,19 @@ export function SearchBox({
           </div>
         )}
 
-        {/* 鍒嗙被涓嬫媺鑿滃崟 */}
+        {/* 分类下拉菜单 */}
         {isDropdownOpen && (
           <>
-            {/* 閬僵灞?*/}
+            {/* 遮罩层 */}
             <div
               className="fixed inset-0 z-40"
               onClick={() => setIsDropdownOpen(false)}
             />
 
-            {/* 鑿滃崟鍐呭 */}
+            {/* 菜单内容 */}
             <div className="absolute top-full left-0 mt-2 w-full bg-card border border-border rounded-xl shadow-lg z-50 max-h-102 overflow-y-auto scroll-auto">
               <div className="p-2">
-                {/* 鍏ㄩ儴閫夐」 */}
+                {/* 全部选项 */}
                 <button
                   onClick={() => handleCategorySelect(undefined)}
                   className={cn(
@@ -442,7 +513,7 @@ export function SearchBox({
                   </div>
                 </button>
 
-                {/* 鍒嗙被閫夐」 */}
+                {/* 分类选项 */}
                 {menuItems.map((category) => (
                   <button
                     key={category.id}
@@ -476,4 +547,3 @@ export function SearchBox({
     </div>
   );
 }
-

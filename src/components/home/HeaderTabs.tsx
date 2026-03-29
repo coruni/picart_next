@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { Link } from "@/i18n/routing";
+import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { ChevronDown } from "lucide-react";
-import Image from "next/image";
-import { useTranslations } from "next-intl";
 import { CategoryList } from "@/types";
+import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { useEffect } from "react";
 
 interface TabItem {
   label: string;
@@ -35,7 +34,7 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
   const channels = categories.filter((category) => !category.link);
   const t = useTranslations("headerTabs");
   const pathname = usePathname();
-  const currentPath = pathname.replace(/^\/(zh|en)/, "") || "/";
+  const currentPath = pathname;
 
   useEffect(() => {
     if (currentPath.startsWith("/channel/") && currentPath !== "/channel") {
@@ -78,12 +77,14 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
               <Link
                 href={tab.href}
                 className={cn(
-                  "relative flex h-full items-center gap-1 px-1 pb-2 text-sm font-semibold transition-colors hover:text-foreground group-hover:text-foreground md:text-base",
+                  "relative flex h-full items-center gap-1 px-1  text-sm font-semibold transition-colors hover:text-foreground group-hover:text-foreground md:text-base",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   isActive ? "text-foreground" : "text-secondary",
                 )}
               >
-                <span className={cn("inline-flex items-center", labelClassName)}>
+                <span
+                  className={cn("inline-flex items-center", labelClassName)}
+                >
                   {tab.label}
                   {tab.hasDropdown && (
                     <ChevronDown
@@ -94,7 +95,7 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
                 </span>
                 <span
                   className={cn(
-                    "absolute bottom-0 left-1/2 h-1 w-5 -translate-x-1/2 rounded-full bg-primary transition-opacity",
+                    "absolute -bottom-1 left-1/2 h-1 w-5 -translate-x-1/2 rounded-full bg-primary transition-opacity",
                     isActive
                       ? "opacity-100"
                       : "opacity-0 group-hover:opacity-100",

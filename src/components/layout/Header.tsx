@@ -1,21 +1,20 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { Link } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
-import { ChevronRight, MessageCircle, PenIcon } from "lucide-react";
-import { MessageDropdown } from "./MessageDropdown";
-import { UserDropdown } from "./UserDropdown";
-import { useAppStore, useUserStore } from "@/stores";
-import { HeaderTabs } from "../home/HeaderTabs";
-import { CategoryList } from "@/types";
-import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { useScrollThreshold } from "@/hooks/useScrollThreshold";
-import { SearchBox } from "./SearchBox";
-import { Avatar } from "../ui/Avatar";
-import { openLoginDialog } from "@/lib/modal-helpers";
 import { GuardedLink } from "@/components/shared/GuardedLink";
+import { useScrollThreshold } from "@/hooks/useScrollThreshold";
+import { Link, usePathname } from "@/i18n/routing";
+import { openLoginDialog } from "@/lib/modal-helpers";
+import { cn } from "@/lib/utils";
+import { useAppStore, useUserStore } from "@/stores";
+import { CategoryList } from "@/types";
+import { ChevronRight, MessageCircle, PenIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useRef } from "react";
+import { HeaderTabs } from "../home/HeaderTabs";
+import { Avatar } from "../ui/Avatar";
+import { MessageDropdown } from "./MessageDropdown";
+import { SearchBox } from "./SearchBox";
+import { UserDropdown } from "./UserDropdown";
 
 type HeaderProps = {
   categories?: CategoryList;
@@ -34,6 +33,9 @@ export function Header({ categories }: HeaderProps) {
     allowedPages.some((path) => pathname.includes(path)) &&
     !deniedPages.some((path) => pathname.includes(path));
   const scrolled = useScrollThreshold(240, isTransparentBgPage);
+
+  // 搜索页不显示搜索框，避免重复
+  const isSearchPage = pathname === "/search";
 
   const actionButtonClassName = cn(
     "flex items-center justify-center rounded-full p-2 transition-colors",
@@ -185,7 +187,10 @@ export function Header({ categories }: HeaderProps) {
 
     const root = document.documentElement;
     const updateHeaderHeight = () => {
-      root.style.setProperty("--header-height", `${headerElement.offsetHeight}px`);
+      root.style.setProperty(
+        "--header-height",
+        `${headerElement.offsetHeight}px`,
+      );
     };
 
     updateHeaderHeight();
@@ -220,6 +225,14 @@ export function Header({ categories }: HeaderProps) {
             >
               {siteConfig?.site_name}
             </Link>
+            <div className="hidden md:block">
+              <HeaderTabs
+                categories={categories ?? []}
+                labelClassName={
+                  isTransparentBgPage && !scrolled ? "text-white" : undefined
+                }
+              />
+            </div>
 
             <div className="shrink-0 md:hidden">{renderMobileActions()}</div>
           </div>
@@ -231,29 +244,24 @@ export function Header({ categories }: HeaderProps) {
                 isTransparentBgPage && !scrolled ? "text-white" : undefined
               }
             />
+            {!isSearchPage && (
+              <SearchBox
+                categories={categories}
+                isAccountPage={isTransparentBgPage}
+                scrolled={scrolled}
+                mobileVisible
+                className="flex-1"
+              />
+            )}
+          </div>
+
+          {!isSearchPage && (
             <SearchBox
               categories={categories}
               isAccountPage={isTransparentBgPage}
               scrolled={scrolled}
-              mobileVisible
-              className="flex-1"
             />
-          </div>
-
-          <div className="hidden md:block">
-            <HeaderTabs
-              categories={categories ?? []}
-              labelClassName={
-                isTransparentBgPage && !scrolled ? "text-white" : undefined
-              }
-            />
-          </div>
-
-          <SearchBox
-            categories={categories}
-            isAccountPage={isTransparentBgPage}
-            scrolled={scrolled}
-          />
+          )}
 
           <div className="hidden md:flex md:items-center md:gap-4">
             {renderActions()}

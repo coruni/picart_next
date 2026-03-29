@@ -1,7 +1,8 @@
-﻿import { ChannelArticleListClient } from "@/components/channel/ChannelArticleList.client";
+import { ChannelArticleListClient } from "@/components/channel/ChannelArticleList.client";
+import { redirect } from "@/i18n/routing";
+import { getPublicCategories } from "@/lib/seo";
 import { serverApi } from "@/lib/server-api";
 import { getTranslations } from "next-intl/server";
-import { redirect } from "next/navigation";
 
 export default async function ChannelPage({
   params,
@@ -11,11 +12,7 @@ export default async function ChannelPage({
   const { slug, locale } = await params;
   const t = await getTranslations("channelPage");
 
-  const { data: categoryData } = await serverApi.categoryControllerFindAll({
-    query: { page: 1, limit: 100 },
-  });
-
-  const channels = categoryData?.data.data || [];
+  const channels = await getPublicCategories();
 
   if (channels.length === 0) {
     return (
@@ -30,7 +27,10 @@ export default async function ChannelPage({
   if (!slug || slug.length === 0) {
     const firstChannel = channels[0];
     if (firstChannel.children && firstChannel.children.length > 0) {
-      redirect(`/${locale}/channel/${firstChannel.id}/${firstChannel.children[0].id}`);
+      redirect({
+        href: `/channel/${firstChannel.id}/${firstChannel.children[0].id}`,
+        locale: locale,
+      });
     }
 
     return (
@@ -48,27 +48,44 @@ export default async function ChannelPage({
   if (!currentChannel) {
     const firstChannel = channels[0];
     if (firstChannel.children && firstChannel.children.length > 0) {
-      redirect(`/${locale}/channel/${firstChannel.id}/${firstChannel.children[0].id}`);
+      redirect({
+        href: `/channel/${firstChannel.id}/${firstChannel.children[0].id}`,
+        locale: locale,
+      });
     }
-    redirect(`/${locale}/channel/${firstChannel.id}`);
+    redirect({
+      href: `/channel/${firstChannel.id}`,
+      locale: locale,
+    });
   }
 
   if (slug.length === 1) {
-    if (currentChannel.children && currentChannel.children.length > 0) {
+    if (currentChannel?.children && currentChannel.children.length > 0) {
       const firstChild = currentChannel.children[0];
-      redirect(`/${locale}/channel/${pid}/${firstChild.id}`);
+      redirect({
+        href: `/channel/${pid}/${firstChild.id}`,
+        locale: locale,
+      });
     }
   }
 
   const childId = slug[1];
-  const childCategory = currentChannel.children?.find((item) => item.id === Number(childId));
+  const childCategory = currentChannel?.children?.find(
+    (item) => item.id === Number(childId),
+  );
 
   if (!childCategory) {
-    if (currentChannel.children && currentChannel.children.length > 0) {
+    if (currentChannel?.children && currentChannel.children.length > 0) {
       const firstChild = currentChannel.children[0];
-      redirect(`/${locale}/channel/${pid}/${firstChild.id}`);
+      redirect({
+        href: `/channel/${pid}/${firstChild.id}`,
+        locale: locale,
+      });
     }
-    redirect(`/${locale}/channel/${pid}`);
+    redirect({
+      href: `/channel/${pid}`,
+      locale: locale,
+    });
   }
 
   const { data } = await serverApi.articleControllerFindAll({

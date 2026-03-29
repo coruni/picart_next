@@ -1,7 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { Link } from "@/i18n/routing";
+import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 
 export interface TabItem {
@@ -19,7 +18,7 @@ interface NavigationTabsProps {
   indicatorClassName?: string;
   /**
    * 自定义路径匹配逻辑
-   * @param currentPath 当前路径（已移除 locale 前缀）
+   * @param currentPath 当前路径
    * @param tabHref tab 的 href
    * @returns 是否激活
    */
@@ -45,13 +44,10 @@ export function NavigationTabs({
 }: NavigationTabsProps) {
   const pathname = usePathname();
 
-  // 移除 locale 前缀来匹配路径
-  const currentPath = pathname.replace(/^\/(zh|en)/, "") || "/";
-
   return (
     <div className={cn("inline-flex items-center gap-6", className)}>
       {tabs.map((tab) => {
-        const active = isActive(currentPath, tab.href);
+        const active = isActive(pathname, tab.href);
 
         return (
           <Link
@@ -63,7 +59,10 @@ export function NavigationTabs({
               tabClassName,
               active
                 ? cn("text-foreground", activeTabClassName)
-                : cn("text-secondary hover:text-foreground", inactiveTabClassName)
+                : cn(
+                    "text-secondary hover:text-foreground",
+                    inactiveTabClassName,
+                  ),
             )}
           >
             {tab.label}
@@ -71,7 +70,7 @@ export function NavigationTabs({
               <span
                 className={cn(
                   "absolute bottom-0 left-1/2 -translate-x-1/2 h-1 bg-primary rounded-full w-5",
-                  indicatorClassName
+                  indicatorClassName,
                 )}
               />
             )}

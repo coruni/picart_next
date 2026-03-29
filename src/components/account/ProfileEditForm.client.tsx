@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import AvatarEditor from "react-avatar-editor";
 import { Avatar } from "@/components/ui/Avatar";

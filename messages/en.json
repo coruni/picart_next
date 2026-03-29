@@ -370,6 +370,11 @@
     "recommend": "Recommend",
     "activity": "Activity"
   },
+  "searchFeedTabs": {
+    "article": "Posts",
+    "topic": "Topics",
+    "user": "Users"
+  },
   "messageDropdown": {
     "cleanMessages": "Mark all as read",
     "notificationSettings": "Notification settings",

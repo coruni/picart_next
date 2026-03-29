@@ -369,6 +369,11 @@
     "recommend": "推荐",
     "activity": "活动"
   },
+  "searchFeedTabs": {
+    "article": "帖子",
+    "topic": "话题",
+    "user": "用户"
+  },
   "messageDropdown": {
     "cleanMessages": "全部标记为已读",
     "notificationSettings": "消息通知设置",
