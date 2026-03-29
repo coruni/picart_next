@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { CommentCard } from "@/components/comment";
-import { useTranslations } from "next-intl";
-import {  CommentList, UserCommentList } from "@/types";
 import { commentControllerGetUserComments } from "@/api";
-import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
+import { CommentCard } from "@/components/comment";
 import { InfiniteScrollStatus } from "@/components/shared";
+import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
+import { CommentList, UserCommentList } from "@/types";
+import { useTranslations } from "next-intl";
+import { useCallback, useRef, useState } from "react";
 
 type CommentListClientProps = {
   initPage: number;

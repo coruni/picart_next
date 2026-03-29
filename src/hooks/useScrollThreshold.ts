@@ -1,32 +1,76 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+type UseScrollThresholdOptions = {
+  enabled?: boolean;
+  hysteresis?: number;
+};
 
 /**
- * 监听滚动是否超过指定阈值
- * @param threshold 滚动阈值（像素）
- * @param enabled 是否启用监听
- * @returns 是否已滚动超过阈值
+ * Listen for whether the page scroll position has crossed a threshold.
+ * `hysteresis` adds a small buffer near the threshold to avoid flicker.
  */
-export function useScrollThreshold(threshold: number = 300, enabled: boolean = true) {
+export function useScrollThreshold(
+  threshold: number = 300,
+  enabledOrOptions: boolean | UseScrollThresholdOptions = true,
+) {
+  const options =
+    typeof enabledOrOptions === "boolean"
+      ? { enabled: enabledOrOptions, hysteresis: 0 }
+      : enabledOrOptions;
+  const enabled = options.enabled ?? true;
+  const hysteresis = options.hysteresis ?? 0;
+
   const [scrolled, setScrolled] = useState(false);
+  const scrolledRef = useRef(scrolled);
+
+  useEffect(() => {
+    scrolledRef.current = scrolled;
+  }, [scrolled]);
 
   useEffect(() => {
     if (!enabled) {
+      scrolledRef.current = false;
       setScrolled(false);
       return;
     }
 
-    const handleScroll = () => {
-      setScrolled(window.scrollY >= threshold);
+    let frameId = 0;
+
+    const evaluate = () => {
+      frameId = 0;
+      const scrollY = window.scrollY;
+      const nextScrolled = scrolledRef.current
+        ? scrollY >= threshold - hysteresis
+        : scrollY >= threshold + hysteresis;
+
+      if (nextScrolled !== scrolledRef.current) {
+        scrolledRef.current = nextScrolled;
+        setScrolled(nextScrolled);
+      }
     };
 
-    // 初始检查
-    handleScroll();
+    const requestEvaluate = () => {
+      if (frameId) {
+        return;
+      }
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [threshold, enabled]);
+      frameId = window.requestAnimationFrame(evaluate);
+    };
+
+    evaluate();
+    window.addEventListener("scroll", requestEvaluate, { passive: true });
+    window.addEventListener("resize", requestEvaluate, { passive: true });
+
+    return () => {
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
+      window.removeEventListener("scroll", requestEvaluate);
+      window.removeEventListener("resize", requestEvaluate);
+    };
+  }, [enabled, hysteresis, threshold]);
 
   return scrolled;
 }

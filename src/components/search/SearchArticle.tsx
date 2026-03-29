@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { cn } from "@/lib";
+import { cn, prepareRichTextHtmlForSummary } from "@/lib";
 import { ArticleList } from "@/types";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 
@@ -39,6 +39,11 @@ export function SearchArticle({
   article,
   keyword,
 }: SearchArticleProps) {
+  const summaryHtml =
+    article.summary && typeof article.summary === "string"
+      ? prepareRichTextHtmlForSummary(article.summary)
+      : "";
+
   return (
     <Link
       href={`/article/${article.id}`}
@@ -52,10 +57,10 @@ export function SearchArticle({
           <h2 className="line-clamp-2 font-semibold text-foreground">
             {highlightText(article.title || "", keyword)}
           </h2>
-          {article.summary && (
+          {summaryHtml && (
             <p
               className="article-summary-html mt-1 px-0! text-secondary text-sm leading-5 line-clamp-3 overflow-hidden cursor-pointer"
-              dangerouslySetInnerHTML={{ __html: article.summary }}
+              dangerouslySetInnerHTML={{ __html: summaryHtml }}
             />
           )}
         </div>

@@ -45,7 +45,7 @@ export function NavigationTabs({
   const pathname = usePathname();
 
   return (
-    <div className={cn("inline-flex items-center gap-6", className)}>
+    <div className={cn("inline-flex items-center gap-4 md:gap-6", className)}>
       {tabs.map((tab) => {
         const active = isActive(pathname, tab.href);
 
@@ -54,7 +54,7 @@ export function NavigationTabs({
             key={tab.value}
             href={tab.href}
             className={cn(
-              "relative px-1 py-2 text-base font-medium transition-colors h-full",
+              "relative h-full px-1 py-2 text-sm font-medium transition-colors md:text-base",
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               tabClassName,
               active

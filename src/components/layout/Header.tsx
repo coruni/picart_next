@@ -1,6 +1,7 @@
 "use client";
 
 import { GuardedLink } from "@/components/shared/GuardedLink";
+import { useIsMobile } from "@/hooks";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { Link, usePathname } from "@/i18n/routing";
 import { openLoginDialog } from "@/lib/modal-helpers";
@@ -27,12 +28,16 @@ export function Header({ categories }: HeaderProps) {
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const user = useUserStore((state) => state.user);
   const pathname = usePathname();
+  const isMobile = useIsMobile();
   const allowedPages = ["/account/", "/topic/"];
   const deniedPages = ["/edit", "/decoration"];
   const isTransparentBgPage =
     allowedPages.some((path) => pathname.includes(path)) &&
     !deniedPages.some((path) => pathname.includes(path));
-  const scrolled = useScrollThreshold(240, isTransparentBgPage);
+  const scrolled = useScrollThreshold(isMobile ? 168 : 220, {
+    enabled: isTransparentBgPage,
+    hysteresis: isMobile ? 16 : 24,
+  });
   const shouldUseTransparentHeader = isTransparentBgPage && !scrolled;
 
   // 搜索页不显示搜索框，避免重复
@@ -210,7 +215,7 @@ export function Header({ categories }: HeaderProps) {
     <header
       ref={headerRef}
       className={cn(
-        "fixed left-0 right-0 top-0 z-50 transition-colors",
+        "fixed left-0 right-0 top-0 z-50 transition-[background-color,color,box-shadow] duration-250 ease-out will-change-[background-color]",
         shouldUseTransparentHeader
           ? "bg-transparent dark:bg-transparent"
           : "bg-card",

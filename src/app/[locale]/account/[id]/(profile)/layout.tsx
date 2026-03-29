@@ -1,17 +1,18 @@
 import { ReactNode } from "react";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import Image from "next/image";
 
 import { AccountInfo, AccountTabs } from "@/components/account";
-import { Metadata } from "next";
-import Image from "next/image";
-import { generateAuthorMetadata } from "@/lib";
 import { Sidebar } from "@/components/sidebar/Sidebar";
+import { generateAuthorMetadata } from "@/lib";
 import { serverApi } from "@/lib/server-api";
+
 interface AccountLayoutProps {
   children: ReactNode;
   params: Promise<{ id: string; locale: string }>;
 }
-// 动态生成元数据
+
 export async function generateMetadata({
   params,
 }: {
@@ -30,18 +31,17 @@ export default async function AccountLayout({
   params,
 }: AccountLayoutProps) {
   const { id } = await params;
-  // 请求用户数据
   const { data } = await serverApi.userControllerFindOne({ path: { id } });
   const user = data?.data;
+
   if (!user) {
     notFound();
   }
 
   return (
     <>
-      {/* 背景 */}
-      <div className="fixed h-75 w-full z-0 box-border">
-        <div className="absolute top-0 left-0 w-full z-2 bg-linear-to-b from-[#00000066] to-transparent h-20" />
+      <div className="fixed z-0 box-border h-56 w-full md:h-75">
+        <div className="absolute top-0 left-0 z-2 h-16 w-full bg-linear-to-b from-[#00000066] to-transparent md:h-20" />
         {user.background && (
           <Image
             quality={95}
@@ -50,28 +50,24 @@ export default async function AccountLayout({
             loading="eager"
             preload
             alt={`${user.nickname || user.username} background image`}
-            className="w-full h-full object-cover object-bottom align-bottom"
+            className="h-full w-full object-cover object-bottom align-bottom"
           />
         )}
-
-        <div className="absolute bottom-0 left-0 w-full z-2 bg-linear-to-t from-[#00000066] to-transparent h-25" />
+        <div className="absolute bottom-0 left-0 z-2 h-18 w-full bg-linear-to-t from-[#00000066] to-transparent md:h-25" />
       </div>
 
-      {/* 页面内容 */}
-      <div className="mt-75 w-full z-10 relative bg-background ">
-        {/* 用户信息 */}
+      <div className="relative z-10 mt-56 w-full bg-background md:mt-75">
         <AccountInfo user={user} />
-        {/* 子页面内容 */}
-        <div className="page-container pt-4!">
+
+        <div className="page-container px-3 pt-3! md:px-0 md:pt-4!">
           <div className="left-container">
-            {/* Tabs 导航 */}
-            <div className="top-header-tabs px-8 h-14 flex items-center border-b border-border sticky bg-card z-5 rounded-t-xl">
+            <div className="top-header-tabs sticky z-5 flex h-12 items-center overflow-x-auto rounded-t-xl border-b border-border bg-card px-4 md:h-14 md:px-8">
               <AccountTabs />
             </div>
             {children}
           </div>
+
           <div className="right-container">
-            {/* 侧边栏内容 */}
             <Sidebar
               showArticleCreate={false}
               showRecommendTag={false}

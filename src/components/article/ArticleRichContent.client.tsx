@@ -1,5 +1,6 @@
 "use client";
 
+import { prepareRichTextHtmlForDisplay } from "@/lib";
 import { useEffect, useRef, useState } from "react";
 import { ImageViewer } from "./ImageViewer";
 
@@ -12,6 +13,7 @@ export function ArticleRichContent({ html }: ArticleRichContentProps) {
   const [viewerVisible, setViewerVisible] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const safeHtml = prepareRichTextHtmlForDisplay(html);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -48,14 +50,14 @@ export function ArticleRichContent({ html }: ArticleRichContentProps) {
 
     container.addEventListener("click", handleClick);
     return () => container.removeEventListener("click", handleClick);
-  }, [html]);
+  }, [safeHtml]);
 
   return (
     <>
       <div
         ref={containerRef}
         className="ql-editor px-0!"
-        dangerouslySetInnerHTML={{ __html: html }}
+        dangerouslySetInnerHTML={{ __html: safeHtml }}
       />
       {viewerVisible && images.length > 0 && (
         <ImageViewer

@@ -1,10 +1,11 @@
 "use client";
 
+import { Link } from "@/i18n/routing";
 import { cn } from "@/lib";
 import Image from "next/image";
+import { type MouseEvent, useState } from "react";
 import "swiper/css";
 import { Autoplay } from "swiper/modules";
-import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { ResolvedBannerItem } from "./Banner";
 
@@ -14,6 +15,45 @@ type BannerCarouselProps = {
   autoplayDelay?: number;
 };
 
+function BannerImage({ banner }: { banner: ResolvedBannerItem }) {
+  const [position, setPosition] = useState({ x: 50, y: 50 });
+  const [isHovering, setIsHovering] = useState(false);
+
+  const handleMouseMove = (event: MouseEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const nextX = ((event.clientX - rect.left) / rect.width) * 100;
+    const nextY = ((event.clientY - rect.top) / rect.height) * 100;
+
+    setPosition({
+      x: Math.max(0, Math.min(100, nextX)),
+      y: Math.max(0, Math.min(100, nextY)),
+    });
+  };
+
+  return (
+    <div
+      className="relative h-full w-full cursor-pointer overflow-hidden bg-border"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => {
+        setIsHovering(false);
+        setPosition({ x: 50, y: 50 });
+      }}
+      onMouseMove={handleMouseMove}
+    >
+      <Image
+        src={banner.image}
+        alt={banner.title}
+        fill
+        sizes="(max-width: 768px) 100vw, 320px"
+        className={cn("object-cover")}
+        style={{
+          objectPosition: `${position.x}% ${position.y}%`,
+        }}
+      />
+    </div>
+  );
+}
+
 export function BannerCarousel({
   banners,
   className,
@@ -22,7 +62,12 @@ export function BannerCarousel({
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <div className={cn("relative h-full w-full overflow-hidden rounded-xl", className)}>
+    <div
+      className={cn(
+        "relative h-full w-full overflow-hidden rounded-xl",
+        className,
+      )}
+    >
       <Swiper
         modules={[Autoplay]}
         slidesPerView={1}
@@ -42,21 +87,11 @@ export function BannerCarousel({
         className="banner-swiper h-full w-full"
       >
         {banners.map((banner, index) => {
-          const content = (
-            <div className="relative h-full w-full overflow-hidden bg-border cursor-pointer">
-              <Image
-                src={banner.image}
-                alt={banner.title}
-                fill
-                sizes="(max-width: 768px) 100vw, 320px"
-                className="object-cover"
-              />
-            </div>
-          );
+          const content = <BannerImage banner={banner} />;
 
           return (
             <SwiperSlide key={`${banner.image}-${index}`}>
-              {banner.href ? (
+              {banner.href && banner.hrefType === "external" ? (
                 <a
                   href={banner.href}
                   target="_blank"
@@ -65,6 +100,13 @@ export function BannerCarousel({
                 >
                   {content}
                 </a>
+              ) : banner.href && banner.hrefType === "internal" ? (
+                <Link
+                  href={banner.href}
+                  className="block h-full w-full transition-opacity hover:opacity-90"
+                >
+                  {content}
+                </Link>
               ) : (
                 content
               )}

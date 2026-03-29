@@ -1,36 +1,37 @@
 ﻿"use client";
 
-import { forwardRef, useEffect, useRef, useState } from "react";
+import QuillBlotFormatter2, {
+  BlotSpec,
+} from "@enzedonline/quill-blot-formatter2";
+import "@enzedonline/quill-blot-formatter2/dist/css/quill-blot-formatter2.css";
 import { useTranslations } from "next-intl";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { SizeClass, SizeStyle } from "quill/formats/size";
-import QuillBlotFormatter2 from "@enzedonline/quill-blot-formatter2";
-import { BlotSpec } from "@enzedonline/quill-blot-formatter2";
-import "@enzedonline/quill-blot-formatter2/dist/css/quill-blot-formatter2.css";
+import { forwardRef, useEffect, useRef, useState } from "react";
 
-import { CustomImageBlot } from "./blots/CustomImageBlot";
+import { prepareRichTextHtmlForEditor, sanitizeRichTextHtml } from "@/lib";
 import { CustomEmojiBlot } from "./blots/CustomEmojiBlot";
+import { CustomImageBlot } from "./blots/CustomImageBlot";
 import { CustomImageSpec } from "./CustomImageSpec";
 import { CustomLinkSpec } from "./CustomLinkSpec";
-import {
-  quillOverrideStyles,
-  defaultFormats,
-  customIcons,
-  renderToolbar,
-} from "./index";
 import type { EditorProps } from "./index";
 import {
+  customIcons,
+  defaultFormats,
+  quillOverrideStyles,
+  renderToolbar,
+} from "./index";
+import {
+  Button,
   cn,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   Input,
-  Button,
   uploadControllerUploadFile,
 } from "./types";
-import { prepareRichTextHtmlForEditor, sanitizeRichTextHtml } from "@/lib";
 
 const CODE_BLOCK_HINT_REGEX =
   /(^\s{2,}|\t)|[{}[\];]|=>|<\/?[a-z][\s\S]*?>|^\s*(const|let|var|function|class|import|export|if|else|for|while|switch|try|catch|return|def|public|private|async|await)\b/m;
@@ -39,10 +40,7 @@ const normalizeClipboardText = (value: string) =>
   value.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
 const escapeHtml = (value: string) =>
-  value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const shouldPasteAsCodeBlock = (plainText: string, htmlText: string) => {
   const normalized = normalizeClipboardText(plainText).trimEnd();
@@ -62,14 +60,47 @@ const shouldPasteAsCodeBlock = (plainText: string, htmlText: string) => {
   );
 };
 
-// 娉ㄥ唽鑷畾涔夊瓧鍙?
-SizeClass.whitelist = ["12px", "14px", "16px", "18px", "20px", "24px", "32px"];
-SizeStyle.whitelist = ["12px", "14px", "16px", "18px", "20px", "24px", "32px"];
-Quill.register(SizeStyle, true);
-Quill.register(SizeClass, true);
-Quill.register("modules/blotFormatter2", QuillBlotFormatter2);
-Quill.register({ "formats/image": CustomImageBlot }, true);
-Quill.register({ "formats/emoji": CustomEmojiBlot }, true);
+declare global {
+  interface Window {
+    __PICART_QUILL_REGISTERED__?: boolean;
+  }
+}
+
+const registerQuillModules = () => {
+  if (typeof window !== "undefined" && window.__PICART_QUILL_REGISTERED__) {
+    return;
+  }
+
+  SizeClass.whitelist = [
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px",
+    "24px",
+    "32px",
+  ];
+  SizeStyle.whitelist = [
+    "12px",
+    "14px",
+    "16px",
+    "18px",
+    "20px",
+    "24px",
+    "32px",
+  ];
+  Quill.register(SizeStyle, true);
+  Quill.register(SizeClass, true);
+  Quill.register("modules/blotFormatter2", QuillBlotFormatter2);
+  Quill.register({ "formats/image": CustomImageBlot }, true);
+  Quill.register({ "formats/emoji": CustomEmojiBlot }, true);
+
+  if (typeof window !== "undefined") {
+    window.__PICART_QUILL_REGISTERED__ = true;
+  }
+};
+
+registerQuillModules();
 
 /**
  * 瀵屾枃鏈紪杈戝櫒缁勪欢
@@ -123,7 +154,10 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           caption = document.createElement("p");
           caption.className = "ql-image-caption";
           caption.setAttribute("contenteditable", "true");
-          caption.setAttribute("data-placeholder", t("imageCaptionPlaceholder"));
+          caption.setAttribute(
+            "data-placeholder",
+            t("imageCaptionPlaceholder"),
+          );
           imageWrapper.appendChild(caption);
         }
 
@@ -156,7 +190,10 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               userOnly: true,
             },
             blotFormatter2: {
-              specs: [CustomImageSpec as unknown as typeof BlotSpec, CustomLinkSpec as unknown as typeof BlotSpec],
+              specs: [
+                CustomImageSpec as unknown as typeof BlotSpec,
+                CustomLinkSpec as unknown as typeof BlotSpec,
+              ],
               toolbar: {
                 icons: customIcons,
                 mainStyle: {
@@ -275,12 +312,16 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 await new Promise((resolve) => setTimeout(resolve, 50));
 
                 // 鎵惧埌鍒氭彃鍏ョ殑鍥剧墖锛圕ustomImageBlot 浼氬垱寤?div.ql-image-wrapper > img.ql-image锛?
-                const wrappers = quill.root.querySelectorAll("div.ql-image-wrapper");
+                const wrappers = quill.root.querySelectorAll(
+                  "div.ql-image-wrapper",
+                );
                 let targetWrapper: HTMLDivElement | null = null;
                 let targetImg: HTMLImageElement | null = null;
 
                 for (const wrapper of Array.from(wrappers)) {
-                  const img = wrapper.querySelector("img.ql-image") as HTMLImageElement | null;
+                  const img = wrapper.querySelector(
+                    "img.ql-image",
+                  ) as HTMLImageElement | null;
                   if (img && img.src === base64 && !img.dataset.uploaded) {
                     targetWrapper = wrapper as HTMLDivElement;
                     targetImg = img;
@@ -399,10 +440,18 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             // 妫€鏌ユ槸鍚︽湁閫変腑鐨勫浘鐗?blot
             const selection = quill.getSelection();
             if (selection && selection.length > 0) {
-              const delta = quill.getContents(selection.index, selection.length);
+              const delta = quill.getContents(
+                selection.index,
+                selection.length,
+              );
               // 妫€鏌ユ槸鍚﹀寘鍚浘鐗?
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              const hasImage = delta.ops.some((op: any) => op.insert && typeof op.insert === "object" && "image" in op.insert);
+
+              const hasImage = delta.ops.some(
+                (op: any) =>
+                  op.insert &&
+                  typeof op.insert === "object" &&
+                  "image" in op.insert,
+              );
               if (hasImage) {
                 // 瀛樺偍鍒板叏灞€鍙橀噺
                 (window as any).__quillClipboardImage = delta;
@@ -419,7 +468,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               const index = selection ? selection.index : quill.getLength();
               quill.updateContents(
                 new (Quill.import("delta"))().retain(index).concat(clipImage),
-                "user"
+                "user",
               );
               quill.setSelection(index + clipImage.length(), 0);
             }
@@ -434,7 +483,8 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
           const plainText = clipboardData.getData("text/plain");
           const htmlText = clipboardData.getData("text/html");
-          if (!plainText || !shouldPasteAsCodeBlock(plainText, htmlText)) return;
+          if (!plainText || !shouldPasteAsCodeBlock(plainText, htmlText))
+            return;
 
           e.preventDefault();
           e.stopPropagation();
@@ -617,7 +667,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             "[&_.ql-container]:border-0 [&_.ql-container]:rounded-b-lg [&_.ql-container]:min-h-100 [&_.ql-container]:overflow-visible",
             "[&_.ql-editor]:min-h-100! [&_.ql-editor]:text-sm",
             "[&_.ql-editor.ql-blank::before]:text-muted-foreground [&_.ql-editor.ql-blank::before]:font-normal",
-            
+
             className,
           )}
         >
@@ -627,7 +677,9 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           <Dialog open={showVideoModal} onOpenChange={setShowVideoModal}>
             <DialogContent className="max-w-2xl pt-4!">
               <DialogHeader>
-                <DialogTitle className="text-sm">{t("modal.insertVideo")}</DialogTitle>
+                <DialogTitle className="text-sm">
+                  {t("modal.insertVideo")}
+                </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <Input
@@ -639,15 +691,20 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     if (e.key === "Enter") handleInsertVideo();
                   }}
                 />
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-center gap-8">
                   <Button
-                    variant="ghost"
+                    variant="default"
                     onClick={() => setShowVideoModal(false)}
+                    className="rounded-full bg-muted text-secondary"
                   >
                     {t("toolbar.cancel")}
                   </Button>
-                  <Button variant="primary" onClick={handleInsertVideo}>
-                    {t("toolbar.insert")}
+                  <Button
+                    variant="default"
+                    className="rounded-full"
+                    onClick={handleInsertVideo}
+                  >
+                    {t("toolbar.confirm")}
                   </Button>
                 </div>
               </div>
@@ -668,7 +725,9 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           >
             <DialogContent className="max-w-2xl pt-4!">
               <DialogHeader>
-                <DialogTitle className="text-sm">{t("modal.insertLink")}</DialogTitle>
+                <DialogTitle className="text-sm">
+                  {t("modal.insertLink")}
+                </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <Input
@@ -695,7 +754,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                       setLinkText("");
                       savedSelection.current = null;
                     }}
-                    className="rounded-full bg-[#EDF1F7] hover:bg-[#8592A3] text-muted"
+                    className="rounded-full bg-muted text-secondary"
                   >
                     {t("toolbar.cancel")}
                   </Button>
@@ -717,4 +776,3 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 );
 
 Editor.displayName = "Editor";
-

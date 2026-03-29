@@ -19,6 +19,7 @@ type BannerField =
   | "picture"
   | "url"
   | "link"
+  | "linkUrl"
   | "href"
   | "targetUrl"
   | "jumpUrl"
@@ -27,9 +28,12 @@ type BannerField =
   | "alt"
   | "description";
 
+export type BannerHrefType = "internal" | "external";
+
 export type ResolvedBannerItem = {
   image: string;
   href?: string;
+  hrefType?: BannerHrefType;
   title: string;
 };
 
@@ -38,7 +42,7 @@ function pickStringValue(
   keys: BannerField[],
 ): string | undefined {
   for (const key of keys) {
-    const value = source[key];
+    const value = (source as Record<string, unknown>)[key];
     if (typeof value === "string" && value.trim()) {
       return value.trim();
     }
@@ -68,9 +72,25 @@ function resolveBannerData(banner: unknown): ResolvedBannerItem | null {
     return null;
   }
 
+  const rawHref = pickStringValue(record, [
+    "link",
+    "linkUrl",
+    "href",
+    "targetUrl",
+    "jumpUrl",
+  ]);
+  const hrefType = rawHref
+    ? /^https?:\/\//i.test(rawHref) || rawHref.startsWith("//")
+      ? "external"
+      : rawHref.startsWith("/")
+        ? "internal"
+        : undefined
+    : undefined;
+
   return {
     image,
-    href: pickStringValue(record, ["link", "href", "targetUrl", "jumpUrl"]),
+    href: hrefType ? rawHref : undefined,
+    hrefType,
     title:
       pickStringValue(record, ["title", "name", "alt", "description"]) ||
       "banner",
