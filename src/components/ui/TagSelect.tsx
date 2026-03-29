@@ -27,7 +27,10 @@ type TagSelectProps = {
 
 const PAGE_SIZE = 10;
 
-const mergeTagOptions = (baseOptions: TagOption[], nextOptions: TagOption[]) => {
+const mergeTagOptions = (
+  baseOptions: TagOption[],
+  nextOptions: TagOption[],
+) => {
   const seen = new Set(baseOptions.map((option) => option.value));
   return [
     ...baseOptions,
@@ -86,7 +89,8 @@ export const TagSelect = ({
   const normalizedQuery = searchQuery.trim();
   const hasExactMatch = normalizedQuery
     ? options.some(
-        (option) => option.label.trim().toLowerCase() === normalizedQuery.toLowerCase(),
+        (option) =>
+          option.label.trim().toLowerCase() === normalizedQuery.toLowerCase(),
       ) ||
       customValue.some(
         (item) => item.trim().toLowerCase() === normalizedQuery.toLowerCase(),
@@ -121,7 +125,9 @@ export const TagSelect = ({
         activeQueryRef.current = query.trim();
 
         setOptions((current) => {
-          const base = append ? mergeTagOptions(current, fetchedTags) : fetchedTags;
+          const base = append
+            ? mergeTagOptions(current, fetchedTags)
+            : fetchedTags;
           const selected = value
             .map((selectedValue) =>
               resolveSelectedOption(
@@ -222,7 +228,11 @@ export const TagSelect = ({
     const normalized = name.trim();
     if (!normalized) return;
 
-    if (customValue.some((item) => item.trim().toLowerCase() === normalized.toLowerCase())) {
+    if (
+      customValue.some(
+        (item) => item.trim().toLowerCase() === normalized.toLowerCase(),
+      )
+    ) {
       setSearchQuery("");
       setIsOpen(true);
       return;
@@ -241,7 +251,9 @@ export const TagSelect = ({
   const handleRemoveCustom = (optionName: string) => {
     onCustomChange(
       customValue.filter(
-        (selectedValue) => selectedValue.trim().toLowerCase() !== optionName.trim().toLowerCase(),
+        (selectedValue) =>
+          selectedValue.trim().toLowerCase() !==
+          optionName.trim().toLowerCase(),
       ),
     );
     inputRef.current?.focus();
@@ -277,9 +289,11 @@ export const TagSelect = ({
         {resolvedSelectedOptions.map((option) => (
           <span
             key={option.value}
-            className="inline-flex max-w-full h-7.5 min-w-0 items-center gap-1 rounded-full bg-[#f1f4f9] px-3 py-1"
+            className="inline-flex max-w-full h-7.5 min-w-0 items-center gap-1 rounded-full bg-muted px-3 py-1"
           >
-            <span className="truncate text-sm">{option.label}</span>
+            <span className="truncate text-xs text-muted-foreground">
+              {option.label}
+            </span>
             <button
               type="button"
               aria-label={t("removeSelected")}
@@ -342,7 +356,7 @@ export const TagSelect = ({
               : placeholder || t("placeholder")
           }
           className={cn(
-            "min-w-[8rem] flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400",
+            "min-w-32 flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400",
             disabled && "cursor-not-allowed",
           )}
         />

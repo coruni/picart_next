@@ -419,3 +419,20 @@ body {
   display: block !important;
   justify-self: center;
 }
+
+.textarea-resizer {
+  resize: vertical;
+  color-scheme: light;
+}
+
+.textarea-resizer::-webkit-resizer {
+  background: transparent;
+}
+
+.textarea-resizer::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.dark .textarea-resizer {
+  color-scheme: dark;
+}

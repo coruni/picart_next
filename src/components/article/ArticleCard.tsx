@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { DropdownMenu, MenuItem } from "@/components/shared";
+import { useUserStore } from "@/stores";
 import { GuardedLink } from "@/components/shared/GuardedLink";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Avatar } from "@/components/ui/Avatar";
@@ -9,16 +9,15 @@ import { Link } from "@/i18n/routing";
 import { cn, formatRelativeTime, prepareRichTextHtmlForSummary } from "@/lib";
 import type { ArticleDetail, ArticleList } from "@/types";
 import {
-  EllipsisVertical,
   Eye,
   FileImage,
   GalleryHorizontalEnd,
   Hash,
-  HeartCrack,
   MessageCircleMore,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { ArticleMenu } from "./ArticleMenu";
 import { ImageViewer } from "./ImageViewer";
 import { ReactionPanel } from "./ReactionPanel.client";
 
@@ -32,10 +31,14 @@ export const ArticleCard = ({
   article,
   showFollow = true,
 }: ArticleCardProps) => {
+  const currentUser = useUserStore((state) => state.user);
   const t = useTranslations("time");
-  const tCard = useTranslations("articleCard");
   const [viewerVisible, setViewerVisible] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
+  const isOwner =
+    currentUser?.id != null &&
+    article?.author?.id != null &&
+    String(currentUser.id) === String(article.author.id);
 
   const summaryHtml =
     article.summary && typeof article.summary === "string"
@@ -45,16 +48,6 @@ export const ArticleCard = ({
   const previewImages = (article.images || []).filter(
     (url) => !!url && url !== article.cover,
   );
-
-  const menuItems: MenuItem[] = [
-    {
-      label: tCard("dislikeContent"),
-      icon: <HeartCrack size={20} />,
-      onClick: () => {
-        console.log("dislike", article.id);
-      },
-    },
-  ];
 
   const openImageViewer = (index: number) => {
     setViewerIndex(index);
@@ -249,7 +242,7 @@ export const ArticleCard = ({
               </span>
             </div>
           </div>
-          {showFollow && (
+          {showFollow && !isOwner && (
             <div className="ml-3 flex items-center w-auto">
               <FollowButtonWithStatus
                 author={article.author}
@@ -258,18 +251,14 @@ export const ArticleCard = ({
             </div>
           )}
         </div>
-        <DropdownMenu
-          trigger={
-            <EllipsisVertical
-              size={20}
-              className="text-secondary cursor-pointer hover:text-primary"
-            />
-          }
-          items={menuItems}
-          title={tCard("more")}
-          position="right"
-          className="ml-2"
-        />
+        <div className="ml-2">
+          <ArticleMenu
+            articleId={String(article.id)}
+            authorId={String(article?.author?.id || "")}
+            articleType={article?.type}
+            isOwner={isOwner}
+          />
+        </div>
       </div>
 
       <section>

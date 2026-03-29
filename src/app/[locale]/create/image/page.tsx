@@ -71,9 +71,7 @@ const sanitizeImageUrl = (value: string) =>
   value.trim().replace(/^[\s"'[\]]+|[\s"'[\]]+$/g, "");
 
 const toNumericTagIds = (value: string[]) =>
-  value
-    .map((item) => Number(item))
-    .filter((item) => Number.isFinite(item));
+  value.map((item) => Number(item)).filter((item) => Number.isFinite(item));
 
 async function uploadImagesBatch(files: File[]): Promise<string[]> {
   if (files.length === 0) return [];
@@ -138,7 +136,9 @@ export default function CreateImagePage() {
   const parentSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   // 用 ref 跟踪请求序号，丢弃过期响应（防止竞态）
   const childSearchSeqRef = useRef(0);
@@ -180,7 +180,10 @@ export default function CreateImagePage() {
         minLength: { value: 4, message: tPost("form.titleMinLength") },
         maxLength: { value: 200, message: tPost("form.titleMaxLength") },
       },
-      content: { required: tPost("form.contentRequired") },
+      content: {
+        required: tPost("form.contentRequired"),
+        maxLength: { value: 3000, message: "3000 characters maximum" },
+      },
       categoryId: { required: tPost("form.categoryRequired") },
       images: {
         validate: (value) =>
@@ -571,6 +574,8 @@ export default function CreateImagePage() {
     });
   };
 
+  const contentCharacterCount = values.content.replace(/[\s\u3000]+/g, "").length;
+
   return (
     <div className="page-container">
       <div className="flex-1 max-w-4xl mx-auto bg-card rounded-xl flex flex-col">
@@ -604,19 +609,25 @@ export default function CreateImagePage() {
                   />
                 </FormField>
                 <FormField name="content" label={tPost("form.content")}>
-                  <textarea
-                    value={values.content}
-                    onChange={handleChange("content")}
-                    onBlur={handleBlur("content")}
-                    placeholder={tPost("form.contentPlaceholder")}
-                    className={cn(
-                      "min-h-40 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm",
-                      "placeholder:text-gray-400 dark:placeholder:text-gray-500",
-                      "focus:ring-offset-0 outline-none focus:outline-none",
-                      "transition-colors duration-200",
-                      "focus:ring-primary focus:border-primary hover:border-primary",
-                    )}
-                  />
+                  <div className="relative">
+                    <textarea
+                      value={values.content}
+                      onChange={handleChange("content")}
+                      onBlur={handleBlur("content")}
+                      placeholder={tPost("form.contentPlaceholder")}
+                      maxLength={3000}
+                      className={cn(
+                        "textarea-resizer min-h-40 w-full rounded-lg border border-border bg-card px-3 py-2 pb-8 text-sm",
+                        "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+                        "focus:ring-offset-0 outline-none focus:outline-none",
+                        "transition-colors duration-200",
+                        "focus:ring-primary focus:border-primary hover:border-primary",
+                      )}
+                    />
+                    <div className="pointer-events-none absolute right-3 bottom-3 text-xs text-muted-foreground">
+                      {contentCharacterCount}/3000
+                    </div>
+                  </div>
                 </FormField>
                 <FormField
                   name="images"
@@ -716,7 +727,7 @@ export default function CreateImagePage() {
                           htmlFor="image-upload"
                           className={cn(
                             "relative flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border text-xs",
-                            "border-border  bg-[#b2bdce] dark:bg-black text-white",
+                            "border-border  bg-muted-foreground text-white",
                             "transition-colors",
                             imagesUploading &&
                               "pointer-events-none opacity-70 hover:bg-transparent",

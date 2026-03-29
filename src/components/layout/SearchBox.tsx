@@ -366,7 +366,7 @@ export function SearchBox({
           block ? "w-full max-w-full" : "max-w-md",
           // 普通页面样式
           (!isAccountPage || scrolled) && [
-            "bg-[#f1f4f9] border border-border dark:bg-[#343746]",
+            "bg-muted border border-border",
             "hover:bg-card hover:border-primary hover:ring-1 hover:ring-primary",
             "focus-within:bg-card",
           ],
@@ -449,31 +449,33 @@ export function SearchBox({
           {shouldShowAnimatedPlaceholder && (
             <div className="pointer-events-none absolute inset-0 flex items-center px-2 text-xs">
               <div className="w-full h-5 overflow-hidden">
-              <div
-                className={cn(
-                  "w-full",
-                  !isPlaceholderResetting && "transition-transform duration-400",
-                  isPlaceholderAnimating ? "-translate-y-5" : "translate-y-0",
-                )}
-              >
-                <span
+                <div
                   className={cn(
-                    "block h-5 leading-5 truncate text-secondary dark:text-white/60",
-                    isAccountPage && !scrolled && "text-white/70",
+                    "w-full",
+                    !isPlaceholderResetting &&
+                      "transition-transform duration-400",
+                    isPlaceholderAnimating ? "-translate-y-5" : "translate-y-0",
                   )}
                 >
-                  {currentHotSearchKeyword}
-                </span>
-                <span
-                  className={cn(
-                    "block h-5 leading-5 truncate text-secondary dark:text-white/60",
-                    isAccountPage && !scrolled && "text-white/70",
-                  )}
-                >
-                  {hotSearches[(currentHotSearchIndex + 1) % hotSearches.length] ||
-                    currentHotSearchKeyword}
-                </span>
-              </div>
+                  <span
+                    className={cn(
+                      "block h-5 leading-5 truncate text-secondary dark:text-white/60",
+                      isAccountPage && !scrolled && "text-white/70",
+                    )}
+                  >
+                    {currentHotSearchKeyword}
+                  </span>
+                  <span
+                    className={cn(
+                      "block h-5 leading-5 truncate text-secondary dark:text-white/60",
+                      isAccountPage && !scrolled && "text-white/70",
+                    )}
+                  >
+                    {hotSearches[
+                      (currentHotSearchIndex + 1) % hotSearches.length
+                    ] || currentHotSearchKeyword}
+                  </span>
+                </div>
               </div>
             </div>
           )}

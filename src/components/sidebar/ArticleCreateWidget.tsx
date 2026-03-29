@@ -16,7 +16,7 @@ export const ArticleCreateWidget = async () => {
         >
           <div className="size-12 flex items-center justify-center  bg-[#3db8f533] rounded-full">
             <svg
-              className="size-8"
+              className="size-6"
               viewBox="0 0 1493 1024"
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
@@ -49,7 +49,7 @@ export const ArticleCreateWidget = async () => {
         >
           <div className="size-12 flex items-center justify-center bg-orange-100 rounded-full ">
             <svg
-              className="size-8"
+              className="size-6"
               viewBox="0 0 1024 1024"
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
@@ -77,7 +77,7 @@ export const ArticleCreateWidget = async () => {
         >
           <div className="size-12 flex items-center justify-center bg-red-100 rounded-full ">
             <svg
-              className="size-8"
+              className="size-6"
               viewBox="0 0 1024 1024"
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"

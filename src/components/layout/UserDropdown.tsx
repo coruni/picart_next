@@ -182,10 +182,7 @@ export function UserDropdown() {
           </h3>
 
           <div className="group/language relative p-1">
-            <button
-              type="button"
-              className="mb-1 flex h-10 w-full cursor-pointer items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary group-hover/language:bg-primary/15 group-hover/language:text-primary focus:outline-none"
-            >
+            <div className="mb-1 flex h-10 cursor-pointer items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary">
               <div className="flex items-center gap-3">
                 <div className="flex shrink-0 items-center justify-center">
                   <Globe className="size-5" />
@@ -201,18 +198,9 @@ export function UserDropdown() {
                 </span>
                 <ChevronRight className="size-4" />
               </div>
-            </button>
+            </div>
 
-            <div className="pointer-events-none absolute top-0 right-full z-10 h-full w-3" />
-
-            <div
-              className={`
-                invisible pointer-events-none absolute top-0 right-full z-10 mr-1 min-w-36 rounded-xl border border-border bg-card p-1 opacity-0 shadow-lg
-                transition-all duration-150
-                group-hover/language:visible group-hover/language:pointer-events-auto group-hover/language:opacity-100
-                group-focus-within/language:visible group-focus-within/language:pointer-events-auto group-focus-within/language:opacity-100
-              `}
-            >
+            <div className="invisible absolute top-0 right-full z-10 mr-1 min-w-36 rounded-xl border border-border bg-card p-1 opacity-0 shadow-lg transition-all duration-150 group-hover/language:visible group-hover/language:opacity-100">
               {languageOptions.map((option) => (
                 <button
                   key={option.value}
