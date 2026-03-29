@@ -17,7 +17,6 @@ type BannerCarouselProps = {
 
 function BannerImage({ banner }: { banner: ResolvedBannerItem }) {
   const [position, setPosition] = useState({ x: 50, y: 50 });
-  const [isHovering, setIsHovering] = useState(false);
 
   const handleMouseMove = (event: MouseEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -33,9 +32,7 @@ function BannerImage({ banner }: { banner: ResolvedBannerItem }) {
   return (
     <div
       className="relative h-full w-full cursor-pointer overflow-hidden bg-border"
-      onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => {
-        setIsHovering(false);
         setPosition({ x: 50, y: 50 });
       }}
       onMouseMove={handleMouseMove}
@@ -116,7 +113,7 @@ export function BannerCarousel({
       </Swiper>
 
       {banners.length > 1 ? (
-        <div className="pointer-events-none absolute bottom-3 left-1/2 z-[8] flex -translate-x-1/2 items-center gap-2">
+        <div className="pointer-events-none absolute bottom-3 left-1/2 z-8 flex -translate-x-1/2 items-center gap-2">
           {banners.map((banner, index) => {
             const isActive = index === activeIndex;
 

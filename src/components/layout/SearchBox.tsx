@@ -111,6 +111,7 @@ export function SearchBox({
   );
 
   // 搜索建议（防抖）
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const searchSuggestions = useCallback(
     debounce((query: string) => {
       (async () => {
