@@ -33,6 +33,7 @@ export function Header({ categories }: HeaderProps) {
     allowedPages.some((path) => pathname.includes(path)) &&
     !deniedPages.some((path) => pathname.includes(path));
   const scrolled = useScrollThreshold(240, isTransparentBgPage);
+  const shouldUseTransparentHeader = isTransparentBgPage && !scrolled;
 
   // 搜索页不显示搜索框，避免重复
   const isSearchPage = pathname === "/search";
@@ -209,9 +210,16 @@ export function Header({ categories }: HeaderProps) {
     <header
       ref={headerRef}
       className={cn(
-        "fixed left-0 right-0 top-0 z-50",
-        isTransparentBgPage && !scrolled ? "bg-transparent" : "bg-card",
+        "fixed left-0 right-0 top-0 z-50 transition-colors",
+        shouldUseTransparentHeader
+          ? "bg-transparent dark:bg-transparent"
+          : "bg-card",
       )}
+      style={
+        shouldUseTransparentHeader
+          ? { backgroundColor: "transparent" }
+          : undefined
+      }
     >
       <div className="mx-auto px-4 md:px-10">
         <div className="flex min-h-15 flex-col justify-center gap-2 py-2 md:h-15 md:min-h-0 md:flex-row md:items-center md:justify-between md:gap-4 md:py-0">
@@ -220,7 +228,7 @@ export function Header({ categories }: HeaderProps) {
               href="/"
               className={cn(
                 "line-clamp-1 min-w-0 text-nowrap text-2xl font-bold text-primary md:text-3xl",
-                isTransparentBgPage && !scrolled && "text-white",
+                shouldUseTransparentHeader && "text-white",
               )}
             >
               {siteConfig?.site_name}
@@ -229,7 +237,7 @@ export function Header({ categories }: HeaderProps) {
               <HeaderTabs
                 categories={categories ?? []}
                 labelClassName={
-                  isTransparentBgPage && !scrolled ? "text-white" : undefined
+                  shouldUseTransparentHeader ? "text-white" : undefined
                 }
               />
             </div>
@@ -241,7 +249,7 @@ export function Header({ categories }: HeaderProps) {
             <HeaderTabs
               categories={categories ?? []}
               labelClassName={
-                isTransparentBgPage && !scrolled ? "text-white" : undefined
+                shouldUseTransparentHeader ? "text-white" : undefined
               }
             />
             {!isSearchPage && (

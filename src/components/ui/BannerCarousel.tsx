@@ -3,36 +3,43 @@
 import { cn } from "@/lib";
 import Image from "next/image";
 import "swiper/css";
-import "swiper/css/pagination";
-import { Autoplay, Pagination } from "swiper/modules";
+import { Autoplay } from "swiper/modules";
+import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { ResolvedBannerItem } from "./Banner";
 
 type BannerCarouselProps = {
   banners: ResolvedBannerItem[];
   className?: string;
+  autoplayDelay?: number;
 };
 
-export function BannerCarousel({ banners, className }: BannerCarouselProps) {
+export function BannerCarousel({
+  banners,
+  className,
+  autoplayDelay = 4000,
+}: BannerCarouselProps) {
+  const [activeIndex, setActiveIndex] = useState(0);
+
   return (
-    <div className={cn("h-full w-full overflow-hidden rounded-xl", className)}>
+    <div className={cn("relative h-full w-full overflow-hidden rounded-xl", className)}>
       <Swiper
-        modules={[Autoplay, Pagination]}
+        modules={[Autoplay]}
         slidesPerView={1}
         loop={banners.length > 1}
         autoplay={
           banners.length > 1
             ? {
-                delay: 4000,
+                delay: autoplayDelay,
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true,
               }
             : false
         }
-        pagination={{
-          clickable: true,
+        onRealIndexChange={(swiper) => {
+          setActiveIndex(swiper.realIndex);
         }}
-        className="h-full w-full"
+        className="banner-swiper h-full w-full"
       >
         {banners.map((banner, index) => {
           const content = (
@@ -65,6 +72,34 @@ export function BannerCarousel({ banners, className }: BannerCarouselProps) {
           );
         })}
       </Swiper>
+
+      {banners.length > 1 ? (
+        <div className="pointer-events-none absolute bottom-3 left-1/2 z-[8] flex -translate-x-1/2 items-center gap-2">
+          {banners.map((banner, index) => {
+            const isActive = index === activeIndex;
+
+            return (
+              <div
+                key={`${banner.image}-indicator-${index}`}
+                className={cn(
+                  "relative h-2 overflow-hidden rounded-full transition-all duration-300",
+                  isActive ? "w-8 bg-white/15" : "w-2 bg-white/55",
+                )}
+              >
+                {isActive ? (
+                  <div
+                    key={`progress-${activeIndex}-${autoplayDelay}`}
+                    className="absolute inset-0 origin-left rounded-full bg-primary"
+                    style={{
+                      animation: `bannerIndicatorProgress ${autoplayDelay}ms linear forwards`,
+                    }}
+                  />
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
     </div>
   );
 }

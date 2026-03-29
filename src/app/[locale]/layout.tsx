@@ -12,6 +12,7 @@ import {
   getPublicConfig,
 } from "@/lib/seo";
 import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
+import { ThemeSyncProvider } from "@/components/providers/ThemeSyncProvider";
 import { AuthRouteGuard } from "@/components/providers/AuthRouteGuard";
 import { UserStateProvider } from "@/components/providers/UserStateProvider";
 import { getServerCookie } from "@/lib/server-cookies";
@@ -115,6 +116,7 @@ export default async function LocaleLayout({
       <NextTopLoader color="#6680ff" showSpinner={false} />
       <NextIntlClientProvider messages={messages}>
         <DeviceFingerprintProvider />
+        <ThemeSyncProvider />
 
         <UserStateProvider
           initialToken={initialToken}

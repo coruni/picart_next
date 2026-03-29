@@ -117,14 +117,14 @@ export default async function ChannelLayout({
           className="absolute bottom-0 left-0 w-full z-2 h-70"
           style={{
             background:
-              "linear-gradient(180deg, rgba(245, 246, 251, 0) 0%, #f5f6fb 100%)",
+              "linear-gradient(180deg, color-mix(in srgb, var(--background) 0%, transparent) 0%, var(--background) 100%)",
           }}
         />
       </div>
 
       <ChannelNav channels={categories} currentId={Number(pid)} />
 
-      <div className="mt-60 w-full z-10 relative dark:bg-gray-800">
+      <div className="relative z-10 mt-60 w-full">
         <div className="page-container">
           <div className="left-container">
             <div className="top-header px-10 h-14 flex items-center border-b border-border sticky bg-card z-5 rounded-t-xl">

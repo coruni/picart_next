@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   --background: #f5f6fb;
@@ -29,14 +30,12 @@
 }
 
 /* 暗色模式下的滚动条 */
-@media (prefers-color-scheme: dark) {
-  ::-webkit-scrollbar-thumb {
-    background-color: #4b5563;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: #6b7280;
-  }
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280;
 }
 
 @theme {
@@ -45,6 +44,8 @@
   --color-border: #f5f6fb;
   /* 如果需要添加次要色 */
   --color-secondary: #00000073;
+  --color-muted: #f1f4f9;
+  --color-muted-foreground: #6b7280;
   /* Card 背景颜色 */
   --color-card: #ffffff;
   /* 自定义字体 */
@@ -59,15 +60,14 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0c0f1d;
-    --foreground: #ededed;
-    --color-card: #1b1d2a;
-    --color-secondary: #ffffffa6;
-    --color-border:#0c0f1d;
-
-  }
+.dark {
+  --background: #0c0f1d;
+  --foreground: #ededed;
+  --color-card: #1b1d2a;
+  --color-secondary: #ffffffa6;
+  --color-muted: #252938;
+  --color-muted-foreground: #9ca3af;
+  --color-border:#0c0f1d;
 }
 
 body {
@@ -116,6 +116,23 @@ body {
   border-width: 3px;
   outline-offset: 4px;
 }
+
+@keyframes bannerIndicatorProgress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.banner-swiper,
+.banner-swiper .swiper-wrapper,
+.banner-swiper .swiper-slide {
+  width: 100%;
+  height: 100%;
+}
+
 
 
 /*  Viewer 自定义样式 */

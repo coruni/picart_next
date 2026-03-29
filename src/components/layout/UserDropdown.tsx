@@ -1,35 +1,59 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { GuardedLink } from "@/components/shared/GuardedLink";
+import { Switch } from "@/components/ui/Switch";
 import { Link } from "@/i18n/routing";
+import { MODAL_IDS } from "@/lib/modal-helpers";
+import { useAppStore, useModalStore, useUserStore } from "@/stores";
 import {
-  Globe,
-  Moon,
+  Check,
   ChevronRight,
-  LogIn,
-  Power,
-  User,
-  MessageCircle,
+  Globe,
   Lock,
+  LogIn,
+  MessageCircle,
+  Monitor,
+  Moon,
+  Power,
+  Sun,
+  User,
   UserRoundX,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useUserStore, useModalStore } from "@/stores";
-import { Switch } from "@/components/ui/Switch";
-import { MODAL_IDS } from "@/lib/modal-helpers";
-import { UserLoginDialog } from "./UserLoginDialog";
+import { useState } from "react";
 import { Avatar } from "../ui/Avatar";
-import { GuardedLink } from "@/components/shared/GuardedLink";
+import { UserLoginDialog } from "./UserLoginDialog";
 
 export function UserDropdown() {
   const t = useTranslations("common");
   const tHeader = useTranslations("header");
+  const tTheme = useTranslations("themeSwitcher");
   const [autoTranslate, setAutoTranslate] = useState(false);
 
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const user = useUserStore((state) => state.user);
   const logout = useUserStore((state) => state.logout);
+  const theme = useAppStore((state) => state.theme);
+  const setTheme = useAppStore((state) => state.setTheme);
   const modalStore = useModalStore();
+
+  const themeOptions = [
+    {
+      value: "system" as const,
+      label: tTheme("system"),
+      icon: Monitor,
+    },
+    {
+      value: "light" as const,
+      label: tTheme("light"),
+      icon: Sun,
+    },
+    {
+      value: "dark" as const,
+      label: tTheme("dark"),
+      icon: Moon,
+    },
+  ];
 
   const handleLogout = async () => {
     logout();
@@ -152,11 +176,8 @@ export function UserDropdown() {
             </Link>
           </div>
 
-          <div className="p-1">
-            <Link
-              href="#"
-              className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
-            >
+          <div className="group/theme relative p-1">
+            <div className="mb-1 flex h-10 cursor-pointer items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary">
               <div className="flex items-center gap-3">
                 <div className="flex shrink-0 items-center justify-center rounded-full">
                   <Moon className="size-5" />
@@ -166,10 +187,38 @@ export function UserDropdown() {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm">{tHeader("followSystem")}</span>
+                <span className="text-sm">
+                  {themeOptions.find((option) => option.value === theme)?.label ||
+                    tHeader("followSystem")}
+                </span>
                 <ChevronRight className="size-4" />
               </div>
-            </Link>
+            </div>
+
+            <div className="invisible absolute top-0 right-full z-10 mr-1 min-w-40 rounded-xl border border-border bg-card p-1 opacity-0 shadow-lg transition-all duration-150 group-hover/theme:visible group-hover/theme:opacity-100">
+              {themeOptions.map((option) => {
+                const Icon = option.icon;
+
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setTheme(option.value)}
+                    className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className="size-4" />
+                      <span className="text-sm font-medium">{option.label}</span>
+                    </div>
+                    <Check
+                      className={`size-4 ${
+                        theme === option.value ? "opacity-100" : "opacity-0"
+                      }`}
+                    />
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="p-1">

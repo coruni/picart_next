@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { articleControllerSearch } from "@/api";
+import { articleControllerFindHotSearch, articleControllerSearch } from "@/api";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { useRouter } from "@/i18n/routing";
@@ -80,6 +80,12 @@ export function SearchBox({
   const [isSearchPanelOpen, setIsSearchPanelOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(defaultValue);
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [hotSearches, setHotSearches] = useState<string[]>(
+    () => (tSearch.raw("hotSearches") as string[]) || [],
+  );
+  const [currentHotSearchIndex, setCurrentHotSearchIndex] = useState(0);
+  const [isPlaceholderAnimating, setIsPlaceholderAnimating] = useState(false);
+  const [isPlaceholderResetting, setIsPlaceholderResetting] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [searchHistory, setSearchHistory] = useLocalStorage<string[]>(
     "searchHistory",
@@ -91,9 +97,7 @@ export function SearchBox({
   const searchBoxRef = useRef<HTMLDivElement>(null!);
   const inputRef = useRef<HTMLInputElement>(null);
   const searchAbortControllerRef = useRef<AbortController | null>(null);
-
-  // Mock hot searches data - in real app this would come from API
-  const hotSearches = tSearch.raw("hotSearches") as string[];
+  const hotSearchLoadedRef = useRef(false);
 
   // Close search panel when clicking outside
   useClickOutside<HTMLDivElement>(searchBoxRef, () => {
@@ -125,6 +129,12 @@ export function SearchBox({
     avatar: "/placeholder/menu.png",
     description: t("searchAll"),
   };
+  const currentHotSearchKeyword = hotSearches[currentHotSearchIndex] || "";
+  const shouldShowAnimatedPlaceholder =
+    !placeholder && !searchQuery.trim() && Boolean(currentHotSearchKeyword);
+  const effectivePlaceholder = shouldShowAnimatedPlaceholder
+    ? ""
+    : placeholder || t("search");
 
   // 搜索建议（防抖）
   const searchSuggestions = useCallback(
@@ -196,6 +206,79 @@ export function SearchBox({
     };
   }, []);
 
+  useEffect(() => {
+    if (hotSearchLoadedRef.current) {
+      return;
+    }
+
+    hotSearchLoadedRef.current = true;
+
+    const fallbackHotSearches = (tSearch.raw("hotSearches") as string[]) || [];
+
+    void (async () => {
+      try {
+        const response = await articleControllerFindHotSearch({
+          query: {
+            limit: 8,
+          },
+        });
+
+        const items = response.data?.data?.data;
+        if (!Array.isArray(items)) {
+          setHotSearches(fallbackHotSearches);
+          return;
+        }
+
+        const keywords = items
+          .map((item) => {
+            if (
+              typeof item === "object" &&
+              item !== null &&
+              "keyword" in item &&
+              typeof item.keyword === "string"
+            ) {
+              return item.keyword.trim();
+            }
+            return "";
+          })
+          .filter(Boolean);
+
+        setHotSearches(keywords.length > 0 ? keywords : fallbackHotSearches);
+      } catch (error) {
+        console.error("Hot search error:", error);
+        setHotSearches(fallbackHotSearches);
+      }
+    })();
+  }, [tSearch]);
+
+  useEffect(() => {
+    if (hotSearches.length <= 1) {
+      setCurrentHotSearchIndex(0);
+      return;
+    }
+
+    let resetTimer: number | undefined;
+    const timer = window.setInterval(() => {
+      setIsPlaceholderAnimating(true);
+
+      resetTimer = window.setTimeout(() => {
+        setIsPlaceholderResetting(true);
+        setCurrentHotSearchIndex((prev) => (prev + 1) % hotSearches.length);
+        setIsPlaceholderAnimating(false);
+        window.requestAnimationFrame(() => {
+          setIsPlaceholderResetting(false);
+        });
+      }, 420);
+    }, 20000);
+
+    return () => {
+      window.clearInterval(timer);
+      if (resetTimer) {
+        window.clearTimeout(resetTimer);
+      }
+    };
+  }, [hotSearches]);
+
   // 跳转到搜索页面
   const goToSearchPage = useCallback(
     (query: string) => {
@@ -229,8 +312,11 @@ export function SearchBox({
   );
 
   const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    goToSearchPage(query);
+    const normalizedQuery = query.trim() || currentHotSearchKeyword;
+    if (!normalizedQuery) return;
+
+    setSearchQuery(normalizedQuery);
+    goToSearchPage(normalizedQuery);
   };
 
   const handleSearchFromHistory = (query: string) => {
@@ -244,7 +330,7 @@ export function SearchBox({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && searchQuery.trim()) {
+    if (e.key === "Enter") {
       handleSearch(searchQuery);
     }
   };
@@ -343,26 +429,59 @@ export function SearchBox({
         </div>
 
         {/* 搜索输入框 */}
-        <input
-          ref={inputRef}
-          type="text"
-          value={searchQuery}
-          onChange={handleInputChange}
-          onFocus={handleInputFocus}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder || t("search")}
-          className={cn(
-            "w-full h-full rounded-full transition-all px-2 bg-transparent border-none",
-            "placeholder:text-secondary placeholder:text-xs text-xs text-black/80",
-            "focus:outline-none",
-            // Account 页面未滚动时的透明样式
-            isAccountPage && !scrolled && ["placeholder:text-white/70"],
+        <div className="relative h-full flex-1">
+          <input
+            ref={inputRef}
+            type="text"
+            value={searchQuery}
+            onChange={handleInputChange}
+            onFocus={handleInputFocus}
+            onKeyDown={handleKeyDown}
+            placeholder={effectivePlaceholder}
+            className={cn(
+              "relative z-10 w-full h-full rounded-full transition-all px-2 bg-transparent border-none",
+              "placeholder:text-secondary placeholder:text-xs text-xs text-black/80 dark:text-white/80 dark:placeholder:text-white/60",
+              "focus:outline-none",
+              // Account 页面未滚动时的透明样式
+              isAccountPage && !scrolled && ["placeholder:text-white/70"],
+            )}
+          />
+          {shouldShowAnimatedPlaceholder && (
+            <div className="pointer-events-none absolute inset-0 flex items-center px-2 text-xs">
+              <div className="w-full h-5 overflow-hidden">
+              <div
+                className={cn(
+                  "w-full",
+                  !isPlaceholderResetting && "transition-transform duration-400",
+                  isPlaceholderAnimating ? "-translate-y-5" : "translate-y-0",
+                )}
+              >
+                <span
+                  className={cn(
+                    "block h-5 leading-5 truncate text-secondary dark:text-white/60",
+                    isAccountPage && !scrolled && "text-white/70",
+                  )}
+                >
+                  {currentHotSearchKeyword}
+                </span>
+                <span
+                  className={cn(
+                    "block h-5 leading-5 truncate text-secondary dark:text-white/60",
+                    isAccountPage && !scrolled && "text-white/70",
+                  )}
+                >
+                  {hotSearches[(currentHotSearchIndex + 1) % hotSearches.length] ||
+                    currentHotSearchKeyword}
+                </span>
+              </div>
+              </div>
+            </div>
           )}
-        />
+        </div>
 
         {/* 搜索按钮 */}
         <button
-          onClick={() => searchQuery.trim() && handleSearch(searchQuery)}
+          onClick={() => handleSearch(searchQuery)}
           className={cn(
             "flex items-center justify-center size-7 rounded-full transition-colors",
             "hover:bg-primary/10",
@@ -403,7 +522,7 @@ export function SearchBox({
                           <button
                             key={index}
                             onClick={() => handleSearchFromHistory(item)}
-                            className="px-3 py-1.5 text-sm bg-muted hover:bg-muted/80 rounded-full transition-colors text-muted-foreground hover:text-foreground"
+                            className="px-3 py-1 cursor-pointer text-sm bg-muted hover:bg-muted/80 rounded-full transition-colors text-muted-foreground hover:text-foreground"
                           >
                             {item}
                           </button>
@@ -421,7 +540,7 @@ export function SearchBox({
                         <button
                           key={index}
                           onClick={() => handleSearchFromHistory(item)}
-                          className="px-3 py-1.5 text-sm bg-primary/10 hover:bg-primary/20 rounded-full transition-colors text-primary"
+                          className="px-3 py-1 cursor-pointer text-sm bg-primary/10 hover:bg-primary/20 rounded-full transition-colors text-primary"
                         >
                           {item}
                         </button>
@@ -482,69 +601,80 @@ export function SearchBox({
         )}
 
         {/* 分类下拉菜单 */}
-        {isDropdownOpen && (
-          <>
-            {/* 遮罩层 */}
-            <div
-              className="fixed inset-0 z-40"
-              onClick={() => setIsDropdownOpen(false)}
-            />
+        <>
+          {/* 遮罩层 */}
+          <div
+            className={cn(
+              "fixed inset-0 z-40 transition-opacity duration-150",
+              isDropdownOpen
+                ? "pointer-events-auto opacity-100"
+                : "pointer-events-none opacity-0",
+            )}
+            onClick={() => setIsDropdownOpen(false)}
+          />
 
-            {/* 菜单内容 */}
-            <div className="absolute top-full left-0 mt-2 w-full bg-card border border-border rounded-xl shadow-lg z-50 max-h-102 overflow-y-auto scroll-auto">
-              <div className="p-2">
-                {/* 全部选项 */}
+          {/* 菜单内容 */}
+          <div
+            className={cn(
+              "absolute top-full left-0 mt-2 z-50 w-full max-h-102 overflow-y-auto rounded-xl border border-border bg-card shadow-lg scroll-auto",
+              "origin-top transition-all duration-150 will-change-transform",
+              isDropdownOpen
+                ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
+                : "pointer-events-none -translate-y-1 scale-98 opacity-0",
+            )}
+          >
+            <div className="p-2">
+              {/* 全部选项 */}
+              <button
+                onClick={() => handleCategorySelect(undefined)}
+                className={cn(
+                  "w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left cursor-pointer hover:bg-primary/15",
+                  !selectedCategory && "text-primary",
+                )}
+              >
+                <div className="size-8 rounded-full bg-primary/15 flex items-center justify-center">
+                  <Image
+                    src="/placeholder/menu.png"
+                    width={32}
+                    height={32}
+                    alt="all menu"
+                    className="rounded-full"
+                  />
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm">{t("all")}</div>
+                </div>
+              </button>
+
+              {/* 分类选项 */}
+              {menuItems.map((category) => (
                 <button
-                  onClick={() => handleCategorySelect(undefined)}
+                  key={category.id}
+                  onClick={() => handleCategorySelect(category)}
                   className={cn(
-                    "w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left cursor-pointer hover:bg-primary/15",
-                    !selectedCategory && "text-primary",
+                    "w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left cursor-pointer hover:bg-primary/15 hover:text-primary",
+                    selectedCategory?.id === category.id && "text-primary",
                   )}
                 >
-                  <div className="size-8 rounded-full bg-primary/15 flex items-center justify-center">
-                    <Image
-                      src="/placeholder/menu.png"
-                      width={32}
-                      height={32}
-                      alt="all menu"
-                      className="rounded-full"
-                    />
+                  <div className="size-8 rounded-full bg-primary/15 flex items-center justify-center relative">
+                    {category.avatar && (
+                      <Image
+                        src={category.avatar}
+                        fill
+                        quality={95}
+                        alt={category.name}
+                        className="rounded-full object-cover"
+                      />
+                    )}
                   </div>
                   <div className="flex-1">
-                    <div className="text-sm">{t("all")}</div>
+                    <span className="text-sm">{category.name}</span>
                   </div>
                 </button>
-
-                {/* 分类选项 */}
-                {menuItems.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => handleCategorySelect(category)}
-                    className={cn(
-                      "w-full flex items-center gap-3 p-2 rounded-lg transition-colors text-left cursor-pointer hover:bg-primary/15 hover:text-primary",
-                      selectedCategory?.id === category.id && "text-primary",
-                    )}
-                  >
-                    <div className="size-8 rounded-full bg-primary/15 flex items-center justify-center relative">
-                      {category.avatar && (
-                        <Image
-                          src={category.avatar}
-                          fill
-                          quality={95}
-                          alt={category.name}
-                          className="rounded-full object-cover"
-                        />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <span className="text-sm">{category.name}</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
+              ))}
             </div>
-          </>
-        )}
+          </div>
+        </>
       </div>
     </div>
   );

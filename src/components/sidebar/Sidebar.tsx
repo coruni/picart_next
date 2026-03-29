@@ -1,18 +1,22 @@
-import { bannerControllerFindActive } from "@/api";
-import { LoginWidget } from "./LoadingWidget";
+import { ArticleDetail } from "@/types";
 import { ArticleCreateWidget } from "./ArticleCreateWidget";
+import { AuthorInfoWidget } from "./AuthorInfoWidget";
+import { HotSearch } from "./HotSearch";
+import { LoginWidget } from "./LoadingWidget";
 import { RecommendUserWidget } from "./RecommendUserWidget";
 import { RecommendTagWidget } from "./RecommentTagWidget";
-import { AuthorInfoWidget } from "./AuthorInfoWidget";
-import { ArticleDetail } from "@/types";
+import { SearchHistory } from "./SearchHistory";
+
 type SidebarProps = {
   showLogin?: boolean;
   showArticleCreate?: boolean;
   showRecommendUser?: boolean;
   showRecommendTag?: boolean;
   showAuthorInfo?: boolean;
-  author?: ArticleDetail['author']
-}
+  showSearchHistory?: boolean;
+  showHotSearch?: boolean;
+  author?: ArticleDetail["author"];
+};
 
 export async function Sidebar({
   showLogin = true,
@@ -20,37 +24,25 @@ export async function Sidebar({
   showRecommendUser = true,
   showRecommendTag = true,
   showAuthorInfo = false,
-  author
+  showSearchHistory = false,
+  showHotSearch = false,
+  author,
 }: SidebarProps) {
-  // SSR: 获取活跃的 Banner
-  const response = await bannerControllerFindActive({});
-  const banners = response.data?.data || [];
-
   return (
-    <div className="space-y-4 relative">
-      {/* 登录 */}
-      {showLogin && (
-        <LoginWidget />
-      )}
-      {/* 作者信息 */}
-      {showAuthorInfo && author &&(
-        <AuthorInfoWidget author={author}/>
-      )}
+    <div className="relative space-y-4">
+      {showLogin && <LoginWidget />}
 
-      {/* 发帖 */}
-      {showArticleCreate && (
-        <ArticleCreateWidget />
-      )}
-      {/* 推荐用户 */}
-      {showRecommendUser && (
-        <RecommendUserWidget />
-      )}
-      {/* 热门话题 */}
-      {showRecommendTag && (
-        <RecommendTagWidget />
-      )}
+      {showAuthorInfo && author && <AuthorInfoWidget author={author} />}
+
+      {showArticleCreate && <ArticleCreateWidget />}
+
+      {showSearchHistory && <SearchHistory />}
+
+      {showHotSearch && <HotSearch />}
+
+      {showRecommendUser && <RecommendUserWidget />}
+
+      {showRecommendTag && <RecommendTagWidget />}
     </div>
-
-
   );
 }

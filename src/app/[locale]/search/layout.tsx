@@ -13,26 +13,34 @@ type SearchLayoutProps = {
 };
 
 export default async function SearchLayout(props: SearchLayoutProps) {
-  const { locale } = await props.params;
+  await props.params;
   const categories = await getPublicCategories();
 
   return (
     <div className="page-container">
       <div className="left-container bg-transparent! space-y-4">
-        <div className="bg-card rounded-xl relative">
-          <div className="top-header sticky py-3 z-10 bg-card rounded-t-xl">
+        <div className="relative space-y-4">
+          <div className="top-header pt-4 sticky z-10  rounded-xl bg-card">
             <SearchHeader categories={categories} className="w-full px-6" />
             <SearchPanel />
           </div>
-          <div className="p-6">
+
+          <div className="rounded-xl bg-card p-6">
             <Banner className="aspect-23/7" />
           </div>
-        </div>
 
-        {props.children}
+          {props.children}
+        </div>
       </div>
       <div className="right-container">
-        <Sidebar />
+        <Sidebar
+          showRecommendUser={false}
+          showAuthorInfo={false}
+          showArticleCreate={false}
+          showRecommendTag={false}
+          showSearchHistory
+          showHotSearch
+        />
       </div>
     </div>
   );
