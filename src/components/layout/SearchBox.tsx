@@ -85,6 +85,7 @@ export function SearchBox({
     "searchHistory",
     [],
   );
+  const sort = useSearchStore((state) => state.sort);
   const setSearchParams = useSearchStore((state) => state.setSearchParams);
 
   const searchBoxRef = useRef<HTMLDivElement>(null!);
@@ -185,8 +186,9 @@ export function SearchBox({
     setSearchParams({
       q: searchQuery.trim(),
       ...(selectedCategory?.id && { category: String(selectedCategory.id) }),
+      sort,
     });
-  }, [searchQuery, selectedCategory, setSearchParams, syncSearchStore]);
+  }, [searchQuery, selectedCategory, setSearchParams, sort, syncSearchStore]);
 
   useEffect(() => {
     return () => {

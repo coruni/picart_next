@@ -4,7 +4,7 @@ export type ClientOptions = {
     baseUrl: string;
 };
 
-export type 装饰 = {
+export type Decoration = {
     COMMENT_BUBBLE: {
         id: number;
         name: string;
@@ -2669,7 +2669,7 @@ export type UserControllerFindAllResponses = {
                     createdAt: string;
                     updatedAt: string;
                 }>;
-                equippedDecorations: 装饰;
+                equippedDecorations: Decoration;
             }>;
             meta: {
                 total: number;
@@ -2793,7 +2793,7 @@ export type UserControllerCreateResponses = {
             isMember: boolean;
             token: string;
             refreshToken: string;
-            equippedDecorations: 装饰;
+            equippedDecorations: Decoration;
         };
     };
 };
@@ -2943,7 +2943,7 @@ export type UserControllerFindOneResponses = {
             updatedAt: string;
             isFollowed: boolean;
             isMember: boolean;
-            equippedDecorations: 装饰;
+            equippedDecorations: Decoration;
         };
     };
 };
@@ -3090,7 +3090,7 @@ export type UserControllerGetProfileResponses = {
             createdAt: string;
             updatedAt: string;
             isMember: boolean;
-            equippedDecorations: 装饰;
+            equippedDecorations: Decoration;
         };
     };
 };
@@ -3556,7 +3556,7 @@ export type UserControllerLoginResponses = {
             isMember: boolean;
             token: string;
             refreshToken: string;
-            equippedDecorations: 装饰;
+            equippedDecorations: Decoration;
         };
     };
 };
@@ -3676,7 +3676,7 @@ export type UserControllerRegisterUserResponses = {
             isMember: boolean;
             token: string;
             refreshToken: string;
-            equippedDecorations: 装饰;
+            equippedDecorations: Decoration;
         };
     };
 };
@@ -4441,7 +4441,7 @@ export type ArticleControllerFindAllResponses = {
                     updatedAt: string;
                     isMember: boolean;
                     isFollowed: boolean;
-                    equippedDecorations: 装饰;
+                    equippedDecorations: Decoration;
                 };
                 category: {
                     id: number;
@@ -4660,7 +4660,7 @@ export type ArticleControllerFindOneResponses = {
                 updatedAt: string;
                 isMember: boolean;
                 isFollowed: boolean;
-                equippedDecorations: 装饰;
+                equippedDecorations: Decoration;
             };
             category: {
                 id: number;
@@ -4866,7 +4866,6 @@ export type ArticleControllerSearchData = {
     };
     path?: never;
     query: {
-        keyword: string;
         /**
          * 页码
          */
@@ -4876,6 +4875,8 @@ export type ArticleControllerSearchData = {
          */
         limit?: number;
         categoryId?: number;
+        keyword: string;
+        sortBy?: 'relevance' | 'latest' | 'views' | 'likes';
     };
     url: '/article/search';
 };
@@ -4959,7 +4960,7 @@ export type ArticleControllerSearchResponses = {
                     updatedAt: string;
                     isMember: boolean;
                     isFollowed: boolean;
-                    equippedDecorations: 装饰;
+                    equippedDecorations: Decoration;
                 };
                 category: {
                     id: number;
@@ -5115,7 +5116,7 @@ export type ArticleControllerFindRecommendationsResponses = {
                     updatedAt: string;
                     isMember: boolean;
                     isFollowed: boolean;
-                    equippedDecorations: 装饰;
+                    equippedDecorations: Decoration;
                 };
                 category: {
                     id: number;
@@ -5283,7 +5284,7 @@ export type ArticleControllerFindByAuthorResponses = {
                     updatedAt: string;
                     isMember: boolean;
                     isFollowed: boolean;
-                    equippedDecorations: 装饰;
+                    equippedDecorations: Decoration;
                 };
                 category: {
                     id: number;
@@ -5475,7 +5476,7 @@ export type ArticleControllerGetLikedArticlesResponses = {
                     updatedAt: string;
                     isMember: boolean;
                     isFollowed: boolean;
-                    equippedDecorations: 装饰;
+                    equippedDecorations: Decoration;
                 };
                 category: {
                     id: number;
@@ -5642,7 +5643,7 @@ export type ArticleControllerGetUserBrowseHistoryResponses = {
                         inviteCount: number;
                         createdAt: string;
                         updatedAt: string;
-                        equippedDecorations: 装饰;
+                        equippedDecorations: Decoration;
                     };
                     category: {
                         id: number;
@@ -5805,7 +5806,7 @@ export type ArticleControllerGetRecentBrowsedArticlesResponses = {
                 inviteCount: number;
                 createdAt: string;
                 updatedAt: string;
-                equippedDecorations: 装饰;
+                equippedDecorations: Decoration;
             };
             category?: {
                 id: number;
@@ -5951,7 +5952,7 @@ export type ArticleControllerGetBrowseHistoryResponses = {
                     inviteCount: number;
                     createdAt: string;
                     updatedAt: string;
-                    equippedDecorations: 装饰;
+                    equippedDecorations: Decoration;
                 };
                 category: {
                     id: number;
@@ -6089,7 +6090,7 @@ export type ArticleControllerGetFavoritedArticlesResponses = {
                     updatedAt: string;
                     isMember: boolean;
                     isFollowed: boolean;
-                    equippedDecorations: 装饰;
+                    equippedDecorations: Decoration;
                 };
                 category: {
                     id: number;
@@ -10591,7 +10592,17 @@ export type BannerControllerFindAllResponses = {
         code: number;
         message: string;
         data: {
-            data: Array<string>;
+            data: Array<{
+                id?: number;
+                title?: string;
+                description?: string;
+                imageUrl?: string;
+                linkUrl?: string;
+                sortOrder?: number;
+                status?: string;
+                createdAt?: string;
+                updatedAt?: string;
+            }>;
             meta: {
                 total: number;
                 page: number;
@@ -10632,8 +10643,28 @@ export type BannerControllerCreateResponses = {
     /**
      * 创建成功
      */
-    201: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+            data: {
+                id: number;
+                title: string;
+                description: string;
+                imageUrl: string;
+                linkUrl: string;
+                sortOrder: number;
+                status: string;
+                createdAt: string;
+                updatedAt: string;
+            };
+        };
+    };
 };
+
+export type BannerControllerCreateResponse = BannerControllerCreateResponses[keyof BannerControllerCreateResponses];
 
 export type BannerControllerFindActiveData = {
     body?: never;
@@ -10655,7 +10686,17 @@ export type BannerControllerFindActiveResponses = {
     200: {
         code: number;
         message: string;
-        data: Array<string>;
+        data: Array<{
+            id?: number;
+            title?: string;
+            description?: string;
+            imageUrl?: string;
+            linkUrl?: string;
+            sortOrder?: number;
+            status?: string;
+            createdAt?: string;
+            updatedAt?: string;
+        }>;
     };
 };
 

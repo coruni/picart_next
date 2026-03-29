@@ -3276,7 +3276,7 @@
                                 }
                               },
                               "equippedDecorations": {
-                                "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                                "$ref": "#/components/schemas/Decoration"
                               }
                             },
                             "required": [
@@ -3715,7 +3715,7 @@
                           "type": "string"
                         },
                         "equippedDecorations": {
-                          "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                          "$ref": "#/components/schemas/Decoration"
                         }
                       },
                       "required": [
@@ -4134,7 +4134,7 @@
                           "type": "boolean"
                         },
                         "equippedDecorations": {
-                          "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                          "$ref": "#/components/schemas/Decoration"
                         }
                       },
                       "required": [
@@ -4713,7 +4713,7 @@
                           "type": "boolean"
                         },
                         "equippedDecorations": {
-                          "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                          "$ref": "#/components/schemas/Decoration"
                         }
                       },
                       "required": [
@@ -6341,7 +6341,7 @@
                           "type": "string"
                         },
                         "equippedDecorations": {
-                          "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                          "$ref": "#/components/schemas/Decoration"
                         }
                       },
                       "required": [
@@ -6756,7 +6756,7 @@
                           "type": "string"
                         },
                         "equippedDecorations": {
-                          "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                          "$ref": "#/components/schemas/Decoration"
                         }
                       },
                       "required": [
@@ -9191,7 +9191,7 @@
                                     "type": "boolean"
                                   },
                                   "equippedDecorations": {
-                                    "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                                    "$ref": "#/components/schemas/Decoration"
                                   }
                                 },
                                 "required": [
@@ -9883,7 +9883,7 @@
                               "type": "boolean"
                             },
                             "equippedDecorations": {
-                              "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                              "$ref": "#/components/schemas/Decoration"
                             }
                           },
                           "required": [
@@ -10666,15 +10666,6 @@
         ],
         "parameters": [
           {
-            "name": "keyword",
-            "in": "query",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
             "name": "page",
             "in": "query",
             "description": "页码",
@@ -10704,6 +10695,30 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "relevance",
+                "latest",
+                "views",
+                "likes"
+              ]
             }
           },
           {
@@ -10940,7 +10955,7 @@
                                     "type": "boolean"
                                   },
                                   "equippedDecorations": {
-                                    "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                                    "$ref": "#/components/schemas/Decoration"
                                   }
                                 },
                                 "required": [
@@ -11575,7 +11590,7 @@
                                     "type": "boolean"
                                   },
                                   "equippedDecorations": {
-                                    "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                                    "$ref": "#/components/schemas/Decoration"
                                   }
                                 },
                                 "required": [
@@ -12248,7 +12263,7 @@
                                     "type": "boolean"
                                   },
                                   "equippedDecorations": {
-                                    "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                                    "$ref": "#/components/schemas/Decoration"
                                   }
                                 },
                                 "required": [
@@ -12988,7 +13003,7 @@
                                     "type": "boolean"
                                   },
                                   "equippedDecorations": {
-                                    "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                                    "$ref": "#/components/schemas/Decoration"
                                   }
                                 },
                                 "required": [
@@ -13637,7 +13652,7 @@
                                         "type": "string"
                                       },
                                       "equippedDecorations": {
-                                        "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                                        "$ref": "#/components/schemas/Decoration"
                                       }
                                     },
                                     "required": [
@@ -14288,7 +14303,7 @@
                                 "type": "string"
                               },
                               "equippedDecorations": {
-                                "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                                "$ref": "#/components/schemas/Decoration"
                               }
                             },
                             "required": [
@@ -14760,7 +14775,7 @@
                                   "type": "string"
                                 },
                                 "equippedDecorations": {
-                                  "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                                  "$ref": "#/components/schemas/Decoration"
                                 }
                               },
                               "required": [
@@ -15349,7 +15364,7 @@
                                     "type": "boolean"
                                   },
                                   "equippedDecorations": {
-                                    "$ref": "#/components/schemas/%E8%A3%85%E9%A5%B0"
+                                    "$ref": "#/components/schemas/Decoration"
                                   }
                                 },
                                 "required": [
@@ -30952,7 +30967,36 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "imageUrl": {
+                                "type": "string"
+                              },
+                              "linkUrl": {
+                                "type": "string"
+                              },
+                              "sortOrder": {
+                                "type": "integer"
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              }
+                            }
                           }
                         },
                         "meta": {
@@ -31071,6 +31115,85 @@
         "responses": {
           "201": {
             "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "imageUrl": {
+                              "type": "string"
+                            },
+                            "linkUrl": {
+                              "type": "string"
+                            },
+                            "sortOrder": {
+                              "type": "integer"
+                            },
+                            "status": {
+                              "type": "string"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "title",
+                            "description",
+                            "imageUrl",
+                            "linkUrl",
+                            "sortOrder",
+                            "status",
+                            "createdAt",
+                            "updatedAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "success",
+                        "message",
+                        "data"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           },
           "401": {
@@ -31159,7 +31282,36 @@
                     "data": {
                       "type": "array",
                       "items": {
-                        "type": "string"
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "imageUrl": {
+                            "type": "string"
+                          },
+                          "linkUrl": {
+                            "type": "string"
+                          },
+                          "sortOrder": {
+                            "type": "integer"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "type": "string"
+                          }
+                        }
                       }
                     }
                   },
@@ -40570,7 +40722,7 @@
   },
   "components": {
     "schemas": {
-      "装饰": {
+      "Decoration": {
         "type": "object",
         "properties": {
           "COMMENT_BUBBLE": {
