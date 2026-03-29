@@ -17,6 +17,24 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+function stripHtmlTags(value: string) {
+  return value.replace(/<[^>]+>/g, " ");
+}
+
+function isLikelyChineseContent(value: string) {
+  const text = value.replace(/\s+/g, "");
+  if (!text) {
+    return false;
+  }
+
+  const chineseMatches = text.match(/[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/g);
+  const letterMatches = text.match(/[A-Za-z]/g);
+  const chineseCount = chineseMatches?.length ?? 0;
+  const letterCount = letterMatches?.length ?? 0;
+
+  return chineseCount > 0 && chineseCount >= letterCount;
+}
+
 type ArticleDetailPageProps = {
   params: Promise<{
     id: string;
@@ -42,7 +60,7 @@ export async function generateMetadata({
 }
 
 export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
-  const { id } = await props.params;
+  const { id, locale } = await props.params;
   const t = await getTranslations("articleDetail");
 
   const { data } = await serverApi.articleControllerFindOne({
@@ -58,6 +76,14 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
       /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
       "",
     ) || "",
+  );
+  const shouldTranslateArticleDetail = !(
+    locale === "zh" &&
+    isLikelyChineseContent(
+      [article?.title, stripHtmlTags(article?.content || "")]
+        .filter(Boolean)
+        .join(" "),
+    )
   );
 
   return (
@@ -105,7 +131,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             />
           </div>
           <div className="px-6">
-            <ArticleTranslateNotice />
+            <ArticleTranslateNotice enabled={shouldTranslateArticleDetail} />
           </div>
           <div className="mt-4 px-6">
             {article?.type === "image" && (
@@ -118,11 +144,20 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             )}
             {content &&
               (article?.type === "image" ? (
-                <div data-auto-translate-content className="mt-2 text-sm">
+                <div
+                  data-auto-translate-content={
+                    shouldTranslateArticleDetail ? true : undefined
+                  }
+                  className="mt-2 text-sm"
+                >
                   {article.content}
                 </div>
               ) : (
-                <div data-auto-translate-content>
+                <div
+                  data-auto-translate-content={
+                    shouldTranslateArticleDetail ? true : undefined
+                  }
+                >
                   <ArticleRichContent html={content} />
                 </div>
               ))}
@@ -141,7 +176,9 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           </div>
           {article.tags?.length > 0 && (
             <div
-              data-auto-translate-content
+              data-auto-translate-content={
+                shouldTranslateArticleDetail ? true : undefined
+              }
               className="mt-2 flex items-center flex-wrap gap-2"
             >
               {article.tags?.map((tag) => (

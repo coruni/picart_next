@@ -1,7 +1,6 @@
 import type { CreateClientConfig } from "./api/client.gen";
 import {
   buildAuthHeaders,
-  getExplicitAuthHeaders,
   getRequestAuthState,
 } from "./lib/request-auth";
 
@@ -25,21 +24,8 @@ export function initializeInterceptors(): Promise<void> {
           const headers = await buildAuthHeaders(request.headers as HeadersInit);
           request.headers = headers;
 
-          if (process.env.NODE_ENV === "development") {
-            const fullUrl = (request.baseUrl || "") + request.url;
-            const explicitHeaders = getExplicitAuthHeaders(headers);
-            console.log("[auth][interceptor] request", {
-              url: fullUrl,
-              path: request.url,
-              method: request.method || "GET",
-              hasToken: !!token,
-              tokenPreview: token ? `${token.slice(0, 12)}...` : null,
-              deviceId: deviceId || "none",
-              authorizationHeader: explicitHeaders.Authorization,
-              deviceIdHeader: explicitHeaders["Device-Id"],
-              isServer: typeof window === "undefined",
-            });
-          }
+          void token;
+          void deviceId;
         } catch (error) {
           console.error("Error in request interceptor:", error);
         }
@@ -60,7 +46,6 @@ export function initializeInterceptors(): Promise<void> {
       });
 
       interceptorsInitialized = true;
-      console.log("API interceptors initialized successfully");
     })
     .catch((error) => {
       console.error("Failed to initialize API interceptors:", error);

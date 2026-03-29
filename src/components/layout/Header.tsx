@@ -7,7 +7,7 @@ import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { useAppStore } from "@/stores";
 import { CategoryList } from "@/types";
-import { ChevronRight, MessageCircle, PenIcon } from "lucide-react";
+import { ChevronRight, PenIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { HeaderTabs } from "../home/HeaderTabs";
@@ -156,9 +156,10 @@ export function Header({ categories }: HeaderProps) {
       <GuardedLink href="/create/post" className={actionButtonClassName}>
         <PenIcon className="size-5" />
       </GuardedLink>
-      <GuardedLink href="/messages" className={actionButtonClassName}>
-        <MessageCircle className="size-5" />
-      </GuardedLink>
+      <MessageDropdown
+        isTransparentBgPage={isTransparentBgPage}
+        scrolled={scrolled}
+      />
       <UserDropdown />
     </div>
   );

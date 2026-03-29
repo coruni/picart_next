@@ -28,12 +28,12 @@ declare global {
 
 const DETAIL_TRANSLATE_SCOPE_SELECTOR =
   "[data-auto-translate-article-detail] [data-auto-translate-content]";
-const TRANSLATE_LANGUAGE_MAP: Record<string, string | null> = {
-  zh: null,
+const TRANSLATE_LANGUAGE_MAP: Record<string, string> = {
+  zh: "chinese_simplified",
   en: "english",
 };
 
-export function ArticleTranslateNotice() {
+export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }) {
   const t = useTranslations("articleDetail");
   const locale = useLocale();
   const [showOriginal, setShowOriginal] = useState(false);
@@ -42,12 +42,12 @@ export function ArticleTranslateNotice() {
     setShowOriginal(false);
   }, [locale]);
 
-  const targetLanguage = TRANSLATE_LANGUAGE_MAP[locale] ?? null;
+  const targetLanguage = TRANSLATE_LANGUAGE_MAP[locale];
   const isVisible = !!targetLanguage;
 
   const providerLabel = useMemo(() => "translate.js", []);
 
-  if (!isVisible) {
+  if (!enabled || !isVisible) {
     return null;
   }
 

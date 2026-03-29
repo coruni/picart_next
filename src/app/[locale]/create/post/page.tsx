@@ -1,34 +1,36 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { useForm } from "@/hooks/useForm";
-import AvatarEditor from "react-avatar-editor";
-import { Form, FormField } from "@/components/ui/Form";
-import { Input } from "@/components/ui/Input";
-import { Editor } from "@/components/ui/Editor";
+import {
+  articleControllerCreate,
+  articleControllerFindOne,
+  articleControllerUpdate,
+  categoryControllerFindAll,
+  uploadControllerUploadFile,
+} from "@/api";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
-import { useRouter } from "@/i18n/routing";
-import { useSearchParams } from "next/navigation";
-import { CategorySelect, CategoryOption } from "@/components/ui/CategorySelect";
-import { TagSelect } from "@/components/ui/TagSelect";
+import { CategoryOption, CategorySelect } from "@/components/ui/CategorySelect";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
 } from "@/components/ui/Dialog";
-import {
-  uploadControllerUploadFile,
-  categoryControllerFindAll,
-  articleControllerCreate,
-  articleControllerFindOne,
-  articleControllerUpdate,
-} from "@/api";
-import { cn } from "@/lib";
-import { Edit, Trash2, Loader2 } from "lucide-react";
+import { Editor } from "@/components/ui/Editor";
+import { Form, FormField } from "@/components/ui/Form";
+import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
+import { TagSelect } from "@/components/ui/TagSelect";
+import { useForm } from "@/hooks/useForm";
+import { useRouter } from "@/i18n/routing";
+import { cn, prepareRichTextHtmlForDisplay } from "@/lib";
+import { useUserStore } from "@/stores";
+import { Edit, Loader2, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
+import AvatarEditor from "react-avatar-editor";
 
 type CreatePostFormData = {
   cover: string;
@@ -55,9 +57,7 @@ type CreatePostPageProps = {
 };
 
 const toNumericTagIds = (value: string[]) =>
-  value
-    .map((item) => Number(item))
-    .filter((item) => Number.isFinite(item));
+  value.map((item) => Number(item)).filter((item) => Number.isFinite(item));
 
 export default function CreatePostPage(_props: CreatePostPageProps) {
   const router = useRouter();
@@ -69,9 +69,11 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   const tc = useTranslations("common");
   const tTag = useTranslations("tagSelect");
   const coverEditorRef = useRef<AvatarEditor>(null);
+  const currentUser = useUserStore((state) => state.user);
 
   // Article loading state for edit mode
   const [articleLoading, setArticleLoading] = useState(isEditMode);
+  const [showPreview, setShowPreview] = useState(false);
 
   // Cover editor states
   const [showCoverEditor, setShowCoverEditor] = useState(false);
@@ -180,6 +182,21 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       }
     },
   });
+
+  const previewHtml = useMemo(
+    () => prepareRichTextHtmlForDisplay(values.content || ""),
+    [values.content],
+  );
+
+  const selectedParentCategory = useMemo(
+    () => parentCategories.find((item) => item.value === selectedParentId),
+    [parentCategories, selectedParentId],
+  );
+
+  const selectedChildCategory = useMemo(
+    () => childCategories.find((item) => item.value === values.categoryId),
+    [childCategories, values.categoryId],
+  );
 
   // Fetch article data in edit mode
   useEffect(() => {
@@ -392,7 +409,8 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         if (
           seq !== parentSearchSeqRef.current ||
           parentSearchAbortControllerRef.current !== abortController
-        ) return;
+        )
+          return;
         if (response.data?.data?.data) {
           const parents = response.data.data.data
             .filter((cat) => !cat.parentId || cat.parentId === 0)
@@ -469,7 +487,8 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         if (
           seq !== childSearchSeqRef.current ||
           childSearchAbortControllerRef.current !== abortController
-        ) return;
+        )
+          return;
         if (response.data?.data?.data) {
           const results = response.data.data.data
             .filter((cat) => cat.parentId === parentId)
@@ -799,6 +818,8 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                 <div className="mt-12 max-w-xl flex justify-center items-center mx-auto gap-8">
                   <Button
                     variant="default"
+                    type="button"
+                    onClick={() => setShowPreview(true)}
                     className="w-full h-11 rounded-full"
                   >
                     {t("actions.preview")}
@@ -873,6 +894,100 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
             )}
           </div>
         </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <>
+          <DialogOverlay className="bg-black/65 backdrop-blur-sm" />
+          <DialogContent
+            showClose={false}
+            className="fixed inset-0 max-h-none max-w-none translate-x-0 translate-y-0 border-0 bg-transparent p-0 shadow-none"
+          >
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+              <div className="absolute right-4 top-4 z-10 sm:right-6 sm:top-6">
+                <Button
+                  type="button"
+                  variant="primary"
+                  className="rounded-full size-8 p-2!"
+                  onClick={() => setShowPreview(false)}
+                >
+                  <X />
+                </Button>
+              </div>
+
+              <div className="relative flex h-full w-full max-w-6xl items-center justify-center overflow-hidden rounded-[28px]  ">
+                <div className="pointer-events-none absolute inset-0 " />
+                <div className="relative flex h-full w-full items-center justify-center p-6">
+                  <div className="relative w-full max-w-90 rounded-[38px] border-[6px] border-white/85 bg-[#f5f7fb] p-2 shadow-[0_28px_80px_rgba(15,23,42,0.22)] dark:border-white/15 dark:bg-[#0f1724] aspect-9/16">
+                    <div className="absolute left-1/2 top-2 h-1.5 w-24 -translate-x-1/2 rounded-full bg-black/12 dark:bg-white/12 z-10" />
+                    <div className="overflow-hidden rounded-[30px] bg-card h-full">
+                      <div className="h-full overflow-y-auto">
+                        {values.cover && (
+                          <div className="relative aspect-21/9 w-full overflow-hidden bg-muted">
+                            <ImageWithFallback
+                              src={values.cover}
+                              alt={values.title || t("title")}
+                              fill
+                              sizes="360px"
+                              className="object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="space-y-4 px-4 py-4 h-full">
+                          <div>
+                            <h2 className="text-lg font-bold leading-7 text-foreground">
+                              {values.title || t("form.titlePlaceholder")}
+                            </h2>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="relative h-10 w-10 overflow-hidden rounded-full bg-muted">
+                              {currentUser?.avatar ? (
+                                <ImageWithFallback
+                                  src={currentUser.avatar}
+                                  alt={
+                                    currentUser.nickname ||
+                                    currentUser.username ||
+                                    "User"
+                                  }
+                                  fill
+                                  sizes="40px"
+                                  className="object-cover"
+                                />
+                              ) : null}
+                            </div>
+                            <div className="min-w-0">
+                              <div className="truncate text-sm font-semibold text-foreground">
+                                {currentUser?.nickname ||
+                                  currentUser?.username ||
+                                  t("title")}
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {selectedParentCategory?.label}
+                                {selectedChildCategory?.label
+                                  ? ` · ${selectedChildCategory.label}`
+                                  : ""}
+                              </div>
+                            </div>
+                          </div>
+                          {previewHtml ? (
+                            <div
+                              className="ql-editor px-0! pb-2!"
+                              dangerouslySetInnerHTML={{ __html: previewHtml }}
+                            />
+                          ) : (
+                            <div className="rounded-xl border border-dashed border-border px-4 py-6 text-sm text-muted-foreground">
+                              {t("form.contentPlaceholder")}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </DialogContent>
+        </>
       </Dialog>
     </div>
   );

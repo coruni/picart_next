@@ -74,7 +74,6 @@ export function getCookie(name: string, cookieString?: string): string | null {
  */
 export function removeCookie(name: string, options: CookieOptions = {}): void {
   if (typeof document === "undefined") return;
-  console.log(123)
   const { path = "/", domain, sameSite } = options;
   const encodedName = encodeURIComponent(name);
   

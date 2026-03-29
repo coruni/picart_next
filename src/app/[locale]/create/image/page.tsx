@@ -636,7 +636,7 @@ export default function CreateImagePage() {
               </div>
             ) : (
               <Form errors={errors} onSubmit={handleSubmit} touched={touched}>
-                <FormField name="title" label={tPost("form.title")}>
+                <FormField name="title" label={tPost("form.title")} className="pt-4">
                   <Input
                     name="title"
                     maxLength={200}
@@ -905,18 +905,12 @@ export default function CreateImagePage() {
                   </div>
                 </div>
 
-                <div className="mt-12 max-w-xl flex justify-center items-center mx-auto gap-8">
-                  <Button
-                    variant="default"
-                    className="w-full h-11 rounded-full"
-                  >
-                    {tPost("actions.preview")}
-                  </Button>
+                <div className="mt-12 max-w-xl mx-auto">
                   <Button
                     type="submit"
                     loading={isSubmitting}
                     variant="default"
-                    className="w-full h-11 rounded-full"
+                    className="h-11 w-full rounded-full"
                   >
                     {isEditMode
                       ? tPost("actions.update")

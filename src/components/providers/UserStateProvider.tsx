@@ -42,17 +42,6 @@ export function UserStateProvider({
       const resolvedToken =
         initialToken || cookieToken || useUserStore.getState().token;
 
-      if (process.env.NODE_ENV === "development") {
-        console.log("[auth][provider] hydration start", {
-          initialToken,
-          cookieToken,
-          resolvedToken,
-          initialUserId: initialUser?.id ?? null,
-          storeToken: token,
-          storeUserId: user?.id ?? null,
-        });
-      }
-
       if (resolvedToken && resolvedToken !== useUserStore.getState().token) {
         setToken(resolvedToken);
       }
@@ -102,15 +91,6 @@ export function UserStateProvider({
         } else {
           setTimeout(schedule, 0);
         }
-      }
-
-      if (process.env.NODE_ENV === "development") {
-        const currentState = useUserStore.getState();
-        console.log("[auth][provider] hydration end", {
-          token: currentState.token,
-          userId: currentState.user?.id ?? null,
-          isAuthenticated: currentState.isAuthenticated,
-        });
       }
     };
 

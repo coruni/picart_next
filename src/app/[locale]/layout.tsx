@@ -20,7 +20,6 @@ import { getServerCookie } from "@/lib/server-cookies";
 import {
   buildAuthHeaders,
   DEVICE_ID_COOKIE_NAME,
-  getAuthDebugSnapshot,
   TOKEN_COOKIE_NAME,
 } from "@/lib/request-auth";
 import NextTopLoader from "nextjs-toploader";
@@ -62,55 +61,10 @@ export default async function LocaleLayout({
     getServerCookie(DEVICE_ID_COOKIE_NAME),
     buildAuthHeaders(),
   ]);
-
-  if (process.env.NODE_ENV === "development") {
-    console.log("[auth][layout] SSR cookie snapshot", {
-      hasInitialToken: !!initialToken,
-      initialTokenPreview: initialToken ? `${initialToken.slice(0, 12)}...` : null,
-      deviceId,
-      locale,
-      dynamicMode: "force-dynamic",
-    });
-
-    console.log("[auth][layout] SSR request headers snapshot", {
-      ...getAuthDebugSnapshot(requestHeaders),
-      rawCookieTokenPreview: initialToken ? `${initialToken.slice(0, 12)}...` : null,
-      rawCookieDeviceId: deviceId,
-    });
-  }
-
-  if (process.env.NODE_ENV === "development") {
-    console.log("[auth][layout] category request start", {
-      ...getAuthDebugSnapshot(requestHeaders),
-    });
-  }
   const categories = await getPublicCategories();
-
-  if (process.env.NODE_ENV === "development") {
-    console.log("[auth][layout] category request end", {
-      ...getAuthDebugSnapshot(requestHeaders),
-    });
-  }
-
-  if (process.env.NODE_ENV === "development") {
-    console.log("[auth][layout] public-config request start", {
-      ...getAuthDebugSnapshot(requestHeaders),
-    });
-  }
   const config = await getPublicConfig();
-
-  if (process.env.NODE_ENV === "development") {
-    console.log("[auth][layout] public-config request end", {
-      ...getAuthDebugSnapshot(requestHeaders),
-    });
-  }
-  if (process.env.NODE_ENV === "development") {
-    console.log("[auth][layout] profile fetch deferred to client", {
-      hasInitialToken: !!initialToken,
-      deviceId,
-      ...getAuthDebugSnapshot(requestHeaders),
-    });
-  }
+  void deviceId;
+  void requestHeaders;
 
   return (
     <>
