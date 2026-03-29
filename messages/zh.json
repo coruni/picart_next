@@ -57,7 +57,9 @@
     "autoTranslate": "自动翻译推荐内容",
     "followSystem": "跟随系统",
     "currentLanguage": "简体中文",
-    "authorInfo": "作者信息"
+    "authorInfo": "用户信息",
+    "logoutConfirmTitle": "确认退出登录？",
+    "logoutConfirmDescription": "退出后需要重新登录才能继续使用当前账号。"
   },
   "form": {
     "email": "邮箱",

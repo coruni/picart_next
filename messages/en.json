@@ -57,7 +57,9 @@
     "autoTranslate": "Auto-translate recommended content",
     "followSystem": "Follow System",
     "currentLanguage": "Simplified Chinese",
-    "authorInfo": "Author Info"
+    "authorInfo": "Author Info",
+    "logoutConfirmTitle": "Log out?",
+    "logoutConfirmDescription": "You will need to log in again to continue using your account."
   },
   "form": {
     "email": "Email",

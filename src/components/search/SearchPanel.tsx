@@ -38,7 +38,7 @@ export function SearchPanel() {
       <div className="mt-2 flex h-12 w-full items-stretch gap-2 border-b border-border px-6 leading-12">
         <SearchFeedTabs className="w-full " />
         <div
-          className="flex shrink-0 cursor-pointer items-center gap-1 text-sm text-secondary hover:text-primary"
+          className="flex shrink-0 cursor-pointer items-center gap-1 text-sm text-muted-foreground hover:text-primary"
           onClick={handleSortClick}
         >
           <span>更多排序</span>

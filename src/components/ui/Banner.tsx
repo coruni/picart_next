@@ -5,6 +5,7 @@ import { BannerCarousel } from "./BannerCarousel";
 
 type BannerProps = {
   className?: string;
+  autoplayDelay?: number;
 };
 
 type BannerItem = ActiveBanners[number];
@@ -76,7 +77,7 @@ function resolveBannerData(banner: unknown): ResolvedBannerItem | null {
   };
 }
 
-export async function Banner({ className }: BannerProps) {
+export async function Banner({ className, autoplayDelay = 4000 }: BannerProps) {
   let banners: ActiveBanners = [];
 
   try {
@@ -96,6 +97,10 @@ export async function Banner({ className }: BannerProps) {
   }
 
   return (
-    <BannerCarousel banners={normalizedBanners} className={cn(className)} />
+    <BannerCarousel
+      banners={normalizedBanners}
+      className={cn(className)}
+      autoplayDelay={autoplayDelay}
+    />
   );
 }

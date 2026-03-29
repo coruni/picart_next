@@ -1,8 +1,17 @@
 ﻿"use client";
 
 import { GuardedLink } from "@/components/shared/GuardedLink";
+import { Button } from "@/components/ui/Button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/Dialog";
 import { Switch } from "@/components/ui/Switch";
-import { Link } from "@/i18n/routing";
+import { Link, routing, usePathname, useRouter } from "@/i18n/routing";
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { useAppStore, useModalStore, useUserStore } from "@/stores";
 import {
@@ -19,7 +28,7 @@ import {
   User,
   UserRoundX,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Avatar } from "../ui/Avatar";
 import { UserLoginDialog } from "./UserLoginDialog";
@@ -28,8 +37,14 @@ export function UserDropdown() {
   const t = useTranslations("common");
   const tHeader = useTranslations("header");
   const tTheme = useTranslations("themeSwitcher");
+  const tLanguage = useTranslations("languageSwitcher");
   const [autoTranslate, setAutoTranslate] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const user = useUserStore((state) => state.user);
   const logout = useUserStore((state) => state.logout);
@@ -55,13 +70,23 @@ export function UserDropdown() {
     },
   ];
 
+  const languageOptions = routing.locales.map((value) => ({
+    value,
+    label: value === "zh" ? tLanguage("zh") : tLanguage("en"),
+  }));
+
   const handleLogout = async () => {
+    setIsLoggingOut(true);
     logout();
     window.location.reload();
   };
 
   const handleLoginDialogOpen = () => {
     modalStore.openModal(MODAL_IDS.LOGIN);
+  };
+
+  const handleLocaleChange = (nextLocale: string) => {
+    router.replace(pathname, { locale: nextLocale });
   };
 
   return (
@@ -156,10 +181,10 @@ export function UserDropdown() {
             {tHeader("systemSettings")}
           </h3>
 
-          <div className="p-1">
-            <Link
-              href="#"
-              className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+          <div className="group/language relative p-1">
+            <button
+              type="button"
+              className="mb-1 flex h-10 w-full cursor-pointer items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary group-hover/language:bg-primary/15 group-hover/language:text-primary focus:outline-none"
             >
               <div className="flex items-center gap-3">
                 <div className="flex shrink-0 items-center justify-center">
@@ -170,10 +195,40 @@ export function UserDropdown() {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">{tHeader("currentLanguage")}</span>
+                <span className="text-sm text-muted-foreground">
+                  {languageOptions.find((option) => option.value === locale)
+                    ?.label || tHeader("currentLanguage")}
+                </span>
                 <ChevronRight className="size-4" />
               </div>
-            </Link>
+            </button>
+
+            <div className="pointer-events-none absolute top-0 right-full z-10 h-full w-3" />
+
+            <div
+              className={`
+                invisible pointer-events-none absolute top-0 right-full z-10 mr-1 min-w-36 rounded-xl border border-border bg-card p-1 opacity-0 shadow-lg
+                transition-all duration-150
+                group-hover/language:visible group-hover/language:pointer-events-auto group-hover/language:opacity-100
+                group-focus-within/language:visible group-focus-within/language:pointer-events-auto group-focus-within/language:opacity-100
+              `}
+            >
+              {languageOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => handleLocaleChange(option.value)}
+                  className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                >
+                  <span className="text-sm font-medium">{option.label}</span>
+                  <Check
+                    className={`size-4 ${
+                      locale === option.value ? "opacity-100" : "opacity-0"
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="group/theme relative p-1">
@@ -188,8 +243,8 @@ export function UserDropdown() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm">
-                  {themeOptions.find((option) => option.value === theme)?.label ||
-                    tHeader("followSystem")}
+                  {themeOptions.find((option) => option.value === theme)
+                    ?.label || tHeader("followSystem")}
                 </span>
                 <ChevronRight className="size-4" />
               </div>
@@ -208,7 +263,9 @@ export function UserDropdown() {
                   >
                     <div className="flex items-center gap-3">
                       <Icon className="size-4" />
-                      <span className="text-sm font-medium">{option.label}</span>
+                      <span className="text-sm font-medium">
+                        {option.label}
+                      </span>
                     </div>
                     <Check
                       className={`size-4 ${
@@ -255,7 +312,7 @@ export function UserDropdown() {
           <div className="px-1 pb-2">
             {isAuthenticated ? (
               <button
-                onClick={handleLogout}
+                onClick={() => setLogoutDialogOpen(true)}
                 className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
               >
                 <Power className="size-5" />
@@ -274,7 +331,35 @@ export function UserDropdown() {
           <UserLoginDialog />
         </div>
       </div>
+
+      <Dialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <DialogContent className="max-w-sm rounded-2xl p-6" showClose={false}>
+          <DialogHeader className="mb-0 space-y-2 text-center sm:text-center">
+            <DialogTitle>{tHeader("logoutConfirmTitle")}</DialogTitle>
+            <DialogDescription>
+              {tHeader("logoutConfirmDescription")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-6 flex-row justify-center gap-6! sm:justify-center">
+            <Button
+              variant="outline"
+              className="h-8 rounded-full px-6"
+              onClick={() => setLogoutDialogOpen(false)}
+              disabled={isLoggingOut}
+            >
+              {t("cancel")}
+            </Button>
+            <Button
+              className="h-8 rounded-full px-6"
+              onClick={handleLogout}
+              loading={isLoggingOut}
+              disabled={isLoggingOut}
+            >
+              {t("logout")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
-

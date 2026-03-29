@@ -111,7 +111,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             )}
             {content &&
               (article?.type === "image" ? (
-                <div className="mt-2">{article.content}</div>
+                <div className="mt-2 text-sm">{article.content}</div>
               ) : (
                 <ArticleRichContent html={content} />
               ))}

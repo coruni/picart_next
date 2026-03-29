@@ -63,6 +63,7 @@ export function UserLoginDialog() {
     const loginDialogOpen = useModalStore((state) => state.isOpen(MODAL_IDS.LOGIN));
     const closeModal = useModalStore((state) => state.closeModal);
     const siteConfig = useAppStore((state) => state.siteConfig);
+    const loginLogo = siteConfig?.site_logo || "/placeholder/loginLogo.png";
 
     // 浣跨敤 selector 鑾峰彇鍝嶅簲寮忔柟娉?
     const setToken = useUserStore((state) => state.setToken);
@@ -332,7 +333,10 @@ export function UserLoginDialog() {
             <DialogContent className="max-w-110 rounded-2xl max-h-[98vh]">
                 <div className="flex flex-col">
                     {/* logo */}
-                    <div className="w-50 h-14 mx-auto relative -mt-2 bg-cover bg-center" style={{ backgroundImage: `url(/placeholder/loginLogo.png)` }}>
+                    <div
+                        className="w-50 h-14 mx-auto relative -mt-2 bg-contain bg-center bg-no-repeat"
+                        style={{ backgroundImage: `url(${loginLogo})` }}
+                    >
                     </div>
 
                     {/* 鏍囬 */}

@@ -6166,6 +6166,40 @@ export type ArticleControllerGetFavoritedArticlesResponses = {
 
 export type ArticleControllerGetFavoritedArticlesResponse = ArticleControllerGetFavoritedArticlesResponses[keyof ArticleControllerGetFavoritedArticlesResponses];
 
+export type ArticleControllerFindHotSearchData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: {
+        /**
+         * 限制
+         */
+        limit?: number;
+    };
+    url: '/article/hot-search';
+};
+
+export type ArticleControllerFindHotSearchResponses = {
+    200: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            data: Array<{
+                keyword: string;
+                count: number;
+            }>;
+        };
+    };
+};
+
+export type ArticleControllerFindHotSearchResponse = ArticleControllerFindHotSearchResponses[keyof ArticleControllerFindHotSearchResponses];
+
 export type ArticleControllerUpdateBrowseProgressData = {
     body: RecordBrowseHistoryDto;
     headers?: {
