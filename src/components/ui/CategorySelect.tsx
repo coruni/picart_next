@@ -64,6 +64,7 @@ export const CategorySelect = ({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const requestAbortControllerRef = useRef<AbortController | null>(null);
   const activeQueryRef = useRef("");
   const prevSearchQueryRef = useRef("");
 
@@ -77,11 +78,16 @@ export const CategorySelect = ({
   const fetchCategories = useCallback(
     async (query: string, pageToLoad: number, append: boolean) => {
       if (parentId === "") {
+        requestAbortControllerRef.current?.abort();
+        requestAbortControllerRef.current = null;
         setFetchedOptions([]);
         setHasMore(false);
         return;
       }
 
+      requestAbortControllerRef.current?.abort();
+      const abortController = new AbortController();
+      requestAbortControllerRef.current = abortController;
       setLoading(true);
       try {
         const numericParentId = parentId ? Number(parentId) : undefined;
@@ -92,7 +98,12 @@ export const CategorySelect = ({
             ...(query.trim() ? { name: query.trim() } : {}),
             ...(numericParentId ? { parentId: numericParentId } : {}),
           },
+          signal: abortController.signal,
         });
+
+        if (requestAbortControllerRef.current !== abortController) {
+          return;
+        }
 
         const rawCategories = response.data?.data?.data;
         const categories = Array.isArray(rawCategories) ? rawCategories : [];
@@ -121,13 +132,28 @@ export const CategorySelect = ({
           append ? mergeCategoryOptions(current, mappedOptions) : mappedOptions,
         );
       } catch (error) {
+        if (abortController.signal.aborted) {
+          return;
+        }
         console.error("Failed to fetch categories:", error);
       } finally {
-        setLoading(false);
+        if (requestAbortControllerRef.current === abortController) {
+          requestAbortControllerRef.current = null;
+          setLoading(false);
+        }
       }
     },
     [parentId],
   );
+
+  useEffect(() => {
+    return () => {
+      requestAbortControllerRef.current?.abort();
+      if (searchTimerRef.current) {
+        clearTimeout(searchTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (searchTimerRef.current) {

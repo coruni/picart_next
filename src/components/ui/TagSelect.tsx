@@ -73,6 +73,7 @@ export const TagSelect = ({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const requestAbortControllerRef = useRef<AbortController | null>(null);
   const activeQueryRef = useRef("");
   const prevSearchQueryRef = useRef("");
 
@@ -99,6 +100,9 @@ export const TagSelect = ({
 
   const fetchTags = useCallback(
     async (query: string, pageToLoad: number, append: boolean) => {
+      requestAbortControllerRef.current?.abort();
+      const abortController = new AbortController();
+      requestAbortControllerRef.current = abortController;
       setLoading(true);
       try {
         const response = await tagControllerFindAll({
@@ -107,7 +111,12 @@ export const TagSelect = ({
             limit: PAGE_SIZE,
             ...(query.trim() ? { name: query.trim() } : {}),
           },
+          signal: abortController.signal,
         });
+
+        if (requestAbortControllerRef.current !== abortController) {
+          return;
+        }
 
         const fetchedTags =
           response.data?.data?.data?.map((tag) => ({
@@ -141,13 +150,28 @@ export const TagSelect = ({
           return mergeTagOptions(base, selected);
         });
       } catch (error) {
+        if (abortController.signal.aborted) {
+          return;
+        }
         console.error("Failed to fetch tags:", error);
       } finally {
-        setLoading(false);
+        if (requestAbortControllerRef.current === abortController) {
+          requestAbortControllerRef.current = null;
+          setLoading(false);
+        }
       }
     },
     [initialSelectedOptions, value],
   );
+
+  useEffect(() => {
+    return () => {
+      requestAbortControllerRef.current?.abort();
+      if (searchTimerRef.current) {
+        clearTimeout(searchTimerRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (searchTimerRef.current) {

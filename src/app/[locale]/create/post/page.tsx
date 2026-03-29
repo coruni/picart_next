@@ -115,6 +115,8 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   // 记录上一次实际发起请求的 query，相同值直接跳过
   const lastParentQueryRef = useRef<string | null>(null);
   const lastChildQueryRef = useRef<string | null>(null);
+  const parentSearchAbortControllerRef = useRef<AbortController | null>(null);
+  const childSearchAbortControllerRef = useRef<AbortController | null>(null);
 
   const {
     values,
@@ -321,6 +323,19 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    return () => {
+      parentSearchAbortControllerRef.current?.abort();
+      childSearchAbortControllerRef.current?.abort();
+      if (parentSearchTimerRef.current) {
+        clearTimeout(parentSearchTimerRef.current);
+      }
+      if (childSearchTimerRef.current) {
+        clearTimeout(childSearchTimerRef.current);
+      }
+    };
+  }, []);
+
   // Handle parent category change
   const handleParentCategoryChange = (value: string) => {
     setSelectedParentId(value);
@@ -364,13 +379,20 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
 
     parentSearchTimerRef.current = setTimeout(async () => {
       const seq = ++parentSearchSeqRef.current;
+      parentSearchAbortControllerRef.current?.abort();
+      const abortController = new AbortController();
+      parentSearchAbortControllerRef.current = abortController;
       setParentSearching(true);
       try {
         const response = await categoryControllerFindAll({
           query: { name: query },
+          signal: abortController.signal,
         });
         // 丢弃过期响应
-        if (seq !== parentSearchSeqRef.current) return;
+        if (
+          seq !== parentSearchSeqRef.current ||
+          parentSearchAbortControllerRef.current !== abortController
+        ) return;
         if (response.data?.data?.data) {
           const parents = response.data.data.data
             .filter((cat) => !cat.parentId || cat.parentId === 0)
@@ -382,9 +404,14 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           setParentCategories(parents);
         }
       } catch (error) {
+        if (abortController.signal.aborted) return;
         console.error("Failed to search categories:", error);
       } finally {
-        if (seq === parentSearchSeqRef.current) {
+        if (
+          seq === parentSearchSeqRef.current &&
+          parentSearchAbortControllerRef.current === abortController
+        ) {
+          parentSearchAbortControllerRef.current = null;
           setParentSearching(false);
         }
       }
@@ -427,15 +454,22 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
 
     childSearchTimerRef.current = setTimeout(async () => {
       const seq = ++childSearchSeqRef.current;
+      childSearchAbortControllerRef.current?.abort();
+      const abortController = new AbortController();
+      childSearchAbortControllerRef.current = abortController;
       setChildSearching(true);
       try {
         const parentId = parseInt(selectedParentId, 10);
         const currentSelectedId = values.categoryId;
         const response = await categoryControllerFindAll({
           query: { name: query, parentId },
+          signal: abortController.signal,
         });
         // 丢弃过期响应
-        if (seq !== childSearchSeqRef.current) return;
+        if (
+          seq !== childSearchSeqRef.current ||
+          childSearchAbortControllerRef.current !== abortController
+        ) return;
         if (response.data?.data?.data) {
           const results = response.data.data.data
             .filter((cat) => cat.parentId === parentId)
@@ -462,9 +496,14 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           setChildCategories(results);
         }
       } catch (error) {
+        if (abortController.signal.aborted) return;
         console.error("Failed to search child categories:", error);
       } finally {
-        if (seq === childSearchSeqRef.current) {
+        if (
+          seq === childSearchSeqRef.current &&
+          childSearchAbortControllerRef.current === abortController
+        ) {
+          childSearchAbortControllerRef.current = null;
           setChildSearching(false);
         }
       }
