@@ -51,7 +51,6 @@ import type {
   ReportControllerGetStatisticsResponses,
   UserControllerFindOneResponse,
   ArticleControllerFindByAuthorResponse,
-  CommentControllerFindAllCommentsResponses,
   CommentControllerFindAllResponse,
   CommentControllerGetUserCommentsResponse,
 } from "@/api/types.gen";
@@ -131,6 +130,8 @@ export type CommentList = NonNullable<CommentControllerGetUserCommentsResponse["
 export type UserCommentList = NonNullable<CommentControllerGetUserCommentsResponse["data"]["data"]>;
 
 // ==================== 通用结构类型 ====================
+
+import "./translate";
 
 // 分页参数
 export interface PaginationParams {
