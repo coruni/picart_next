@@ -6,7 +6,6 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { SizeClass, SizeStyle } from "quill/formats/size";
 import QuillBlotFormatter2 from "@enzedonline/quill-blot-formatter2";
-import type BlotFormatter from "@enzedonline/quill-blot-formatter2";
 import { BlotSpec } from "@enzedonline/quill-blot-formatter2";
 import "@enzedonline/quill-blot-formatter2/dist/css/quill-blot-formatter2.css";
 
@@ -387,10 +386,12 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         }
 
         // 鐩戝惉鍐呭鍙樺寲
-        quill.on("text-change", () => {
+        const handleTextChange = () => {
           ensureImageCaptions(quill.root);
           emitSanitizedContent(quill.root);
-        });
+        };
+
+        quill.on("text-change", handleTextChange);
 
         // 閿洏蹇嵎閿細Ctrl+C 澶嶅埗鍥剧墖
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -510,6 +511,16 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           setShowLinkModal(true);
         };
         document.addEventListener("link-edit", handleLinkEdit);
+
+        return () => {
+          uploadAbortControllerRef.current?.abort();
+          quill.off("text-change", handleTextChange);
+          quill.root.removeEventListener("keydown", handleKeyDown);
+          quill.root.removeEventListener("paste", handlePaste, true);
+          quill.root.removeEventListener("input", handleCaptionInput);
+          quill.root.removeEventListener("keydown", handleCaptionKeyDown, true);
+          document.removeEventListener("link-edit", handleLinkEdit);
+        };
       }
     }, [ref, placeholder, readOnly, onChange, value]);
 

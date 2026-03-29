@@ -406,7 +406,10 @@
     "placeholder": "Select category",
     "searchPlaceholder": "Search category...",
     "noMatched": "No matching categories",
-    "noCategories": "No categories"
+    "noCategories": "No categories",
+    "loading": "Loading...",
+    "loadMore": "Scroll to load more",
+    "allLoaded": "All categories loaded"
   },
   "tagSelect": {
     "label": "Select topic",

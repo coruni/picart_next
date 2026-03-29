@@ -405,7 +405,10 @@
     "placeholder": "选择分类",
     "searchPlaceholder": "搜索分类...",
     "noMatched": "没有匹配的分类",
-    "noCategories": "暂无分类"
+    "noCategories": "暂无分类",
+    "loading": "加载中...",
+    "loadMore": "滚动加载更多",
+    "allLoaded": "已加载全部分类"
   },
   "tagSelect": {
     "label": "选择话题",

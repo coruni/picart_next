@@ -77,6 +77,8 @@ export const quillOverrideStyles = `
   }
   /* placeholder 不使用斜体 */
   .ql-editor.ql-blank::before {
+    color: color-mix(in srgb, var(--foreground) 42%, transparent) !important;
+    opacity: 1 !important;
     font-style: normal !important;
     font-weight: normal !important;
   }

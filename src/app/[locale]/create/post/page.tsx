@@ -93,8 +93,8 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   // 独立控制子分类框的显示，不依赖 childCategories.length，避免搜索无结果时隐藏
   const [showChildSelect, setShowChildSelect] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
-  const [parentSearching, setParentSearching] = useState(false);
-  const [childSearching, setChildSearching] = useState(false);
+  const [_parentSearching, setParentSearching] = useState(false);
+  const [_childSearching, setChildSearching] = useState(false);
 
   // Store initial categories and children map in ref to avoid re-fetching
   const initialParentCategoriesRef = useRef<CategoryOption[]>([]);
@@ -348,7 +348,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   };
 
   // Search parent categories — debounced 300ms，竞态安全
-  const handleSearchParentCategories = (query: string) => {
+  const _handleSearchParentCategories = (query: string) => {
     // query 未变化时跳过，防止重渲染引起的重复调用
     if (query === lastParentQueryRef.current) return;
     lastParentQueryRef.current = query;
@@ -393,7 +393,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
 
   // Search child categories — debounced 300ms，竞态安全
   // 搜索无结果时保留子分类框（showChildSelect 不变），仅清空列表
-  const handleSearchChildCategories = (query: string) => {
+  const _handleSearchChildCategories = (query: string) => {
     if (!selectedParentId) return;
 
     // query 未变化时跳过，防止重渲染引起的重复调用
@@ -647,8 +647,6 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                       options={parentCategories}
                       placeholder={t("form.selectCategory")}
                       disabled={categoriesLoading}
-                      loading={parentSearching}
-                      onSearch={handleSearchParentCategories}
                       className="flex-1"
                     />
                     {/* 用独立的 showChildSelect 控制显隐，与搜索结果数量解耦 */}
@@ -659,9 +657,8 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                           value={values.categoryId}
                           onChange={handleChildCategoryChange}
                           options={childCategories}
+                          parentId={selectedParentId}
                           placeholder={t("form.selectSubCategory")}
-                          loading={childSearching}
-                          onSearch={handleSearchChildCategories}
                           className="flex-1"
                         />
                       </>
@@ -725,20 +722,22 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                           />
                         </div>
                         {values.requirePayment && (
-                          <Input
-                            className="h-full justify-self-end"
-                            type="number"
-                            min={1}
-                            step={1}
-                            max={999}
-                            placeholder={t("settings.pricePlaceholder")}
-                            value={values.viewPrice}
-                            onChange={(value) =>
-                              setFieldValues({
-                                viewPrice: Number(value.target.value),
-                              })
-                            }
-                          />
+                          <div className="mt-2 flex justify-end">
+                            <Input
+                              className="h-9 w-full max-w-36 text-right tabular-nums"
+                              type="number"
+                              min={1}
+                              step={1}
+                              max={999}
+                              placeholder={t("settings.pricePlaceholder")}
+                              value={values.viewPrice}
+                              onChange={(value) =>
+                                setFieldValues({
+                                  viewPrice: Number(value.target.value),
+                                })
+                              }
+                            />
+                          </div>
                         )}
                       </div>
                     </FormField>

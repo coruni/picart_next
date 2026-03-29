@@ -266,7 +266,7 @@ export function UserDropdown() {
             </div>
           </div>
 
-          <div className="p-1">
+          <div className="p-1 cursor-pointer">
             <div className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary">
               <div className="flex items-center gap-3">
                 <div className="flex shrink-0 items-center justify-center rounded-full">

@@ -384,16 +384,16 @@ export const TagSelect = ({
         />
       </div>
 
-      {isOpen && (
-        <div
-          className={cn(
-            "absolute z-20 w-full mt-1",
-            "bg-card border border-border",
-            "drop-shadow-lg",
-            "rounded-lg",
-            "overflow-hidden",
-          )}
-        >
+      <div
+        className={cn(
+          "absolute z-20 mt-1 w-full origin-top",
+          "rounded-lg border border-border bg-card shadow-lg",
+          "overflow-hidden transition-[opacity,transform] duration-160 ease-out will-change-transform",
+          isOpen
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none -translate-y-1 opacity-0",
+        )}
+      >
           <div className="px-4 pt-4">
             <span className="font-semibold text-sm">{t("recommended")}</span>
           </div>
@@ -472,8 +472,7 @@ export const TagSelect = ({
               emptyClassName="text-muted-foreground"
             />
           </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
