@@ -1,4 +1,18 @@
 import "./globals.css";
+import { Inter, Noto_Sans_SC } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const notoSansSC = Noto_Sans_SC({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-noto-sans-sc",
+  weight: ["400", "500", "600", "700"],
+});
 
 export default function RootLayout({
   children,
@@ -7,7 +21,9 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning>
-      <body className="antialiased">
+      <body
+        className={`${inter.variable} ${notoSansSC.variable} antialiased`}
+      >
         {children}
       </body>
     </html>

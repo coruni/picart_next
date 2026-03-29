@@ -1,6 +1,5 @@
 "use client";
 
-import { useAppStore } from "@/stores";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 
@@ -29,8 +28,6 @@ declare global {
 
 const DETAIL_TRANSLATE_SCOPE_SELECTOR =
   "[data-auto-translate-article-detail] [data-auto-translate-content]";
-const AUTO_TRANSLATE_SELECTOR = "[data-auto-translate-content]";
-const ARTICLE_DETAIL_SCOPE_SELECTOR = "[data-auto-translate-article-detail]";
 const TRANSLATE_LANGUAGE_MAP: Record<string, string | null> = {
   zh: null,
   en: "english",
@@ -39,9 +36,6 @@ const TRANSLATE_LANGUAGE_MAP: Record<string, string | null> = {
 export function ArticleTranslateNotice() {
   const t = useTranslations("articleDetail");
   const locale = useLocale();
-  const autoTranslateContent = useAppStore(
-    (state) => state.autoTranslateContent,
-  );
   const [showOriginal, setShowOriginal] = useState(false);
 
   useEffect(() => {
@@ -83,19 +77,6 @@ export function ArticleTranslateNotice() {
     }
 
     translate.reset?.();
-    if (autoTranslateContent) {
-      const autoTranslateDocuments = Array.from(
-        document.querySelectorAll(AUTO_TRANSLATE_SELECTOR),
-      ).filter((element) => !element.closest(ARTICLE_DETAIL_SCOPE_SELECTOR));
-
-      if (autoTranslateDocuments.length > 0) {
-        translate.service?.use?.("client.edge");
-        translate.language?.setLocal?.("chinese_simplified");
-        translate.setDocuments?.(autoTranslateDocuments);
-        translate.execute(autoTranslateDocuments);
-        translate.changeLanguage?.(targetLanguage!);
-      }
-    }
     setShowOriginal(true);
   };
 

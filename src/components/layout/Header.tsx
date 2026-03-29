@@ -4,15 +4,13 @@ import { GuardedLink } from "@/components/shared/GuardedLink";
 import { useIsMobile } from "@/hooks";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { Link, usePathname } from "@/i18n/routing";
-import { openLoginDialog } from "@/lib/modal-helpers";
 import { cn } from "@/lib/utils";
-import { useAppStore, useUserStore } from "@/stores";
+import { useAppStore } from "@/stores";
 import { CategoryList } from "@/types";
 import { ChevronRight, MessageCircle, PenIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { HeaderTabs } from "../home/HeaderTabs";
-import { Avatar } from "../ui/Avatar";
 import { MessageDropdown } from "./MessageDropdown";
 import { SearchBox } from "./SearchBox";
 import { UserDropdown } from "./UserDropdown";
@@ -25,8 +23,6 @@ export function Header({ categories }: HeaderProps) {
   const headerRef = useRef<HTMLElement>(null);
   const tHeader = useTranslations("header");
   const siteConfig = useAppStore((state) => state.siteConfig);
-  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
-  const user = useUserStore((state) => state.user);
   const pathname = usePathname();
   const isMobile = useIsMobile();
   const allowedPages = ["/account/", "/topic/"];
@@ -163,27 +159,7 @@ export function Header({ categories }: HeaderProps) {
       <GuardedLink href="/messages" className={actionButtonClassName}>
         <MessageCircle className="size-5" />
       </GuardedLink>
-      {isAuthenticated && user ? (
-        <Link
-          href={`/account/${user.id}`}
-          className="flex shrink-0 items-center justify-center rounded-full bg-primary/20 transition-all"
-        >
-          <Avatar
-            bordered
-            url={user.avatar}
-            frameUrl={user.equippedDecorations?.AVATAR_FRAME?.imageUrl}
-            className="size-10"
-          />
-        </Link>
-      ) : (
-        <button
-          type="button"
-          onClick={openLoginDialog}
-          className="flex shrink-0 items-center justify-center rounded-full bg-primary/20 transition-all"
-        >
-          <Avatar bordered className="size-10" />
-        </button>
-      )}
+      <UserDropdown />
     </div>
   );
 

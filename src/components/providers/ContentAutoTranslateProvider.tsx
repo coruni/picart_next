@@ -29,7 +29,6 @@ declare global {
 }
 
 const AUTO_TRANSLATE_SELECTOR = "[data-auto-translate-content]";
-const ARTICLE_DETAIL_SCOPE_SELECTOR = "[data-auto-translate-article-detail]";
 const TRANSLATE_LOCAL_LANGUAGE = "chinese_simplified";
 const LOCAL_TRANSLATE_SCRIPT_PATH = "/vendor/translate.js/3.18.66/translate.js";
 const TRANSLATE_LANGUAGE_MAP: Record<string, string | null> = {
@@ -37,12 +36,6 @@ const TRANSLATE_LANGUAGE_MAP: Record<string, string | null> = {
   en: "english",
 };
 const TRANSLATE_SCRIPT_ID = "local-translate-js";
-
-function getAutoTranslateDocuments() {
-  return Array.from(document.querySelectorAll(AUTO_TRANSLATE_SELECTOR)).filter(
-    (element) => !element.closest(ARTICLE_DETAIL_SCOPE_SELECTOR),
-  );
-}
 
 export function ContentAutoTranslateProvider() {
   const locale = useLocale();
@@ -95,7 +88,7 @@ export function ContentAutoTranslateProvider() {
     }
 
     const targetLanguage = TRANSLATE_LANGUAGE_MAP[locale] ?? null;
-    const documents = getAutoTranslateDocuments();
+    const documents = document.querySelectorAll(AUTO_TRANSLATE_SELECTOR);
 
     if (documents.length === 0) {
       return;
@@ -152,7 +145,7 @@ export function ContentAutoTranslateProvider() {
       return;
     }
 
-    const documents = getAutoTranslateDocuments();
+    const documents = document.querySelectorAll(AUTO_TRANSLATE_SELECTOR);
     if (documents.length === 0) {
       return;
     }

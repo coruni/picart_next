@@ -5,7 +5,14 @@
   --background: #f5f6fb;
   --foreground: #171717;
   --header-height: 60px;
-  --font-geist-sans: Arial, Helvetica, sans-serif;
+  --font-geist-sans:
+    var(--font-noto-sans-sc),
+    var(--font-inter),
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Microsoft YaHei",
+    "Noto Sans SC",
+    sans-serif;
   --font-geist-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
@@ -49,7 +56,14 @@
   /* Card 背景颜色 */
   --color-card: #ffffff;
   /* 自定义字体 */
-  --font-sans: 'Roboto', 'Arial', ui-sans-serif, system-ui, sans-serif;
+  --font-sans:
+    var(--font-noto-sans-sc),
+    var(--font-inter),
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Microsoft YaHei",
+    "Noto Sans SC",
+    sans-serif;
 }
 
 
@@ -73,7 +87,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans);
 }
 
 .page-container {
