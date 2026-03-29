@@ -1,9 +1,9 @@
 ﻿"use client";
 
-import { ReactNode, useRef, useState } from "react";
 import { useClickOutside } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
+import { ReactNode, useRef, useState } from "react";
 
 export type MenuItem = {
   label: string;
@@ -54,49 +54,45 @@ export function DropdownMenu({
         {trigger}
       </div>
 
-      {isOpen && (
-        <div
-          className={cn(
-            "absolute top-8 rounded-xl drop-shadow-xl bg-card min-w-50 z-10",
-            position === "right" ? "right-0" : "left-0",
-            menuClassName,
+      <div
+        className={cn(
+          "absolute top-8 z-8 min-w-50 origin-top rounded-xl bg-card border-border drop-shadow-2xl  will-change-[opacity,transform] transform-gpu transition-[opacity,transform] duration-120 ease-out",
+          position === "right" ? "right-0" : "left-0",
+          isOpen
+            ? "visible scale-100 opacity-100"
+            : "invisible pointer-events-none scale-70 opacity-0",
+          menuClassName,
+        )}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+      >
+        <div className="p-2 text-sm ">
+          {(title ?? t("more")) && (
+            <div className="mb-1 px-2 font-medium">
+              <span>{title ?? t("more")}</span>
+            </div>
           )}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-        >
-          <div className="p-2">
-            {(title ?? t("more")) && (
-              <div className="px-2 font-medium mb-1">
-                <span>{title ?? t("more")}</span>
-              </div>
-            )}
 
-            {items.map((item, index) => (
-              <div
-                key={index}
-                className={cn(
-                  "cursor-pointer p-2 text-sm rounded-xl flex items-center gap-2 transition-colors",
-                  item.disabled
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-primary/15 group hover:text-primary",
-                  item.className,
-                )}
-                onClick={() => handleItemClick(item)}
-              >
-                {item.icon && (
-                  <span className="text-secondary group-hover:text-primary">
-                    {item.icon}
-                  </span>
-                )}
-                <span>{item.label}</span>
-              </div>
-            ))}
-          </div>
+          {items.map((item, index) => (
+            <div
+              key={index}
+              className={cn(
+                "flex items-center gap-2 rounded-xl p-2 text-sm transition-colors",
+                item.disabled
+                  ? "cursor-not-allowed opacity-50"
+                  : "group cursor-pointer hover:bg-primary/15 hover:text-primary text-black/75 dark:text-white/75",
+                item.className,
+              )}
+              onClick={() => handleItemClick(item)}
+            >
+              {item.icon && <span>{item.icon}</span>}
+              <span>{item.label}</span>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }
-

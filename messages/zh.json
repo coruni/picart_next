@@ -409,7 +409,23 @@
     "reportPost": "举报帖子",
     "blockUser": "拉黑用户",
     "dislikeType": "我不喜欢这类内容",
-    "moreActions": "更多操作"
+    "moreActions": "更多操作",
+    "reportDialog": {
+      "title": "选择原因",
+      "close": "关闭",
+      "confirm": "确定"
+    },
+    "reportOptions": {
+      "spamSite": "含广告及钓鱼网站",
+      "accountTrading": "涉嫌账号交易",
+      "privacyLeak": "涉嫌信息泄露",
+      "sensitiveContent": "含争议敏感内容",
+      "abuseThreat": "涉嫌语言暴力和威胁",
+      "copyright": "涉嫌侵权",
+      "impersonation": "仿冒他人",
+      "communityViolation": "违反社区礼仪",
+      "minorSafety": "儿童性虐待和性剥削"
+    }
   },
   "categorySelect": {
     "placeholder": "选择分类",

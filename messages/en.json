@@ -410,7 +410,23 @@
     "reportPost": "Report Post",
     "blockUser": "Block User",
     "dislikeType": "I dislike this type of content",
-    "moreActions": "More Actions"
+    "moreActions": "More Actions",
+    "reportDialog": {
+      "title": "Select a reason",
+      "close": "Close",
+      "confirm": "Confirm"
+    },
+    "reportOptions": {
+      "spamSite": "Contains ads or phishing sites",
+      "accountTrading": "Suspected account trading",
+      "privacyLeak": "Suspected privacy leak",
+      "sensitiveContent": "Contains sensitive content",
+      "abuseThreat": "Contains abusive language or threats",
+      "copyright": "Suspected copyright infringement",
+      "impersonation": "Impersonating someone else",
+      "communityViolation": "Violates community etiquette",
+      "minorSafety": "Child sexual abuse or exploitation"
+    }
   },
   "categorySelect": {
     "placeholder": "Select category",

@@ -104,7 +104,7 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
               </Link>
 
               {tab.hasDropdown && (
-                <div className="absolute top-full left-0 z-50 mt-2 hidden w-80 rounded-xl bg-card opacity-0 shadow-lg invisible transition-all duration-200 group-hover:visible group-hover:opacity-100 md:block">
+                <div className="absolute top-full left-0 z-50 mt-2 hidden w-80 rounded-xl bg-card opacity-0 drop-shadow-2xl border border-border invisible transition-all duration-200 group-hover:visible group-hover:opacity-100 md:block">
                   <div className="max-h-100 overflow-y-auto p-2">
                     <div className="grid gap-2">
                       {channels.map((channel) => {

@@ -1,13 +1,13 @@
-﻿import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { Dialog, DialogContent } from "../ui/Dialog";
-import { useAppStore, useModalStore, useUserStore } from "@/stores";
-import { MODAL_IDS } from "@/lib/modal-helpers";
+﻿import { userControllerLogin, userControllerRegisterUser, userControllerResetPassword, userControllerSendVerificationCode } from "@/api";
 import { useForm } from "@/hooks/useForm";
-import { Form, FormField } from "../ui/Form";
-import { FloatingInput } from "../ui/FloatingInput";
+import { MODAL_IDS } from "@/lib/modal-helpers";
+import { useAppStore, useModalStore, useUserStore } from "@/stores";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { Button } from "../ui/Button";
-import { userControllerLogin, userControllerRegisterUser, userControllerSendVerificationCode, userControllerResetPassword } from "@/api";
+import { Dialog, DialogContent } from "../ui/Dialog";
+import { FloatingInput } from "../ui/FloatingInput";
+import { Form, FormField } from "../ui/Form";
 
 type LoginFormData = {
     account: string;
@@ -65,11 +65,11 @@ export function UserLoginDialog() {
     const siteConfig = useAppStore((state) => state.siteConfig);
     const loginLogo = siteConfig?.site_logo || "/placeholder/loginLogo.png";
 
-    // 浣跨敤 selector 鑾峰彇鍝嶅簲寮忔柟娉?
+    // 使用 selector 获取所需状态方法
     const setToken = useUserStore((state) => state.setToken);
     const setUser = useUserStore((state) => state.setUser);
 
-    // 鏄惁闇€瑕侀偖绠遍獙璇?
+    // 是否需要邮箱验证
     const needEmailVerification = siteConfig?.user_email_verification === true;
 
     const getLoginErrorMessage = (error: unknown) => {
@@ -86,7 +86,7 @@ export function UserLoginDialog() {
         return t("loginFailed");
     };
 
-    // 鐧诲綍琛ㄥ崟
+    // 登录表单
     const loginForm = useForm<LoginFormData>({
         initialValues: {
             account: "",
@@ -127,7 +127,7 @@ export function UserLoginDialog() {
         },
     });
 
-    // 娉ㄥ唽琛ㄥ崟
+    // 注册表单
     const registerForm = useForm<RegisterFormData>({
         initialValues: {
             username: "",
@@ -194,7 +194,7 @@ export function UserLoginDialog() {
         },
     });
 
-    // 閲嶇疆瀵嗙爜琛ㄥ崟
+    // 重置密码表单
     const resetForm = useForm<ResetPasswordData>({
         initialValues: {
             email: "",
@@ -242,7 +242,7 @@ export function UserLoginDialog() {
                     }
                 });
 
-                // 閲嶇疆鎴愬姛锛屽垏鎹㈠洖鐧诲綍妯″紡
+                // 重置成功后切回登录模式
                 alert(tReset("resetSuccess"));
                 setMode("login");
                 resetForm.reset();
@@ -254,7 +254,7 @@ export function UserLoginDialog() {
         },
     });
 
-    // 鍙戦€侀獙璇佺爜
+    // 发送验证码
     const handleSendCode = async (email: string) => {
         if (!email) {
             return;
@@ -266,7 +266,7 @@ export function UserLoginDialog() {
                 body: { email, type: 'reset_password' }
             });
 
-            // 寮€濮嬪€掕鏃?
+            // 开始倒计时
             setCountdown(60);
             const timer = setInterval(() => {
                 setCountdown((prev) => {
@@ -330,7 +330,7 @@ export function UserLoginDialog() {
         <Dialog
             open={loginDialogOpen}
             onOpenChange={handleDialogClose}>
-            <DialogContent className="max-w-110 rounded-2xl max-h-[98vh]">
+            <DialogContent className="max-w-110 rounded-2xl max-h-[98vh] bg-card! border border-border!">
                 <div className="flex flex-col">
                     {/* logo */}
                     <div
@@ -339,7 +339,7 @@ export function UserLoginDialog() {
                     >
                     </div>
 
-                    {/* 鏍囬 */}
+                    {/* 标题 */}
                     <div className="my-6 text-center text-2xl font-semibold">
                         <span>
                             {mode === "login" && t("title")}
@@ -348,7 +348,7 @@ export function UserLoginDialog() {
                         </span>
                     </div>
 
-                    {/* 鐧诲綍琛ㄥ崟 */}
+                    {/* 登录表单 */}
                     {mode === "login" && (
                         <Form errors={loginForm.errors} onSubmit={loginForm.handleSubmit} touched={loginForm.touched}>
                             <FormField name="account" floating>
@@ -411,7 +411,7 @@ export function UserLoginDialog() {
                         </Form>
                     )}
 
-                    {/* 娉ㄥ唽琛ㄥ崟 */}
+                    {/* 注册表单 */}
                     {mode === "register" && (
                         <Form errors={registerForm.errors} onSubmit={registerForm.handleSubmit} touched={registerForm.touched}>
                             <FormField name="username" floating>
@@ -518,7 +518,7 @@ export function UserLoginDialog() {
                         </Form>
                     )}
 
-                    {/* 閲嶇疆瀵嗙爜琛ㄥ崟 */}
+                    {/* 重置密码表单 */}
                     {mode === "reset" && (
                         <Form errors={resetForm.errors} onSubmit={resetForm.handleSubmit} touched={resetForm.touched}>
                             <FormField name="email" floating>
