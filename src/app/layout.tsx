@@ -1,17 +1,37 @@
+import localFont from "next/font/local";
 import "./globals.css";
-import { Inter, Noto_Sans_SC } from "next/font/google";
 
-const inter = Inter({
-  subsets: ["latin"],
+const miSans = localFont({
+  src: [
+    {
+      path: "./fonts/MiSans-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/MiSans-Normal.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "./fonts/MiSans-Semibold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+  ],
+  fallback: [
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Microsoft YaHei",
+    "HarmonyOS Sans SC",
+    "Noto Sans SC",
+    "Segoe UI",
+    "Helvetica Neue",
+    "Arial",
+  ],
+  variable: "--font-misans",
   display: "swap",
-  variable: "--font-inter",
-});
-
-const notoSansSC = Noto_Sans_SC({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-noto-sans-sc",
-  weight: ["400", "500", "600", "700"],
+  preload: true,
 });
 
 export default function RootLayout({
@@ -21,9 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning>
-      <body
-        className={`${inter.variable} ${notoSansSC.variable} antialiased`}
-      >
+      <body className={`${miSans.className} ${miSans.variable} antialiased`}>
         {children}
       </body>
     </html>
