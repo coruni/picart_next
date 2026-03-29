@@ -383,7 +383,10 @@
   },
   "articleDetail": {
     "pageTitle": "帖子详情",
-    "repostable": "允许转载"
+    "repostable": "允许转载",
+    "translatedBy": "由 {provider} 翻译",
+    "viewOriginal": "查看原文",
+    "viewTranslation": "查看译文"
   },
   "articleCard": {
     "dislikeContent": "我不喜欢这类内容",

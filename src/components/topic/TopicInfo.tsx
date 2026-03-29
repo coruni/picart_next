@@ -75,10 +75,16 @@ export const TopicInfo = ({ tag, isFollowed: initialIsFollowed }: TopicInfoProps
             </div>
           </div>
           <div className="absolute box-border w-full -top-19 flex flex-col h-19 justify-center">
-            <div className="flex items-center space-x-2 mb-1">
+            <div
+              data-auto-translate-content
+              className="flex items-center space-x-2 mb-1"
+            >
               <span className=" text-xl text-white">{tag.name}</span>
             </div>
-            <div className="flex items-center text-xs space-x-1 text-[#ffffffa6]">
+            <div
+              data-auto-translate-content
+              className="flex items-center text-xs space-x-1 text-[#ffffffa6]"
+            >
               <span>{tag.description}</span>
             </div>
           </div>

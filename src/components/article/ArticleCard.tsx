@@ -263,11 +263,15 @@ export const ArticleCard = ({
 
       <section>
         <GuardedLink href={`/article/${article.id}`}>
-          <h3 className="mt-2 font-bold hover:text-primary cursor-pointer">
+          <h3
+            data-auto-translate-content
+            className="mt-2 font-bold hover:text-primary cursor-pointer"
+          >
             {article?.title}
           </h3>
           {summaryHtml && (
             <p
+              data-auto-translate-content
               className="article-summary-html mt-1 px-0! text-secondary text-sm leading-5 line-clamp-2 overflow-hidden cursor-pointer"
               dangerouslySetInnerHTML={{ __html: summaryHtml }}
             />
@@ -277,7 +281,10 @@ export const ArticleCard = ({
       </section>
 
       {(article.tags?.length ?? 0) > 0 && (
-        <div className="mt-2 flex items-center flex-wrap gap-2">
+        <div
+          data-auto-translate-content
+          className="mt-2 flex items-center flex-wrap gap-2"
+        >
           {article.tags?.map((tag) => (
             <Link
               href={`/topic/${tag?.id}`}

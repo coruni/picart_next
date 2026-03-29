@@ -21,10 +21,16 @@ export const RecommendTagWidget = async () => {
     console.error("Failed to fetch tags:", error);
     return (
       <section className="rounded-xl py-4 px-2 bg-card">
-        <div className=" text-ellipsis line-clamp-1 overflow-hidden leading-6  font-medium px-2 mb-3">
+        <div
+          data-auto-translate-content
+          className=" text-ellipsis line-clamp-1 overflow-hidden leading-6  font-medium px-2 mb-3"
+        >
           <span>{t("hotTopics")}</span>
         </div>
-        <div className="text-center py-4 text-muted-foreground text-sm">
+        <div
+          data-auto-translate-content
+          className="text-center py-4 text-muted-foreground text-sm"
+        >
           {t("loadError")}
         </div>
       </section>
@@ -38,7 +44,7 @@ export const RecommendTagWidget = async () => {
         key={tag.id}
         className="py-2 px-3 rounded-lg cursor-pointer hover:bg-primary/15 block"
       >
-        <div className="flex flex-col">
+        <div data-auto-translate-content className="flex flex-col">
           <div className="text-sm">
             <span>#</span>
             <span className=" font-bold leading-5">{tag.name}</span>
@@ -55,12 +61,19 @@ export const RecommendTagWidget = async () => {
 
   return (
     <section className="rounded-xl py-4 px-2 bg-card">
-      <div className=" text-ellipsis line-clamp-1 overflow-hidden leading-6  font-semibold px-2 mb-3">
+      <div
+        data-auto-translate-content
+        className=" text-ellipsis line-clamp-1 overflow-hidden leading-6  font-semibold px-2 mb-3"
+      >
         <span>{t("hotTopics")}</span>
       </div>
       {tags.map((tag) => tagCard(tag))}
       <div className="px-2 mt-2">
-        <Link href="/topic" className="text-sm text-primary hover:text-primary/80 cursor-pointer">
+        <Link
+          href="/topic"
+          data-auto-translate-content
+          className="text-sm text-primary hover:text-primary/80 cursor-pointer"
+        >
           {t("viewMore")}
         </Link>
       </div>

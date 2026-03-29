@@ -28,6 +28,7 @@ export function ImageGallery({
   const [thumbCanScrollPrev, setThumbCanScrollPrev] = useState(false);
   const [thumbCanScrollNext, setThumbCanScrollNext] = useState(false);
   const [thumbHasOverflow, setThumbHasOverflow] = useState(false);
+  const [overflowingIndexes, setOverflowingIndexes] = useState<number[]>([]);
 
   const syncThumbNavState = (swiper: SwiperType) => {
     setThumbCanScrollPrev(!swiper.isBeginning);
@@ -53,6 +54,10 @@ export function ImageGallery({
       thumbsSwiper.off("update", updateOverflow);
     };
   }, [thumbsSwiper]);
+
+  useEffect(() => {
+    setOverflowingIndexes([]);
+  }, [images]);
 
   if (!images || !Array.isArray(images) || images.length === 0) return null;
 
@@ -184,26 +189,34 @@ export function ImageGallery({
                     width={0}
                     height={0}
                     quality={95}
+                    preload={index === 0}
                     loading={index === 0 ? "eager" : "lazy"}
                     fetchPriority={index === 0 ? "high" : "auto"}
-                    className="object-cover"
+                    className="h-auto w-full object-contain"
                     alt={`${alt} ${index + 1}`}
                     sizes="(max-width: 1280px) 100vw, 1920px"
                     onLoad={(e) => {
                       const img = e.currentTarget;
-                      const slide = img.closest(".swiper-slide");
-                      const indicator = slide?.querySelector(
-                        ".overflow-indicator",
-                      );
-                      if (indicator && img.naturalHeight > 1066) {
-                        indicator.classList.remove("hidden");
-                      }
+                      const exceedsMaxHeight = img.clientHeight > 904;
+
+                      setOverflowingIndexes((previous) => {
+                        const hasIndex = previous.includes(index);
+                        if (exceedsMaxHeight && !hasIndex) {
+                          return [...previous, index];
+                        }
+                        if (!exceedsMaxHeight && hasIndex) {
+                          return previous.filter((item) => item !== index);
+                        }
+                        return previous;
+                      });
                     }}
                   />
-                </div>
-                <div className="overflow-indicator pointer-events-none absolute bottom-4 right-4 hidden items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-sm text-white backdrop-blur-sm [&:not(.hidden)]:flex">
-                  <Fullscreen size={14} />
-                  <span>{t("viewFullImage")}</span>
+                  {overflowingIndexes.includes(index) && (
+                    <div className="pointer-events-none absolute right-4 bottom-4 flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-sm text-white opacity-85 backdrop-blur-sm transition-opacity group-hover:opacity-100">
+                      <Fullscreen size={14} />
+                      <span>{t("viewFullImage")}</span>
+                    </div>
+                  )}
                 </div>
               </SwiperSlide>
             ))}

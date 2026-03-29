@@ -3,6 +3,7 @@
   ArticleAuthor,
   ArticleMenu,
   ArticleRichContent,
+  ArticleTranslateNotice,
   ImageGallery,
   ReactionStats,
 } from "@/components/article";
@@ -61,7 +62,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
 
   return (
     <div className="page-container">
-      <div className="left-container ">
+      <div className="left-container " data-auto-translate-article-detail>
         <div className="top-header px-4 h-14 flex items-center border-b rounded-t-xl border-border sticky bg-white dark:bg-gray-800 z-15">
           <div className="h-full flex-1 flex items-center">
             <span className="font-bold text-base pr-6">{t("pageTitle")}</span>
@@ -90,7 +91,10 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             </div>
           )}
           <div className="px-6 pt-4 mt-1">
-            <h1 className="text-[22px] wrap-break-word font-bold">
+            <h1
+              data-auto-translate-content
+              className="text-[22px] wrap-break-word font-bold"
+            >
               {article?.title}
             </h1>
           </div>
@@ -99,6 +103,9 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               author={article?.author}
               createdAt={article?.createdAt}
             />
+          </div>
+          <div className="px-6">
+            <ArticleTranslateNotice />
           </div>
           <div className="mt-4 px-6">
             {article?.type === "image" && (
@@ -111,9 +118,13 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             )}
             {content &&
               (article?.type === "image" ? (
-                <div className="mt-2 text-sm">{article.content}</div>
+                <div data-auto-translate-content className="mt-2 text-sm">
+                  {article.content}
+                </div>
               ) : (
-                <ArticleRichContent html={content} />
+                <div data-auto-translate-content>
+                  <ArticleRichContent html={content} />
+                </div>
               ))}
           </div>
         </section>
@@ -129,7 +140,10 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             <span>{t("repostable")}</span>
           </div>
           {article.tags?.length > 0 && (
-            <div className="mt-2 flex items-center flex-wrap gap-2">
+            <div
+              data-auto-translate-content
+              className="mt-2 flex items-center flex-wrap gap-2"
+            >
               {article.tags?.map((tag) => (
                 <Link
                   href={`/topic/${tag.id}`}

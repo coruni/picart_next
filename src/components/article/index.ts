@@ -1,5 +1,6 @@
 export { ArticleCard } from "./ArticleCard";
 export { ArticleAuthor } from "./ArticleAuthor";
+export { ArticleTranslateNotice } from "./ArticleTranslateNotice";
 export { ArticleRichContent } from "./ArticleRichContent.client";
 export { ImageGallery } from "./ImageGallery";
 export { ImageViewer } from "./ImageViewer";

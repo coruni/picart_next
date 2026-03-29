@@ -54,11 +54,15 @@ export function SearchArticle({
     >
       <div className="flex flex-1 flex-col justify-between w-full shrink-0">
         <div className="flex flex-col gap-2 w-full">
-          <h2 className="line-clamp-2 font-semibold text-foreground">
+          <h2
+            data-auto-translate-content
+            className="line-clamp-2 font-semibold text-foreground"
+          >
             {highlightText(article.title || "", keyword)}
           </h2>
           {summaryHtml && (
             <p
+              data-auto-translate-content
               className="article-summary-html mt-1 px-0! text-secondary text-sm leading-5 line-clamp-3 overflow-hidden cursor-pointer"
               dangerouslySetInnerHTML={{ __html: summaryHtml }}
             />

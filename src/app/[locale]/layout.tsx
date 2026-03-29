@@ -15,6 +15,7 @@ import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerpr
 import { ThemeSyncProvider } from "@/components/providers/ThemeSyncProvider";
 import { AuthRouteGuard } from "@/components/providers/AuthRouteGuard";
 import { UserStateProvider } from "@/components/providers/UserStateProvider";
+import { ContentAutoTranslateProvider } from "@/components/providers/ContentAutoTranslateProvider";
 import { getServerCookie } from "@/lib/server-cookies";
 import {
   buildAuthHeaders,
@@ -117,6 +118,7 @@ export default async function LocaleLayout({
       <NextIntlClientProvider messages={messages}>
         <DeviceFingerprintProvider />
         <ThemeSyncProvider />
+        <ContentAutoTranslateProvider />
 
         <UserStateProvider
           initialToken={initialToken}

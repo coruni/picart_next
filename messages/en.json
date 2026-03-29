@@ -384,7 +384,10 @@
   },
   "articleDetail": {
     "pageTitle": "Post Detail",
-    "repostable": "Repost allowed"
+    "repostable": "Repost allowed",
+    "translatedBy": "Translated by {provider}",
+    "viewOriginal": "View original",
+    "viewTranslation": "View translation"
   },
   "articleCard": {
     "dislikeContent": "I dislike this content",

@@ -38,7 +38,6 @@ export function UserDropdown() {
   const tHeader = useTranslations("header");
   const tTheme = useTranslations("themeSwitcher");
   const tLanguage = useTranslations("languageSwitcher");
-  const [autoTranslate, setAutoTranslate] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -50,6 +49,12 @@ export function UserDropdown() {
   const logout = useUserStore((state) => state.logout);
   const theme = useAppStore((state) => state.theme);
   const setTheme = useAppStore((state) => state.setTheme);
+  const autoTranslateContent = useAppStore(
+    (state) => state.autoTranslateContent,
+  );
+  const setAutoTranslateContent = useAppStore(
+    (state) => state.setAutoTranslateContent,
+  );
   const modalStore = useModalStore();
 
   const themeOptions = [
@@ -289,8 +294,8 @@ export function UserDropdown() {
                 </span>
               </div>
               <Switch
-                checked={autoTranslate}
-                onCheckedChange={setAutoTranslate}
+                checked={autoTranslateContent}
+                onCheckedChange={setAutoTranslateContent}
               />
             </div>
           </div>
