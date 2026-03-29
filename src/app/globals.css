@@ -103,7 +103,7 @@ body {
 .page-container {
   min-height: calc(100vh - var(--header-height, 60px));
   padding-top: calc(var(--header-height, 60px) + 16px);
-  @apply w-full relative flex gap-6 flex-1 max-w-6xl md:max-w-7xl mx-auto pb-4;
+  @apply w-full relative flex gap-6 flex-1 max-w-6xl md:max-w-7xl mx-auto md:pb-4;
 }
 
 .top-header {
