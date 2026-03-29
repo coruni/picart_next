@@ -1,4 +1,4 @@
-﻿import {
+import {
   ArticleActions,
   ArticleAuthor,
   ArticleMenu,

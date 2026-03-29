@@ -2,15 +2,15 @@
 
 /* eslint-disable @next/next/no-img-element */
 
+import { cn } from "@/lib";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { ComponentType, useCallback, useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
-import { useTranslations } from "next-intl";
 import { customViewerStyles } from "./imageViewerStyles";
 import { cleanupViewerCustomUI, setupViewerCustomUI } from "./imageViewerUI";
-import { cn } from "@/lib";
 
 type ImageViewerProps = {
   images: string[];
@@ -52,6 +52,7 @@ export function ImageViewer({
   const panelExpandedRef = useRef(false);
   const onCloseRef = useRef(onClose);
   const onChangeRef = useRef(onChange);
+  const resizeFrameRef = useRef<number | null>(null);
 
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [viewerMounted, setViewerMounted] = useState(visible);
@@ -420,13 +421,9 @@ export function ImageViewer({
 
     const handleTransitionEnd = () => {
       applyCanvasLayout();
+      applyNavigationButtonLayout();
+      updateIndexDisplay(getSafeIndex(getCurrentIndex()));
       window.dispatchEvent(new Event("resize"));
-
-      const currentIndex = getCurrentIndex();
-      requestAnimationFrame(() => {
-        viewerRef.current?.view(currentIndex);
-        updateIndexDisplay(currentIndex);
-      });
     };
 
     panelEl.addEventListener("transitionend", handleTransitionEnd);
@@ -441,6 +438,7 @@ export function ImageViewer({
     applyCanvasLayout,
     applyNavigationButtonLayout,
     getCurrentIndex,
+    getSafeIndex,
     syncPanelToggleButton,
     updateIndexDisplay,
   ]);
@@ -449,13 +447,15 @@ export function ImageViewer({
     if (!visible || !viewerRef.current) return;
 
     const handleResize = () => {
-      applyCanvasLayout();
-      applyNavigationButtonLayout();
+      if (resizeFrameRef.current !== null) {
+        cancelAnimationFrame(resizeFrameRef.current);
+      }
 
-      const currentIndex = getSafeIndex(getCurrentIndex());
-      requestAnimationFrame(() => {
-        viewerRef.current?.view(currentIndex);
-        updateIndexDisplay(currentIndex);
+      resizeFrameRef.current = requestAnimationFrame(() => {
+        resizeFrameRef.current = null;
+        applyCanvasLayout();
+        applyNavigationButtonLayout();
+        updateIndexDisplay(getSafeIndex(getCurrentIndex()));
       });
     };
 
@@ -463,6 +463,10 @@ export function ImageViewer({
     window.visualViewport?.addEventListener("resize", handleResize);
 
     return () => {
+      if (resizeFrameRef.current !== null) {
+        cancelAnimationFrame(resizeFrameRef.current);
+        resizeFrameRef.current = null;
+      }
       window.removeEventListener("resize", handleResize);
       window.visualViewport?.removeEventListener("resize", handleResize);
     };

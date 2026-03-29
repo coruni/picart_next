@@ -91,6 +91,11 @@ export const customViewerStyles = `
     z-index: 10000;
   }
 
+  .custom-prev-btn,
+  .custom-next-btn {
+    display: flex;
+  }
+
   .custom-toolbar-button,
   .custom-toolbar-value {
     position: relative;
@@ -180,6 +185,8 @@ export const customViewerStyles = `
   }
 
   @media (max-width: 767px) {
+    .custom-prev-btn,
+    .custom-next-btn,
     .custom-thumbnail-column {
       display: none !important;
     }
