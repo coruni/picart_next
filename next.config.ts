@@ -7,6 +7,8 @@ const allowPrivateIpImages =
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  output: "standalone",
+
   images: {
     dangerouslyAllowLocalIP: allowPrivateIpImages,
     unoptimized: process.env.NODE_ENV === "development",
@@ -24,6 +26,12 @@ const nextConfig: NextConfig = {
     serverActions: {
       allowedOrigins: ["*"],
     },
+    optimizePackageImports: [
+      "swiper",
+      "quill",
+      "viewerjs",
+      "@hey-api/client-fetch",
+    ],
   },
 };
 
