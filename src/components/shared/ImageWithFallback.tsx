@@ -85,7 +85,7 @@ export function ImageWithFallback({
 
   if (fill) {
     return (
-      <span ref={wrapperRef} className={cn(" inset-0 block relative", wrapperClassName)}>
+      <span ref={wrapperRef} className={cn(" inset-0 block relative h-full w-full", wrapperClassName)}>
         <Image
           {...rest}
           src={src}

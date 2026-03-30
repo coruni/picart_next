@@ -5,7 +5,8 @@ import { useAppStore } from "@/stores";
 import { useLocale } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
-const AUTO_TRANSLATE_SELECTOR = "[data-auto-translate-content]";
+const AUTO_TRANSLATE_SELECTOR =
+  "[data-auto-translate-content], [data-auto-translate-comment]";
 const TRANSLATE_LOCAL_LANGUAGE = "chinese_simplified";
 const LOCAL_TRANSLATE_SCRIPT_PATH = "/vendor/translate.js/3.18.66/translate.js";
 const TRANSLATE_LANGUAGE_MAP: Record<string, string> = {

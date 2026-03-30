@@ -92,6 +92,8 @@ export function CommentReplyList({
     displayHtml: modalDisplayHtml,
     isTranslated: isModalTranslated,
     isTranslating: isModalTranslating,
+    renderKey: modalRenderKey,
+    shouldAutoTranslate: shouldAutoTranslateModal,
     toggleTranslate: toggleModalTranslate,
   } = useManualHtmlTranslate({
     html: contentHtml,
@@ -406,8 +408,11 @@ export function CommentReplyList({
               </div>
               <div className="py-2">
                 <div
+                  key={modalRenderKey}
                   className="whitespace-pre-wrap text-sm"
-                  data-auto-translate-content
+                  {...(shouldAutoTranslateModal
+                    ? { "data-auto-translate-comment": true }
+                    : {})}
                   dangerouslySetInnerHTML={{ __html: modalDisplayHtml }}
                 />
                 <CommentImageGallery

@@ -46,6 +46,8 @@ export function CommentItem({
     displayHtml,
     isTranslated,
     isTranslating,
+    renderKey,
+    shouldAutoTranslate,
     toggleTranslate,
   } = useManualHtmlTranslate({
     html: contentHtml,
@@ -191,12 +193,13 @@ export function CommentItem({
       {/* Comment Content element */}
       <div className="py-2">
         <div className="pl-19 pr-6">
-          <div
-            className="whitespace-pre-wrap text-sm"
-            data-auto-translate-content
-            dangerouslySetInnerHTML={{ __html: displayHtml }}
-          />
-        </div>
+        <div
+          key={renderKey}
+          className="whitespace-pre-wrap text-sm"
+          {...(shouldAutoTranslate ? { "data-auto-translate-comment": true } : {})}
+          dangerouslySetInnerHTML={{ __html: displayHtml }}
+        />
+      </div>
         <CommentImageGallery
           images={commentState.images || []}
           imageAltPrefix={`Comment image ${commentState.id}`}

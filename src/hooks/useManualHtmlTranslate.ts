@@ -1,5 +1,6 @@
 "use client";
 
+import { useAppStore } from "@/stores";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 
@@ -8,6 +9,7 @@ const TRANSLATE_LANGUAGE_MAP: Record<string, string> = {
   zh: "chinese_simplified",
   en: "english",
 };
+const MANUAL_TRANSLATE_SELECTOR = "[data-manual-translate-comment]";
 const TRANSLATE_TIMEOUT_MS = 1800;
 const TRANSLATE_SETTLE_MS = 160;
 
@@ -33,11 +35,14 @@ async function translateHtmlContent(
   const host = document.createElement("div");
   host.className = "pointer-events-none fixed -top-[9999px] left-0 opacity-0";
   host.setAttribute("aria-hidden", "true");
-  host.innerHTML = `<div>${html}</div>`;
+  host.innerHTML = `<div data-manual-translate-comment="true">${html}</div>`;
   document.body.appendChild(host);
 
-  const documentNode = host.firstElementChild as HTMLElement | null;
-  if (!documentNode) {
+  const documents = Array.from(
+    host.querySelectorAll<HTMLElement>(MANUAL_TRANSLATE_SELECTOR),
+  );
+  const documentNode = documents[0] ?? null;
+  if (!documentNode || documents.length === 0) {
     host.remove();
     return html;
   }
@@ -82,9 +87,9 @@ async function translateHtmlContent(
     translate.service?.use?.("client.edge");
     translate.language?.setLocal?.(TRANSLATE_LOCAL_LANGUAGE);
     disableTranslateLanguageSelector();
-    translate.setDocuments?.([documentNode]);
+    translate.setDocuments?.(documents);
     translate.listener?.start?.();
-    translate.execute([documentNode]);
+    translate.execute(documents);
 
     window.requestAnimationFrame(() => {
       translate.changeLanguage?.(targetLanguage);
@@ -106,7 +111,12 @@ export function useManualHtmlTranslate({
   resetKey,
 }: UseManualHtmlTranslateOptions) {
   const locale = useLocale();
-  const [isTranslated, setIsTranslated] = useState(false);
+  const autoTranslateContent = useAppStore(
+    (state) => state.autoTranslateContent,
+  );
+  const [manualMode, setManualMode] = useState<
+    "follow-auto" | "original" | "translated"
+  >("follow-auto");
   const [translatedHtml, setTranslatedHtml] = useState<string | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
 
@@ -116,13 +126,20 @@ export function useManualHtmlTranslate({
       return;
     }
 
-    if (isTranslated) {
-      setIsTranslated(false);
+    if (autoTranslateContent) {
+      setManualMode((currentMode) =>
+        currentMode === "follow-auto" ? "original" : "follow-auto",
+      );
+      return;
+    }
+
+    if (manualMode === "translated") {
+      setManualMode("original");
       return;
     }
 
     if (translatedHtml) {
-      setIsTranslated(true);
+      setManualMode("translated");
       return;
     }
 
@@ -130,22 +147,37 @@ export function useManualHtmlTranslate({
     try {
       const nextTranslatedHtml = await translateHtmlContent(html, targetLanguage);
       setTranslatedHtml(nextTranslatedHtml);
-      setIsTranslated(true);
+      setManualMode("translated");
     } finally {
       setIsTranslating(false);
     }
-  }, [html, isTranslated, isTranslating, locale, translatedHtml]);
+  }, [
+    autoTranslateContent,
+    html,
+    isTranslating,
+    locale,
+    manualMode,
+    translatedHtml,
+  ]);
 
   useEffect(() => {
-    setIsTranslated(false);
+    setManualMode("follow-auto");
     setTranslatedHtml(null);
     setIsTranslating(false);
   }, [resetKey]);
 
+  const isFollowingAuto = manualMode === "follow-auto";
+  const shouldAutoTranslate = autoTranslateContent && isFollowingAuto;
+  const isTranslated =
+    manualMode === "translated" ||
+    (autoTranslateContent && manualMode === "follow-auto");
+
   return {
-    displayHtml: isTranslated && translatedHtml ? translatedHtml : html,
+    displayHtml: manualMode === "translated" && translatedHtml ? translatedHtml : html,
     isTranslated,
     isTranslating,
+    renderKey: `${String(resetKey ?? html)}-${manualMode}`,
+    shouldAutoTranslate,
     toggleTranslate,
   };
 }

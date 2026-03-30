@@ -1,5 +1,4 @@
 "use client";
-"use client";
 
 import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
@@ -58,6 +57,8 @@ export function CommentReplyItem({
     displayHtml,
     isTranslated,
     isTranslating,
+    renderKey,
+    shouldAutoTranslate,
     toggleTranslate,
   } = useManualHtmlTranslate({
     html: replyContentHtml,
@@ -121,7 +122,10 @@ export function CommentReplyItem({
                 {tComment("replyToSuffix")}
               </span>
               <span
-                data-auto-translate-content
+                key={renderKey}
+                {...(shouldAutoTranslate
+                  ? { "data-auto-translate-comment": true }
+                  : {})}
                 dangerouslySetInnerHTML={{
                   __html: displayHtml,
                 }}
@@ -129,8 +133,11 @@ export function CommentReplyItem({
             </p>
           ) : (
             <div
+              key={renderKey}
               className="whitespace-pre-wrap text-sm py-1"
-              data-auto-translate-content
+              {...(shouldAutoTranslate
+                ? { "data-auto-translate-comment": true }
+                : {})}
               dangerouslySetInnerHTML={{
                 __html: displayHtml,
               }}
