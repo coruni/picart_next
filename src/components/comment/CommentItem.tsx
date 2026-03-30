@@ -2,7 +2,12 @@
 
 import { cn } from "@/lib";
 import { CommentList } from "@/types";
-import { EllipsisVertical, Languages, MessageCircleMore, ThumbsUp } from "lucide-react";
+import {
+  EllipsisVertical,
+  Languages,
+  MessageCircleMore,
+  ThumbsUp,
+} from "lucide-react";
 import { Avatar } from "../ui/Avatar";
 
 type CommentItemProps = {
@@ -55,7 +60,9 @@ export function CommentItem({ data }: CommentItemProps) {
       {/* Comment Content element */}
       <div className="py-2">
         <div className="pl-19 pr-6">
-          <p className="text-sm">{data.content}</p>
+          <p className="text-sm" data-auto-translate-content>
+            {data.content}
+          </p>
         </div>
       </div>
       {/* Comment Actions element */}
@@ -83,6 +90,45 @@ export function CommentItem({ data }: CommentItemProps) {
               <ThumbsUp size={20} />
               <span className="text-xs">{data.likes}</span>
             </button>
+          </div>
+        </div>
+      </div>
+      {/* Replies element */}
+      <div className="mt-3 ml-19 pr-6">
+        <div className="pl-3 border-l-2 border-muted text-sm">
+          <div className="flex items-center space-x-2">
+            <Avatar url={data.author.avatar} className="size-5" />
+            <span>{data.author.nickname || data.author.username}</span>
+          </div>
+          <div className="text-sm mt-1">
+            <p className="whitespace-pre-wrap" data-auto-translate-content>
+              {data.content}
+            </p>
+          </div>
+          <div className="mt-1 flex items-center justify-between text-secondary text-sm">
+            <span className="text-xs">
+              {new Date(data.createdAt).toLocaleDateString()}
+            </span>
+            <div className="flex items-center space-x-4">
+              <button
+                className={cn(
+                  "flex items-center space-x-1 focus:outline-0 focus:border-0 border-0 outline-0",
+                  "cursor-pointer  hover:text-primary",
+                )}
+              >
+                <MessageCircleMore size={20} />
+                <span className="text-xs">回复</span>
+              </button>
+              <button
+                className={cn(
+                  "flex items-center space-x-1 focus:outline-0 focus:border-0 border-0 outline-0",
+                  "cursor-pointer hover:text-primary",
+                )}
+              >
+                <ThumbsUp size={20} />
+                <span className="text-xs">{data.likes}</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

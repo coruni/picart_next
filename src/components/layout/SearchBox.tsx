@@ -477,10 +477,12 @@ export function SearchBox({
             placeholder={effectivePlaceholder}
             className={cn(
               "relative z-10 w-full h-full rounded-full transition-all px-2 bg-transparent border-none",
-              "placeholder:text-secondary placeholder:text-xs text-xs text-black/80 dark:text-white/80 dark:placeholder:text-white/60",
+              "placeholder:text-secondary placeholder:text-xs text-xs",
               "focus:outline-none",
-              // Account 页面未滚动时的透明样式
-              isAccountPage && !scrolled && ["placeholder:text-white/70"],
+              // 普通模式
+              !isAccountPage || scrolled
+                ? "text-black/80 dark:text-white/80 dark:placeholder:text-white/60"
+                : "text-white/90 placeholder:text-white/70",
             )}
           />
           {shouldShowAnimatedPlaceholder && (
