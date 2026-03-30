@@ -1,28 +1,29 @@
-import type { Metadata } from "next";
-import { unstable_noStore as noStore } from "next/cache";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
-import { routing } from "@/i18n/routing";
-import { notFound } from "next/navigation";
 import { Header } from "@/components/layout/Header";
-import { NotificationContainer } from "@/components/shared";
-import {
-  generateSiteMetadata,
-  getPublicCategories,
-  getPublicConfig,
-} from "@/lib/seo";
+import { AuthRouteGuard } from "@/components/providers/AuthRouteGuard";
+import { ContentAutoTranslateProvider } from "@/components/providers/ContentAutoTranslateProvider";
 import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
 import { ThemeSyncProvider } from "@/components/providers/ThemeSyncProvider";
-import { AuthRouteGuard } from "@/components/providers/AuthRouteGuard";
 import { UserStateProvider } from "@/components/providers/UserStateProvider";
-import { ContentAutoTranslateProvider } from "@/components/providers/ContentAutoTranslateProvider";
-import { getServerCookie } from "@/lib/server-cookies";
+import { NotificationContainer } from "@/components/shared";
+import { routing } from "@/i18n/routing";
 import {
   buildAuthHeaders,
   DEVICE_ID_COOKIE_NAME,
   TOKEN_COOKIE_NAME,
 } from "@/lib/request-auth";
+import {
+  generateSiteMetadata,
+  getPublicCategories,
+  getPublicConfig,
+} from "@/lib/seo";
+import { getServerCookie } from "@/lib/server-cookies";
+import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages } from "next-intl/server";
+import { unstable_noStore as noStore } from "next/cache";
+import { notFound } from "next/navigation";
 import NextTopLoader from "nextjs-toploader";
+import { LocaleProvider } from "./LocaleProvider";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -70,6 +71,7 @@ export default async function LocaleLayout({
     <>
       <NextTopLoader color="#6680ff" showSpinner={false} />
       <NextIntlClientProvider messages={messages}>
+        <LocaleProvider />
         <DeviceFingerprintProvider />
         <ThemeSyncProvider />
         <ContentAutoTranslateProvider />

@@ -40,7 +40,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html suppressHydrationWarning lang="zh-CN" className={miSans.className}>
+    <html suppressHydrationWarning className={miSans.className}>
       <body className="antialiased">
         {children}
       </body>
