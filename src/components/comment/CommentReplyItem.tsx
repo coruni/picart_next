@@ -12,6 +12,7 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { memo, useCallback } from "react";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
 import { CommentImageGallery } from "./CommentImageGallery";
@@ -31,7 +32,7 @@ type CommentReplyItemProps = {
   showTranslateButton?: boolean;
 };
 
-export function CommentReplyItem({
+export const CommentReplyItem = memo(function CommentReplyItem({
   articleId,
   rootCommentId,
   reply,
@@ -65,9 +66,41 @@ export function CommentReplyItem({
     resetKey: `${reply.id}-${reply.content}`,
   });
 
-  const handleItemClick = () => {
+  const handleItemClick = useCallback(() => {
     onOpenModal?.(reply);
-  };
+  }, [onOpenModal, reply]);
+
+  const handleToggleTranslate = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation();
+      void toggleTranslate();
+    },
+    [toggleTranslate],
+  );
+
+  const handleOpenReplyEditor = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation();
+      onToggleReplyEditor(reply.id);
+    },
+    [onToggleReplyEditor, reply.id],
+  );
+
+  const handleToggleLike = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation();
+      void onToggleLike(reply.id);
+    },
+    [onToggleLike, reply.id],
+  );
+
+  const handleOpenImageViewer = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation();
+      onOpenImageViewer(reply.images || [], 0);
+    },
+    [onOpenImageViewer, reply.images],
+  );
 
   return (
     <section
@@ -88,14 +121,11 @@ export function CommentReplyItem({
               type="button"
               title={tComment("translate")}
               className={cn(
-              "flex size-7 cursor-pointer items-center justify-center rounded-lg p-1 text-secondary transition hover:bg-muted hover:text-primary",
-              isTranslated && "bg-muted text-primary",
-              isTranslating && "pointer-events-none opacity-70",
-            )}
-              onClick={(event) => {
-                event.stopPropagation();
-                toggleTranslate();
-              }}
+                "flex size-7 cursor-pointer items-center justify-center rounded-lg p-1 text-secondary transition hover:bg-muted hover:text-primary",
+                isTranslated && "bg-muted text-primary",
+                isTranslating && "pointer-events-none opacity-70",
+              )}
+              onClick={handleToggleTranslate}
             >
               {isTranslating ? (
                 <LoaderCircle size={16} className="animate-spin" />
@@ -155,10 +185,7 @@ export function CommentReplyItem({
             <button
               type="button"
               className="mt-2 inline-flex cursor-pointer items-center gap-1.5 text-sm text-primary hover:opacity-80"
-              onClick={(event) => {
-                event.stopPropagation();
-                onOpenImageViewer(reply.images || [], 0);
-              }}
+              onClick={handleOpenImageViewer}
             >
               <ImageIcon className="size-4" />
               <span>{tComment("viewImages")}</span>
@@ -178,10 +205,7 @@ export function CommentReplyItem({
               "flex items-center space-x-1 focus:outline-0 focus:border-0 border-0 outline-0",
               "cursor-pointer  hover:text-primary",
             )}
-            onClick={(event) => {
-              event.stopPropagation();
-              onToggleReplyEditor(reply.id);
-            }}
+            onClick={handleOpenReplyEditor}
           >
             <MessageCircleMore size={20} />
             <span className="text-xs">{tComment("reply")}</span>
@@ -193,10 +217,7 @@ export function CommentReplyItem({
               "cursor-pointer hover:text-primary",
               reply.isLiked && "text-primary",
             )}
-            onClick={(event) => {
-              event.stopPropagation();
-              void onToggleLike(reply.id);
-            }}
+            onClick={handleToggleLike}
           >
             <ThumbsUp size={20} />
             <span className="text-xs">{reply?.likes}</span>
@@ -214,4 +235,4 @@ export function CommentReplyItem({
       ) : null}
     </section>
   );
-}
+});

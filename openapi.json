@@ -19783,7 +19783,23 @@
                                     "isLiked": {
                                       "type": "boolean"
                                     }
-                                  }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "content",
+                                    "images",
+                                    "likes",
+                                    "replyCount",
+                                    "createdAt",
+                                    "updatedAt",
+                                    "parent",
+                                    "rootId",
+                                    "parentId",
+                                    "isLiked",
+                                    "status",
+                                    "author",
+                                    "article"
+                                  ]
                                 }
                               },
                               "createdAt": {
@@ -19811,9 +19827,10 @@
                               "content",
                               "id",
                               "images",
-                              "replies",
                               "parentId",
-                              "isLiked"
+                              "isLiked",
+                              "replies",
+                              "parent"
                             ]
                           }
                         },

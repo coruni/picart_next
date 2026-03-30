@@ -100,66 +100,72 @@ export function CommentReplyList({
     resetKey: `${data.id}-${data.content}`,
   });
 
-  const openReplyModal = (_reply?: CommentReply) => {
+  const openReplyModal = useCallback((_reply?: CommentReply) => {
     setModalOpen(true);
-  };
+  }, []);
 
-  const handleSortChange = (nextSortKey: CommentSortKey) => {
+  const handleSortChange = useCallback((nextSortKey: CommentSortKey) => {
     if (nextSortKey === sortKey) {
       return;
     }
 
     setIsSortChanging(true);
     setSortKey(nextSortKey);
-  };
+  }, [sortKey]);
 
-  const sortItems: MenuItem[] = [
-    {
-      label: tComment("sortOptions.all"),
-      onClick: () => handleSortChange("all"),
-      className:
-        sortKey === "all"
-          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
-          : undefined,
-    },
-    {
-      label: tComment("sortOptions.hot"),
-      onClick: () => handleSortChange("hot"),
-      className:
-        sortKey === "hot"
-          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
-          : undefined,
-    },
-    {
-      label: tComment("sortOptions.oldest"),
-      onClick: () => handleSortChange("oldest"),
-      className:
-        sortKey === "oldest"
-          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
-          : undefined,
-    },
-    {
-      label: tComment("sortOptions.latest"),
-      onClick: () => handleSortChange("latest"),
-      className:
-        sortKey === "latest"
-          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
-          : undefined,
-    },
-    {
-      label: tComment("sortOptions.rootOnly"),
-      onClick: () => handleSortChange("rootOnly"),
-      className:
-        sortKey === "rootOnly"
-          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
-          : undefined,
-    },
-  ];
+  const sortItems: MenuItem[] = useMemo(
+    () => [
+      {
+        label: tComment("sortOptions.all"),
+        onClick: () => handleSortChange("all"),
+        className:
+          sortKey === "all"
+            ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+            : undefined,
+      },
+      {
+        label: tComment("sortOptions.hot"),
+        onClick: () => handleSortChange("hot"),
+        className:
+          sortKey === "hot"
+            ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+            : undefined,
+      },
+      {
+        label: tComment("sortOptions.oldest"),
+        onClick: () => handleSortChange("oldest"),
+        className:
+          sortKey === "oldest"
+            ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+            : undefined,
+      },
+      {
+        label: tComment("sortOptions.latest"),
+        onClick: () => handleSortChange("latest"),
+        className:
+          sortKey === "latest"
+            ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+            : undefined,
+      },
+      {
+        label: tComment("sortOptions.rootOnly"),
+        onClick: () => handleSortChange("rootOnly"),
+        className:
+          sortKey === "rootOnly"
+            ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+            : undefined,
+      },
+    ],
+    [handleSortChange, sortKey, tComment],
+  );
 
-  const currentSortLabel =
-    sortKey === "all"
-      ? tComment("sortWithCount", { count: total })
-      : tComment(`sortOptions.${sortKey}`);
+  const currentSortLabel = useMemo(
+    () =>
+      sortKey === "all"
+        ? tComment("sortWithCount", { count: total })
+        : tComment(`sortOptions.${sortKey}`),
+    [sortKey, tComment, total],
+  );
 
   const fetchReplies = useCallback(
     async (pageToLoad: number) => {
@@ -260,26 +266,33 @@ export function CommentReplyList({
         return;
       }
 
-      const targetReply = modalReplies.find((reply) => reply.id === commentId);
-      const previousLiked = Boolean(targetReply?.isLiked);
-      const previousLikes = targetReply?.likes || 0;
-      const nextLiked = !previousLiked;
-      const nextLikes = Math.max(0, previousLikes + (nextLiked ? 1 : -1));
+      let previousLiked = false;
+      let previousLikes = 0;
+      let foundTarget = false;
 
-      if (targetReply) {
-        setModalReplies((current) =>
-          current.map((reply) =>
-            reply.id === commentId
-              ? { ...reply, isLiked: nextLiked, likes: nextLikes }
-              : reply,
-          ),
-        );
-      }
+      setModalReplies((current) =>
+        current.map((reply) => {
+          if (reply.id !== commentId) {
+            return reply;
+          }
+
+          foundTarget = true;
+          previousLiked = Boolean(reply.isLiked);
+          previousLikes = reply.likes || 0;
+          const nextLiked = !previousLiked;
+          const nextLikes = Math.max(
+            0,
+            previousLikes + (nextLiked ? 1 : -1),
+          );
+
+          return { ...reply, isLiked: nextLiked, likes: nextLikes };
+        }),
+      );
 
       try {
         await onToggleLike(commentId);
       } catch (likeError) {
-        if (targetReply) {
+        if (foundTarget) {
           setModalReplies((current) =>
             current.map((reply) =>
               reply.id === commentId
@@ -291,7 +304,7 @@ export function CommentReplyList({
         throw likeError;
       }
     },
-    [modalReplies, onToggleLike],
+    [onToggleLike],
   );
 
   useEffect(() => {

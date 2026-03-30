@@ -16,7 +16,7 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
 import { CommentImageGallery } from "./CommentImageGallery";
@@ -27,7 +27,7 @@ type CommentItemProps = {
   data: CommentList[number];
   onSubmitted?: () => void | Promise<void>;
 };
-export function CommentItem({
+export const CommentItem = memo(function CommentItem({
   articleId,
   data,
   onSubmitted,
@@ -58,7 +58,7 @@ export function CommentItem({
     setCommentState(data);
   }, [data]);
 
-  const openImageViewer = (images: string[], index: number = 0) => {
+  const openImageViewer = useCallback((images: string[], index: number = 0) => {
     if (!images.length) {
       return;
     }
@@ -66,9 +66,9 @@ export function CommentItem({
     setViewerImages(images);
     setViewerIndex(index);
     setViewerVisible(true);
-  };
+  }, []);
 
-  const toggleReplyEditor = (parentId: number | undefined) => {
+  const toggleReplyEditor = useCallback((parentId: number | undefined) => {
     if (!parentId) {
       return;
     }
@@ -76,14 +76,14 @@ export function CommentItem({
     setActiveReplyParentId((current) =>
       current === parentId ? null : parentId,
     );
-  };
+  }, []);
 
-  const handleReplySubmitted = async () => {
+  const handleReplySubmitted = useCallback(async () => {
     setActiveReplyParentId(null);
     await onSubmitted?.();
-  };
+  }, [onSubmitted]);
 
-  const handleToggleLike = async (commentId: number | undefined) => {
+  const handleToggleLike = useCallback(async (commentId: number | undefined) => {
     if (!commentId) return;
 
     if (!isAuthenticated) {
@@ -134,7 +134,7 @@ export function CommentItem({
       );
       console.error("Failed to like comment:", error);
     }
-  };
+  }, [commentState.id, commentState.isLiked, commentState.likes, commentState.replies, isAuthenticated]);
 
   return (
     <article>
@@ -193,13 +193,15 @@ export function CommentItem({
       {/* Comment Content element */}
       <div className="py-2">
         <div className="pl-19 pr-6">
-        <div
-          key={renderKey}
-          className="whitespace-pre-wrap text-sm"
-          {...(shouldAutoTranslate ? { "data-auto-translate-comment": true } : {})}
-          dangerouslySetInnerHTML={{ __html: displayHtml }}
-        />
-      </div>
+          <div
+            key={renderKey}
+            className="whitespace-pre-wrap text-sm"
+            {...(shouldAutoTranslate
+              ? { "data-auto-translate-comment": true }
+              : {})}
+            dangerouslySetInnerHTML={{ __html: displayHtml }}
+          />
+        </div>
         <CommentImageGallery
           images={commentState.images || []}
           imageAltPrefix={`Comment image ${commentState.id}`}
@@ -271,4 +273,4 @@ export function CommentItem({
       )}
     </article>
   );
-}
+});
