@@ -552,16 +552,6 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quill.root.addEventListener("keydown", handleCaptionKeyDown, true);
 
-        // 鐩戝惉 link-edit 浜嬩欢锛堢敱 blotFormatter2 鐨?EditLinkAction 瑙﹀彂锛?
-        const handleLinkEdit = (e: Event) => {
-          const customEvent = e as CustomEvent<{ href: string; text: string }>;
-          const { href, text } = customEvent.detail;
-          setLinkUrl(href);
-          setLinkText(text);
-          setShowLinkModal(true);
-        };
-        document.addEventListener("link-edit", handleLinkEdit);
-
         return () => {
           uploadAbortControllerRef.current?.abort();
           quill.off("text-change", handleTextChange);
@@ -569,10 +559,24 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           quill.root.removeEventListener("paste", handlePaste, true);
           quill.root.removeEventListener("input", handleCaptionInput);
           quill.root.removeEventListener("keydown", handleCaptionKeyDown, true);
-          document.removeEventListener("link-edit", handleLinkEdit);
         };
       }
     }, [ref, placeholder, readOnly, onChange, value]);
+
+    // 独立的 link-edit 事件监听器
+    useEffect(() => {
+      const handleLinkEdit = (e: Event) => {
+        const customEvent = e as CustomEvent<{ href: string; text: string }>;
+        const { href, text } = customEvent.detail;
+        setLinkUrl(href);
+        setLinkText(text);
+        setShowLinkModal(true);
+      };
+      document.addEventListener("link-edit", handleLinkEdit);
+      return () => {
+        document.removeEventListener("link-edit", handleLinkEdit);
+      };
+    }, []);
 
     useEffect(() => {
       const quill = quillRef.current;
