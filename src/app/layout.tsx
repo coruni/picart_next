@@ -4,12 +4,12 @@ import "./globals.css";
 const miSans = localFont({
   src: [
     {
-      path: "./fonts/MiSans-Regular.woff2",
+      path: "./fonts/MiSans-Normal.woff2",
       weight: "400",
       style: "normal",
     },
     {
-      path: "./fonts/MiSans-Normal.woff2",
+      path: "./fonts/MiSans-Regular.woff2",
       weight: "500",
       style: "normal",
     },

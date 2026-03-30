@@ -178,14 +178,24 @@
     "retry": "Retry",
     "allLoaded": "All comments loaded",
     "noComments": "No comments",
+    "sortWithCount": "All comments {count}",
     "translate": "Translate",
     "reply": "Reply",
-    "replyTo": "Reply to {name}:",
+    "replyToPrefix": "Reply to",
+    "replyToSuffix": ":",
     "replies": "replies",
     "viewMoreReplies": "View {count} more replies",
     "totalReplies": "{count} replies",
+    "viewCommentTitle": "View comments {count}",
     "viewImages": "View images",
-    "like": "Like"
+    "like": "Like",
+    "sortOptions": {
+      "all": "All comments",
+      "hot": "Most liked",
+      "oldest": "Oldest",
+      "latest": "Latest",
+      "rootOnly": "Root only"
+    }
   },
   "commentEditor": {
     "placeholder": "Share your thoughts...",

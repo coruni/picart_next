@@ -177,14 +177,24 @@
     "retry": "重试",
     "allLoaded": "已加载全部评论",
     "noComments": "暂无评论",
+    "sortWithCount": "全部评论 {count}",
     "translate": "翻译",
     "reply": "回复",
-    "replyTo": "回复{name}：",
+    "replyToPrefix": "回复",
+    "replyToSuffix": "：",
     "replies": "条回复",
     "viewMoreReplies": "查看更多 {count} 条回复",
     "totalReplies": "共{count}条回复",
+    "viewCommentTitle": "查看评论 {count}",
     "viewImages": "查看图片",
-    "like": "点赞"
+    "like": "点赞",
+    "sortOptions": {
+      "all": "全部评论",
+      "hot": "点赞最多",
+      "oldest": "最早",
+      "latest": "最新",
+      "rootOnly": "只看楼主"
+    }
   },
   "commentEditor": {
     "placeholder": "快来发表你的评论吧～",

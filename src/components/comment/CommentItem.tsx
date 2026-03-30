@@ -1,51 +1,49 @@
 "use client";
 
+import { commentControllerLike } from "@/api";
 import { ImageViewer } from "@/components/article/ImageViewer";
 import { Link } from "@/i18n/routing";
-import { cn, prepareRichTextHtmlForDisplay } from "@/lib";
+import { cn, prepareCommentHtmlForDisplay } from "@/lib";
+import { openLoginDialog } from "@/lib/modal-helpers";
+import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
 import {
-  ChevronLeft,
-  ChevronRight,
   EllipsisVertical,
-  Image as ImageIcon,
   Languages,
   MessageCircleMore,
   ThumbsUp,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRef, useState } from "react";
-import type { Swiper as SwiperType } from "swiper";
-import { FreeMode } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { useEffect, useState } from "react";
 import { Avatar } from "../ui/Avatar";
-
-import "swiper/css";
-import { ImageWithFallback } from "../shared/ImageWithFallback";
+import { CommentEditor } from "./CommentEditor";
+import { CommentImageGallery } from "./CommentImageGallery";
+import { CommentReplyList } from "./CommentReplyList";
 
 type CommentItemProps = {
+  articleId: string;
   data: CommentList[number];
+  onSubmitted?: () => void | Promise<void>;
 };
-export function CommentItem({ data }: CommentItemProps) {
+export function CommentItem({
+  articleId,
+  data,
+  onSubmitted,
+}: CommentItemProps) {
   const tComment = useTranslations("commentList");
-  const tImageViewer = useTranslations("imageViewer");
-  const contentHtml = prepareRichTextHtmlForDisplay(data.content || "");
-  const visibleReplies = data.replies.slice(0, 2);
-  const [canScrollPrev, setCanScrollPrev] = useState(false);
-  const [canScrollNext, setCanScrollNext] = useState(false);
+  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  const [commentState, setCommentState] = useState(data);
   const [viewerVisible, setViewerVisible] = useState(false);
   const [viewerImages, setViewerImages] = useState<string[]>([]);
   const [viewerIndex, setViewerIndex] = useState(0);
-  const swiperRef = useRef<SwiperType | null>(null);
+  const [activeReplyParentId, setActiveReplyParentId] = useState<number | null>(
+    null,
+  );
+  const contentHtml = prepareCommentHtmlForDisplay(commentState.content || "");
 
-  const syncSwiperNavState = (swiper: SwiperType) => {
-    const wrapperWidth = swiper.wrapperEl?.scrollWidth || 0;
-    const containerWidth = swiper.el?.clientWidth || swiper.width || 0;
-    const hasOverflow = wrapperWidth > containerWidth + 1;
-
-    setCanScrollPrev(hasOverflow && !swiper.isBeginning);
-    setCanScrollNext(hasOverflow && !swiper.isEnd);
-  };
+  useEffect(() => {
+    setCommentState(data);
+  }, [data]);
 
   const openImageViewer = (images: string[], index: number = 0) => {
     if (!images.length) {
@@ -57,30 +55,72 @@ export function CommentItem({ data }: CommentItemProps) {
     setViewerVisible(true);
   };
 
-  const handlePrevImage = () => {
-    const swiper = swiperRef.current;
-    if (!swiper) return;
-
-    swiper.slidePrev();
-  };
-
-  const handleNextImage = () => {
-    const swiper = swiperRef.current;
-    if (!swiper) return;
-
-    swiper.slideNext();
-  };
-
-  const getReplyTargetName = (
-    reply: NonNullable<CommentList[number]["replies"]>[number],
-  ) => {
-    if (!reply.parent || reply.parent.id === data.id) {
-      return null;
+  const toggleReplyEditor = (parentId: number | undefined) => {
+    if (!parentId) {
+      return;
     }
 
-    return (
-      reply.parent.author?.nickname || reply.parent.author?.username || null
+    setActiveReplyParentId((current) =>
+      current === parentId ? null : parentId,
     );
+  };
+
+  const handleReplySubmitted = async () => {
+    setActiveReplyParentId(null);
+    await onSubmitted?.();
+  };
+
+  const handleToggleLike = async (commentId: number | undefined) => {
+    if (!commentId) return;
+
+    if (!isAuthenticated) {
+      openLoginDialog();
+      return;
+    }
+
+    const targetIsMain = commentState.id === commentId;
+    const targetReply = commentState.replies.find((reply) => reply.id === commentId);
+    const previousLiked = targetIsMain
+      ? Boolean(commentState.isLiked)
+      : Boolean(targetReply?.isLiked);
+    const previousLikes = targetIsMain
+      ? commentState.likes || 0
+      : targetReply?.likes || 0;
+    const nextLiked = !previousLiked;
+    const nextLikes = Math.max(0, previousLikes + (nextLiked ? 1 : -1));
+
+    setCommentState((current) =>
+      current.id === commentId
+        ? { ...current, isLiked: nextLiked, likes: nextLikes }
+        : {
+            ...current,
+            replies: current.replies.map((reply) =>
+              reply.id === commentId
+                ? { ...reply, isLiked: nextLiked, likes: nextLikes }
+                : reply,
+            ),
+          },
+    );
+
+    try {
+      await commentControllerLike({
+        path: { id: commentId },
+      });
+    } catch (error) {
+      setCommentState((current) =>
+        current.id === commentId
+          ? { ...current, isLiked: previousLiked, likes: previousLikes }
+          : {
+              ...current,
+              replies: current.replies.map((reply) =>
+                reply.id === commentId
+                  ? { ...reply, isLiked: previousLiked, likes: previousLikes }
+                  : reply,
+              ),
+            },
+      );
+      console.error("Failed to like comment:", error);
+    }
   };
 
   return (
@@ -96,14 +136,14 @@ export function CommentItem({ data }: CommentItemProps) {
         <div className="grow w-0">
           <Link
             className="flex items-center"
-            href={`/account/${data.author.id}`}
+            href={`/account/${commentState.author.id}`}
           >
             <span className="text-sm leading-5 font-semibold">
-              {data.author.nickname || data.author.username}
+              {commentState.author.nickname || commentState.author.username}
             </span>
           </Link>
           <span className="text-xs flex-1 text-muted-foreground">
-            {data.createdAt}
+            {commentState.createdAt}
           </span>
         </div>
         <div className="flex items-center space-x-2">
@@ -133,230 +173,69 @@ export function CommentItem({ data }: CommentItemProps) {
       <div className="py-2">
         <div className="pl-19 pr-6">
           <div
-            className="ql-editor whitespace-pre-wrap p-0! text-sm"
+            className="whitespace-pre-wrap text-sm"
             data-auto-translate-content
             dangerouslySetInnerHTML={{ __html: contentHtml }}
           />
         </div>
-        <div className="pr-6">
-          {data.images?.length === 1 && (
-            <div className="mt-3 pl-19">
-              <button
-                type="button"
-                className="inline-block cursor-pointer max-w-full overflow-hidden rounded-2xl bg-muted"
-                onClick={() => openImageViewer(data.images || [], 0)}
-              >
-                <ImageWithFallback
-                  fill
-                  src={data.images[0]}
-                  alt={`Comment image ${data.id}`}
-                  className="block h-auto max-h-45 max-w-full object-contain"
-                />
-              </button>
-            </div>
-          )}
-          {data.images?.length > 1 && (
-            <div className="group relative mt-3 pl-19">
-              <Swiper
-                modules={[FreeMode]}
-                onSwiper={(swiper) => {
-                  swiperRef.current = swiper;
-                  requestAnimationFrame(() => {
-                    syncSwiperNavState(swiper);
-                  });
-                }}
-                freeMode={{
-                  enabled: true,
-                  sticky: true,
-                  momentumBounce: false,
-                }}
-                slidesPerView="auto"
-                spaceBetween={12}
-                onSlideChange={syncSwiperNavState}
-                onResize={syncSwiperNavState}
-                onUpdate={syncSwiperNavState}
-                onAfterInit={syncSwiperNavState}
-                onSetTranslate={syncSwiperNavState}
-                onTransitionEnd={syncSwiperNavState}
-                onTouchEnd={syncSwiperNavState}
-                onSliderMove={syncSwiperNavState}
-                onFromEdge={(swiper) => {
-                  syncSwiperNavState(swiper);
-                }}
-              >
-                {data.images.map((image, index) => (
-                  <SwiperSlide
-                    key={`${data.id}-image-${index}`}
-                    className="w-auto!"
-                  >
-                    <div className="overflow-hidden rounded-2xl bg-muted">
-                      <button
-                        type="button"
-                        className="block cursor-pointer"
-                        onClick={() =>
-                          openImageViewer(data.images || [], index)
-                        }
-                      >
-                        <ImageWithFallback
-                          src={image}
-                          alt={`Comment image ${data.id}-${index + 1}`}
-                          width={320}
-                          height={180}
-                          wrapperClassName="relative block"
-                          className="block h-auto max-h-45 w-auto max-w-none object-contain"
-                        />
-                      </button>
-                    </div>
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-              {canScrollPrev && (
-                <button
-                  type="button"
-                  className="absolute left-21 top-1/2 z-8 hidden size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/70 md:group-hover:flex md:group-hover:opacity-100"
-                  onClick={handlePrevImage}
-                  aria-label={tImageViewer("prev")}
-                >
-                  <ChevronLeft className="size-4" />
-                </button>
-              )}
-              {canScrollNext && (
-                <button
-                  type="button"
-                  className="absolute right-2 top-1/2 z-8 hidden size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/70 md:group-hover:flex md:group-hover:opacity-100"
-                  onClick={handleNextImage}
-                  aria-label={tImageViewer("next")}
-                >
-                  <ChevronRight className="size-4" />
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+        <CommentImageGallery
+          images={commentState.images || []}
+          imageAltPrefix={`Comment image ${commentState.id}`}
+          className="mt-3 pl-19 pr-6"
+          onOpenImageViewer={openImageViewer}
+        />
       </div>
       {/* Comment Actions element */}
       <div className="pl-19 pr-6">
         <div className="flex items-center justify-between text-secondary text-sm mt-2">
           <span className="text-xs">
-            {new Date(data.createdAt).toLocaleDateString()}
+            {new Date(commentState.createdAt).toLocaleDateString()}
           </span>
           <div className="flex items-center space-x-4">
             <button
+              type="button"
               className={cn(
                 "flex items-center space-x-1 focus:outline-0 focus:border-0 border-0 outline-0",
                 "cursor-pointer py-1 hover:text-primary",
               )}
+              onClick={() => toggleReplyEditor(commentState.id)}
             >
               <MessageCircleMore size={20} />
               <span className="text-xs">{tComment("reply")}</span>
             </button>
             <button
+              type="button"
               className={cn(
                 "flex items-center space-x-1 focus:outline-0 focus:border-0 border-0 outline-0",
                 "cursor-pointer py-1 hover:text-primary",
+                commentState.isLiked && "text-primary",
               )}
+              onClick={() => void handleToggleLike(commentState.id)}
             >
               <ThumbsUp size={20} />
-              <span className="text-xs">{data.likes}</span>
+              <span className="text-xs">{commentState.likes}</span>
             </button>
           </div>
         </div>
-      </div>
-      {/* Replies element */}
-      <div className="mt-3 ml-19 pr-6">
-        <div className="pl-3 border-l-3 border-muted text-sm space-y-6">
-          {visibleReplies.length > 0 &&
-            visibleReplies.map((reply) => {
-              const replyTargetName = getReplyTargetName(reply);
-
-              return (
-                <section key={reply.id}>
-                  <div className="flex items-center gap-2">
-                    <Avatar
-                      url={reply.author?.avatar}
-                      className="size-5 shrink-0"
-                    />
-                    <span className="font-semibold text-foreground">
-                      {reply.author?.nickname || reply.author?.username}
-                    </span>
-                  </div>
-                  <div className="mt-1.5 text-sm">
-                    {replyTargetName ? (
-                      <div className="flex flex-wrap items-start gap-1">
-                        <span className="text-secondary">
-                          {tComment("replyTo", { name: replyTargetName })}
-                        </span>
-                        <div
-                          className="ql-editor min-w-0 flex-1 whitespace-pre-wrap p-0! text-sm"
-                          data-auto-translate-content
-                          dangerouslySetInnerHTML={{
-                            __html: prepareRichTextHtmlForDisplay(
-                              reply.content || "",
-                            ),
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <div
-                        className="ql-editor whitespace-pre-wrap p-0! text-sm"
-                        data-auto-translate-content
-                        dangerouslySetInnerHTML={{
-                          __html: prepareRichTextHtmlForDisplay(
-                            reply.content || "",
-                          ),
-                        }}
-                      />
-                    )}
-                    {reply.images?.length ? (
-                      <button
-                        type="button"
-                        className="mt-2 inline-flex cursor-pointer items-center gap-1.5 text-sm text-primary hover:opacity-80"
-                        onClick={() => openImageViewer(reply.images || [], 0)}
-                      >
-                        <ImageIcon className="size-4" />
-                        <span>{tComment("viewImages")}</span>
-                      </button>
-                    ) : null}
-                  </div>
-                  <div className="mt-2 flex items-center justify-between text-secondary text-sm">
-                    <span className="text-xs">
-                      {new Date(reply?.createdAt).toLocaleDateString()}
-                    </span>
-                    <div className="flex items-center space-x-4">
-                      <button
-                        className={cn(
-                          "flex items-center space-x-1 focus:outline-0 focus:border-0 border-0 outline-0",
-                          "cursor-pointer  hover:text-primary",
-                        )}
-                      >
-                        <MessageCircleMore size={20} />
-                        <span className="text-xs">{tComment("reply")}</span>
-                      </button>
-                      <button
-                        className={cn(
-                          "flex items-center space-x-1 focus:outline-0 focus:border-0 border-0 outline-0",
-                          "cursor-pointer hover:text-primary",
-                        )}
-                      >
-                        <ThumbsUp size={20} />
-                        <span className="text-xs">{reply?.likes}</span>
-                      </button>
-                    </div>
-                  </div>
-                </section>
-              );
-            })}
-        </div>
-        {data.replies.length > 2 ? (
-          <button
-            type="button"
-            className="inline-flex mt-4 h-8 items-center bg-muted rounded-full px-4 text-sm text-secondary transition"
-          >
-            {tComment("totalReplies", { count: data.replies.length })}
-            <ChevronRight className="size-4" />
-          </button>
+        {activeReplyParentId === commentState.id ? (
+          <CommentEditor
+            articleId={articleId}
+            parentId={commentState.id}
+            className="px-0 pt-4"
+            onSubmitted={handleReplySubmitted}
+          />
         ) : null}
       </div>
+      {/* Replies element */}
+      <CommentReplyList
+        articleId={articleId}
+        data={commentState}
+        activeReplyParentId={activeReplyParentId}
+        onToggleReplyEditor={toggleReplyEditor}
+        onToggleLike={handleToggleLike}
+        onReplySubmitted={handleReplySubmitted}
+        onOpenImageViewer={openImageViewer}
+      />
       {viewerVisible && viewerImages.length > 0 && (
         <ImageViewer
           images={viewerImages}

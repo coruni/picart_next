@@ -1,9 +1,14 @@
 "use client";
 
 import { commentControllerFindAll } from "@/api";
-import { InfiniteScrollStatus } from "@/components/shared";
+import {
+  DropdownMenu,
+  InfiniteScrollStatus,
+  type MenuItem,
+} from "@/components/shared";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { CommentList } from "@/types";
+import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CommentEditor } from "./CommentEditor";
@@ -14,6 +19,8 @@ type ArticleCommentListProps = {
   articleId: string;
   pageSize?: number;
 };
+
+type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
 
 export function ArticleCommentList({
   articleId,
@@ -28,14 +35,27 @@ export function ArticleCommentList({
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<CommentSortKey>("all");
 
   const fetchComments = useCallback(
     async (pageToLoad: number) => {
+      const sortByMap: Record<
+        CommentSortKey,
+        "hot" | "oldest" | "latest" | undefined
+      > = {
+        all: undefined,
+        hot: "hot",
+        oldest: "oldest",
+        latest: "latest",
+        rootOnly: undefined,
+      };
       const response = await commentControllerFindAll({
         path: { id: articleId },
         query: {
           page: pageToLoad,
           limit: pageSize,
+          sortBy: sortByMap[sortKey],
+          onlyAuthor: sortKey === "rootOnly",
         },
       });
 
@@ -44,7 +64,7 @@ export function ArticleCommentList({
         total: response.data?.data?.meta?.total || 0,
       };
     },
-    [articleId, pageSize],
+    [articleId, pageSize, sortKey],
   );
 
   // 初始化加载
@@ -69,6 +89,54 @@ export function ArticleCommentList({
   useEffect(() => {
     void refreshComments();
   }, [refreshComments]);
+
+  const sortItems: MenuItem[] = [
+    {
+      label: t("sortOptions.all"),
+      onClick: () => setSortKey("all"),
+      className:
+        sortKey === "all"
+          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+          : undefined,
+    },
+    {
+      label: t("sortOptions.hot"),
+      onClick: () => setSortKey("hot"),
+      className:
+        sortKey === "hot"
+          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+          : undefined,
+    },
+    {
+      label: t("sortOptions.oldest"),
+      onClick: () => setSortKey("oldest"),
+      className:
+        sortKey === "oldest"
+          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+          : undefined,
+    },
+    {
+      label: t("sortOptions.latest"),
+      onClick: () => setSortKey("latest"),
+      className:
+        sortKey === "latest"
+          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+          : undefined,
+    },
+    {
+      label: t("sortOptions.rootOnly"),
+      onClick: () => setSortKey("rootOnly"),
+      className:
+        sortKey === "rootOnly"
+          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+          : undefined,
+    },
+  ];
+
+  const currentSortLabel =
+    sortKey === "all"
+      ? t("sortWithCount", { count: total })
+      : t(`sortOptions.${sortKey}`);
 
   const loadMoreComments = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -113,6 +181,21 @@ export function ArticleCommentList({
     return (
       <div className="space-y-4">
         <CommentEditor articleId={articleId} onSubmitted={refreshComments} />
+        <div className="border-b border-border px-6 pb-4">
+          <DropdownMenu
+            className="w-fit"
+            position="left"
+            title=""
+            trigger={
+              <button className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-foreground transition hover:text-primary">
+                <span>{currentSortLabel}</span>
+                <ChevronDown className="size-4 text-[#aeb8c7]" />
+              </button>
+            }
+            items={sortItems}
+            menuClassName="top-9 min-w-0 rounded-2xl border border-border bg-card drop-shadow-lg"
+          />
+        </div>
         <CommentListSkeleton />
       </div>
     );
@@ -122,8 +205,29 @@ export function ArticleCommentList({
     <div className="space-y-4">
       <CommentEditor articleId={articleId} onSubmitted={refreshComments} />
 
+      <div className="border-b border-border px-6 pb-4 min-w-min">
+        <DropdownMenu
+          className="w-fit text-sm "
+          position="left"
+          title=""
+          trigger={
+            <button className="inline-flex shrink-0 w-fit items-center gap-1.5 text-sm font-medium text-foreground transition hover:text-primary">
+              <span className=" w-max">{currentSortLabel}</span>
+              <ChevronDown className="size-4 text-[#aeb8c7]" />
+            </button>
+          }
+          items={sortItems}
+          menuClassName="top-9 min-w-0 max-w rounded-xl border border-border bg-card drop-shadow-lg"
+        />
+      </div>
+
       {comments.map((comment) => (
-        <CommentItem data={comment} key={comment.id} />
+        <CommentItem
+          articleId={articleId}
+          data={comment}
+          key={comment.id}
+          onSubmitted={refreshComments}
+        />
       ))}
 
       <InfiniteScrollStatus

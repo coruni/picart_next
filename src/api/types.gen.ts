@@ -6423,7 +6423,14 @@ export type CommentControllerFindAllData = {
          * 每页数量
          */
         limit?: number;
-        sortBy?: string;
+        /**
+         * 排序
+         */
+        sortBy?: 'latest' | 'oldest' | 'hot' | '';
+        /**
+         * 只看作者
+         */
+        onlyAuthor?: boolean;
     };
     url: '/comment/article/{id}';
 };
@@ -6882,6 +6889,14 @@ export type CommentControllerFindOneData = {
          * 每页数量
          */
         limit?: number;
+        /**
+         * 排序
+         */
+        sortBy?: 'latest' | 'oldest' | 'hot';
+        /**
+         * 只看作者
+         */
+        onlyAuthor?: boolean;
     };
     url: '/comment/{id}';
 };

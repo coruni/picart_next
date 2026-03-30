@@ -56,7 +56,7 @@ export function DropdownMenu({
 
       <div
         className={cn(
-          "absolute top-8 z-8 min-w-50 origin-top rounded-xl bg-card border-border drop-shadow-2xl  will-change-[opacity,transform] transform-gpu transition-[opacity,transform] duration-120 ease-out",
+          "absolute top-8 z-8 min-w-50 w-max origin-top rounded-xl bg-card border-border drop-shadow-2xl will-change-[opacity,transform] transform-gpu transition-[opacity,transform] duration-120 ease-out",
           position === "right" ? "right-0" : "left-0",
           isOpen
             ? "visible scale-100 opacity-100"
@@ -79,7 +79,7 @@ export function DropdownMenu({
             <div
               key={index}
               className={cn(
-                "flex items-center gap-2 rounded-xl p-2 text-sm transition-colors",
+                "flex items-center gap-2 rounded-xl p-2 text-sm whitespace-nowrap transition-colors",
                 item.disabled
                   ? "cursor-not-allowed opacity-50"
                   : "group cursor-pointer hover:bg-primary/15 hover:text-primary text-black/75 dark:text-white/75",
@@ -88,7 +88,7 @@ export function DropdownMenu({
               onClick={() => handleItemClick(item)}
             >
               {item.icon && <span>{item.icon}</span>}
-              <span>{item.label}</span>
+              <span className="whitespace-nowrap">{item.label}</span>
             </div>
           ))}
         </div>

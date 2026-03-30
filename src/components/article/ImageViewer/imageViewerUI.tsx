@@ -1,4 +1,3 @@
-import ReactDOMServer from "react-dom/server";
 import {
   ChevronLeft,
   ChevronRight,
@@ -8,8 +7,9 @@ import {
   Square,
   X,
 } from "lucide-react";
-import Viewer from "viewerjs";
 import { ComponentType, Dispatch, SetStateAction } from "react";
+import ReactDOMServer from "react-dom/server";
+import Viewer from "viewerjs";
 
 const renderIcon = (
   Icon: ComponentType<{ size?: number; className?: string }>,
@@ -159,7 +159,7 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
   if (hasMultipleImages && !container.querySelector(".custom-thumbnail-column")) {
     const thumbnailColumn = document.createElement("div");
     thumbnailColumn.className =
-      "custom-thumbnail-column absolute right-4 top-1/2 z-[9998] flex max-h-83 -translate-y-1/2 flex-col items-center gap-3 overflow-y-auto rounded-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+      "custom-thumbnail-column absolute right-4 top-1/2 z-[9998] inline-flex max-h-83 -translate-y-1/2 flex-col items-center gap-3 overflow-y-auto rounded-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
     const currentIndex = getCurrentIndex();
 
     images.forEach((src, idx) => {

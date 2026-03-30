@@ -314,6 +314,16 @@ export function prepareRichTextHtmlForDisplay(html: string): string {
   return sanitizeRichTextHtml(html);
 }
 
+export function prepareCommentHtmlForDisplay(html: string): string {
+  return prepareRichTextHtmlForDisplay(html)
+    .replace(/<div class="ql-image-wrapper">[\s\S]*?<\/div>/g, "")
+    .replace(
+      /<img\b(?:(?!class=(["'])[^"']*ql-emoji-embed__img[^"']*\1)[^>])*>/gi,
+      "",
+    )
+    .replace(/<p>\s*(<br\s*\/?>)?\s*<\/p>/gi, "");
+}
+
 export function prepareRichTextHtmlForSummary(html: string): string {
   return prepareRichTextHtmlForDisplay(html)
     .replace(/<div class="ql-image-wrapper">[\s\S]*?<\/div>/g, "")

@@ -1,0 +1,386 @@
+"use client";
+
+import { commentControllerFindOne } from "@/api";
+import { InfiniteScrollStatus } from "@/components/shared";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/Dialog";
+import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
+import { Link } from "@/i18n/routing";
+import { cn, prepareCommentHtmlForDisplay } from "@/lib";
+import { CommentList } from "@/types";
+import {
+  ChevronRight,
+  EllipsisVertical,
+  Languages,
+  MessageCircleMore,
+  ThumbsUp,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Avatar } from "../ui/Avatar";
+import { CommentEditor } from "./CommentEditor";
+import { CommentImageGallery } from "./CommentImageGallery";
+import { CommentReplyItem, type CommentReply } from "./CommentReplyItem";
+import { CommentListSkeleton } from "./CommentSkeleton";
+
+type CommentReplyListProps = {
+  articleId: string;
+  data: CommentList[number];
+  activeReplyParentId: number | null;
+  onToggleReplyEditor: (parentId: number | undefined) => void;
+  onToggleLike: (commentId: number | undefined) => void | Promise<void>;
+  onReplySubmitted: () => void | Promise<void>;
+  onOpenImageViewer: (images: string[], index?: number) => void;
+};
+
+export function CommentReplyList({
+  articleId,
+  data,
+  activeReplyParentId,
+  onToggleReplyEditor,
+  onToggleLike,
+  onReplySubmitted,
+  onOpenImageViewer,
+}: CommentReplyListProps) {
+  const tComment = useTranslations("commentList");
+  const observerRef = useRef<HTMLDivElement>(null);
+  const scrollRootRef = useRef<HTMLDivElement>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [modalReplies, setModalReplies] = useState<
+    NonNullable<CommentList[number]["replies"]>
+  >([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const visibleReplies = useMemo(
+    () => data.replies.slice(0, 2),
+    [data.replies],
+  );
+  const contentHtml = prepareCommentHtmlForDisplay(data.content || "");
+  const totalReplies = data.replyCount || data.replies.length;
+
+  const openReplyModal = (_reply?: CommentReply) => {
+    setModalOpen(true);
+  };
+
+  const fetchReplies = useCallback(
+    async (pageToLoad: number) => {
+      const response = await commentControllerFindOne({
+        path: { id: String(data.id) },
+        query: {
+          page: pageToLoad,
+          limit: 10,
+        },
+      });
+
+      return {
+        replies:
+          (response.data?.data?.data as NonNullable<CommentList[number]["replies"]>) ||
+          [],
+        total: response.data?.data?.meta?.total || 0,
+      };
+    },
+    [data.id],
+  );
+
+  const refreshReplies = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await fetchReplies(1);
+      setModalReplies(result.replies);
+      setTotal(result.total);
+      setPage(2);
+      setHasMore(result.replies.length < result.total);
+    } catch (loadError) {
+      console.error("Failed to load comment replies:", loadError);
+      setError(tComment("loadFailed"));
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchReplies, tComment]);
+
+  const loadMoreReplies = useCallback(async () => {
+    if (loading || !hasMore) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await fetchReplies(page);
+      const newReplies = result.replies;
+      const responseTotal = result.total || total;
+
+      if (newReplies.length === 0) {
+        setHasMore(false);
+      } else {
+        setModalReplies((prev) => [...prev, ...newReplies]);
+        setPage((prev) => prev + 1);
+        if (modalReplies.length + newReplies.length >= responseTotal) {
+          setHasMore(false);
+        }
+      }
+    } catch (loadError) {
+      console.error("Failed to load more comment replies:", loadError);
+      setError(tComment("loadFailed"));
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchReplies, hasMore, loading, modalReplies.length, page, tComment, total]);
+
+  const handleReplySubmitted = useCallback(async () => {
+    await onReplySubmitted();
+    if (modalOpen) {
+      await refreshReplies();
+    }
+  }, [modalOpen, onReplySubmitted, refreshReplies]);
+
+  const handleToggleLike = useCallback(
+    async (commentId: number | undefined) => {
+      if (!commentId) {
+        return;
+      }
+
+      const targetReply = modalReplies.find((reply) => reply.id === commentId);
+      const previousLiked = Boolean(targetReply?.isLiked);
+      const previousLikes = targetReply?.likes || 0;
+      const nextLiked = !previousLiked;
+      const nextLikes = Math.max(0, previousLikes + (nextLiked ? 1 : -1));
+
+      if (targetReply) {
+        setModalReplies((current) =>
+          current.map((reply) =>
+            reply.id === commentId
+              ? { ...reply, isLiked: nextLiked, likes: nextLikes }
+              : reply,
+          ),
+        );
+      }
+
+      try {
+        await onToggleLike(commentId);
+      } catch (likeError) {
+        if (targetReply) {
+          setModalReplies((current) =>
+            current.map((reply) =>
+              reply.id === commentId
+                ? { ...reply, isLiked: previousLiked, likes: previousLikes }
+                : reply,
+            ),
+          );
+        }
+        throw likeError;
+      }
+    },
+    [modalReplies, onToggleLike],
+  );
+
+  useEffect(() => {
+    if (!modalOpen) {
+      return;
+    }
+
+    void refreshReplies();
+  }, [modalOpen, refreshReplies]);
+
+  useInfiniteScrollObserver({
+    targetRef: observerRef,
+    rootRef: scrollRootRef,
+    enabled: modalOpen && hasMore,
+    onIntersect: () => {
+      if (!loading) {
+        void loadMoreReplies();
+      }
+    },
+  });
+
+  if (!totalReplies && !data.replies.length) {
+    return null;
+  }
+
+  return (
+    <>
+      <div className="mt-3 ml-19 pr-6">
+        <div className="pl-3 border-l-3 border-muted text-sm space-y-6">
+          {visibleReplies.map((reply) => (
+            <CommentReplyItem
+              key={reply.id}
+              articleId={articleId}
+              rootCommentId={data.id}
+              reply={reply}
+              isReplyEditorOpen={activeReplyParentId === reply.id}
+              onToggleReplyEditor={onToggleReplyEditor}
+              onToggleLike={onToggleLike}
+              onReplySubmitted={onReplySubmitted}
+              onOpenImageViewer={onOpenImageViewer}
+              onOpenModal={openReplyModal}
+            />
+          ))}
+        </div>
+        {totalReplies > visibleReplies.length ? (
+          <button
+            type="button"
+            className="mt-4 inline-flex h-8 items-center rounded-full bg-muted px-4 text-sm text-secondary transition hover:text-primary"
+            onClick={() => openReplyModal()}
+          >
+            {tComment("totalReplies", { count: totalReplies })}
+            <ChevronRight className="size-4" />
+          </button>
+        ) : null}
+      </div>
+
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-3xl rounded-2xl p-0">
+          <DialogHeader className="px-6 py-4 mb-0!">
+            <DialogTitle className="text-sm font-semibold text-left">
+              {tComment.has("viewCommentTitle")
+                ? tComment("viewCommentTitle", { count: totalReplies })
+                : `${tComment("totalReplies", { count: totalReplies })}`}
+            </DialogTitle>
+          </DialogHeader>
+          <div ref={scrollRootRef} className="max-h-[80vh] overflow-y-auto">
+            <article className="border-b border-border px-6 py-5">
+              <div className="flex items-center space-x-3">
+                <Avatar
+                  className="size-10"
+                  alt={data.author.nickname || data.author.username}
+                  url={data.author.avatar}
+                  frameUrl={
+                    data.author?.equippedDecorations?.AVATAR_FRAME?.imageUrl
+                  }
+                />
+                <div className="grow w-0">
+                  <Link
+                    className="flex items-center"
+                    href={`/account/${data.author.id}`}
+                  >
+                    <span className="text-sm leading-5 font-semibold">
+                      {data.author.nickname || data.author.username}
+                    </span>
+                  </Link>
+                  <span className="text-xs text-muted-foreground">
+                    {data.createdAt}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button
+                    title={tComment("translate")}
+                    className={cn(
+                      "flex size-7 cursor-pointer items-center justify-center rounded-lg p-1 text-secondary hover:bg-muted hover:text-primary",
+                    )}
+                  >
+                    <Languages size={20} />
+                  </button>
+                  <button
+                    title={tComment("translate")}
+                    className="flex size-7 cursor-pointer items-center justify-center p-1 text-secondary"
+                  >
+                    <EllipsisVertical size={20} />
+                  </button>
+                </div>
+              </div>
+              <div className="py-2">
+                <div
+                  className="whitespace-pre-wrap text-sm"
+                  data-auto-translate-content
+                  dangerouslySetInnerHTML={{ __html: contentHtml }}
+                />
+                <CommentImageGallery
+                  images={data.images || []}
+                  imageAltPrefix={`Comment image ${data.id}`}
+                  className="mt-3"
+                  onOpenImageViewer={onOpenImageViewer}
+                />
+              </div>
+              <div className="mt-2 flex items-center justify-between text-sm text-secondary">
+                <span className="text-xs">
+                  {new Date(data.createdAt).toLocaleDateString()}
+                </span>
+                <div className="flex items-center space-x-4">
+                  <button
+                    type="button"
+                    className="flex cursor-pointer items-center space-x-1 py-1 hover:text-primary"
+                    onClick={() => onToggleReplyEditor(data.id)}
+                  >
+                    <MessageCircleMore size={20} />
+                    <span className="text-xs">{tComment("reply")}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className={cn(
+                      "flex cursor-pointer items-center space-x-1 py-1 hover:text-primary",
+                      data.isLiked && "text-primary",
+                    )}
+                    onClick={() => void onToggleLike(data.id)}
+                  >
+                    <ThumbsUp size={20} />
+                    <span className="text-xs">{data.likes}</span>
+                  </button>
+                </div>
+              </div>
+              {activeReplyParentId === data.id ? (
+                <CommentEditor
+                  articleId={articleId}
+                  parentId={data.id}
+                  className="px-0 pt-4"
+                  onSubmitted={handleReplySubmitted}
+                />
+              ) : null}
+            </article>
+
+            <div className="px-6 py-5">
+              {loading && modalReplies.length === 0 ? (
+                <CommentListSkeleton count={4} className="space-y-6" />
+              ) : (
+                <div className="text-sm space-y-6">
+                  {modalReplies.map((reply) => (
+                    <CommentReplyItem
+                      key={`modal-${reply.id}`}
+                      articleId={articleId}
+                      rootCommentId={data.id}
+                      reply={reply}
+                      isReplyEditorOpen={activeReplyParentId === reply.id}
+                      onToggleReplyEditor={onToggleReplyEditor}
+                      onToggleLike={handleToggleLike}
+                      onReplySubmitted={handleReplySubmitted}
+                      onOpenImageViewer={onOpenImageViewer}
+                      imageDisplayMode="gallery"
+                    />
+                  ))}
+                </div>
+              )}
+
+              <InfiniteScrollStatus
+                observerRef={observerRef}
+                hasMore={hasMore}
+                loading={loading}
+                error={error}
+                isEmpty={modalReplies.length === 0}
+                onRetry={loadMoreReplies}
+                loadingText={tComment("loading")}
+                idleText={tComment("loadMore")}
+                retryText={tComment("retry")}
+                allLoadedText={tComment("allLoaded")}
+                emptyText={tComment("noComments")}
+                containerClassName="py-6"
+                loadingClassName="text-secondary"
+                idleTextClassName="text-secondary"
+                endClassName="text-secondary"
+                emptyClassName="text-muted-foreground"
+              />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}

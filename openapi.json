@@ -16555,10 +16555,25 @@
           {
             "name": "sortBy",
             "in": "query",
-            "description": "",
+            "description": "排序",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "latest",
+                "oldest",
+                "hot",
+                ""
+              ]
+            }
+          },
+          {
+            "name": "onlyAuthor",
+            "in": "query",
+            "description": "只看作者",
+            "required": false,
+            "schema": {
+              "type": "boolean"
             }
           },
           {
@@ -18218,6 +18233,29 @@
               "maximum": 100,
               "default": 10,
               "type": "number"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "排序",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "latest",
+                "oldest",
+                "hot"
+              ]
+            }
+          },
+          {
+            "name": "onlyAuthor",
+            "in": "query",
+            "description": "只看作者",
+            "required": false,
+            "schema": {
+              "type": "boolean"
             }
           },
           {
