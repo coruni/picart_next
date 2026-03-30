@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Image from "next/image";
+import { notFound } from "next/navigation";
+import { ReactNode } from "react";
 
 import { AccountInfo, AccountTabs } from "@/components/account";
 import { Sidebar } from "@/components/sidebar/Sidebar";

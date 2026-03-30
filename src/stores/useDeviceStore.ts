@@ -1,10 +1,10 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { removeCookie } from "@/lib/cookies";
 import {
   DEVICE_ID_COOKIE_NAME,
   persistClientDeviceId,
 } from "@/lib/request-auth";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface DeviceState {
   deviceId: string | null;
@@ -17,7 +17,7 @@ export const useDeviceStore = create<DeviceState>()(
     (set) => ({
       deviceId: null,
 
-      setDeviceId: (deviceId) => {
+      setDeviceId: (deviceId: string) => {
         persistClientDeviceId(deviceId);
         set({
           deviceId,
@@ -39,9 +39,9 @@ export const useDeviceStore = create<DeviceState>()(
     }),
     {
       name: "device-storage",
-      partialize: (state) => ({
+      partialize: (state: DeviceState) => ({
         deviceId: state.deviceId,
       }),
     }
-  )
+  ) as never
 );

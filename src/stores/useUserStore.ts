@@ -1,12 +1,12 @@
+import { removeCookie, setCookie } from "@/lib/cookies";
+import type { UserProfile } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { UserProfile } from "@/types";
-import { setCookie, removeCookie } from "@/lib/cookies";
 
 const TOKEN_COOKIE_NAME = "auth-token";
 const TOKEN_EXPIRY_DAYS = 30;
 
-interface UserState {
+export interface UserState {
   user: UserProfile | null;
   token: string | null;
   isAuthenticated: boolean;
@@ -38,13 +38,6 @@ function syncTokenToCookie(token: string | null): void {
       path: "/",
       sameSite: "Lax"
     });
-    
-    // 额外保险：直接使用 document.cookie 删除
-    if (typeof document !== "undefined") {
-      document.cookie = `${TOKEN_COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
-      document.cookie = `${TOKEN_COOKIE_NAME}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
-      document.cookie = `${TOKEN_COOKIE_NAME}=; max-age=0; path=/`;
-    }
   }
 }
 
@@ -55,21 +48,21 @@ export const useUserStore = create<UserState>()(
       token: null,
       isAuthenticated: false,
 
-      setUser: (user) =>
-        set((state) => ({
+      setUser: (user: UserProfile | null) =>
+        set((state: UserState) => ({
           user,
           isAuthenticated: !!user || !!state.token,
         })),
 
-      setToken: (token) => {
+      setToken: (token: string | null) => {
         syncTokenToCookie(token);
-        set((state) => ({
+        set((state: UserState) => ({
           token,
           isAuthenticated: !!token || !!state.user,
         }));
       },
 
-      login: (user, token) => {
+      login: (user: UserProfile, token: string) => {
         syncTokenToCookie(token);
         set({
           user,
@@ -87,19 +80,12 @@ export const useUserStore = create<UserState>()(
           localStorage.removeItem("user-storage");
         }
         
-        // 3. 重置状态（persist 会尝试保存，但我们已经删除了 key）
+        // 3. 重置状态
         set({
           user: null,
           token: null,
           isAuthenticated: false,
         });
-        
-        // 4. 再次确保清除（防止 persist 中间件重新写入）
-        if (typeof window !== "undefined") {
-          requestAnimationFrame(() => {
-            localStorage.removeItem("user-storage");
-          });
-        }
       },
 
       clearStorage: () => {
@@ -108,19 +94,19 @@ export const useUserStore = create<UserState>()(
         }
       },
 
-      updateUser: (userData) =>
-        set((state) => ({
+      updateUser: (userData: Partial<UserProfile>) =>
+        set((state: UserState) => ({
           user: state.user ? { ...state.user, ...userData } : null,
         })),
     }),
     {
       name: "user-storage",
-      partialize: (state) => ({
+      partialize: (state: UserState) => ({
         user: state.user,
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
     }
-  )
+  ) as never
 );
 

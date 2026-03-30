@@ -125,14 +125,15 @@ export function UserDropdown() {
     content: ReactNode,
   ) => {
     const isOpen = key === "language" ? mobileLanguageOpen : mobileThemeOpen;
-    const setOpen = key === "language" ? setMobileLanguageOpen : setMobileThemeOpen;
+    const setOpen =
+      key === "language" ? setMobileLanguageOpen : setMobileThemeOpen;
 
     return (
       <div className="p-1">
         <button
           type="button"
           onClick={() => setOpen(!isOpen)}
-          className="mb-1 flex h-10 w-full items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+          className="mb-1  cursor-pointer flex h-10 w-full items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
         >
           {trigger}
           <ChevronDown
@@ -388,7 +389,7 @@ export function UserDropdown() {
           className="flex max-h-[85vh] w-[calc(100vw-2rem)] max-w-md flex-col overflow-hidden rounded-2xl p-0 md:hidden"
           showClose={false}
         >
-          <div className="shrink-0 border-b border-border bg-muted/40 px-4 py-4">
+          <div className="shrink-0 border-b border-border px-4 py-4">
             <div className="flex items-center gap-3">
               <Avatar
                 bordered
@@ -496,7 +497,7 @@ export function UserDropdown() {
                     key={option.value}
                     type="button"
                     onClick={() => handleLocaleChange(option.value)}
-                    className="flex h-10 w-full items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                    className="flex cursor-pointer h-10 w-full items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
                   >
                     <span className="text-sm font-medium">{option.label}</span>
                     <Check
@@ -530,7 +531,7 @@ export function UserDropdown() {
                       key={option.value}
                       type="button"
                       onClick={() => handleThemeChange(option.value)}
-                      className="flex h-10 w-full items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                      className="flex cursor-pointer h-10 w-full items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
                     >
                       <div className="flex items-center gap-3">
                         <Icon className="size-4" />
@@ -550,7 +551,7 @@ export function UserDropdown() {
             )}
 
             <div className="p-1">
-              <div className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500">
+              <div className="mb-1  cursor-pointer flex h-10 items-center justify-between rounded-lg px-2 text-gray-500">
                 <div className="flex items-center gap-3">
                   <svg
                     className="size-5"
@@ -575,11 +576,9 @@ export function UserDropdown() {
                 />
               </div>
             </div>
-
-            <div className="my-2 border-t border-border" />
           </div>
 
-          <div className="shrink-0 border-t border-border bg-muted/40 p-3">
+          <div className="shrink-0 border-t border-border p-3">
             <div className="px-1">
               {isAuthenticated ? (
                 <button
@@ -587,7 +586,7 @@ export function UserDropdown() {
                     setMobileMenuOpen(false);
                     setLogoutDialogOpen(true);
                   }}
-                  className="flex h-10 w-full items-center gap-2 rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                  className="flex cursor-pointer h-10 w-full items-center gap-2 rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <Power className="size-5" />
                   <span className="text-sm font-medium">{t("logout")}</span>
@@ -595,7 +594,7 @@ export function UserDropdown() {
               ) : (
                 <button
                   onClick={handleLoginDialogOpen}
-                  className="flex h-10 w-full items-center gap-2 rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                  className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <LogIn className="size-5" />
                   <span className="text-sm font-medium">{t("login")}</span>

@@ -1,3 +1,4 @@
+import { routing } from "@/i18n/routing";
 import { PublicConfigs } from "@/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
@@ -22,24 +23,24 @@ export const useAppStore = create<AppState>()(
       theme: "system",
       autoTranslateContent: false,
       sidebarOpen: true,
-      locale: "zh",
+      locale: routing.defaultLocale,
       siteConfig: {} as PublicConfigs,
-      setTheme: (theme) =>
+      setTheme: (theme: "light" | "dark" | "system") =>
         set({
           theme,
         }),
 
-      setAutoTranslateContent: (autoTranslateContent) =>
+      setAutoTranslateContent: (autoTranslateContent: boolean) =>
         set({
           autoTranslateContent,
         }),
 
       toggleSidebar: () =>
-        set((state) => ({
+        set((state: AppState) => ({
           sidebarOpen: !state.sidebarOpen,
         })),
 
-      setSidebarOpen: (open) =>
+      setSidebarOpen: (open: boolean) =>
         set({
           sidebarOpen: open,
         }),
@@ -49,13 +50,13 @@ export const useAppStore = create<AppState>()(
           siteConfig,
         }),
 
-      setLocale: (locale) =>
+      setLocale: (locale: string) =>
         set({
           locale,
         }),
     }),
     {
       name: "app-storage",
-    }
-  )
+    },
+  ) as never,
 );

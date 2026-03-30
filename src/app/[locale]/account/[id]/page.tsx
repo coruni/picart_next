@@ -2,7 +2,7 @@ import { ArticleListClient } from "@/components/account/ArticleList.client";
 import { serverApi } from "@/lib/server-api";
 import { ArticleList } from "@/types";
 
-export default async function AccountHomePage({
+export default async function AccountPage({
   params,
 }: {
   params: Promise<{ id: string; locale: string }>;
