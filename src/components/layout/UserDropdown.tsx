@@ -387,7 +387,6 @@ export function UserDropdown() {
       <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
         <DialogContent
           className="flex max-h-[85vh] w-[calc(100vw-2rem)] max-w-md flex-col overflow-hidden rounded-2xl p-0 md:hidden"
-          showClose={false}
         >
           <div className="shrink-0 border-b border-border px-4 py-4">
             <div className="flex items-center gap-3">

@@ -35,6 +35,8 @@
   },
   "header": {
     "create": {
+      "title": "创作",
+      "subtitle": "选择要创作的内容类型",
       "article": "文章",
       "image": "图片",
       "video": "视频"
