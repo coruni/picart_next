@@ -19,11 +19,15 @@ import {
   Smile,
   X,
 } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { FreeMode } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 import { Button } from "../ui/Button";
+
+import "swiper/css";
 
 type CommentEditorProps = {
   articleId: string;
@@ -127,12 +131,64 @@ function hasQuillContent(quill: Quill | null) {
     return false;
   }
 
-  const text = quill.getText().replace(/\n/g, "").trim();
+  const text = quill
+    .getText()
+    .replace(/[\s\u00A0\u200B-\u200D\uFEFF]/g, "");
   if (text.length > 0) {
     return true;
   }
 
   return !!quill.root.querySelector(".ql-emoji-embed");
+}
+
+function AttachmentPreviewCard({
+  attachment,
+  onRemove,
+  removeLabel,
+}: {
+  attachment: UploadedAttachment;
+  onRemove: (id: string) => void;
+  removeLabel: string;
+}) {
+  const isUploading = attachment.status === "uploading";
+
+  return (
+    <div className="relative h-46 w-82 overflow-hidden rounded-[14px] bg-[#d9d9d9]">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={attachment.url || attachment.previewUrl}
+        alt=""
+        className={cn(
+          "h-full w-full object-cover transition duration-300",
+          isUploading ? "opacity-70 grayscale-[0.2]" : "opacity-100",
+        )}
+      />
+      <div
+        className={cn(
+          "absolute right-3 top-3 flex items-center overflow-hidden rounded-full bg-black/70 text-xs font-semibold text-white transition-[padding,gap] duration-300",
+          isUploading ? "gap-2 px-3 py-1" : "gap-0 p-1",
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center overflow-hidden whitespace-nowrap transition-[max-width,opacity,margin] duration-300",
+            isUploading ? "mr-1 max-w-20 opacity-100" : "mr-0 max-w-0 opacity-0",
+          )}
+        >
+          <LoaderCircle className="mr-2 size-3.5 shrink-0 animate-spin" />
+          <span>{attachment.progress}%</span>
+        </div>
+        <button
+          type="button"
+          className="flex size-4 shrink-0 items-center justify-center rounded-full text-white/90 transition hover:text-white"
+          onClick={() => onRemove(attachment.id)}
+          aria-label={removeLabel}
+        >
+          <X className="size-4" />
+        </button>
+      </div>
+    </div>
+  );
 }
 
 export function CommentEditor({
@@ -142,13 +198,13 @@ export function CommentEditor({
   onSubmitted,
 }: CommentEditorProps) {
   const t = useTranslations("commentEditor");
-  const locale = useLocale();
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const emojiPanelRef = useRef<HTMLDivElement>(null);
   const emojiTabsViewportRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
   const uploadTimersRef = useRef<Record<string, number>>({});
+  const attachmentsRef = useRef<UploadedAttachment[]>([]);
   const removedAttachmentIdsRef = useRef(new Set<string>());
   const [emojiGroups, setEmojiGroups] = useState<EmojiGroup[]>([]);
   const [activeEmojiGroup, setActiveEmojiGroup] = useState<string>("all");
@@ -256,16 +312,24 @@ export function CommentEditor({
   }, [emojiOpen]);
 
   useEffect(() => {
+    attachmentsRef.current = attachments;
+  }, [attachments]);
+
+  useEffect(() => {
+    const timers = uploadTimersRef.current;
+
     return () => {
-      Object.values(uploadTimersRef.current).forEach((timer) => {
+      const currentAttachments = attachmentsRef.current;
+
+      Object.values(timers).forEach((timer) => {
         window.clearInterval(timer);
       });
 
-      attachments.forEach((attachment) => {
+      currentAttachments.forEach((attachment) => {
         URL.revokeObjectURL(attachment.previewUrl);
       });
     };
-  }, [attachments]);
+  }, []);
 
   const updateAttachment = (
     id: string,
@@ -317,7 +381,6 @@ export function CommentEditor({
     quill.insertText(index + 1, " ", "user");
     quill.setSelection(index + 2, 0, "silent");
     setEditorHasContent(true);
-    setEmojiOpen(false);
 
     try {
       await emojiControllerIncrementUseCount({ path: { id: emoji.id } });
@@ -489,38 +552,28 @@ export function CommentEditor({
         </div>
 
         {attachments.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-3">
-            {attachments.map((attachment) => (
-              <div
-                key={attachment.id}
-                className="relative h-46 w-82 overflow-hidden rounded-[14px] bg-[#d9d9d9]"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={attachment.url || attachment.previewUrl}
-                  alt=""
-                  className={cn(
-                    "h-full w-full object-cover",
-                    attachment.status === "uploading" &&
-                      "opacity-70 grayscale-[0.2]",
-                  )}
-                />
-                <div className="absolute right-3 top-3 flex items-center gap-2 rounded-full bg-black/70 px-3 py-1 text-xs font-semibold text-white">
-                  {attachment.status === "uploading" ? (
-                    <LoaderCircle className="size-3.5 animate-spin" />
-                  ) : null}
-                  <span>{attachment.progress}%</span>
-                  <button
-                    type="button"
-                    className="flex size-4 items-center justify-center rounded-full text-white/90 transition hover:text-white"
-                    onClick={() => removeAttachment(attachment.id)}
-                    aria-label={t("removeImage")}
-                  >
-                    <X className="size-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
+          <div className="mt-4">
+            <Swiper
+              modules={[FreeMode]}
+              freeMode={{
+                enabled: true,
+                sticky: true,
+                momentumBounce: false,
+              }}
+              slidesPerView="auto"
+              spaceBetween={12}
+              className="comment-editor-upload-swiper"
+            >
+              {attachments.map((attachment) => (
+                <SwiperSlide key={attachment.id} className="!w-auto">
+                  <AttachmentPreviewCard
+                    attachment={attachment}
+                    onRemove={removeAttachment}
+                    removeLabel={t("removeImage")}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
           </div>
         )}
 
@@ -543,7 +596,7 @@ export function CommentEditor({
                       type="button"
                       className="flex h-6 w-6 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors hover:bg-card"
                       onClick={() => scrollEmojiTabs("prev")}
-                      aria-label={locale === "zh" ? "向前滚动" : "Scroll left"}
+                      aria-label={t("scrollPrev")}
                     >
                       <ChevronLeft className="size-4" />
                     </button>
@@ -558,11 +611,9 @@ export function CommentEditor({
                           activeEmojiGroup === "all" && "bg-card text-primary",
                         )}
                         onClick={() => setActiveEmojiGroup("all")}
-                        title={locale === "zh" ? "全部" : "All"}
+                        title={t("all")}
                       >
-                        <span className="text-xs font-medium">
-                          {locale === "zh" ? "全部" : "All"}
-                        </span>
+                        <span className="text-xs font-medium">{t("all")}</span>
                       </button>
                       {emojiGroups.map((group) => (
                         <button
@@ -595,7 +646,7 @@ export function CommentEditor({
                       type="button"
                       className="flex h-6 w-6 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors hover:bg-card"
                       onClick={() => scrollEmojiTabs("next")}
-                      aria-label={locale === "zh" ? "向后滚动" : "Scroll right"}
+                      aria-label={t("scrollNext")}
                     >
                       <ChevronRight className="size-4" />
                     </button>

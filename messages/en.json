@@ -178,9 +178,13 @@
     "retry": "Retry",
     "allLoaded": "All comments loaded",
     "noComments": "No comments",
+    "translate": "Translate",
     "reply": "Reply",
+    "replyTo": "Reply to {name}:",
     "replies": "replies",
     "viewMoreReplies": "View {count} more replies",
+    "totalReplies": "{count} replies",
+    "viewImages": "View images",
     "like": "Like"
   },
   "commentEditor": {
@@ -188,6 +192,9 @@
     "emoji": "Emoji",
     "image": "Upload image",
     "removeImage": "Remove image",
+    "all": "All",
+    "scrollPrev": "Scroll left",
+    "scrollNext": "Scroll right",
     "emptyEmoji": "No emoji",
     "send": "Send",
     "uploadFailed": "Failed to upload image",

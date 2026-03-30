@@ -101,6 +101,9 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
+button {
+  @apply cursor-pointer;
+}
 
 .page-container {
   min-height: calc(100vh - var(--header-height, 60px));
@@ -188,6 +191,164 @@ body {
 
 
 /* Quill 自定义字号 class 样式 */
+.viewer-transition {
+  transition: all 0.15s !important;
+}
+
+.custom-panel-toggle-btn {
+  @apply absolute top-5 right-0 z-[9999] flex h-12 w-7 items-center justify-center rounded-l-full border-0 bg-white p-0 text-gray-800 outline-none transition-[background-color,color,transform];
+}
+
+.custom-panel-toggle-btn::before,
+.custom-panel-toggle-btn::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+
+.custom-panel-toggle-btn::before {
+  top: -16px;
+  background: radial-gradient(circle at 100% 100%, transparent 18px, #ffffff 19px);
+  transform: rotate(180deg);
+}
+
+.custom-panel-toggle-btn::after {
+  bottom: -16px;
+  background: radial-gradient(circle at 100% 0, transparent 18px, #ffffff 19px);
+  transform: rotate(180deg);
+}
+
+.custom-panel-toggle-btn:focus,
+.custom-panel-toggle-btn:focus-visible {
+  outline: none;
+  box-shadow: -4px 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+.custom-panel-toggle-btn:hover::before {
+  background: radial-gradient(circle at 100% 100%, transparent 18px, #f8fafc 19px);
+  transform: rotate(180deg);
+}
+
+.custom-panel-toggle-btn:hover::after {
+  background: radial-gradient(circle at 100% 0, transparent 18px, #f8fafc 19px);
+  transform: rotate(180deg);
+}
+
+.custom-viewer-toolbar {
+  @apply absolute left-1/2 bottom-5 z-[10000] flex -translate-x-1/2 items-center gap-1 rounded-xl bg-black/85 px-3 py-2;
+}
+
+.custom-thumbnail-column {
+  position: relative;
+}
+
+.custom-thumbnail-column::before,
+.custom-thumbnail-column::after {
+  content: "";
+  position: sticky;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 12px;
+  margin: 0;
+  pointer-events: none;
+  border-radius: 0.375rem;
+}
+
+.custom-thumbnail-column::before {
+  top: 0;
+  margin-bottom: -12px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.42), rgba(255, 255, 255, 0));
+}
+
+.custom-thumbnail-column::after {
+  bottom: 0;
+  margin-top: -12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.42), rgba(255, 255, 255, 0));
+}
+
+.custom-prev-btn,
+.custom-next-btn {
+  @apply flex;
+}
+
+.custom-toolbar-button,
+.custom-toolbar-value {
+  @apply relative inline-flex h-6 min-w-6 items-center justify-center rounded-md border-0 bg-transparent text-white transition-[background-color,color];
+}
+
+.custom-toolbar-button {
+  @apply cursor-pointer;
+}
+
+.custom-toolbar-button:hover,
+.custom-toolbar-button:focus-visible {
+  @apply bg-white/12 outline-none;
+}
+
+.custom-toolbar-button[data-active="true"] {
+  background: rgba(255, 255, 255, 0.18);
+  color: #93c5fd;
+}
+
+.custom-toolbar-value {
+  @apply min-w-14 cursor-default px-2.5 text-[13px] font-medium;
+}
+
+.custom-toolbar-button::before,
+.custom-toolbar-value::before {
+  content: attr(data-tooltip);
+  @apply pointer-events-none absolute left-1/2 -top-10 whitespace-nowrap rounded-lg bg-slate-900/96 px-2.5 py-1.5 text-xs leading-none text-white opacity-0 transition-[opacity,transform];
+  transform: translateX(-50%) translateY(4px);
+}
+
+.custom-toolbar-button::after,
+.custom-toolbar-value::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -16px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid rgba(15, 23, 42, 0.96);
+  transform: translateX(-50%) translateY(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.custom-toolbar-button:hover::before,
+.custom-toolbar-button:focus-visible::before,
+.custom-toolbar-value:hover::before {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.custom-toolbar-button:hover::after,
+.custom-toolbar-button:focus-visible::after,
+.custom-toolbar-value:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 767px) {
+  .custom-prev-btn,
+  .custom-next-btn,
+  .custom-thumbnail-column {
+    display: none !important;
+  }
+
+  .custom-panel,
+  .custom-panel-toggle-btn {
+    display: none !important;
+  }
+}
+
 .ql-editor {
   color: color-mix(in srgb, var(--foreground) 86%, transparent);
   font-size: 16px;

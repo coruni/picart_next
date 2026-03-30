@@ -26,6 +26,7 @@ export function ImageWithFallback({
   fill,
   width,
   height,
+  style,
   ...rest
 }: ImageWithFallbackProps) {
   const [status, setStatus] = useState<"loading" | "loaded" | "error">(
@@ -109,12 +110,10 @@ export function ImageWithFallback({
   return (
     <span
       ref={wrapperRef}
-      className={cn("relative block overflow-hidden", wrapperClassName)}
-      style={
-        width && height
-          ? { width: Number(width), height: Number(height) }
-          : undefined
-      }
+      className={cn(
+        "relative inline-block max-w-full overflow-hidden align-top",
+        wrapperClassName,
+      )}
     >
       <Image
         {...rest}
@@ -124,6 +123,11 @@ export function ImageWithFallback({
         height={height ?? 0}
         unoptimized={shouldDisableOptimization}
         className={cn("h-auto w-auto", imageClassName)}
+        style={{
+          width: "auto",
+          height: "auto",
+          ...style,
+        }}
         onLoad={handleLoad}
         onError={handleError}
       />

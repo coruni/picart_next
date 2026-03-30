@@ -9,7 +9,6 @@ import { ComponentType, useCallback, useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
-import { customViewerStyles } from "./imageViewerStyles";
 import { cleanupViewerCustomUI, setupViewerCustomUI } from "./imageViewerUI";
 
 type ImageViewerProps = {
@@ -323,6 +322,7 @@ export function ImageViewer({
       button: false,
       navbar: false,
       title: false,
+      backdrop: "static",
       toolbar: {
         zoomIn: 0,
         zoomOut: 0,
@@ -480,7 +480,7 @@ export function ImageViewer({
 
   return (
     <>
-      <div ref={containerRef} style={{ display: "none" }}>
+      <div ref={containerRef} className="hidden">
         {images.map((src, index) => (
           <img
             key={`${src}-${index}`}
@@ -492,15 +492,13 @@ export function ImageViewer({
       </div>
 
       <div
-        className="custom-viewer-wrapper fixed inset-0 flex h-full w-full"
-        style={{
-          zIndex: 998,
-          opacity: viewerMounted ? 1 : 0,
-          pointerEvents: viewerMounted ? "auto" : "none",
-          visibility: viewerMounted ? "visible" : "hidden",
-        }}
+        className={cn(
+          "custom-viewer-wrapper fixed inset-0 z-[998] flex h-full w-full transition-opacity",
+          viewerMounted
+            ? "visible pointer-events-auto opacity-100"
+            : "invisible pointer-events-none opacity-0",
+        )}
       >
-        <style>{customViewerStyles}</style>
         <div
           ref={viewerContainerRef}
           className="relative flex-1"

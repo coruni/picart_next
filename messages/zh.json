@@ -177,9 +177,13 @@
     "retry": "重试",
     "allLoaded": "已加载全部评论",
     "noComments": "暂无评论",
+    "translate": "翻译",
     "reply": "回复",
+    "replyTo": "回复{name}：",
     "replies": "条回复",
     "viewMoreReplies": "查看更多 {count} 条回复",
+    "totalReplies": "共{count}条回复",
+    "viewImages": "查看图片",
     "like": "点赞"
   },
   "commentEditor": {
@@ -187,6 +191,9 @@
     "emoji": "表情",
     "image": "上传图片",
     "removeImage": "移除图片",
+    "all": "全部",
+    "scrollPrev": "向前滚动",
+    "scrollNext": "向后滚动",
     "emptyEmoji": "暂无表情",
     "send": "发送",
     "uploadFailed": "图片上传失败",

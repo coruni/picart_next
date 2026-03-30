@@ -89,34 +89,9 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
 
   if (!container.querySelector(".custom-close-btn")) {
     const closeButton = document.createElement("button");
-    closeButton.className = "custom-close-btn";
+    closeButton.className =
+      "custom-close-btn absolute left-5 top-5 z-[9999] flex size-11 items-center justify-center rounded-full border-0 bg-black/50 text-white transition-colors hover:bg-black/70";
     closeButton.innerHTML = renderIcon(X);
-
-    Object.assign(closeButton.style, {
-      position: "absolute",
-      top: "20px",
-      left: "20px",
-      width: "44px",
-      height: "44px",
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-      border: "none",
-      borderRadius: "50%",
-      color: "white",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: "9999",
-      transition: "background-color 0.2s",
-    });
-
-    closeButton.addEventListener("mouseenter", () => {
-      closeButton.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
-    });
-
-    closeButton.addEventListener("mouseleave", () => {
-      closeButton.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-    });
 
     closeButton.addEventListener("click", () => {
       viewer.hide();
@@ -127,11 +102,7 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
 
   if (enableSidePanel && !container.querySelector(".custom-panel-toggle-btn")) {
     const panelToggleBtn = document.createElement("button");
-    panelToggleBtn.className = "custom-panel-toggle-btn";
-
-    Object.assign(panelToggleBtn.style, {
-      padding: "0",
-    });
+    panelToggleBtn.className = "custom-panel-toggle-btn p-0";
 
     panelToggleBtn.addEventListener("click", () => {
       setPanelExpanded((prev) => !prev);
@@ -155,35 +126,9 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
 
   if (hasMultipleImages && !container.querySelector(".custom-prev-btn")) {
     const prevButton = document.createElement("button");
-    prevButton.className = "custom-prev-btn";
+    prevButton.className =
+      "custom-prev-btn absolute left-28 top-1/2 z-[9999] flex size-12 -translate-y-1/2 items-center justify-center rounded-full border-0 bg-black/50 text-white transition-colors hover:bg-black/70";
     prevButton.innerHTML = renderIcon(ChevronLeft, "", 28);
-
-    Object.assign(prevButton.style, {
-      position: "absolute",
-      left: "112px",
-      top: "50%",
-      transform: "translateY(-50%)",
-      width: "48px",
-      height: "48px",
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-      border: "none",
-      borderRadius: "50%",
-      color: "white",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: "9999",
-      transition: "background-color 0.2s",
-    });
-
-    prevButton.addEventListener("mouseenter", () => {
-      prevButton.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
-    });
-
-    prevButton.addEventListener("mouseleave", () => {
-      prevButton.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-    });
 
     prevButton.addEventListener("click", () => {
       const currentIndex = getCurrentIndex();
@@ -197,35 +142,9 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
 
   if (hasMultipleImages && !container.querySelector(".custom-next-btn")) {
     const nextButton = document.createElement("button");
-    nextButton.className = "custom-next-btn";
+    nextButton.className =
+      "custom-next-btn absolute right-28 top-1/2 z-[9999] flex size-12 -translate-y-1/2 items-center justify-center rounded-full border-0 bg-black/50 text-white transition-colors hover:bg-black/70";
     nextButton.innerHTML = renderIcon(ChevronRight, "", 28);
-
-    Object.assign(nextButton.style, {
-      position: "absolute",
-      right: "112px",
-      top: "50%",
-      transform: "translateY(-50%)",
-      width: "48px",
-      height: "48px",
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-      border: "none",
-      borderRadius: "50%",
-      color: "white",
-      cursor: "pointer",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: "9999",
-      transition: "background-color 0.2s",
-    });
-
-    nextButton.addEventListener("mouseenter", () => {
-      nextButton.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
-    });
-
-    nextButton.addEventListener("mouseleave", () => {
-      nextButton.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-    });
 
     nextButton.addEventListener("click", () => {
       const currentIndex = getCurrentIndex();
@@ -239,57 +158,23 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
 
   if (hasMultipleImages && !container.querySelector(".custom-thumbnail-column")) {
     const thumbnailColumn = document.createElement("div");
-    thumbnailColumn.className = "custom-thumbnail-column";
-
-    Object.assign(thumbnailColumn.style, {
-      position: "absolute",
-      right: "16px",
-      top: "50%",
-      transform: "translateY(-50%)",
-      maxHeight: "332px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      padding: "12px 8px",
-      gap: "12px",
-      overflowY: "auto",
-      zIndex: "9998",
-      scrollbarWidth: "none",
-    });
-
-    const size = 60;
+    thumbnailColumn.className =
+      "custom-thumbnail-column absolute right-4 top-1/2 z-[9998] flex max-h-83 -translate-y-1/2 flex-col items-center gap-3 overflow-y-auto rounded-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
     const currentIndex = getCurrentIndex();
 
     images.forEach((src, idx) => {
       const thumbWrapper = document.createElement("div");
-      thumbWrapper.className = "custom-thumbnail-item";
+      thumbWrapper.className =
+        "custom-thumbnail-item box-border size-15 shrink-0 cursor-pointer overflow-hidden rounded-md border-2 border-solid transition-all";
       thumbWrapper.setAttribute("data-index", String(idx));
-
-      Object.assign(thumbWrapper.style, {
-        width: `${size}px`,
-        height: `${size}px`,
-        flexShrink: "0",
-        cursor: "pointer",
-        borderRadius: "6px",
-        overflow: "hidden",
-        border: "2px solid",
-        borderColor:
-          idx === currentIndex ? "var(--color-primary)" : "rgba(255, 255, 255, 0.3)",
-        opacity: idx === currentIndex ? "1" : "0.6",
-        transition: "all 0.2s",
-        boxSizing: "border-box",
-      });
+      thumbWrapper.style.borderColor =
+        idx === currentIndex ? "var(--color-primary)" : "rgba(255, 255, 255, 0.3)";
+      thumbWrapper.style.opacity = idx === currentIndex ? "1" : "0.6";
 
       const thumbImg = document.createElement("img");
       thumbImg.src = src;
       thumbImg.alt = `${alt} ${idx + 1}`;
-
-      Object.assign(thumbImg.style, {
-        width: "100%",
-        height: "100%",
-        objectFit: "cover",
-        display: "block",
-      });
+      thumbImg.className = "block size-full object-cover";
 
       thumbWrapper.appendChild(thumbImg);
 
