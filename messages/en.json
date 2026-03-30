@@ -301,6 +301,9 @@
     "placeholder": "Enter content here",
     "imageCaptionPlaceholder": "Add image caption..."
   },
+  "create": {
+    "title": "Publish Post"
+  },
   "createPost": {
     "title": "Create Post",
     "editTitle": "Edit Post",

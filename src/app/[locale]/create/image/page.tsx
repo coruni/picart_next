@@ -615,7 +615,10 @@ export default function CreateImagePage() {
     });
   };
 
-  const contentCharacterCount = values.content.replace(/[\s\u3000]+/g, "").length;
+  const contentCharacterCount = values.content.replace(
+    /[\s\u3000]+/g,
+    "",
+  ).length;
 
   return (
     <div className="page-container">
@@ -636,7 +639,11 @@ export default function CreateImagePage() {
               </div>
             ) : (
               <Form errors={errors} onSubmit={handleSubmit} touched={touched}>
-                <FormField name="title" label={tPost("form.title")} className="pt-4">
+                <FormField
+                  name="title"
+                  label={tPost("form.title")}
+                  className="pt-4"
+                >
                   <Input
                     name="title"
                     maxLength={200}
@@ -795,7 +802,8 @@ export default function CreateImagePage() {
                       options={parentCategories}
                       placeholder={tPost("form.selectCategory")}
                       disabled={categoriesLoading}
-                      className="flex-1 h-full!"
+                      className="flex-1"
+                      inputClassName="min-h-12"
                     />
                     {/* 用独立的 showChildSelect 控制显隐，与搜索结果数量解耦 */}
                     {selectedParentId && showChildSelect && (
@@ -807,7 +815,8 @@ export default function CreateImagePage() {
                           options={childCategories}
                           parentId={selectedParentId}
                           placeholder={tPost("form.selectSubCategory")}
-                          className="flex-1 h-full!"
+                          className="flex-1"
+                          inputClassName="min-h-12"
                         />
                       </>
                     )}
@@ -823,6 +832,7 @@ export default function CreateImagePage() {
                     placeholder={tTag("placeholder")}
                     disabled={false}
                     className="w-full"
+                    inputClassName="min-h-12"
                   />
                 </FormField>
                 <div className="mv-3">

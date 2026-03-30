@@ -300,6 +300,9 @@
     "placeholder": "请输入内容",
     "imageCaptionPlaceholder": "添加图片说明..."
   },
+  "create": {
+    "title": "发布帖子"
+  },
   "createPost": {
     "title": "发布帖子",
     "editTitle": "编辑帖子",
