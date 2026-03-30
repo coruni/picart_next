@@ -1,4 +1,6 @@
-﻿import { userControllerLogin, userControllerRegisterUser, userControllerResetPassword, userControllerSendVerificationCode } from "@/api";
+﻿"use client";
+
+import { userControllerLogin, userControllerRegisterUser, userControllerResetPassword, userControllerSendVerificationCode } from "@/api";
 import { useForm } from "@/hooks/useForm";
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { useAppStore, useModalStore, useUserStore } from "@/stores";

@@ -209,7 +209,7 @@ export function Header({ categories }: HeaderProps) {
             <Link
               href="/"
               className={cn(
-                "line-clamp-1 min-w-0 text-nowrap text-2xl font-bold text-primary md:text-3xl",
+                "line-clamp-1 min-w-0 text-nowrap text-xl font-bold text-primary md:text-2xl",
                 shouldUseTransparentHeader && "text-white",
               )}
             >

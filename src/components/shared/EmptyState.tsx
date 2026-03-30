@@ -1,4 +1,6 @@
-﻿import Image from "next/image";
+﻿"use client";
+
+import Image from "next/image";
 import { Link } from "@/i18n/routing";
 import { Button } from "@/components/ui/Button";
 import { ReactNode } from "react";

@@ -5,29 +5,6 @@ import { useAppStore } from "@/stores";
 import { useLocale } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
-declare global {
-  interface Window {
-    translate?: {
-      execute: (documents?: Element[] | NodeListOf<Element>) => void;
-      reset?: () => void;
-      changeLanguage?: (language: string) => void;
-      setDocuments?: (documents: Element[] | NodeListOf<Element>) => void;
-      listener?: {
-        start?: () => void;
-      };
-      language?: {
-        setLocal?: (language: string) => void;
-      };
-      service?: {
-        use?: (service: string) => void;
-      };
-      selectLanguageTag?: {
-        show?: boolean;
-      };
-    };
-  }
-}
-
 const AUTO_TRANSLATE_SELECTOR = "[data-auto-translate-content]";
 const TRANSLATE_LOCAL_LANGUAGE = "chinese_simplified";
 const LOCAL_TRANSLATE_SCRIPT_PATH = "/vendor/translate.js/3.18.66/translate.js";

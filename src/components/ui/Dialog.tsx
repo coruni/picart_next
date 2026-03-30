@@ -2,8 +2,8 @@
 
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
-import { createPortal } from "react-dom";
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 
 /**
  * 对话框组件属性接口
@@ -244,7 +244,7 @@ export function DialogClose({ className }: { className?: string }) {
     <button
       type="button"
       className={cn(
-        "absolute right-4 top-4 rounded-sm opacity-70",
+        "absolute right-4 top-4 rounded-sm opacity-70 cursor-pointer",
         "text-gray-500 transition-opacity hover:text-gray-900 hover:opacity-100 dark:text-gray-400 dark:hover:text-gray-100",
         "focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2",
         "disabled:pointer-events-none",

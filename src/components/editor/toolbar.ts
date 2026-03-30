@@ -128,11 +128,16 @@ export const renderToolbar = ({
     });
   };
 
-  // 切换指定下拉菜单（先关闭其他下拉菜单）
+  // 切换指定下拉菜单（先关闭其他下拉菜单，再切换目标）
   const toggleDropdown = (dropdownId: string, e: Event) => {
     e.stopPropagation();
     const dropdown = document.getElementById(dropdownId);
-    dropdown?.classList.toggle("hidden");
+    const isCurrentlyHidden = dropdown?.classList.contains("hidden");
+    closeAllDropdowns();
+    // 如果之前是隐藏的，现在显示它；如果之前是显示的，关闭后保持隐藏
+    if (isCurrentlyHidden) {
+      dropdown?.classList.remove("hidden");
+    }
   };
 
   const normalizeEmojiRecord = (item: unknown): EmojiRecord | null => {
@@ -695,8 +700,11 @@ export const renderToolbar = ({
   colorBtn.onclick = (e) => {
     e.stopPropagation();
     const dropdown = document.getElementById("dropdown-textColor");
+    const isCurrentlyHidden = dropdown?.classList.contains("hidden");
     closeAllDropdowns();
-    dropdown?.classList.toggle("hidden");
+    if (isCurrentlyHidden) {
+      dropdown?.classList.remove("hidden");
+    }
   };
 
   const bgColorBtn = document.createElement("button");
@@ -706,8 +714,11 @@ export const renderToolbar = ({
   bgColorBtn.onclick = (e) => {
     e.stopPropagation();
     const dropdown = document.getElementById("dropdown-bgColor");
+    const isCurrentlyHidden = dropdown?.classList.contains("hidden");
     closeAllDropdowns();
-    dropdown?.classList.toggle("hidden");
+    if (isCurrentlyHidden) {
+      dropdown?.classList.remove("hidden");
+    }
   };
 
   // 创建颜色下拉

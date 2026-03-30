@@ -13,7 +13,6 @@ import { forwardRef, useEffect, useRef, useState } from "react";
 import { prepareRichTextHtmlForEditor, sanitizeRichTextHtml } from "@/lib";
 import { CustomEmojiBlot } from "./blots/CustomEmojiBlot";
 import { CustomImageBlot } from "./blots/CustomImageBlot";
-import { CustomImageSpec, CustomLinkSpec } from "./specs";
 import type { EditorProps } from "./index";
 import {
   customIcons,
@@ -21,6 +20,7 @@ import {
   quillOverrideStyles,
   renderToolbar,
 } from "./index";
+import { CustomImageSpec, CustomLinkSpec } from "./specs";
 import {
   Button,
   cn,
@@ -660,7 +660,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     const modalBodyClassName = "space-y-4 py-4";
     const modalActionsClassName = "flex justify-center gap-8";
     const modalCancelButtonClassName =
-      "rounded-full bg-[#EDF1F7] hover:bg-[#8592A3] text-muted";
+      "rounded-full bg-[#EDF1F7] hover:bg-[#8592A3] text-secondary";
     const modalConfirmButtonClassName = "rounded-full";
 
     return (
