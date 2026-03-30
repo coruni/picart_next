@@ -236,7 +236,7 @@ export function CommentItem({ data }: CommentItemProps) {
       </div>
       {/* Comment Actions element */}
       <div className="pl-19 pr-6">
-        <div className="flex items-center justify-between text-secondary text-sm">
+        <div className="flex items-center justify-between text-secondary text-sm mt-2">
           <span className="text-xs">
             {new Date(data.createdAt).toLocaleDateString()}
           </span>
@@ -318,7 +318,7 @@ export function CommentItem({ data }: CommentItemProps) {
                       </button>
                     ) : null}
                   </div>
-                  <div className="mt-1 flex items-center justify-between text-secondary text-sm">
+                  <div className="mt-2 flex items-center justify-between text-secondary text-sm">
                     <span className="text-xs">
                       {new Date(reply?.createdAt).toLocaleDateString()}
                     </span>
