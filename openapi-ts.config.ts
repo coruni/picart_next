@@ -5,8 +5,7 @@ export default defineConfig({
   input: "./openapi.json", // 或者使用远程 URL: 'https://api.example.com/openapi.json'
   output: {
     path: "./src/api",
-    format: "prettier",
-    lint: "eslint",
+    postProcess: ["eslint", "prettier"],
   },
   types: {
     enums: "javascript",

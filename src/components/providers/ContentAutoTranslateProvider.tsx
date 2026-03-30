@@ -15,6 +15,21 @@ const TRANSLATE_LANGUAGE_MAP: Record<string, string> = {
 const TRANSLATE_SCRIPT_ID = "local-translate-js";
 const MUTATION_TRANSLATE_DEBOUNCE_MS = 180;
 
+function disableTranslateLanguageSelector() {
+  const translate = window.translate;
+
+  if (translate?.selectLanguageTag) {
+    translate.selectLanguageTag.show = false;
+  }
+
+  document.getElementById("translateSelectLanguage")?.remove();
+
+  const container = document.getElementById("translate");
+  if (container?.childElementCount === 0) {
+    container.remove();
+  }
+}
+
 export function ContentAutoTranslateProvider() {
   const locale = useLocale();
   const pathname = usePathname();
@@ -28,6 +43,7 @@ export function ContentAutoTranslateProvider() {
 
   useEffect(() => {
     if (window.translate) {
+      disableTranslateLanguageSelector();
       setScriptReady(true);
       return;
     }
@@ -37,7 +53,10 @@ export function ContentAutoTranslateProvider() {
     ) as HTMLScriptElement | null;
 
     if (existingScript) {
-      const handleLoad = () => setScriptReady(true);
+      const handleLoad = () => {
+        disableTranslateLanguageSelector();
+        setScriptReady(true);
+      };
       existingScript.addEventListener("load", handleLoad);
 
       return () => {
@@ -49,7 +68,10 @@ export function ContentAutoTranslateProvider() {
     script.id = TRANSLATE_SCRIPT_ID;
     script.src = new URL(LOCAL_TRANSLATE_SCRIPT_PATH, window.location.origin).toString();
     script.async = true;
-    script.onload = () => setScriptReady(true);
+    script.onload = () => {
+      disableTranslateLanguageSelector();
+      setScriptReady(true);
+    };
     document.body.appendChild(script);
 
     return () => {
@@ -76,6 +98,7 @@ export function ContentAutoTranslateProvider() {
 
     translate.service?.use?.("client.edge");
     translate.language?.setLocal?.(TRANSLATE_LOCAL_LANGUAGE);
+    disableTranslateLanguageSelector();
 
     if (!autoTranslateContent) {
       translate.reset?.();
@@ -85,10 +108,6 @@ export function ContentAutoTranslateProvider() {
     if (!targetLanguage) {
       translate.reset?.();
       return;
-    }
-
-    if (translate.selectLanguageTag) {
-      translate.selectLanguageTag.show = false;
     }
 
     if (!initializedRef.current) {

@@ -183,6 +183,17 @@
     "viewMoreReplies": "View {count} more replies",
     "like": "Like"
   },
+  "commentEditor": {
+    "placeholder": "Share your thoughts...",
+    "emoji": "Emoji",
+    "image": "Upload image",
+    "removeImage": "Remove image",
+    "emptyEmoji": "No emoji",
+    "send": "Send",
+    "uploadFailed": "Failed to upload image",
+    "submitSuccess": "Comment posted",
+    "submitFailed": "Failed to post comment"
+  },
   "followButton": {
     "follow": "Follow",
     "following": "Following",

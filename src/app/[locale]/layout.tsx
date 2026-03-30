@@ -4,7 +4,6 @@ import { ContentAutoTranslateProvider } from "@/components/providers/ContentAuto
 import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
 import { ThemeSyncProvider } from "@/components/providers/ThemeSyncProvider";
 import { UserStateProvider } from "@/components/providers/UserStateProvider";
-import { NotificationContainer } from "@/components/shared";
 import { routing } from "@/i18n/routing";
 import {
   buildAuthHeaders,
@@ -84,7 +83,6 @@ export default async function LocaleLayout({
           <AuthRouteGuard />
           <Header categories={categories} />
           <main className="flex flex-1 flex-col min-h-screen">{children}</main>
-          <NotificationContainer />
         </UserStateProvider>
       </NextIntlClientProvider>
     </>

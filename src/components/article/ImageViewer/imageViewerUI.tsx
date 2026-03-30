@@ -186,7 +186,10 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     });
 
     prevButton.addEventListener("click", () => {
-      viewer.prev();
+      const currentIndex = getCurrentIndex();
+      const targetIndex =
+        currentIndex <= 0 ? totalImages - 1 : currentIndex - 1;
+      viewer.view(targetIndex);
     });
 
     container.appendChild(prevButton);
@@ -225,7 +228,10 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     });
 
     nextButton.addEventListener("click", () => {
-      viewer.next();
+      const currentIndex = getCurrentIndex();
+      const targetIndex =
+        currentIndex >= totalImages - 1 ? 0 : currentIndex + 1;
+      viewer.view(targetIndex);
     });
 
     container.appendChild(nextButton);
@@ -349,7 +355,12 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
           "custom-toolbar-prev",
           labels.prev,
           renderIcon(ChevronLeft, "", 18),
-          () => viewer.prev(),
+          () => {
+            const currentIndex = getCurrentIndex();
+            const targetIndex =
+              currentIndex <= 0 ? totalImages - 1 : currentIndex - 1;
+            viewer.view(targetIndex);
+          },
         ),
       );
     }
@@ -360,7 +371,12 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
           "custom-toolbar-next",
           labels.next,
           renderIcon(ChevronRight, "", 18),
-          () => viewer.next(),
+          () => {
+            const currentIndex = getCurrentIndex();
+            const targetIndex =
+              currentIndex >= totalImages - 1 ? 0 : currentIndex + 1;
+            viewer.view(targetIndex);
+          },
         ),
       );
     }

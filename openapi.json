@@ -16553,6 +16553,15 @@
             }
           },
           {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "description": "",
@@ -17462,10 +17471,10 @@
                                           "type": "string"
                                         },
                                         "banned": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "banReason": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "avatar": {
                                           "type": "string"
@@ -17480,7 +17489,7 @@
                                           "type": "string"
                                         },
                                         "birthDate": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "articleCount": {
                                           "type": "integer"
@@ -17513,25 +17522,25 @@
                                           "type": "string"
                                         },
                                         "membershipStartDate": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "membershipEndDate": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "lastLoginAt": {
                                           "type": "string"
                                         },
                                         "lastActiveAt": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "inviterId": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "myInviteCode": {
                                           "type": "string"
                                         },
                                         "inviteCode": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "inviteEarnings": {
                                           "type": "string"
@@ -18040,7 +18049,7 @@
                                           ]
                                         },
                                         "rootId": {
-                                          "type": "null"
+                                          "type": "integer"
                                         },
                                         "createdAt": {
                                           "type": "string"
@@ -18077,7 +18086,16 @@
                                     "isLiked": {
                                       "type": "boolean"
                                     }
-                                  }
+                                  },
+                                  "required": [
+                                    "author",
+                                    "article",
+                                    "parent",
+                                    "createdAt",
+                                    "updatedAt",
+                                    "parentId",
+                                    "isLiked"
+                                  ]
                                 }
                               },
                               "createdAt": {

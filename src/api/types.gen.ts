@@ -6423,6 +6423,7 @@ export type CommentControllerFindAllData = {
          * 每页数量
          */
         limit?: number;
+        sortBy?: string;
     };
     url: '/comment/article/{id}';
 };
@@ -6647,18 +6648,18 @@ export type CommentControllerFindAllResponses = {
                     likes?: number;
                     replyCount?: number;
                     status?: string;
-                    author?: {
+                    author: {
                         id: number;
                         username: string;
                         nickname: string;
                         status: string;
-                        banned: unknown;
-                        banReason: unknown;
+                        banned: string;
+                        banReason: string;
                         avatar: string;
                         description: string;
                         background: string;
                         gender: string;
-                        birthDate: unknown;
+                        birthDate: string;
                         articleCount: number;
                         followerCount: number;
                         followingCount: number;
@@ -6669,13 +6670,13 @@ export type CommentControllerFindAllResponses = {
                         membershipLevel: number;
                         membershipLevelName: string;
                         membershipStatus: string;
-                        membershipStartDate: unknown;
-                        membershipEndDate: unknown;
+                        membershipStartDate: string;
+                        membershipEndDate: string;
                         lastLoginAt: string;
-                        lastActiveAt: unknown;
-                        inviterId: unknown;
+                        lastActiveAt: string;
+                        inviterId: string;
                         myInviteCode: string;
-                        inviteCode: unknown;
+                        inviteCode: string;
                         inviteEarnings: string;
                         inviteCount: number;
                         createdAt: string;
@@ -6698,7 +6699,7 @@ export type CommentControllerFindAllResponses = {
                         };
                         isMember: boolean;
                     };
-                    article?: {
+                    article: {
                         id: number;
                         title: string;
                         requireLogin: boolean;
@@ -6739,7 +6740,7 @@ export type CommentControllerFindAllResponses = {
                         createdAt: string;
                         updatedAt: string;
                     };
-                    parent?: {
+                    parent: {
                         id: number;
                         content: string;
                         images: string;
@@ -6797,15 +6798,15 @@ export type CommentControllerFindAllResponses = {
                             };
                             isMember: boolean;
                         };
-                        rootId: unknown;
+                        rootId: number;
                         createdAt: string;
                         updatedAt: string;
                     };
                     rootId?: number;
-                    createdAt?: string;
-                    updatedAt?: string;
-                    parentId?: number;
-                    isLiked?: boolean;
+                    createdAt: string;
+                    updatedAt: string;
+                    parentId: number;
+                    isLiked: boolean;
                 }>;
                 createdAt: string;
                 updatedAt: string;

@@ -6,6 +6,7 @@ import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { CommentList } from "@/types";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { CommentEditor } from "./CommentEditor";
 import { CommentItem } from "./CommentItem";
 import { CommentListSkeleton } from "./CommentSkeleton";
 
@@ -20,7 +21,6 @@ export function ArticleCommentList({
 }: ArticleCommentListProps) {
   const t = useTranslations("commentList");
   const observerRef = useRef<HTMLDivElement>(null);
-  const hasInitializedRef = useRef(false);
 
   const [page, setPage] = useState(1);
   const [comments, setComments] = useState<CommentList>([]);
@@ -48,30 +48,27 @@ export function ArticleCommentList({
   );
 
   // 初始化加载
-  useEffect(() => {
-    if (hasInitializedRef.current) return;
-    hasInitializedRef.current = true;
+  const refreshComments = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-    const loadInitialComments = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const result = await fetchComments(1);
-        setComments(result.comments);
-        setTotal(result.total);
-        setPage(2);
-        setHasMore(result.comments.length < result.total);
-      } catch (loadError) {
-        console.error("Failed to load comments:", loadError);
-        setError(t("loadFailed"));
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    void loadInitialComments();
+    try {
+      const result = await fetchComments(1);
+      setComments(result.comments);
+      setTotal(result.total);
+      setPage(2);
+      setHasMore(result.comments.length < result.total);
+    } catch (loadError) {
+      console.error("Failed to load comments:", loadError);
+      setError(t("loadFailed"));
+    } finally {
+      setLoading(false);
+    }
   }, [fetchComments, t]);
+
+  useEffect(() => {
+    void refreshComments();
+  }, [refreshComments]);
 
   const loadMoreComments = useCallback(async () => {
     if (loading || !hasMore) return;
@@ -113,11 +110,18 @@ export function ArticleCommentList({
 
   // 初始化加载动画
   if (loading && comments.length === 0) {
-    return <CommentListSkeleton />;
+    return (
+      <div className="space-y-4">
+        <CommentEditor articleId={articleId} onSubmitted={refreshComments} />
+        <CommentListSkeleton />
+      </div>
+    );
   }
 
   return (
     <div className="space-y-4">
+      <CommentEditor articleId={articleId} onSubmitted={refreshComments} />
+
       {comments.map((comment) => (
         <CommentItem data={comment} key={comment.id} />
       ))}

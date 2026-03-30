@@ -182,6 +182,17 @@
     "viewMoreReplies": "查看更多 {count} 条回复",
     "like": "点赞"
   },
+  "commentEditor": {
+    "placeholder": "快来发表你的评论吧～",
+    "emoji": "表情",
+    "image": "上传图片",
+    "removeImage": "移除图片",
+    "emptyEmoji": "暂无表情",
+    "send": "发送",
+    "uploadFailed": "图片上传失败",
+    "submitSuccess": "评论发送成功",
+    "submitFailed": "评论发送失败"
+  },
   "followButton": {
     "follow": "关注",
     "following": "已关注",

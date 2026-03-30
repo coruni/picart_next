@@ -354,7 +354,7 @@ export function ImageViewer({
         setupCustomUI();
         applyCanvasLayout();
 
-        const safeIndex = getSafeIndex(pendingIndexRef.current ?? initialIndex);
+        const safeIndex = getSafeIndex(pendingIndexRef.current);
         requestAnimationFrame(() => {
           if (!viewerRef.current) return;
           viewerRef.current.view(safeIndex);
@@ -383,7 +383,7 @@ export function ImageViewer({
       },
     });
 
-    openViewerInstance(pendingIndexRef.current ?? initialIndex);
+    openViewerInstance(pendingIndexRef.current);
 
     return () => {
       destroyViewerInstance();
@@ -392,7 +392,6 @@ export function ImageViewer({
     visible,
     images,
     alt,
-    initialIndex,
     openViewerInstance,
     setupCustomUI,
     disposeViewerInstance,
