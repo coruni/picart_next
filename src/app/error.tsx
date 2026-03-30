@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { useRouter } from "@/i18n/routing";
 import { AlertTriangle, Home, RefreshCcw } from "lucide-react";
 import { useEffect } from "react";
 
@@ -41,10 +42,16 @@ export default function RootError({
   reset: () => void;
 }) {
   const text = getMessages();
+  const router = useRouter();
 
   useEffect(() => {
     console.error("Root error boundary caught:", error);
   }, [error]);
+
+  const handleRetry = () => {
+    reset();
+    router.refresh();
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-8">
@@ -79,7 +86,7 @@ export default function RootError({
         )}
 
         <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:justify-center">
-          <Button onClick={reset} className="w-full sm:w-auto rounded-full">
+          <Button onClick={handleRetry} className="w-full sm:w-auto rounded-full">
             <RefreshCcw className="h-4 w-4" />
             {text.tryAgain}
           </Button>
