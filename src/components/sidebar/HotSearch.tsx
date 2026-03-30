@@ -7,6 +7,10 @@ import { Flame } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+// 热搜缓存时间：30 分钟
+const HOT_SEARCH_CACHE_KEY = "hot-search-widget";
+const HOT_SEARCH_CACHE_TIME = 30 * 60 * 1000; // 毫秒
+
 export function HotSearch() {
   const t = useTranslations("common");
   const tSearch = useTranslations("searchBox");
@@ -20,6 +24,48 @@ export function HotSearch() {
 
   useEffect(() => {
     const fallbackHotSearches = (tSearch.raw("hotSearches") as string[]) || [];
+
+    // 尝试从缓存读取
+    const getCachedHotSearches = () => {
+      try {
+        const cached = sessionStorage.getItem(HOT_SEARCH_CACHE_KEY);
+        if (!cached) return null;
+
+        const { data, timestamp } = JSON.parse(cached);
+        const now = Date.now();
+
+        // 检查缓存是否过期
+        if (now - timestamp < HOT_SEARCH_CACHE_TIME) {
+          return data as string[];
+        }
+
+        // 清除过期缓存
+        sessionStorage.removeItem(HOT_SEARCH_CACHE_KEY);
+        return null;
+      } catch {
+        return null;
+      }
+    };
+
+    // 缓存热搜数据
+    const setCachedHotSearches = (data: string[]) => {
+      try {
+        sessionStorage.setItem(
+          HOT_SEARCH_CACHE_KEY,
+          JSON.stringify({
+            data,
+            timestamp: Date.now(),
+          }),
+        );
+      } catch {}
+    };
+
+    // 优先使用缓存
+    const cached = getCachedHotSearches();
+    if (cached && cached.length > 0) {
+      setHotSearches(cached);
+      return;
+    }
 
     void (async () => {
       try {
@@ -49,7 +95,9 @@ export function HotSearch() {
           })
           .filter(Boolean);
 
-        setHotSearches(keywords.length > 0 ? keywords : fallbackHotSearches);
+        const finalKeywords = keywords.length > 0 ? keywords : fallbackHotSearches;
+        setHotSearches(finalKeywords);
+        setCachedHotSearches(finalKeywords);
       } catch (error) {
         console.error("Hot search sidebar error:", error);
         setHotSearches(fallbackHotSearches);

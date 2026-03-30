@@ -6,11 +6,11 @@
   --foreground: #171717;
   --header-height: 60px;
   --font-geist-sans:
+    var(--font-misans),
     "Inter",
     "Segoe UI",
     "Helvetica Neue",
     Arial,
-    var(--font-misans),
     "PingFang SC",
     "Hiragino Sans GB",
     "Microsoft YaHei",
@@ -61,11 +61,11 @@
   --color-card: #ffffff;
   /* 自定义字体 */
   --font-sans:
+    var(--font-misans),
     "Inter",
     "Segoe UI",
     "Helvetica Neue",
     Arial,
-    var(--font-misans),
     "PingFang SC",
     "Hiragino Sans GB",
     "Microsoft YaHei",
@@ -93,6 +93,7 @@
 }
 
 body {
+  @apply font-sans;
   background: var(--background);
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;

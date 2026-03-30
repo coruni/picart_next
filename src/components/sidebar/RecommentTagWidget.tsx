@@ -4,19 +4,34 @@ import { tagControllerFindAll } from "@/api";
 import { Link } from "@/i18n/routing";
 import { TagList } from "@/types";
 import { getTranslations } from "next-intl/server";
+import { unstable_cache } from "next/cache";
+
+// 缓存标签数据 1 小时
+async function fetchRecommendTags() {
+  const response = await tagControllerFindAll({
+    query: {
+      page: 1,
+      limit: 4,
+    },
+  });
+  return response.data?.data?.data || [];
+}
+
+const getCachedRecommendTags = unstable_cache(
+  fetchRecommendTags,
+  ["recommend-tags"],
+  {
+    revalidate: 3600, // 1 hour
+    tags: ["tags"],
+  },
+);
 
 export const RecommendTagWidget = async () => {
   const t = await getTranslations("sidebar");
 
   let tags: TagList = [];
   try {
-    const { data } = await tagControllerFindAll({
-      query: {
-        page: 1,
-        limit: 4,
-      },
-    });
-    tags = data?.data?.data || [];
+    tags = await getCachedRecommendTags();
   } catch (error) {
     console.error("Failed to fetch tags:", error);
     return (

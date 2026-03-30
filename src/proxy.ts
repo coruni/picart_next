@@ -2,9 +2,9 @@ import createMiddleware from "next-intl/middleware";
 import type { NextRequest } from "next/server";
 import { routing } from "./i18n/routing";
 import {
-    DEVICE_ID_COOKIE_MAX_AGE,
-    DEVICE_ID_COOKIE_NAME,
-    generateDeviceId,
+  DEVICE_ID_COOKIE_MAX_AGE,
+  DEVICE_ID_COOKIE_NAME,
+  generateDeviceId,
 } from "./lib/request-auth";
 
 const intlMiddleware = createMiddleware(routing);
