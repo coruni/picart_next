@@ -111,3 +111,14 @@ NEXT_PUBLIC_APP_URL=         # Site domain
 - **Windows development environment** - Use PowerShell/CMD commands
 - **pnpm** is the package manager
 - Husky + lint-staged runs ESLint on commit
+
+## Project Skills
+
+Project-level skills are located in `.claude/skills/`. Use these instead of global skills when available:
+
+- `picart-dev` - PicArt development assistant (API, stores, i18n, editor)
+- `mcp-builder` - Building MCP servers
+- `pdf` - PDF manipulation
+- `pptx` - PowerPoint files
+- `skill-creator` - Creating new skills
+- `slack-gif-creator` - Animated GIFs for Slack
