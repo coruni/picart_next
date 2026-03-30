@@ -3,7 +3,7 @@
 import { articleControllerFindHotSearch, articleControllerSearch } from "@/api";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
-import { useRouter } from "@/i18n/routing";
+import { usePathname, useRouter } from "@/i18n/routing";
 import { cn, debounce } from "@/lib/utils";
 import { useSearchStore } from "@/stores";
 import { CategoryList } from "@/types";
@@ -73,6 +73,7 @@ export function SearchBox({
   const t = useTranslations("common");
   const tSearch = useTranslations("searchBox");
   const router = useRouter();
+  const pathname = usePathname();
   const [selectedCategory, setSelectedCategory] = useState<
     CategoryList[0] | undefined
   >(undefined);
@@ -315,15 +316,23 @@ export function SearchBox({
       ].slice(0, 10);
       setSearchHistory(newHistory);
 
+      // 根据当前路径确定跳转的搜索 tab
+      let searchPath = "/search";
+      if (pathname.startsWith("/search/topic")) {
+        searchPath = "/search/topic";
+      } else if (pathname.startsWith("/search/user")) {
+        searchPath = "/search/user";
+      }
+
       // 跳转到搜索页面
       const params = new URLSearchParams({ q: query.trim() });
-      if (selectedCategory?.id) {
+      if (searchPath === "/search" && selectedCategory?.id) {
         params.set("category", String(selectedCategory.id));
       }
-      router.push(`/search?${params.toString()}`);
+      router.push(`${searchPath}?${params.toString()}`);
       setIsSearchPanelOpen(false);
     },
-    [router, searchHistory, setSearchHistory, selectedCategory],
+    [router, searchHistory, setSearchHistory, selectedCategory, pathname],
   );
 
   // 跳转到文章详情

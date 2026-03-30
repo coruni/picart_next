@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import { useRouter } from "@/i18n/routing";
+import { useRouter } from "next/navigation";
 import { AlertTriangle, Home, RefreshCcw } from "lucide-react";
 import { useEffect } from "react";
 
@@ -86,7 +86,10 @@ export default function RootError({
         )}
 
         <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:justify-center">
-          <Button onClick={handleRetry} className="w-full sm:w-auto rounded-full">
+          <Button
+            onClick={handleRetry}
+            className="w-full sm:w-auto rounded-full"
+          >
             <RefreshCcw className="h-4 w-4" />
             {text.tryAgain}
           </Button>

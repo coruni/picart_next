@@ -7,6 +7,7 @@ import {
   ImageGallery,
   ReactionStats,
 } from "@/components/article";
+import { ArticleCommentList } from "@/components/comment/ArticleCommentList.client";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Link } from "@/i18n/routing";
@@ -27,7 +28,9 @@ function isLikelyChineseContent(value: string) {
     return false;
   }
 
-  const chineseMatches = text.match(/[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/g);
+  const chineseMatches = text.match(
+    /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/g,
+  );
   const letterMatches = text.match(/[A-Za-z]/g);
   const chineseCount = chineseMatches?.length ?? 0;
   const letterCount = letterMatches?.length ?? 0;
@@ -207,6 +210,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             likes={article.likes!}
           />
         </div>
+        <ArticleCommentList articleId={id} />
       </div>
       <div className="right-container">
         <Sidebar

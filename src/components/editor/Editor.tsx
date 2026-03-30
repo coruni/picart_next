@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import QuillBlotFormatter2, {
   BlotSpec,
@@ -102,8 +102,8 @@ const registerQuillModules = () => {
 registerQuillModules();
 
 /**
- * 瀵屾枃鏈紪杈戝櫒缁勪欢
- * 鍩轰簬 Quill.js
+ * 富文本编辑器组件
+ * 基于 Quill.js
  */
 export const Editor = forwardRef<Quill | null, EditorProps>(
   (
@@ -166,13 +166,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       });
     };
 
-    // 鍒濆鍖?Quill
+    // 初始化 Quill
     useEffect(() => {
       if (!containerRef.current) return;
 
       const container = containerRef.current;
 
-      // 鍒涘缓 editor 瀹瑰櫒
+      // 创建 editor 容器
       const editorContainer = container.querySelector(".editor-container");
       if (!editorContainer) {
         const div = document.createElement("div");
@@ -252,7 +252,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quillRef.current = quill;
 
-        // 娓叉煋鑷畾涔?toolbar
+        // 渲染自定义 toolbar
         renderToolbar({
           quill,
           container,
@@ -277,7 +277,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             setShowLinkModal(true);
           },
           onImageUpload: () => {
-            // 鍥剧墖涓婁紶澶勭悊
+            // 图片上传处理
             const input = document.createElement("input");
             input.type = "file";
             input.accept = "image/*";
@@ -290,27 +290,26 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               const selection = quill.getSelection();
               const startIndex = selection?.index || 0;
 
-              // 涓烘瘡涓枃浠跺垱寤轰笂浼犲崰浣嶇骞朵笂浼?
+              // 为每个文件创建上传占位符并上传
               for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const currentIndex = startIndex + i;
 
-                // 鍒涘缓鏈湴棰勮 URL
-                // 杞崲涓?base64 鍗犱綅
+                // 转换为 base64 占位
                 const base64 = await new Promise<string>((resolve) => {
                   const reader = new FileReader();
                   reader.onload = (e) => resolve(e.target?.result as string);
                   reader.readAsDataURL(file);
                 });
 
-                // 鎻掑叆甯︽湁涓婁紶鐘舵€佺殑鍥剧墖
+                // 插入带有上传状态的图片
                 quill.insertEmbed(currentIndex, "image", base64);
                 quill.setSelection(currentIndex + 1, 0);
 
-                // 寤惰繜涓€涓嬬‘淇?DOM 宸叉洿鏂?
+                // 等待 DOM 更新
                 await new Promise((resolve) => setTimeout(resolve, 50));
 
-                // 鎵惧埌鍒氭彃鍏ョ殑鍥剧墖锛圕ustomImageBlot 浼氬垱寤?div.ql-image-wrapper > img.ql-image锛?
+                // 找到刚插入的图片
                 const wrappers = quill.root.querySelectorAll(
                   "div.ql-image-wrapper",
                 );
@@ -329,11 +328,11 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 }
 
                 if (targetWrapper && targetImg) {
-                  // 璁剧疆 wrapper 涓虹浉瀵瑰畾浣嶏紝浠ヤ究鏄剧ず閬僵
+                  // 设置 wrapper 为相对定位
                   targetWrapper.style.position = "relative";
                   targetWrapper.style.display = "inline-block";
 
-                  // 鍒涘缓閬僵
+                  // 创建遮罩
                   const overlay = document.createElement("div");
                   overlay.className = "image-upload-overlay";
                   overlay.innerHTML = `
@@ -348,10 +347,10 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     </div>
                   `;
 
-                  // 灏嗛伄缃╂坊鍔犲埌 wrapper 涓?
+                  // 将遮罩添加到 wrapper 中
                   targetWrapper.appendChild(overlay);
 
-                  // 鍙栨秷鎸夐挳
+                  // 取消按钮
                   const cancelBtn = overlay.querySelector(
                     ".cancel-btn",
                   ) as HTMLButtonElement;
@@ -364,7 +363,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     quill.deleteText(currentIndex, 1);
                   };
 
-                  // 涓婁紶鍥剧墖
+                  // 上传图片
                   const progressText = overlay.querySelector(
                     ".progress-text",
                   ) as HTMLSpanElement;
@@ -388,7 +387,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                       targetImg.dataset.uploaded = "true";
                     }
 
-                    // 鏇存柊杩涘害
+                    // 更新进度
                     progressText.textContent = "100%";
                   } catch (error) {
                     if ((error as Error).name === "AbortError") {
@@ -399,7 +398,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     quill.deleteText(currentIndex, 1);
                     continue;
                   } finally {
-                    // 绉婚櫎閬僵
+                    // 移除遮罩
                     overlay.remove();
                   }
                 }
@@ -408,7 +407,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           },
         });
 
-        // 鏆撮湶 quill 瀹炰緥
+        // 暴露 quill 实例
         if (ref) {
           if (typeof ref === "function") {
             ref(quill);
@@ -417,7 +416,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           }
         }
 
-        // 璁剧疆鍒濆鍊?
+        // 设置初始值
         if (value) {
           const preparedValue = prepareRichTextHtmlForEditor(value);
           quill.root.innerHTML = preparedValue;
@@ -425,7 +424,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           lastSyncedValueRef.current = sanitizeRichTextHtml(preparedValue);
         }
 
-        // 鐩戝惉鍐呭鍙樺寲
+        // 监听内容变化
         const handleTextChange = () => {
           ensureImageCaptions(quill.root);
           emitSanitizedContent(quill.root);
@@ -433,18 +432,17 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quill.on("text-change", handleTextChange);
 
-        // 閿洏蹇嵎閿細Ctrl+C 澶嶅埗鍥剧墖
+        // 键盘快捷键：Ctrl+C 复制图片
         const handleKeyDown = (e: KeyboardEvent) => {
           if ((e.ctrlKey || e.metaKey) && e.key === "c") {
-            // 妫€鏌ユ槸鍚︽湁閫変腑鐨勫浘鐗?blot
+            // 检查是否有选中的图片 blot
             const selection = quill.getSelection();
             if (selection && selection.length > 0) {
               const delta = quill.getContents(
                 selection.index,
                 selection.length,
               );
-              // 妫€鏌ユ槸鍚﹀寘鍚浘鐗?
-
+              // 检查是否包含图片
               const hasImage = delta.ops.some(
                 (op: any) =>
                   op.insert &&
@@ -452,13 +450,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                   "image" in op.insert,
               );
               if (hasImage) {
-                // 瀛樺偍鍒板叏灞€鍙橀噺
+                // 存储到全局变量
                 (window as any).__quillClipboardImage = delta;
               }
             }
           }
 
-          // Ctrl+V 绮樿创鍥剧墖
+          // Ctrl+V 粘贴图片
           if ((e.ctrlKey || e.metaKey) && e.key === "v") {
             const clipImage = (window as any).__quillClipboardImage;
             if (clipImage) {
@@ -503,7 +501,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quill.root.addEventListener("paste", handlePaste, true);
 
-        // 鐩戝惉鍥剧墖 caption 杈撳叆锛屽悓姝ュ埌 alt 灞炴€?
+        // 监听图片 caption 输入，同步到 alt 属性
         const handleCaptionInput = (e: Event) => {
           const target = e.target as HTMLElement;
           if (target.classList.contains("ql-image-caption")) {
@@ -525,14 +523,14 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quill.root.addEventListener("input", handleCaptionInput);
 
-        // 闃绘 caption 涓婄殑閿洏浜嬩欢鍐掓场鍒?Quill
+        // 阻止 caption 上的键盘事件冒泡到 Quill
         const handleCaptionKeyDown = (e: KeyboardEvent) => {
           const target = e.target as HTMLElement;
           if (target.classList.contains("ql-image-caption")) {
-            // 鍏佽鍩烘湰鐨勭紪杈戞搷浣?
+            // 允许基本的编辑操作
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
-              // 绉诲姩鍏夋爣鍒板浘鐗囧悗闈?
+              // 移动光标到图片后面
               const wrapper = target.closest(".ql-image-wrapper");
               if (wrapper) {
                 const blot = quill.scroll.find(wrapper);
@@ -542,7 +540,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 }
               }
             }
-            // 闃绘鍒犻櫎閿垹闄ゅ浘鐗囨湰韬?
+            // 阻止删除键删除图片本身
             if (e.key === "Backspace" && target.textContent === "") {
               e.preventDefault();
             }
@@ -590,18 +588,18 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       lastSyncedValueRef.current = sanitizeRichTextHtml(preparedValue);
     }, [value]);
 
-    // 鐐瑰嚮澶栭儴鍏抽棴涓嬫媺鑿滃崟
+    // 点击外部关闭下拉菜单
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
         const target = e.target as HTMLElement;
-        // 鎵惧埌 toolbar 瀹瑰櫒
+        // 找到 toolbar 容器
         const toolbar = containerRef.current?.querySelector(".ql-toolbar");
         if (!toolbar) return;
 
-        // 妫€鏌ョ偣鍑绘槸鍚﹀湪 toolbar 鍐?
+        // 检查点击是否在 toolbar 内
         const isInsideToolbar = toolbar.contains(target);
 
-        // 濡傛灉鐐瑰嚮鍦?toolbar 澶栭儴锛屽叧闂墍鏈変笅鎷夎彍鍗?
+        // 如果点击在 toolbar 外部，关闭所有下拉菜单
         if (!isInsideToolbar) {
           const dropdowns = toolbar.querySelectorAll('[id^="dropdown-"]');
           dropdowns.forEach((dropdown) => {
@@ -614,7 +612,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       return () => document.removeEventListener("click", handleClickOutside);
     }, []);
 
-    // 鎻掑叆瑙嗛鐨勫鐞嗗嚱鏁?
+    // 插入视频的处理函数
     const handleInsertVideo = () => {
       const quill = quillRef.current;
       if (quill && videoUrl) {
@@ -625,13 +623,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       setVideoUrl("");
     };
 
-    // 鎻掑叆閾炬帴鐨勫鐞嗗嚱鏁?
+    // 插入链接的处理函数
     const handleInsertLink = () => {
       const quill = quillRef.current;
       if (quill && linkUrl) {
         const selection = savedSelection.current || quill.getSelection();
         if (selection) {
-          // 濡傛灉鏈夐€変腑鐨勬枃瀛楋紝鐩存帴娣诲姞閾炬帴
+          // 如果有选中的文字，直接添加链接
           if (selection.length > 0) {
             quill.formatText(
               selection.index,
@@ -640,11 +638,11 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               linkUrl,
             );
           } else if (linkText) {
-            // 濡傛灉娌℃湁閫変腑鏂囧瓧浣嗘湁閾炬帴鏂囧瓧锛屾彃鍏ユ柊閾炬帴
+            // 如果没有选中文字但有链接文字，插入新链接
             quill.insertText(selection.index, linkText, "link", linkUrl);
             quill.setSelection(selection.index + linkText.length, 0);
           } else {
-            // 濡傛灉閮芥病鏈夛紝鐢ㄩ摼鎺ュ湴鍧€浣滀负鏂囧瓧
+            // 如果都没有，用链接地址作为文字
             quill.insertText(selection.index, linkUrl, "link", linkUrl);
             quill.setSelection(selection.index + linkUrl.length, 0);
           }
@@ -797,4 +795,3 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 );
 
 Editor.displayName = "Editor";
-

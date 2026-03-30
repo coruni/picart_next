@@ -26,6 +26,7 @@ type AvatarProps = {
   frameClassName?: string;
 
   bordered?: boolean;
+  alt?: string;
 };
 
 /**
@@ -62,6 +63,7 @@ export function Avatar({
   avatarClassName,
   frameClassName,
   bordered,
+  alt = "avatar",
 }: AvatarProps) {
   return (
     <div
@@ -95,7 +97,7 @@ export function Avatar({
       <div className="relative z-2 h-full w-full">
         <Image
           src={url || "/placeholder/avatar_placeholder.webp"}
-          alt="avatar"
+          alt={alt}
           fill
           className={cn(
             "h-full w-full rounded-full object-cover",

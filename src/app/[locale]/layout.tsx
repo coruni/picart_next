@@ -83,7 +83,7 @@ export default async function LocaleLayout({
         >
           <AuthRouteGuard />
           <Header categories={categories} />
-          <div className="flex flex-1 flex-col min-h-screen">{children}</div>
+          <main className="flex flex-1 flex-col min-h-screen">{children}</main>
           <NotificationContainer />
         </UserStateProvider>
       </NextIntlClientProvider>
