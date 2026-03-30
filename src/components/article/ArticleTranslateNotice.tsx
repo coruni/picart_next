@@ -47,6 +47,7 @@ export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }
 
   const [showOriginal, setShowOriginal] = useState(true);
   const debounceTimerRef = useRef<number | null>(null);
+  const isUserTogglingRef = useRef(false);
 
   const targetLanguage = TRANSLATE_LANGUAGE_MAP[locale];
   const isVisible = !!targetLanguage;
@@ -58,6 +59,12 @@ export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }
       window.clearTimeout(debounceTimerRef.current);
     }
     debounceTimerRef.current = window.setTimeout(() => {
+      // Skip auto-update if user is actively toggling
+      if (isUserTogglingRef.current) {
+        debounceTimerRef.current = null;
+        return;
+      }
+
       const translate = getTranslateApi();
       const isTranslated = translate && targetLanguage && autoTranslateContent
         ? isTranslatedToTarget(translate, targetLanguage)
@@ -107,12 +114,22 @@ export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }
 
     const isCurrentlyTranslated = isTranslatedToTarget(translate, targetLanguage);
 
+    // Mark that user is actively toggling to prevent auto-detection interference
+    isUserTogglingRef.current = true;
+
     if (showOriginal) {
       // If already translated by auto-translate, just update state
       if (isCurrentlyTranslated) {
         setShowOriginal(false);
+        // Reset toggle flag after state update
+        window.requestAnimationFrame(() => {
+          isUserTogglingRef.current = false;
+        });
         return;
       }
+
+      // Immediately set state before translation
+      setShowOriginal(false);
 
       translate.service?.use?.("client.edge");
       translate.language?.setLocal?.("chinese_simplified");
@@ -122,13 +139,26 @@ export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }
       translate.setDocuments?.(documents);
       translate.listener?.start?.();
       translate.execute(documents);
-      translate.changeLanguage?.(targetLanguage);
-      setShowOriginal(false);
+      
+      // Use requestAnimationFrame to ensure changeLanguage happens after execute
+      window.requestAnimationFrame(() => {
+        translate.changeLanguage?.(targetLanguage);
+        // Reset toggle flag after translation is triggered
+        window.setTimeout(() => {
+          isUserTogglingRef.current = false;
+        }, 200);
+      });
       return;
     }
 
-    translate.reset?.();
+    // Immediately set state before reset
     setShowOriginal(true);
+    translate.reset?.();
+    
+    // Reset toggle flag after reset is triggered
+    window.setTimeout(() => {
+      isUserTogglingRef.current = false;
+    }, 200);
   }, [showOriginal, targetLanguage]);
 
   if (!enabled || !isVisible) {
