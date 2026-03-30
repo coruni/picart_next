@@ -5,157 +5,109 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build & Development Commands
 
 ```bash
-# Development server (localhost:3000)
-pnpm run dev
-
-# Production build
-pnpm run build
-
-# Run production server
-pnpm run start
-
-# Lint code
-pnpm run lint
-
-# Generate API client from openapi.json
-pnpm run openapi
+pnpm run dev          # Development server (localhost:3000)
+pnpm run build        # Production build
+pnpm run lint         # ESLint check
+pnpm run typecheck    # TypeScript check
+pnpm run openapi      # Generate API client from openapi.json
 ```
 
-## Project Architecture
+## Architecture Overview
 
-**PicArt Next** is a social content platform built with Next.js 16, React 19, and TypeScript. It supports article sharing, image galleries, user interactions, and social features.
+**PicArt Next** is a social content platform with articles, topics, channels, and user interactions.
 
-### Technology Stack
+### Key Technologies
 
-- **Framework**: Next.js 16 with App Router and React Compiler
-- **Language**: TypeScript (strict mode)
-- **Styling**: Tailwind CSS 4 with `cn()` utility from `src/lib/utils.ts`
-- **State Management**: Zustand with persistence middleware
-- **Internationalization**: next-intl (locales: `zh`, `en`; default: `zh`)
-- **API Client**: Auto-generated from OpenAPI spec via `@hey-api/openapi-ts`
-- **Icons**: lucide-react
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Next.js | 16.1.2 | App Router, React Compiler enabled |
+| React | 19.2.3 | UI framework |
+| Quill | 2.0.3 | Rich text editor (not react-quill) |
+| Zustand | ^5.0.10 | State management with persistence |
+| next-intl | ^4.7.0 | i18n (zh default, en supported) |
+| @hey-api/openapi-ts | ^0.90.3 | Auto-generated API client |
 
-### Project Structure
+### API Client
 
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── [locale]/          # Localized routes (zh|en)
-│   │   ├── (home)/        # Route group: home feed
-│   │   ├── account/[id]/  # User profiles
-│   │   ├── article/[id]/  # Article detail
-│   │   ├── channel/       # Channel pages
-│   │   └── topic/         # Topic pages
-│   ├── layout.tsx         # Root layout (fonts)
-│   └── globals.css        # Tailwind imports
-├── api/                   # Generated API client (auto-generated)
-│   ├── client/           # Client types
-│   ├── core/             # Core utilities
-│   ├── sdk.gen.ts        # API functions
-│   └── types.gen.ts      # TypeScript types
-├── components/
-│   ├── account/          # Account-related components
-│   ├── article/          # Article display components
-│   ├── channel/          # Channel components
-│   ├── comment/          # Comment components
-│   ├── home/             # Home feed components
-│   ├── layout/           # Header, layout parts
-│   ├── providers/        # Context providers (UserStateProvider, DeviceFingerprintProvider)
-│   ├── shared/           # Shared/common components
-│   ├── sidebar/          # Sidebar widgets
-│   ├── topic/            # Topic components
-│   └── ui/               # Base UI components (Button, Input, Dialog, etc.)
-├── hooks/                 # Custom React hooks
-├── i18n/                  # i18n configuration
-│   ├── request.ts        # Message loading
-│   └── routing.ts        # Locale routing setup
-├── lib/                   # Utility functions
-│   ├── utils.ts          # `cn()` for Tailwind class merging
-│   ├── cookies.ts        # Client-side cookie utilities
-│   ├── server-cookies.ts # Server-side cookie utilities
-│   └── validation.ts     # Form validation
-├── stores/                # Zustand stores
-│   ├── useUserStore.ts   # Auth state (token, user profile)
-│   ├── useAppStore.ts    # App config state
-│   ├── useModalStore.ts  # Modal state
-│   └── useNotificationStore.ts # Notifications
-├── types/                 # TypeScript type definitions
-├── middleware.ts          # next-intl middleware
-└── rumtime.config.ts      # API client config and interceptors
-
-messages/                  # Translation files
-├── zh.json
-└── en.json
-
-openapi.json              # API specification for client generation
-```
-
-### API Client Pattern
-
-The API client is auto-generated from `openapi.json`. Import functions from `@/api`:
+Auto-generated from `openapi.json`. All API functions are in `@/api`.
 
 ```typescript
-import { articleControllerFindAll, userControllerGetProfile } from "@/api";
+import { articleControllerFindAll } from "@/api";
 
-// API responses are wrapped: { data: { data: T, meta: {...} } }
 const response = await articleControllerFindAll({ query: { page: 1, limit: 10 } });
-const articles = response?.data?.data?.data || [];
+const data = response?.data?.data?.data || [];  // Note: 3-level nesting
 const total = response?.data?.data?.meta?.total || 0;
 ```
 
-Authentication and device fingerprinting are handled automatically via interceptors in `rumtime.config.ts`.
+Auth headers (token + device fingerprint) are injected automatically via interceptors in `src/runtime.config.ts`.
 
-### Component Conventions
+### State Management
 
-- **File naming**: PascalCase for components (`ArticleCard.tsx`), camelCase for hooks/utilities
-- **Client components**: Use `.client.tsx` suffix for client-only components
-- **Component props**: Extend HTML attributes where appropriate, use `cn()` for class merging
-- **Styling**: Only Tailwind utility classes, responsive mobile-first approach
+Zustand stores in `src/stores/`:
+- `useUserStore` - Auth state, persists token to localStorage and cookie
+- `useAppStore` - App config
+- `useModalStore` - Modal state
+- `useNotificationStore` - Toast notifications
 
-### State Management Pattern
+Token syncs to cookie for SSR support (see `useUserStore.ts`).
 
-Zustand stores with persistence for auth:
-
-```typescript
-// Access store
-const { user, token, login, logout } = useUserStore();
-
-// Use selectors for reactive state
-const user = useUserStore((state) => state.user);
-```
-
-The `UserStateProvider` synchronizes server-side auth state with the client store during hydration.
-
-### Internationalization Pattern
-
-Use next-intl hooks for translations:
+### Internationalization
 
 ```typescript
 import { useTranslations } from "next-intl";
-import { Link, useRouter, usePathname } from "@/i18n/routing";
+import { Link, useRouter } from "@/i18n/routing";
 
 const t = useTranslations();
-const title = t("article.title");
 ```
 
-Routes are automatically prefixed with locale when needed (`localePrefix: "as-needed"`).
+Config in `src/i18n/routing.ts`: locales `zh`/`en`, default `zh`, prefix `as-needed`.
 
-### SSR vs Client Data Fetching
+### Rich Text Editor
 
-- **Server Components**: Fetch initial data directly using API functions
-- **Client Components**: Receive initial data via props, use `.client.tsx` suffix
-- **Auth SSR**: Server reads token from cookie, fetches user profile via `initializeInterceptors()`
+Located in `src/components/editor/`. Uses Quill 2.0.3 directly (not react-quill).
 
-### Important Configuration Files
+Structure:
+- `Editor.tsx` - Main component
+- `blots/` - Custom blots (CustomImageBlot, CustomEmojiBlot)
+- `specs/` - BlotSpec implementations for blot-formatter2
+- `actions/` - Toolbar actions (CopyAction, DeleteAction, EditLinkAction, etc.)
+- `toolbar.ts` - Toolbar rendering
 
-- `next.config.ts`: Next.js config with `reactCompiler: true`, image domains configured
-- `tsconfig.json`: Path alias `@/*` → `src/*`, strict TypeScript
-- `eslint.config.mjs`: Next.js ESLint preset
-- `src/i18n/routing.ts`: Locale config (zh/en, default zh)
+### Component Conventions
 
-### Required Environment Variables
+- **PascalCase** for component files: `ArticleCard.tsx`
+- **`.client.tsx`** suffix for client-only components
+- **camelCase** for hooks and utilities
+- Use `cn()` from `@/lib/utils` for class merging
+- Only Tailwind utility classes
+
+### Authentication Flow
+
+1. Server reads token from cookie via `getRequestAuthState()` in `src/lib/request-auth.ts`
+2. `initializeInterceptors()` sets up request interceptor to inject auth headers
+3. Client store hydrates from localStorage via Zustand persist middleware
+4. `UserStateProvider` syncs server state to client on mount
+
+### Important Files
+
+| File | Purpose |
+|------|---------|
+| `src/runtime.config.ts` | API client config, interceptor initialization |
+| `src/lib/request-auth.ts` | Auth state retrieval for SSR |
+| `src/lib/cookies.ts` | Client-side cookie utilities |
+| `src/lib/server-cookies.ts` | Server-side cookie utilities |
+| `src/middleware.ts` | next-intl middleware |
+| `src/i18n/routing.ts` | Locale and routing config |
+
+### Environment Variables
 
 ```bash
 NEXT_PUBLIC_API_BASE_URL=    # Backend API URL
 NEXT_PUBLIC_APP_URL=         # Site domain
 ```
+
+## Platform Notes
+
+- **Windows development environment** - Use PowerShell/CMD commands
+- **pnpm** is the package manager
+- Husky + lint-staged runs ESLint on commit
