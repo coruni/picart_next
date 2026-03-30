@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppStore } from "@/stores";
+import { useTranslateStore } from "@/stores";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 
@@ -111,7 +111,7 @@ export function useManualHtmlTranslate({
   resetKey,
 }: UseManualHtmlTranslateOptions) {
   const locale = useLocale();
-  const autoTranslateContent = useAppStore(
+  const autoTranslateContent = useTranslateStore(
     (state) => state.autoTranslateContent,
   );
   const [manualMode, setManualMode] = useState<

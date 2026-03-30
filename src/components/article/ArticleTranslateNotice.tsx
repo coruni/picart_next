@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppStore } from "@/stores";
+import { useTranslateStore } from "@/stores";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -43,7 +43,7 @@ function isTranslatedToTarget(
 export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }) {
   const t = useTranslations("articleDetail");
   const locale = useLocale();
-  const autoTranslateContent = useAppStore((state) => state.autoTranslateContent);
+  const autoTranslateContent = useTranslateStore((state) => state.autoTranslateContent);
 
   const [showOriginal, setShowOriginal] = useState(true);
   const debounceTimerRef = useRef<number | null>(null);

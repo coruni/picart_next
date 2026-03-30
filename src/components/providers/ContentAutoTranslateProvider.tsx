@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "@/i18n/routing";
-import { useAppStore } from "@/stores";
+import { useTranslateStore } from "@/stores";
 import { useLocale } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
@@ -37,6 +37,24 @@ function disableTranslateLanguageSelector() {
   }
 }
 
+function configureSessionStorage() {
+  const translate = window.translate;
+  if (!translate?.storage) return;
+
+  translate.storage.set = (key: string, value: unknown) => {
+    sessionStorage.setItem(key, JSON.stringify(value));
+  };
+  translate.storage.get = (key: string): unknown => {
+    const item = sessionStorage.getItem(key);
+    if (item === null) return undefined;
+    try {
+      return JSON.parse(item);
+    } catch {
+      return item;
+    }
+  };
+}
+
 export function ContentAutoTranslateProvider() {
   const locale = useLocale();
   const pathname = usePathname();
@@ -44,13 +62,14 @@ export function ContentAutoTranslateProvider() {
   const initializedRef = useRef(false);
   const translateObserverRef = useRef<MutationObserver | null>(null);
   const translateTimerRef = useRef<number | null>(null);
-  const autoTranslateContent = useAppStore(
+  const autoTranslateContent = useTranslateStore(
     (state) => state.autoTranslateContent,
   );
 
   useEffect(() => {
     if (window.translate) {
       disableTranslateLanguageSelector();
+      configureSessionStorage();
       setScriptReady(true);
       return;
     }
@@ -62,6 +81,7 @@ export function ContentAutoTranslateProvider() {
     if (existingScript) {
       const handleLoad = () => {
         disableTranslateLanguageSelector();
+        configureSessionStorage();
         setScriptReady(true);
       };
       existingScript.addEventListener("load", handleLoad);
@@ -77,6 +97,7 @@ export function ContentAutoTranslateProvider() {
     script.async = true;
     script.onload = () => {
       disableTranslateLanguageSelector();
+      configureSessionStorage();
       setScriptReady(true);
     };
     document.body.appendChild(script);
