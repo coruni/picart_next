@@ -85,7 +85,7 @@ export function ImageWithFallback({
 
   if (fill) {
     return (
-      <span ref={wrapperRef} className={cn("absolute inset-0 block", wrapperClassName)}>
+      <span ref={wrapperRef} className={cn(" inset-0 block relative", wrapperClassName)}>
         <Image
           {...rest}
           src={src}
@@ -124,9 +124,9 @@ export function ImageWithFallback({
         unoptimized={shouldDisableOptimization}
         className={cn("h-auto w-auto", imageClassName)}
         style={{
+          ...style,
           width: "auto",
           height: "auto",
-          ...style,
         }}
         onLoad={handleLoad}
         onError={handleError}

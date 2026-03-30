@@ -17,6 +17,7 @@ type CommentImageGalleryProps = {
   className?: string;
   singleImageClassName?: string;
   multiImageClassName?: string;
+  prevButtonClassName?: string;
   onOpenImageViewer: (images: string[], index?: number) => void;
 };
 
@@ -26,6 +27,7 @@ export function CommentImageGallery({
   className,
   singleImageClassName,
   multiImageClassName,
+  prevButtonClassName,
   onOpenImageViewer,
 }: CommentImageGalleryProps) {
   const tImageViewer = useTranslations("imageViewer");
@@ -51,15 +53,17 @@ export function CommentImageGallery({
       <div className={className}>
         <button
           type="button"
-          className="inline-block max-w-full cursor-pointer overflow-hidden rounded-2xl bg-muted"
+          className="inline-block max-w-full cursor-pointer overflow-hidden rounded-xl bg-muted"
           onClick={() => onOpenImageViewer(images, 0)}
         >
           <ImageWithFallback
-            fill
             src={images[0]}
+            width={320}
+            height={180}
             alt={`${imageAltPrefix} 1`}
+            wrapperClassName="relative block"
             className={cn(
-              "block h-auto max-h-45 max-w-full object-contain",
+              "block h-auto max-h-45 w-auto max-w-full object-contain",
               singleImageClassName,
             )}
           />
@@ -98,11 +102,8 @@ export function CommentImageGallery({
         }}
       >
         {images.map((image, index) => (
-          <SwiperSlide
-            key={`${imageAltPrefix}-${index}`}
-            className="w-auto!"
-          >
-            <div className="overflow-hidden rounded-2xl bg-muted">
+          <SwiperSlide key={`${imageAltPrefix}-${index}`} className="w-auto!">
+            <div className="overflow-hidden rounded-xl bg-muted">
               <button
                 type="button"
                 className="block cursor-pointer"
@@ -127,7 +128,10 @@ export function CommentImageGallery({
       {canScrollPrev ? (
         <button
           type="button"
-          className="absolute left-2 top-1/2 z-8 hidden size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/70 md:group-hover:flex md:group-hover:opacity-100"
+          className={cn(
+            "absolute left-2 top-1/2 z-8 hidden size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/70 md:group-hover:flex md:group-hover:opacity-100",
+            prevButtonClassName,
+          )}
           onClick={() => swiperRef.current?.slidePrev()}
           aria-label={tImageViewer("prev")}
         >

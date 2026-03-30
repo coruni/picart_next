@@ -36,6 +36,7 @@ export function ArticleCommentList({
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<CommentSortKey>("all");
+  const [isSortChanging, setIsSortChanging] = useState(false);
 
   const fetchComments = useCallback(
     async (pageToLoad: number) => {
@@ -83,6 +84,7 @@ export function ArticleCommentList({
       setError(t("loadFailed"));
     } finally {
       setLoading(false);
+      setIsSortChanging(false);
     }
   }, [fetchComments, t]);
 
@@ -90,10 +92,19 @@ export function ArticleCommentList({
     void refreshComments();
   }, [refreshComments]);
 
+  const handleSortChange = (nextSortKey: CommentSortKey) => {
+    if (nextSortKey === sortKey) {
+      return;
+    }
+
+    setIsSortChanging(true);
+    setSortKey(nextSortKey);
+  };
+
   const sortItems: MenuItem[] = [
     {
       label: t("sortOptions.all"),
-      onClick: () => setSortKey("all"),
+      onClick: () => handleSortChange("all"),
       className:
         sortKey === "all"
           ? "bg-primary/10! text-primary! hover:bg-primary/10!"
@@ -101,7 +112,7 @@ export function ArticleCommentList({
     },
     {
       label: t("sortOptions.hot"),
-      onClick: () => setSortKey("hot"),
+      onClick: () => handleSortChange("hot"),
       className:
         sortKey === "hot"
           ? "bg-primary/10! text-primary! hover:bg-primary/10!"
@@ -109,7 +120,7 @@ export function ArticleCommentList({
     },
     {
       label: t("sortOptions.oldest"),
-      onClick: () => setSortKey("oldest"),
+      onClick: () => handleSortChange("oldest"),
       className:
         sortKey === "oldest"
           ? "bg-primary/10! text-primary! hover:bg-primary/10!"
@@ -117,7 +128,7 @@ export function ArticleCommentList({
     },
     {
       label: t("sortOptions.latest"),
-      onClick: () => setSortKey("latest"),
+      onClick: () => handleSortChange("latest"),
       className:
         sortKey === "latest"
           ? "bg-primary/10! text-primary! hover:bg-primary/10!"
@@ -125,7 +136,7 @@ export function ArticleCommentList({
     },
     {
       label: t("sortOptions.rootOnly"),
-      onClick: () => setSortKey("rootOnly"),
+      onClick: () => handleSortChange("rootOnly"),
       className:
         sortKey === "rootOnly"
           ? "bg-primary/10! text-primary! hover:bg-primary/10!"
@@ -221,32 +232,38 @@ export function ArticleCommentList({
         />
       </div>
 
-      {comments.map((comment) => (
-        <CommentItem
-          articleId={articleId}
-          data={comment}
-          key={comment.id}
-          onSubmitted={refreshComments}
-        />
-      ))}
+      {isSortChanging ? (
+        <CommentListSkeleton />
+      ) : (
+        <>
+          {comments.map((comment) => (
+            <CommentItem
+              articleId={articleId}
+              data={comment}
+              key={comment.id}
+              onSubmitted={refreshComments}
+            />
+          ))}
 
-      <InfiniteScrollStatus
-        observerRef={observerRef}
-        hasMore={hasMore}
-        loading={loading}
-        error={error}
-        isEmpty={comments.length === 0}
-        onRetry={loadMoreComments}
-        loadingText={t("loading")}
-        idleText={t("loadMore")}
-        retryText={t("retry")}
-        allLoadedText={t("allLoaded")}
-        emptyText={t("noComments")}
-        loadingClassName="text-secondary"
-        idleTextClassName="text-secondary"
-        endClassName="text-secondary"
-        emptyClassName="text-muted-foreground"
-      />
+          <InfiniteScrollStatus
+            observerRef={observerRef}
+            hasMore={hasMore}
+            loading={loading}
+            error={error}
+            isEmpty={comments.length === 0}
+            onRetry={loadMoreComments}
+            loadingText={t("loading")}
+            idleText={t("loadMore")}
+            retryText={t("retry")}
+            allLoadedText={t("allLoaded")}
+            emptyText={t("noComments")}
+            loadingClassName="text-secondary"
+            idleTextClassName="text-secondary"
+            endClassName="text-secondary"
+            emptyClassName="text-muted-foreground"
+          />
+        </>
+      )}
     </div>
   );
 }

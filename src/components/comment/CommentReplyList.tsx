@@ -1,21 +1,28 @@
 "use client";
 
 import { commentControllerFindOne } from "@/api";
-import { InfiniteScrollStatus } from "@/components/shared";
+import {
+  DropdownMenu,
+  InfiniteScrollStatus,
+  type MenuItem,
+} from "@/components/shared";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
+import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { Link } from "@/i18n/routing";
 import { cn, prepareCommentHtmlForDisplay } from "@/lib";
 import { CommentList } from "@/types";
 import {
+  ChevronDown,
   ChevronRight,
   EllipsisVertical,
   Languages,
+  LoaderCircle,
   MessageCircleMore,
   ThumbsUp,
 } from "lucide-react";
@@ -27,6 +34,19 @@ import { CommentImageGallery } from "./CommentImageGallery";
 import { CommentReplyItem, type CommentReply } from "./CommentReplyItem";
 import { CommentListSkeleton } from "./CommentSkeleton";
 
+function dedupeRepliesById(
+  replies: NonNullable<CommentList[number]["replies"]>,
+) {
+  const seen = new Set<number>();
+  return replies.filter((reply) => {
+    if (seen.has(reply.id)) {
+      return false;
+    }
+    seen.add(reply.id);
+    return true;
+  });
+}
+
 type CommentReplyListProps = {
   articleId: string;
   data: CommentList[number];
@@ -36,6 +56,8 @@ type CommentReplyListProps = {
   onReplySubmitted: () => void | Promise<void>;
   onOpenImageViewer: (images: string[], index?: number) => void;
 };
+
+type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
 
 export function CommentReplyList({
   articleId,
@@ -51,6 +73,7 @@ export function CommentReplyList({
   const scrollRootRef = useRef<HTMLDivElement>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [page, setPage] = useState(1);
+  const [sortKey, setSortKey] = useState<CommentSortKey>("all");
   const [modalReplies, setModalReplies] = useState<
     NonNullable<CommentList[number]["replies"]>
   >([]);
@@ -58,24 +81,103 @@ export function CommentReplyList({
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSortChanging, setIsSortChanging] = useState(false);
   const visibleReplies = useMemo(
     () => data.replies.slice(0, 2),
     [data.replies],
   );
   const contentHtml = prepareCommentHtmlForDisplay(data.content || "");
   const totalReplies = data.replyCount || data.replies.length;
+  const {
+    displayHtml: modalDisplayHtml,
+    isTranslated: isModalTranslated,
+    isTranslating: isModalTranslating,
+    toggleTranslate: toggleModalTranslate,
+  } = useManualHtmlTranslate({
+    html: contentHtml,
+    resetKey: `${data.id}-${data.content}`,
+  });
 
   const openReplyModal = (_reply?: CommentReply) => {
     setModalOpen(true);
   };
 
+  const handleSortChange = (nextSortKey: CommentSortKey) => {
+    if (nextSortKey === sortKey) {
+      return;
+    }
+
+    setIsSortChanging(true);
+    setSortKey(nextSortKey);
+  };
+
+  const sortItems: MenuItem[] = [
+    {
+      label: tComment("sortOptions.all"),
+      onClick: () => handleSortChange("all"),
+      className:
+        sortKey === "all"
+          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+          : undefined,
+    },
+    {
+      label: tComment("sortOptions.hot"),
+      onClick: () => handleSortChange("hot"),
+      className:
+        sortKey === "hot"
+          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+          : undefined,
+    },
+    {
+      label: tComment("sortOptions.oldest"),
+      onClick: () => handleSortChange("oldest"),
+      className:
+        sortKey === "oldest"
+          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+          : undefined,
+    },
+    {
+      label: tComment("sortOptions.latest"),
+      onClick: () => handleSortChange("latest"),
+      className:
+        sortKey === "latest"
+          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+          : undefined,
+    },
+    {
+      label: tComment("sortOptions.rootOnly"),
+      onClick: () => handleSortChange("rootOnly"),
+      className:
+        sortKey === "rootOnly"
+          ? "bg-primary/10! text-primary! hover:bg-primary/10!"
+          : undefined,
+    },
+  ];
+
+  const currentSortLabel =
+    sortKey === "all"
+      ? tComment("sortWithCount", { count: total })
+      : tComment(`sortOptions.${sortKey}`);
+
   const fetchReplies = useCallback(
     async (pageToLoad: number) => {
+      const sortByMap: Record<
+        CommentSortKey,
+        "hot" | "oldest" | "latest" | undefined
+      > = {
+        all: undefined,
+        hot: "hot",
+        oldest: "oldest",
+        latest: "latest",
+        rootOnly: undefined,
+      };
       const response = await commentControllerFindOne({
         path: { id: String(data.id) },
         query: {
           page: pageToLoad,
           limit: 10,
+          sortBy: sortByMap[sortKey],
+          onlyAuthor: sortKey === "rootOnly",
         },
       });
 
@@ -86,7 +188,7 @@ export function CommentReplyList({
         total: response.data?.data?.meta?.total || 0,
       };
     },
-    [data.id],
+    [data.id, sortKey],
   );
 
   const refreshReplies = useCallback(async () => {
@@ -95,7 +197,7 @@ export function CommentReplyList({
 
     try {
       const result = await fetchReplies(1);
-      setModalReplies(result.replies);
+      setModalReplies(dedupeRepliesById(result.replies));
       setTotal(result.total);
       setPage(2);
       setHasMore(result.replies.length < result.total);
@@ -104,6 +206,7 @@ export function CommentReplyList({
       setError(tComment("loadFailed"));
     } finally {
       setLoading(false);
+      setIsSortChanging(false);
     }
   }, [fetchReplies, tComment]);
 
@@ -123,9 +226,14 @@ export function CommentReplyList({
       if (newReplies.length === 0) {
         setHasMore(false);
       } else {
-        setModalReplies((prev) => [...prev, ...newReplies]);
+        let mergedReplyCount = 0;
+        setModalReplies((prev) => {
+          const mergedReplies = dedupeRepliesById([...prev, ...newReplies]);
+          mergedReplyCount = mergedReplies.length;
+          return mergedReplies;
+        });
         setPage((prev) => prev + 1);
-        if (modalReplies.length + newReplies.length >= responseTotal) {
+        if (mergedReplyCount >= responseTotal) {
           setHasMore(false);
         }
       }
@@ -135,7 +243,7 @@ export function CommentReplyList({
     } finally {
       setLoading(false);
     }
-  }, [fetchReplies, hasMore, loading, modalReplies.length, page, tComment, total]);
+  }, [fetchReplies, hasMore, loading, page, tComment, total]);
 
   const handleReplySubmitted = useCallback(async () => {
     await onReplySubmitted();
@@ -190,7 +298,7 @@ export function CommentReplyList({
     }
 
     void refreshReplies();
-  }, [modalOpen, refreshReplies]);
+  }, [modalOpen, refreshReplies, sortKey]);
 
   useInfiniteScrollObserver({
     targetRef: observerRef,
@@ -273,12 +381,20 @@ export function CommentReplyList({
                 </div>
                 <div className="flex items-center space-x-2">
                   <button
+                    type="button"
                     title={tComment("translate")}
                     className={cn(
                       "flex size-7 cursor-pointer items-center justify-center rounded-lg p-1 text-secondary hover:bg-muted hover:text-primary",
+                      isModalTranslated && "bg-muted text-primary",
+                      isModalTranslating && "pointer-events-none opacity-70",
                     )}
+                    onClick={toggleModalTranslate}
                   >
-                    <Languages size={20} />
+                    {isModalTranslating ? (
+                      <LoaderCircle size={18} className="animate-spin" />
+                    ) : (
+                      <Languages size={20} />
+                    )}
                   </button>
                   <button
                     title={tComment("translate")}
@@ -292,7 +408,7 @@ export function CommentReplyList({
                 <div
                   className="whitespace-pre-wrap text-sm"
                   data-auto-translate-content
-                  dangerouslySetInnerHTML={{ __html: contentHtml }}
+                  dangerouslySetInnerHTML={{ __html: modalDisplayHtml }}
                 />
                 <CommentImageGallery
                   images={data.images || []}
@@ -338,7 +454,22 @@ export function CommentReplyList({
             </article>
 
             <div className="px-6 py-5">
-              {loading && modalReplies.length === 0 ? (
+              <div className="mb-4 border-b border-border pb-4 min-w-min">
+                <DropdownMenu
+                  className="w-fit text-sm"
+                  position="left"
+                  title=""
+                  trigger={
+                    <button className="inline-flex w-fit shrink-0 items-center gap-1.5 text-sm font-medium text-foreground transition hover:text-primary">
+                      <span className="w-max">{currentSortLabel}</span>
+                      <ChevronDown className="size-4 text-[#aeb8c7]" />
+                    </button>
+                  }
+                  items={sortItems}
+                  menuClassName="top-9 min-w-0 rounded-xl border border-border bg-card drop-shadow-lg"
+                />
+              </div>
+              {isSortChanging || (loading && modalReplies.length === 0) ? (
                 <CommentListSkeleton count={4} className="space-y-6" />
               ) : (
                 <div className="text-sm space-y-6">
@@ -354,29 +485,32 @@ export function CommentReplyList({
                       onReplySubmitted={handleReplySubmitted}
                       onOpenImageViewer={onOpenImageViewer}
                       imageDisplayMode="gallery"
+                      showTranslateButton
                     />
                   ))}
                 </div>
               )}
 
-              <InfiniteScrollStatus
-                observerRef={observerRef}
-                hasMore={hasMore}
-                loading={loading}
-                error={error}
-                isEmpty={modalReplies.length === 0}
-                onRetry={loadMoreReplies}
-                loadingText={tComment("loading")}
-                idleText={tComment("loadMore")}
-                retryText={tComment("retry")}
-                allLoadedText={tComment("allLoaded")}
-                emptyText={tComment("noComments")}
-                containerClassName="py-6"
-                loadingClassName="text-secondary"
-                idleTextClassName="text-secondary"
-                endClassName="text-secondary"
-                emptyClassName="text-muted-foreground"
-              />
+              {isSortChanging ? null : (
+                <InfiniteScrollStatus
+                  observerRef={observerRef}
+                  hasMore={hasMore}
+                  loading={loading}
+                  error={error}
+                  isEmpty={modalReplies.length === 0}
+                  onRetry={loadMoreReplies}
+                  loadingText={tComment("loading")}
+                  idleText={tComment("loadMore")}
+                  retryText={tComment("retry")}
+                  allLoadedText={tComment("allLoaded")}
+                  emptyText={tComment("noComments")}
+                  containerClassName="py-6"
+                  loadingClassName="text-secondary"
+                  idleTextClassName="text-secondary"
+                  endClassName="text-secondary"
+                  emptyClassName="text-muted-foreground"
+                />
+              )}
             </div>
           </div>
         </DialogContent>

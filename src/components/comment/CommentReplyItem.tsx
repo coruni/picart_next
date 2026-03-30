@@ -1,14 +1,21 @@
 "use client";
+"use client";
 
+import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
 import { cn, prepareCommentHtmlForDisplay } from "@/lib";
 import { CommentList } from "@/types";
-import { Image as ImageIcon, MessageCircleMore, ThumbsUp } from "lucide-react";
+import {
+  Image as ImageIcon,
+  Languages,
+  LoaderCircle,
+  MessageCircleMore,
+  ThumbsUp,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
 import { CommentImageGallery } from "./CommentImageGallery";
-
 export type CommentReply = NonNullable<CommentList[number]["replies"]>[number];
 
 type CommentReplyItemProps = {
@@ -22,6 +29,7 @@ type CommentReplyItemProps = {
   onOpenImageViewer: (images: string[], index?: number) => void;
   onOpenModal?: (reply: CommentReply) => void;
   imageDisplayMode?: "link" | "gallery";
+  showTranslateButton?: boolean;
 };
 
 export function CommentReplyItem({
@@ -35,6 +43,7 @@ export function CommentReplyItem({
   onOpenImageViewer,
   onOpenModal,
   imageDisplayMode = "link",
+  showTranslateButton = false,
 }: CommentReplyItemProps) {
   const tComment = useTranslations("commentList");
   const replyTarget =
@@ -45,6 +54,15 @@ export function CommentReplyItem({
         }
       : null;
   const replyContentHtml = prepareCommentHtmlForDisplay(reply.content || "");
+  const {
+    displayHtml,
+    isTranslated,
+    isTranslating,
+    toggleTranslate,
+  } = useManualHtmlTranslate({
+    html: replyContentHtml,
+    resetKey: `${reply.id}-${reply.content}`,
+  });
 
   const handleItemClick = () => {
     onOpenModal?.(reply);
@@ -57,11 +75,34 @@ export function CommentReplyItem({
       onClick={handleItemClick}
     >
       <div>
-        <div className="flex items-center gap-2">
-          <Avatar url={reply.author?.avatar} className="size-5 shrink-0" />
-          <span className="font-semibold text-foreground">
-            {reply.author?.nickname || reply.author?.username}
-          </span>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Avatar url={reply.author?.avatar} className="size-5 shrink-0" />
+            <span className="font-semibold text-foreground">
+              {reply.author?.nickname || reply.author?.username}
+            </span>
+          </div>
+          {showTranslateButton ? (
+            <button
+              type="button"
+              title={tComment("translate")}
+              className={cn(
+              "flex size-7 cursor-pointer items-center justify-center rounded-lg p-1 text-secondary transition hover:bg-muted hover:text-primary",
+              isTranslated && "bg-muted text-primary",
+              isTranslating && "pointer-events-none opacity-70",
+            )}
+              onClick={(event) => {
+                event.stopPropagation();
+                toggleTranslate();
+              }}
+            >
+              {isTranslating ? (
+                <LoaderCircle size={16} className="animate-spin" />
+              ) : (
+                <Languages size={18} />
+              )}
+            </button>
+          ) : null}
         </div>
         <div className="mt-1.5 text-sm">
           {replyTarget?.id && replyTarget.name ? (
@@ -82,7 +123,7 @@ export function CommentReplyItem({
               <span
                 data-auto-translate-content
                 dangerouslySetInnerHTML={{
-                  __html: replyContentHtml,
+                  __html: displayHtml,
                 }}
               />
             </p>
@@ -91,7 +132,7 @@ export function CommentReplyItem({
               className="whitespace-pre-wrap text-sm py-1"
               data-auto-translate-content
               dangerouslySetInnerHTML={{
-                __html: replyContentHtml,
+                __html: displayHtml,
               }}
             />
           )}

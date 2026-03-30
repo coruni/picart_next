@@ -15,6 +15,12 @@ const TRANSLATE_LANGUAGE_MAP: Record<string, string> = {
 const TRANSLATE_SCRIPT_ID = "local-translate-js";
 const MUTATION_TRANSLATE_DEBOUNCE_MS = 180;
 
+function getTranslateDocuments() {
+  return Array.from(
+    document.querySelectorAll<HTMLElement>(AUTO_TRANSLATE_SELECTOR),
+  );
+}
+
 function disableTranslateLanguageSelector() {
   const translate = window.translate;
 
@@ -90,7 +96,7 @@ export function ContentAutoTranslateProvider() {
     }
 
     const targetLanguage = TRANSLATE_LANGUAGE_MAP[locale];
-    const documents = document.querySelectorAll(AUTO_TRANSLATE_SELECTOR);
+    const documents = getTranslateDocuments();
 
     if (documents.length === 0) {
       return;
@@ -144,7 +150,7 @@ export function ContentAutoTranslateProvider() {
       return;
     }
 
-    const documents = document.querySelectorAll(AUTO_TRANSLATE_SELECTOR);
+    const documents = getTranslateDocuments();
     if (documents.length === 0) {
       return;
     }
@@ -190,7 +196,7 @@ export function ContentAutoTranslateProvider() {
       }
 
       translateTimerRef.current = window.setTimeout(() => {
-        const documents = document.querySelectorAll(AUTO_TRANSLATE_SELECTOR);
+        const documents = getTranslateDocuments();
         if (documents.length === 0) {
           return;
         }
