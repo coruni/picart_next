@@ -55,7 +55,11 @@
     "switchLanguage": "切换语言",
     "appearanceSettings": "外观设置",
     "autoTranslate": "自动翻译推荐内容",
-    "followSystem": "跟随系统"
+    "followSystem": "跟随系统",
+    "currentLanguage": "简体中文",
+    "authorInfo": "用户信息",
+    "logoutConfirmTitle": "确认退出登录？",
+    "logoutConfirmDescription": "退出后需要重新登录才能继续使用当前账号。"
   },
   "form": {
     "email": "邮箱",
@@ -197,7 +201,8 @@
     "members": "成员数",
     "recommendUsers": "推荐用户",
     "viewMore": "查看更多",
-    "loadError": "加载失败"
+    "loadError": "加载失败",
+    "authorInfo": "作者信息"
   },
   "time": {
     "justNow": "刚刚",
@@ -236,8 +241,8 @@
       "descriptionPlaceholder": "介绍一下自己吧",
       "save": "保存",
       "saving": "保存中...",
-      "cancel":"取消",
-      "confirm":"确认",
+      "cancel": "取消",
+      "confirm": "确认",
       "updateSuccess": "资料更新成功",
       "updateFailed": "资料更新失败",
       "cropAvatar": "裁剪头像",
@@ -290,7 +295,8 @@
       "uploadFailed": "上传失败",
       "percent": "{percent}%"
     },
-    "placeholder": "请输入内容"
+    "placeholder": "请输入内容",
+    "imageCaptionPlaceholder": "添加图片说明..."
   },
   "createPost": {
     "title": "发布帖子",
@@ -331,6 +337,16 @@
     },
     "loading": "加载中..."
   },
+  "createImage": {
+    "title": "发布图片",
+    "editTitle": "编辑图片",
+    "form": {
+      "images": "图片",
+      "imagesPlaceholder": "选择图片",
+      "imagesRequired": "请至少上传一张图片",
+      "imagesHint": "支持批量上传，多选即可一次添加多张图片"
+    }
+  },
   "imageViewer": {
     "panelTitle": "图片详情",
     "collapsePanel": "收起面板",
@@ -343,5 +359,188 @@
     "zoomIn": "放大",
     "fitWidth": "1:1(定宽)",
     "rotateLeft90": "向左旋转 90°"
+  },
+  "imageGallery": {
+    "clickToView": "点击查看",
+    "scrollThumbnailsLeft": "向左滚动缩略图",
+    "scrollThumbnailsRight": "向右滚动缩略图",
+    "viewFullImage": "查看完整图片"
+  },
+  "feedTabs": {
+    "follow": "关注",
+    "recommend": "推荐",
+    "activity": "活动"
+  },
+  "searchFeedTabs": {
+    "article": "帖子",
+    "topic": "话题",
+    "user": "用户"
+  },
+  "messageDropdown": {
+    "cleanMessages": "全部标记为已读",
+    "notificationSettings": "消息通知设置",
+    "noMessages": "暂无消息",
+    "untitled": "未命名消息",
+    "tabs": {
+      "all": "全部",
+      "notification": "通知",
+      "private": "私信",
+      "system": "系统"
+    }
+  },
+  "articleDetail": {
+    "pageTitle": "帖子详情",
+    "repostable": "允许转载",
+    "translatedBy": "由 {provider} 翻译",
+    "viewOriginal": "查看原文",
+    "viewTranslation": "查看译文"
+  },
+  "articleCard": {
+    "dislikeContent": "我不喜欢这类内容",
+    "more": "更多"
+  },
+  "articleMenu": {
+    "reportReason": "帖子内容需要审核",
+    "reportSubmitted": "举报已提交",
+    "reportFailed": "举报失败，请稍后重试",
+    "blockRecorded": "已记录拉黑操作，后续可接入真实逻辑",
+    "dislikeRecorded": "已记录你的内容偏好",
+    "editPost": "编辑帖子",
+    "reportPost": "举报帖子",
+    "blockUser": "拉黑用户",
+    "dislikeType": "我不喜欢这类内容",
+    "moreActions": "更多操作",
+    "reportDialog": {
+      "title": "选择原因",
+      "close": "关闭",
+      "confirm": "确定"
+    },
+    "reportOptions": {
+      "spamSite": "含广告及钓鱼网站",
+      "accountTrading": "涉嫌账号交易",
+      "privacyLeak": "涉嫌信息泄露",
+      "sensitiveContent": "含争议敏感内容",
+      "abuseThreat": "涉嫌语言暴力和威胁",
+      "copyright": "涉嫌侵权",
+      "impersonation": "仿冒他人",
+      "communityViolation": "违反社区礼仪",
+      "minorSafety": "儿童性虐待和性剥削"
+    }
+  },
+  "categorySelect": {
+    "placeholder": "选择分类",
+    "searchPlaceholder": "搜索分类...",
+    "noMatched": "没有匹配的分类",
+    "noCategories": "暂无分类",
+    "loading": "加载中...",
+    "loadMore": "滚动加载更多",
+    "allLoaded": "已加载全部分类"
+  },
+  "tagSelect": {
+    "label": "选择话题",
+    "placeholder": "选择话题",
+    "searchPlaceholder": "搜索话题...",
+    "noMatched": "没有匹配的话题",
+    "noTags": "暂无话题",
+    "loading": "加载中...",
+    "loadMore": "滚动加载更多",
+    "allLoaded": "已加载全部话题",
+    "createTopic": "创建话题：{name}",
+    "recommended": "推荐话题",
+    "removeSelected": "删除已选话题",
+    "clearAll": "全部清除"
+  },
+  "accountTabs": {
+    "article": "帖子",
+    "comment": "评论",
+    "favorite": "收藏",
+    "tag": "话题"
+  },
+  "themeSwitcher": {
+    "light": "浅色",
+    "dark": "深色",
+    "system": "跟随系统"
+  },
+  "topicInfo": {
+    "posts": "帖子",
+    "members": "成员"
+  },
+  "avatarFrameDialog": {
+    "title": "更换头像框",
+    "empty": "暂无头像框",
+    "loading": "加载中...",
+    "allLoaded": "已全部加载",
+    "duration": "时长：",
+    "permanent": "永久",
+    "canDirectEquip": "可直接装备",
+    "notOwned": "未拥有",
+    "unequip": "卸下",
+    "equip": "装备",
+    "get": "获取",
+    "selectHint": "在左侧选择一个头像框进行预览",
+    "expired": "已过期",
+    "expireToday": "今天过期",
+    "expireInDays": "{days}天后过期"
+  },
+  "decorationPage": {
+    "title": "我的装扮",
+    "types": {
+      "avatarFrame": "头像框",
+      "emoji": "表情",
+      "commentBubble": "评论气泡"
+    },
+    "rarity": {
+      "common": "普通",
+      "rare": "稀有",
+      "epic": "史诗",
+      "legendary": "传说"
+    },
+    "series": "系列",
+    "expireAt": "到期",
+    "permanent": "永久",
+    "ownedHint": "已拥有 10 件，查看更多",
+    "emptyByType": "暂无{type}"
+  },
+  "channelPage": {
+    "noChannels": "暂无频道",
+    "noSubchannels": "该频道暂无子分类"
+  },
+  "accountInfo": {
+    "posts": "帖子",
+    "following": "关注",
+    "followers": "粉丝",
+    "likes": "点赞",
+    "edit": "编辑",
+    "editProfile": "编辑资料",
+    "editBackground": "更换背景"
+  },
+  "emptyState": {
+    "message": "暂无内容",
+    "buttonText": "去登录"
+  },
+  "reactionPanel": {
+    "like": "赞",
+    "love": "爱心",
+    "haha": "哈哈",
+    "wow": "哇",
+    "sad": "难过",
+    "angry": "生气",
+    "dislike": "踩"
+  },
+  "dropdownMenu": {
+    "more": "更多"
+  },
+  "searchBox": {
+    "hotSearches": [
+      "签到",
+      "原神",
+      "崩坏",
+      "星穹铁道",
+      "绝区零"
+    ]
+  },
+  "languageSwitcher": {
+    "zh": "中文",
+    "en": "English"
   }
 }

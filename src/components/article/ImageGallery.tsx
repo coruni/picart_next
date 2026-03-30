@@ -1,156 +1,237 @@
 "use client";
 
-import { useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Thumbs, FreeMode } from "swiper/modules";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
+import { ChevronLeft, ChevronRight, Fullscreen } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import type { Swiper as SwiperType } from "swiper";
-import Image from "next/image";
-import { Fullscreen } from "lucide-react";
-import  {ImageViewer}  from "./ImageViewer";
+import { FreeMode, Thumbs } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { ImageViewer } from "./ImageViewer";
 
-// 导入 Swiper 样式
 import "swiper/css";
 import "swiper/css/thumbs";
-// import "swiper/css/free-mode";
 
 type ImageGalleryProps = {
-    images: string[];
-    alt?: string;
+  images: string[];
+  alt?: string;
 };
 
-export function ImageGallery({ images, alt = "Gallery image" }: ImageGalleryProps) {
-    const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
-    const [viewerVisible, setViewerVisible] = useState(false);
-    const [activeIndex, setActiveIndex] = useState(0);
+export function ImageGallery({
+  images,
+  alt = "Gallery image",
+}: ImageGalleryProps) {
+  const t = useTranslations("imageGallery");
+  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
+  const [viewerVisible, setViewerVisible] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [thumbCanScrollPrev, setThumbCanScrollPrev] = useState(false);
+  const [thumbCanScrollNext, setThumbCanScrollNext] = useState(false);
+  const [thumbHasOverflow, setThumbHasOverflow] = useState(false);
+  const [overflowingIndexes, setOverflowingIndexes] = useState<number[]>([]);
 
-    // 确保 images 是有效数组
-    if (!images || !Array.isArray(images) || images.length === 0) return null;
+  const syncThumbNavState = (swiper: SwiperType) => {
+    setThumbCanScrollPrev(!swiper.isBeginning);
+    setThumbCanScrollNext(!swiper.isEnd);
+  };
 
-    // 单张图片直接显示
-    if (images.length === 1) {
-        return (
-            <>
-                <div
-                    className="relative w-full rounded-xl overflow-hidden cursor-pointer group"
-                    onClick={() => {
-                        setActiveIndex(0);
-                        setViewerVisible(true);
-                    }}
-                >
-                    <Image
-                        src={images[0]}
-                        width={1280}
-                        quality={95}
-                        height={800}
-                        className="w-full h-auto transition-transform group-hover:scale-105"
-                        alt={alt}
-                        sizes="(max-width: 1280px) 100vw, 1280px"
-                        priority
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 text-white px-3 py-2 rounded-lg flex items-center gap-2">
-                            <Fullscreen size={16} />
-                            <span className="text-sm">点击查看</span>
-                        </div>
-                    </div>
-                </div>
-                {viewerVisible && (
-                    <ImageViewer
-                        images={images}
-                        initialIndex={activeIndex}
-                        visible={viewerVisible}
-                        onClose={() => setViewerVisible(false)}
-                        alt={alt}
-                    />
-                )}
+  useEffect(() => {
+    if (!thumbsSwiper || thumbsSwiper.destroyed) return;
 
+    const updateOverflow = () => {
+      const wrapperWidth = thumbsSwiper.wrapperEl?.scrollWidth || 0;
+      const containerWidth =
+        thumbsSwiper.el?.clientWidth || thumbsSwiper.width || 0;
+      setThumbHasOverflow(wrapperWidth > containerWidth + 1);
+    };
 
-            </>
-        );
-    }
+    updateOverflow();
+    thumbsSwiper.on("resize", updateOverflow);
+    thumbsSwiper.on("update", updateOverflow);
 
+    return () => {
+      thumbsSwiper.off("resize", updateOverflow);
+      thumbsSwiper.off("update", updateOverflow);
+    };
+  }, [thumbsSwiper]);
+
+  useEffect(() => {
+    setOverflowingIndexes([]);
+  }, [images]);
+
+  if (!images || !Array.isArray(images) || images.length === 0) return null;
+
+  if (images.length === 1) {
     return (
-        <>
-            <div className="w-full space-y-2">
-                {/* 缩略图 Swiper - 上方，横向滚动 */}
-                <div className="max-w-218 box-content overflow-hidden">
-                    <Swiper
-                        onSwiper={setThumbsSwiper}
-                        modules={[FreeMode, Thumbs]}
-                        spaceBetween={8}
-                        slidesPerView="auto"
-                        freeMode={true}
-                        watchSlidesProgress={true}
-                        className="thumbs-swiper max-w-full overflow-visible!"
-                    >
-                        {images.map((image, index) => (
-                            <SwiperSlide key={`thumb-${index}`} style={{ width: '128px', height: '128px' }} className="shrink-0">
-                                <div className="relative w-full h-full rounded-lg overflow-hidden border-2 border-gray-200 hover:border-blue-500 transition-colors cursor-pointer">
-                                    <Image
-                                        src={image}
-                                        fill
-                                        quality={95}
-                                        sizes="(max-width: 768px) 100px, 128px"
-                                        className="object-cover"
-                                        alt={`${alt} thumbnail ${index + 1}`}
-                                    />
-                                </div>
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
-                </div>
-                {/* 主图 Swiper - 下方，高度自适应 */}
-                <div className="w-full overflow-hidden rounded-xl">
-                    <Swiper
-                        modules={[Thumbs]}
-                        thumbs={{
-                            swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null
-                        }}
-                        autoHeight={true}
-                        className="main-swiper w-full"
-                        onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
-                    >
-                        {images.map((image, index) => (
-                            <SwiperSlide key={`main-${index}`} className="h-auto! relative group">
-                                <div
-                                    className="cursor-pointer"
-                                    onClick={() => setViewerVisible(true)}
-                                >
-                                    <Image
-                                        src={image}
-                                        width={0}
-                                        quality={95}
-                                        height={0}
-                                        className="w-full h-auto object-cover block max-h-266.5"
-                                        alt={`${alt} ${index + 1}`}
-                                        sizes="(max-width: 1280px) 100vw, 1920px"
-                                        priority={index === 0}
-                                        onLoad={(e) => {
-                                            const img = e.currentTarget;
-                                            const slide = img.closest('.swiper-slide');
-                                            const indicator = slide?.querySelector('.overflow-indicator');
-                                            if (indicator && img.naturalHeight > 1066) {
-                                                indicator.classList.remove('hidden');
-                                            }
-                                        }}
-                                    />
-                                </div>
-                                <div className="overflow-indicator absolute bottom-4 right-4 bg-black/60 text-white text-sm px-3 py-1.5 rounded-full backdrop-blur-sm hidden [&:not(.hidden)]:flex items-center gap-1.5 pointer-events-none">
-                                    <Fullscreen size={14} />
-                                    <span>查看完整图片</span>
-                                </div>
-                            </SwiperSlide>
-                        ))}
-                    </Swiper>
-                </div>
+      <>
+        <div
+          className="relative w-full cursor-pointer overflow-hidden rounded-xl group"
+          onClick={() => {
+            setActiveIndex(0);
+            setViewerVisible(true);
+          }}
+        >
+          <ImageWithFallback
+            src={images[0]}
+            fill
+            quality={95}
+            className="transition-transform group-hover:scale-105 object-cover"
+            alt={alt}
+            sizes="(max-width: 1280px) 100vw, 1280px"
+            preload
+          />
+          <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/10">
+            <div className="flex items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-white opacity-0 transition-opacity group-hover:opacity-100">
+              <Fullscreen size={16} />
+              <span className="text-sm">{t("clickToView")}</span>
             </div>
-            <ImageViewer
-                images={images}
-                initialIndex={activeIndex}
-                visible={viewerVisible}
-                onClose={() => setViewerVisible(false)}
-                alt={alt}
-            />
-        </>
+          </div>
+        </div>
+        {viewerVisible && (
+          <ImageViewer
+            images={images}
+            initialIndex={activeIndex}
+            visible={viewerVisible}
+            onClose={() => setViewerVisible(false)}
+            alt={alt}
+          />
+        )}
+      </>
     );
+  }
+
+  return (
+    <>
+      <div className="w-full min-w-0 space-y-2">
+        <div className="relative mx-auto w-full min-w-0 overflow-hidden">
+          {thumbHasOverflow && (
+            <button
+              type="button"
+              aria-label={t("scrollThumbnailsLeft")}
+              className="absolute left-2 top-1/2 z-8 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 disabled:pointer-events-none disabled:opacity-35"
+              onClick={() => thumbsSwiper?.slidePrev()}
+              disabled={!thumbCanScrollPrev}
+            >
+              <ChevronLeft size={18} />
+            </button>
+          )}
+          <Swiper
+            onSwiper={(swiper) => {
+              setThumbsSwiper(swiper);
+              syncThumbNavState(swiper);
+            }}
+            modules={[FreeMode, Thumbs]}
+            spaceBetween={8}
+            slidesPerView="auto"
+            freeMode
+            watchSlidesProgress
+            onSlideChange={syncThumbNavState}
+            onReachBeginning={syncThumbNavState}
+            onReachEnd={syncThumbNavState}
+            onFromEdge={syncThumbNavState}
+            className="thumbs-swiper w-full min-w-0 max-w-full overflow-hidden!"
+          >
+            {images.map((image, index) => (
+              <SwiperSlide
+                key={`thumb-${index}`}
+                style={{ width: "128px", height: "128px" }}
+                className="shrink-0"
+              >
+                <div className="relative h-full w-full cursor-pointer overflow-hidden rounded-lg border-2 border-gray-200 transition-colors hover:border-primary">
+                  <ImageWithFallback
+                    src={image}
+                    fill
+                    quality={95}
+                    loading="eager"
+                    sizes="(max-width: 768px) 100px, 128px"
+                    className="object-cover"
+                    alt={`${alt} thumbnail ${index + 1}`}
+                  />
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          {thumbHasOverflow && (
+            <button
+              type="button"
+              aria-label={t("scrollThumbnailsRight")}
+              className="absolute right-2 top-1/2 z-8 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 disabled:pointer-events-none disabled:opacity-35"
+              onClick={() => thumbsSwiper?.slideNext()}
+              disabled={!thumbCanScrollNext}
+            >
+              <ChevronRight size={18} />
+            </button>
+          )}
+        </div>
+
+        <div className="w-full min-w-0 overflow-hidden rounded-xl">
+          <Swiper
+            modules={[Thumbs]}
+            thumbs={{
+              swiper:
+                thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
+            }}
+            autoHeight
+            className="main-swiper w-full"
+            onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+          >
+            {images.map((image, index) => (
+              <SwiperSlide
+                key={`main-${index}`}
+                className="relative h-auto! group"
+              >
+                <div
+                  className="relative max-h-226 cursor-pointer overflow-hidden"
+                  onClick={() => setViewerVisible(true)}
+                >
+                  <ImageWithFallback
+                    src={image}
+                    width={0}
+                    height={0}
+                    quality={95}
+                    preload={index === 0}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? "high" : "auto"}
+                    className="h-auto w-full object-contain"
+                    alt={`${alt} ${index + 1}`}
+                    sizes="(max-width: 1280px) 100vw, 1920px"
+                    onLoad={(e) => {
+                      const img = e.currentTarget;
+                      const exceedsMaxHeight = img.clientHeight > 904;
+
+                      setOverflowingIndexes((previous) => {
+                        const hasIndex = previous.includes(index);
+                        if (exceedsMaxHeight && !hasIndex) {
+                          return [...previous, index];
+                        }
+                        if (!exceedsMaxHeight && hasIndex) {
+                          return previous.filter((item) => item !== index);
+                        }
+                        return previous;
+                      });
+                    }}
+                  />
+                  {overflowingIndexes.includes(index) && (
+                    <div className="pointer-events-none absolute right-4 bottom-4 flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-sm text-white opacity-85 backdrop-blur-sm transition-opacity group-hover:opacity-100">
+                      <Fullscreen size={14} />
+                      <span>{t("viewFullImage")}</span>
+                    </div>
+                  )}
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      </div>
+      {viewerVisible && (
+        <ImageViewer
+          images={images}
+          initialIndex={activeIndex}
+          visible={viewerVisible}
+          onClose={() => setViewerVisible(false)}
+          alt={alt}
+        />
+      )}
+    </>
+  );
 }

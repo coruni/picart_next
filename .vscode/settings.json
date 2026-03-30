@@ -1,5 +1,18 @@
 {
-    "typescript.autoClosingTags": false,
+    "[javascript][typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ],
+    "js/ts.autoClosingTags.enabled": false,
     "i18n-ally.localesPaths": [
         "messages",
         "src/i18n"

@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { cn } from "@/lib";
+import Image from "next/image";
 
 /**
  * 头像组件属性接口
@@ -94,7 +94,7 @@ export function Avatar({
       {/* Avatar image - REAL content */}
       <div className="relative z-2 h-full w-full">
         <Image
-          src={url || "/placeholder/avatar_placeholder.png"}
+          src={url || "/placeholder/avatar_placeholder.webp"}
           alt="avatar"
           fill
           className={cn(

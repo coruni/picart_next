@@ -1,18 +1,13 @@
-"use client";
+﻿"use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import AvatarEditor from "react-avatar-editor";
+import { uploadControllerUploadFile, userControllerUpdate } from "@/api";
 import { Button } from "@/components/ui/Button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/Dialog";
-import { userControllerUpdate, uploadControllerUploadFile } from "@/api";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/Dialog";
+import { useRouter } from "@/i18n/routing";
 import type { UserDetail } from "@/types";
+import { useTranslations } from "next-intl";
+import { useRef, useState } from "react";
+import AvatarEditor from "react-avatar-editor";
 import { Avatar } from "../ui/Avatar";
 type BackgroundEditorProps = {
   user: UserDetail;
@@ -154,13 +149,13 @@ export const BackgroundEditor = ({
           >
             <div className="pl-6 bg-linear-to-b from-black/60 to-transparent">
               <h2 className="leading-12 text-white text-sm font-semibold">
-                修改背景图
+                {t("cropBackground")}
               </h2>
             </div>
             <div className="absolute bottom-0 left-0 w-full">
               <div className="bg-card h-9 px-6 w-full relative flex items-end">
                 {" "}
-                {/* 使用 flex 对齐 */}
+                {/* 浣跨敤 flex 瀵归綈 */}
                 <Avatar
                   url={user?.avatar}
                   className="absolute bottom-0 size-20"

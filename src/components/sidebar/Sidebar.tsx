@@ -1,18 +1,25 @@
-import { bannerControllerFindActive } from "@/api";
-import { LoginWidget } from "./LoadingWidget";
+import { ArticleDetail } from "@/types";
+import { Banner } from "../ui/Banner";
 import { ArticleCreateWidget } from "./ArticleCreateWidget";
+import { AuthorInfoWidget } from "./AuthorInfoWidget";
+import { HotSearch } from "./HotSearch";
+import { LoginWidget } from "./LoadingWidget";
 import { RecommendUserWidget } from "./RecommendUserWidget";
 import { RecommendTagWidget } from "./RecommentTagWidget";
-import { AuthorInfoWidget } from "./AuthorInfoWidget";
-import { ArticleDetail } from "@/types";
+import { SearchHistory } from "./SearchHistory";
+
 type SidebarProps = {
   showLogin?: boolean;
   showArticleCreate?: boolean;
   showRecommendUser?: boolean;
   showRecommendTag?: boolean;
   showAuthorInfo?: boolean;
-  author?: ArticleDetail['author']
-}
+  showSearchHistory?: boolean;
+  showHotSearch?: boolean;
+  showBanner?: boolean;
+  randomBanner?: boolean;
+  author?: ArticleDetail["author"];
+};
 
 export async function Sidebar({
   showLogin = true,
@@ -20,37 +27,34 @@ export async function Sidebar({
   showRecommendUser = true,
   showRecommendTag = true,
   showAuthorInfo = false,
-  author
+  showSearchHistory = false,
+  showHotSearch = false,
+  showBanner = true,
+  randomBanner = true,
+  author,
 }: SidebarProps) {
-  // SSR: 获取活跃的 Banner
-  const response = await bannerControllerFindActive({});
-  const banners = response.data?.data || [];
+  const shouldShowBanner =
+    showBanner && (randomBanner ? Math.random() >= 0.5 : true);
+
+  const sidebarItems = [
+    showArticleCreate ? <ArticleCreateWidget key="article-create" /> : null,
+   
+    showSearchHistory ? <SearchHistory key="search-history" /> : null,
+    showHotSearch ? <HotSearch key="hot-search" /> : null,
+     shouldShowBanner ? (
+      <Banner key="sidebar-banner" className=" aspect-8/3 w-full rounded-xl" />
+    ) : null,
+    showRecommendUser ? <RecommendUserWidget key="recommend-user" /> : null,
+    showRecommendTag ? <RecommendTagWidget key="recommend-tag" /> : null,
+  ].filter(Boolean);
 
   return (
-    <div className="space-y-4 relative">
-      {/* 登录 */}
-      {showLogin && (
-        <LoginWidget />
-      )}
-      {/* 作者信息 */}
-      {showAuthorInfo && author &&(
-        <AuthorInfoWidget author={author}/>
-      )}
+    <div className="relative space-y-4">
+      {showLogin && <LoginWidget />}
 
-      {/* 发帖 */}
-      {showArticleCreate && (
-        <ArticleCreateWidget />
-      )}
-      {/* 推荐用户 */}
-      {showRecommendUser && (
-        <RecommendUserWidget />
-      )}
-      {/* 热门话题 */}
-      {showRecommendTag && (
-        <RecommendTagWidget />
-      )}
+      {showAuthorInfo && author && <AuthorInfoWidget author={author} />}
+
+      {sidebarItems}
     </div>
-
-
   );
 }

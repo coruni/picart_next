@@ -1,21 +1,22 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import AvatarEditor from "react-avatar-editor";
+import { uploadControllerUploadFile, userControllerUpdate } from "@/api";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Select } from "@/components/ui/Select";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
-import { userControllerUpdate, uploadControllerUploadFile } from "@/api";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { useRouter } from "@/i18n/routing";
 import type { UserDetail } from "@/types";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { useRef, useState } from "react";
+import AvatarEditor from "react-avatar-editor";
 
 type ProfileEditFormProps = {
   user: UserDetail;
@@ -254,7 +255,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
 
       router.push(`/${locale}/account/${user.id}`);
       router.refresh();
-    } catch (error) {
+    } catch {
     } finally {
       setLoading(false);
     }
@@ -348,7 +349,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
             placeholder={t("descriptionPlaceholder")}
             maxLength={200}
             rows={4}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm focus:outline-none focus:ring-primary focus:border-primary hover:border-primary"
+            className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-primary focus:border-primary hover:border-primary"
           />
           <div className="text-right text-xs text-gray-400 mt-1">
             {formData.description.length}/200
@@ -446,9 +447,11 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
             {selectedBackgroundImage && (
               <>
                 {/* Preview with decorative background */}
-                <div className="relative w-full aspect-[21/9] rounded-lg overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600">
+                <div className="relative w-full aspect-21/9 rounded-lg overflow-hidden bg-linear-to-br from-blue-500 to-purple-600">
                   {backgroundUrl && (
-                    <img
+                    <Image
+                      fill
+                      unoptimized
                       src={backgroundUrl}
                       alt="Background preview"
                       className="w-full h-full object-cover opacity-50"
@@ -465,7 +468,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
 
                 {/* Crop area */}
                 <div
-                  className="w-full aspect-[21/9] rounded-lg overflow-hidden cursor-move touch-none"
+                  className="w-full aspect-21/9 rounded-lg overflow-hidden cursor-move touch-none"
                   onWheel={handleBackgroundWheel}
                   onTouchStart={handleBackgroundTouchStart}
                   onTouchMove={handleBackgroundTouchMove}

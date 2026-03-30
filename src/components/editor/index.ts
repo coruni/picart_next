@@ -1,4 +1,5 @@
 export { CustomImageBlot } from "./blots/CustomImageBlot";
+export { CustomEmojiBlot } from "./blots/CustomEmojiBlot";
 export { CustomImageSpec } from "./CustomImageSpec";
 export { CustomLinkSpec } from "./CustomLinkSpec";
 export {

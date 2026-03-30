@@ -55,7 +55,11 @@
     "switchLanguage": "Switch Language",
     "appearanceSettings": "Appearance Settings",
     "autoTranslate": "Auto-translate recommended content",
-    "followSystem": "Follow System"
+    "followSystem": "Follow System",
+    "currentLanguage": "Simplified Chinese",
+    "authorInfo": "Author Info",
+    "logoutConfirmTitle": "Log out?",
+    "logoutConfirmDescription": "You will need to log in again to continue using your account."
   },
   "form": {
     "email": "Email",
@@ -198,7 +202,8 @@
     "members": "members",
     "recommendUsers": "Recommended Users",
     "viewMore": "View More",
-    "loadError": "Failed to load"
+    "loadError": "Failed to load",
+    "authorInfo": "Author Info"
   },
   "time": {
     "justNow": "just now",
@@ -237,8 +242,8 @@
       "descriptionPlaceholder": "Tell us about yourself",
       "save": "Save",
       "saving": "Saving...",
-      "cancel":"Cancel",
-      "confirm":"Confirm",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
       "updateSuccess": "Profile updated successfully",
       "updateFailed": "Failed to update profile",
       "cropAvatar": "Crop Avatar",
@@ -291,7 +296,8 @@
       "uploadFailed": "Upload failed",
       "percent": "{percent}%"
     },
-    "placeholder": "Enter content here"
+    "placeholder": "Enter content here",
+    "imageCaptionPlaceholder": "Add image caption..."
   },
   "createPost": {
     "title": "Create Post",
@@ -332,6 +338,16 @@
     },
     "loading": "Loading..."
   },
+  "createImage": {
+    "title": "Create Image",
+    "editTitle": "Edit Image",
+    "form": {
+      "images": "Images",
+      "imagesPlaceholder": "Select images",
+      "imagesRequired": "Please upload at least one image",
+      "imagesHint": "Batch upload is supported. Select multiple files at once."
+    }
+  },
   "imageViewer": {
     "panelTitle": "Image Details",
     "collapsePanel": "Collapse panel",
@@ -344,5 +360,188 @@
     "zoomIn": "Zoom in",
     "fitWidth": "Fit width",
     "rotateLeft90": "Rotate left 90°"
+  },
+  "imageGallery": {
+    "clickToView": "Click to view",
+    "scrollThumbnailsLeft": "Scroll thumbnails left",
+    "scrollThumbnailsRight": "Scroll thumbnails right",
+    "viewFullImage": "View full image"
+  },
+  "feedTabs": {
+    "follow": "Following",
+    "recommend": "Recommend",
+    "activity": "Activity"
+  },
+  "searchFeedTabs": {
+    "article": "Posts",
+    "topic": "Topics",
+    "user": "Users"
+  },
+  "messageDropdown": {
+    "cleanMessages": "Mark all as read",
+    "notificationSettings": "Notification settings",
+    "noMessages": "No messages",
+    "untitled": "Untitled message",
+    "tabs": {
+      "all": "All",
+      "notification": "Notifications",
+      "private": "Private",
+      "system": "System"
+    }
+  },
+  "articleDetail": {
+    "pageTitle": "Post Detail",
+    "repostable": "Repost allowed",
+    "translatedBy": "Translated by {provider}",
+    "viewOriginal": "View original",
+    "viewTranslation": "View translation"
+  },
+  "articleCard": {
+    "dislikeContent": "I dislike this content",
+    "more": "More"
+  },
+  "articleMenu": {
+    "reportReason": "Post content requires review",
+    "reportSubmitted": "Report submitted",
+    "reportFailed": "Report failed, please try again later",
+    "blockRecorded": "Block action recorded. You can connect real logic later.",
+    "dislikeRecorded": "Your content preference has been recorded",
+    "editPost": "Edit Post",
+    "reportPost": "Report Post",
+    "blockUser": "Block User",
+    "dislikeType": "I dislike this type of content",
+    "moreActions": "More Actions",
+    "reportDialog": {
+      "title": "Select a reason",
+      "close": "Close",
+      "confirm": "Confirm"
+    },
+    "reportOptions": {
+      "spamSite": "Contains ads or phishing sites",
+      "accountTrading": "Suspected account trading",
+      "privacyLeak": "Suspected privacy leak",
+      "sensitiveContent": "Contains sensitive content",
+      "abuseThreat": "Contains abusive language or threats",
+      "copyright": "Suspected copyright infringement",
+      "impersonation": "Impersonating someone else",
+      "communityViolation": "Violates community etiquette",
+      "minorSafety": "Child sexual abuse or exploitation"
+    }
+  },
+  "categorySelect": {
+    "placeholder": "Select category",
+    "searchPlaceholder": "Search category...",
+    "noMatched": "No matching categories",
+    "noCategories": "No categories",
+    "loading": "Loading...",
+    "loadMore": "Scroll to load more",
+    "allLoaded": "All categories loaded"
+  },
+  "tagSelect": {
+    "label": "Select topic",
+    "placeholder": "Select topic",
+    "searchPlaceholder": "Search topics...",
+    "noMatched": "No matching topics",
+    "noTags": "No topics",
+    "loading": "Loading...",
+    "loadMore": "Scroll to load more",
+    "allLoaded": "All topics loaded",
+    "createTopic": "Create topic: {name}",
+    "recommended": "Recommended topics",
+    "removeSelected": "Remove selected topic",
+    "clearAll": "Clear all"
+  },
+  "accountTabs": {
+    "article": "Posts",
+    "comment": "Comments",
+    "favorite": "Favorites",
+    "tag": "Topics"
+  },
+  "themeSwitcher": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "topicInfo": {
+    "posts": "Posts",
+    "members": "Members"
+  },
+  "avatarFrameDialog": {
+    "title": "Change Avatar Frame",
+    "empty": "No avatar frames",
+    "loading": "Loading...",
+    "allLoaded": "All loaded",
+    "duration": "Duration:",
+    "permanent": "Permanent",
+    "canDirectEquip": "Can equip directly",
+    "notOwned": "Not owned",
+    "unequip": "Unequip",
+    "equip": "Equip",
+    "get": "Get",
+    "selectHint": "Select an avatar frame on the left for preview",
+    "expired": "Expired",
+    "expireToday": "Expires today",
+    "expireInDays": "Expires in {days} days"
+  },
+  "decorationPage": {
+    "title": "My Decorations",
+    "types": {
+      "avatarFrame": "Avatar Frame",
+      "emoji": "Emoji",
+      "commentBubble": "Comment Bubble"
+    },
+    "rarity": {
+      "common": "Common",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    },
+    "series": "Series",
+    "expireAt": "expires",
+    "permanent": "Permanent",
+    "ownedHint": "Owned 10 items, view more",
+    "emptyByType": "No {type}"
+  },
+  "channelPage": {
+    "noChannels": "No channels yet",
+    "noSubchannels": "This channel has no sub-categories"
+  },
+  "accountInfo": {
+    "posts": "Posts",
+    "following": "Following",
+    "followers": "Followers",
+    "likes": "Likes",
+    "edit": "Edit",
+    "editProfile": "Edit Profile",
+    "editBackground": "Change Background"
+  },
+  "emptyState": {
+    "message": "No content yet",
+    "buttonText": "Go login"
+  },
+  "reactionPanel": {
+    "like": "Like",
+    "love": "Love",
+    "haha": "Haha",
+    "wow": "Wow",
+    "sad": "Sad",
+    "angry": "Angry",
+    "dislike": "Dislike"
+  },
+  "dropdownMenu": {
+    "more": "More"
+  },
+  "searchBox": {
+    "hotSearches": [
+      "Check in",
+      "Genshin",
+      "Honkai",
+      "Star Rail",
+      "ZZZ"
+    ]
+  },
+  "languageSwitcher": {
+    "zh": "Chinese",
+    "en": "English"
   }
 }

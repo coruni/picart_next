@@ -1,10 +1,15 @@
-import { ReactNode } from "react";
-import Image from "next/image";
+﻿import { ReactNode } from "react";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { ChannelTabs } from "@/components/channel/ChannelTabs";
 import { ChannelNav } from "@/components/channel/ChannelNav";
-import { generateSiteMetadata } from "@/lib/seo";
-import { serverApi } from "@/lib/server-api";
+import {
+  buildLocalizedAlternates,
+  generateSiteMetadata,
+  getLocalizedPath,
+  getPublicCategories,
+  getPublicConfig,
+} from "@/lib/seo";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 
 interface ChannelLayoutProps {
   children: ReactNode;
@@ -14,18 +19,14 @@ interface ChannelLayoutProps {
 export async function generateMetadata({ params }: ChannelLayoutProps) {
   const { slug, locale } = await params;
 
-  // 如果没有 slug 或者 slug 为空，返回默认 SEO
   if (!slug || slug.length === 0) {
     return generateSiteMetadata(locale);
   }
 
   const pid = slug[0];
 
-  // 获取分类列表
-  const { data } = await serverApi.categoryControllerFindAll({
-    query: { page: 1, limit: 100 },
-  });
-  const currentChannel = data?.data.data.find(
+  const categories = await getPublicCategories();
+  const currentChannel = categories.find(
     (item) => item.id === Number(pid),
   );
 
@@ -33,25 +34,26 @@ export async function generateMetadata({ params }: ChannelLayoutProps) {
     return generateSiteMetadata(locale);
   }
 
-  // 获取公共配置
-  const config = await serverApi.configControllerGetPublicConfigs();
-  const siteName = config?.data?.data.site_name || "PicArt";
+  const config = await getPublicConfig();
+  const siteName = config?.site_name || "PicArt";
 
-  // 返回主分类的 SEO
   const title = currentChannel.name;
   const description =
     currentChannel.description ||
-    `${currentChannel.articleCount || 0} 篇文章 · ${currentChannel.followCount || 0} 人关注`;
+    `${currentChannel.articleCount || 0} posts · ${currentChannel.followCount || 0} followers`;
+  const path = slug.length > 0 ? `/channel/${slug.join("/")}` : "/channel";
 
   return {
-    title: title,
-    description: description,
+    title,
+    description,
+    alternates: buildLocalizedAlternates(locale, path),
     openGraph: {
       type: "website",
-      locale: locale,
-      siteName: siteName,
-      title: title,
-      description: description,
+      locale,
+      siteName,
+      url: getLocalizedPath(locale, path),
+      title,
+      description,
       images:
         currentChannel.cover || currentChannel.avatar
           ? [
@@ -66,8 +68,8 @@ export async function generateMetadata({ params }: ChannelLayoutProps) {
     },
     twitter: {
       card: "summary_large_image",
-      title: title,
-      description: description,
+      title,
+      description,
       images:
         currentChannel.cover || currentChannel.avatar
           ? [currentChannel.cover || currentChannel.avatar]
@@ -82,18 +84,14 @@ export default async function ChannelLayout({
 }: ChannelLayoutProps) {
   const { slug } = await params;
 
-  // 如果没有 slug 或者 slug 为空，不显示背景
   if (!slug || slug.length === 0) {
     return <>{children}</>;
   }
 
   const pid = slug[0];
 
-  // 获取分类列表
-  const { data } = await serverApi.categoryControllerFindAll({
-    query: { page: 1, limit: 100 },
-  });
-  const currentChannel = data?.data.data.find(
+  const categories = await getPublicCategories();
+  const currentChannel = categories.find(
     (item) => item.id === Number(pid),
   );
 
@@ -103,9 +101,8 @@ export default async function ChannelLayout({
 
   return (
     <>
-      {/* 背景 */}
       <div className="top-header fixed h-101 w-full z-0">
-        <Image
+        <ImageWithFallback
           quality={95}
           src={
             currentChannel?.background ||
@@ -115,27 +112,23 @@ export default async function ChannelLayout({
           fill
           alt={`${currentChannel?.name} background image`}
           className="w-full h-full object-cover"
-        />
+          />
         <div
           className="absolute bottom-0 left-0 w-full z-2 h-70"
           style={{
             background:
-              "linear-gradient(180deg, rgba(245, 246, 251, 0) 0%, #f5f6fb 100%)",
+              "linear-gradient(180deg, color-mix(in srgb, var(--background) 0%, transparent) 0%, var(--background) 100%)",
           }}
         />
       </div>
 
-      {/* 频道切换 */}
-      <ChannelNav channels={data?.data.data || []} currentId={Number(pid)} />
+      <ChannelNav channels={categories} currentId={Number(pid)} />
 
-      {/* 页面内容 */}
-      <div className="mt-60 w-full z-10 relative dark:bg-gray-800">
+      <div className="relative z-10 mt-60 w-full">
         <div className="page-container">
           <div className="left-container">
             <div className="top-header px-10 h-14 flex items-center border-b border-border sticky bg-card z-5 rounded-t-xl">
-              <ChannelTabs parentId={pid}>
-                {currentChannel.children}
-              </ChannelTabs>
+              <ChannelTabs parentId={pid}>{currentChannel.children}</ChannelTabs>
             </div>
             {children}
           </div>

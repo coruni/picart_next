@@ -1,37 +1,48 @@
-"use client";
+﻿"use client";
 
 import { ArticleList } from "@/types";
-import { EmptyState, ArticleListClient as SharedArticleListClient } from "@/components/shared";
+import {
+  EmptyState,
+  ArticleListClient as SharedArticleListClient,
+} from "@/components/shared";
 import { articleControllerFindAll } from "@/api";
 import { useUserStore } from "@/stores";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { Button } from "../ui/Button";
+import { useTranslations } from "next-intl";
 
 type ArticleListClientProps = {
-    initArticles: ArticleList;
-    initPage: number;
-    initTotal: number;
-    showFollow?: boolean;
+  initArticles: ArticleList;
+  initPage: number;
+  initTotal: number;
+  showFollow?: boolean;
 };
 
 export const ArticleFollowList = (props: ArticleListClientProps) => {
-    const isAuthenticated = useUserStore((state) => state.isAuthenticated)
-    return (
-        <>
-            {isAuthenticated ? (
-                <SharedArticleListClient
-                    showFollow={props.showFollow}
-                    initArticles={props.initArticles}
-                    initPage={props.initPage}
-                    initTotal={props.initTotal}
-                    fetchArticles={articleControllerFindAll}
-                    cacheKey="home-follow-articles"
-                />
-            ) : (
-                <EmptyState message="登录查看更多精彩内容" customButton={
-                    <Button onClick={openLoginDialog} className="rounded-full">去登陆</Button>
-                } />
-            )}
-        </>
-    );
+  const t = useTranslations("sidebar");
+  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+
+  return (
+    <>
+      {isAuthenticated ? (
+        <SharedArticleListClient
+          showFollow={props.showFollow}
+          initArticles={props.initArticles}
+          initPage={props.initPage}
+          initTotal={props.initTotal}
+          fetchArticles={articleControllerFindAll}
+          cacheKey="home-follow-articles"
+        />
+      ) : (
+        <EmptyState
+          message={t("loginPrompt")}
+          customButton={
+            <Button onClick={openLoginDialog} className="rounded-full">
+              {t("login")}
+            </Button>
+          }
+        />
+      )}
+    </>
+  );
 };

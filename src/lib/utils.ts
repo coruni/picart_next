@@ -1,14 +1,16 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { bannerControllerFindActive } from "@/api";
+import { clsx, type ClassValue } from "clsx";
+import { unstable_cache } from "next/cache";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function debounce<T extends (...args: any[]) => void>(
   fn: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: ReturnType<typeof setTimeout>;
   return (...args: Parameters<T>) => {
@@ -19,9 +21,8 @@ export function debounce<T extends (...args: any[]) => void>(
 
 export function formatRelativeTime(
   isoString: string,
-  t: (key: string, values?: Record<string, string | number>) => string
+  t: (key: string, values?: Record<string, string | number>) => string,
 ): string {
-  
   const now = new Date();
   const date = new Date(isoString);
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
@@ -50,3 +51,16 @@ export function formatRelativeTime(
   const day = date.getDate();
   return `${month}/${day}`;
 }
+
+async function fetchPublicBanners() {
+  const { data } = await bannerControllerFindActive();
+  return data?.data;
+}
+
+export const getPublicBanners = unstable_cache(
+  fetchPublicBanners,
+  ["public-Banners"],
+  {
+    revalidate: 300,
+  },
+);

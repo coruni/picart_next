@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { cn, formatRelativeTime } from "@/lib/utils";
-import { Button } from "@/components/ui/Button";
 import { Avatar } from "@/components/ui/Avatar";
-import { useTranslations } from "next-intl";
-import type { ArticleDetail } from "@/types";
+import { Button } from "@/components/ui/Button";
+import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { Link } from "@/i18n/routing";
+import { cn, formatRelativeTime } from "@/lib/utils";
 import { useUserStore } from "@/stores";
+import type { ArticleDetail } from "@/types";
+import { useTranslations } from "next-intl";
 
 type ArticleAuthorProps = {
   author: ArticleDetail["author"];
@@ -21,105 +22,121 @@ export function ArticleAuthor({
   onFollow,
 }: ArticleAuthorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [originalTop, setOriginalTop] = useState(0);
-  const [isSticky, setIsSticky] = useState(false);
   const t = useTranslations("time");
+  const tFollow = useTranslations("followButton");
+  const [stickyThreshold, setStickyThreshold] = useState<number | null>(null);
+  const isSticky = useScrollThreshold(stickyThreshold ?? 0, {
+    enabled: stickyThreshold !== null,
+    hysteresis: 8,
+  });
   const isSelf = useUserStore((state) => state.user)?.id === author.id || false;
+
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) {
+      return;
+    }
 
-    let scrollHandler: (() => void) | null = null;
-    let resizeHandler: (() => void) | null = null;
+    let frameId = 0;
+    let resizeObserver: ResizeObserver | null = null;
 
-    // 获取元素初始位置（相对于文档顶部的绝对位置）
-    const updateOriginalPosition = () => {
+    const updateThreshold = () => {
+      frameId = 0;
+
+      const rootStyle = getComputedStyle(document.documentElement);
+      const headerHeight = Number.parseFloat(
+        rootStyle.getPropertyValue("--header-height"),
+      );
+      const stickyTopOffset = (Number.isFinite(headerHeight) ? headerHeight : 60) + 56;
       const rect = container.getBoundingClientRect();
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      // 元素距离文档顶部的绝对距离 = 当前滚动距离 + 元素距离视口顶部的距离
-      const absoluteTop = scrollTop + rect.top;
-      setOriginalTop(absoluteTop);
+      const absoluteTop = window.scrollY + rect.top;
+      const nextThreshold = Math.max(
+        0,
+        Math.round(absoluteTop - stickyTopOffset),
+      );
+
+      setStickyThreshold((previous) =>
+        previous === nextThreshold ? previous : nextThreshold,
+      );
     };
 
-    // 监听滚动
-    scrollHandler = () => {
-      const scrollTop = window.scrollY || document.documentElement.scrollTop;
-      const stickyTop = 118; // 标题栏高度
-
-      // 当滚动距离超过元素原始位置减去吸顶位置时，变为sticky
-      if (scrollTop >= originalTop - stickyTop) {
-        setIsSticky(true);
-      } else {
-        setIsSticky(false);
+    const requestThresholdUpdate = () => {
+      if (frameId) {
+        return;
       }
+
+      frameId = window.requestAnimationFrame(updateThreshold);
     };
 
-    resizeHandler = updateOriginalPosition;
+    requestThresholdUpdate();
+    window.addEventListener("resize", requestThresholdUpdate, {
+      passive: true,
+    });
+    window.addEventListener("load", requestThresholdUpdate);
 
-    // 延迟获取位置，确保页面完全渲染
-    const timer = setTimeout(() => {
-      updateOriginalPosition();
-      // 只有在获取到正确位置后才添加事件监听器
-      if (scrollHandler) {
-        window.addEventListener("scroll", scrollHandler, { passive: true });
-      }
-      if (resizeHandler) {
-        window.addEventListener("resize", resizeHandler);
-      }
-    }, 100);
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(requestThresholdUpdate);
+      resizeObserver.observe(container);
+    }
 
     return () => {
-      clearTimeout(timer);
-      if (scrollHandler) {
-        window.removeEventListener("scroll", scrollHandler);
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
       }
-      if (resizeHandler) {
-        window.removeEventListener("resize", resizeHandler);
-      }
+      resizeObserver?.disconnect();
+      window.removeEventListener("resize", requestThresholdUpdate);
+      window.removeEventListener("load", requestThresholdUpdate);
     };
-  }, [originalTop]); // 保持 originalTop 作为依赖
+  }, []);
 
   return (
     <div
       ref={containerRef}
-      className={`h-12 px-6 flex items-center transition-all duration-200 sticky top-full z-10`}
+      className="sticky top-full z-10 flex h-12 items-center px-4 md:px-6"
     >
-      <div className="flex items-center flex-1 cursor-pointer mx-auto w-full">
-        {/* 头像 */}
+      <div className="mx-auto flex w-full flex-1 cursor-pointer items-center">
         <Link href={`/account/${author.id}`} className="shrink-0">
           <Avatar
-            className={cn(isSticky ? "size-8" : "size-12")}
+            className={cn(
+              "transition-[width,height] duration-250 ease-out",
+              !isSticky ? "size-12" : "size-8",
+            )}
             url={author?.avatar}
             frameUrl={author?.equippedDecorations?.AVATAR_FRAME?.imageUrl || ""}
           />
         </Link>
-        {/* 用户名 */}
-        <div className="ml-3 flex flex-col flex-1">
+
+        <div className="ml-3 flex min-w-0 flex-1 flex-col">
           <Link
             href={`/account/${author.id}`}
             className="flex items-center leading-5"
           >
-            <span className="font-bold hover:text-primary">
+            <span className="truncate font-bold hover:text-primary">
               {(author?.nickname || author?.username) as string}
             </span>
           </Link>
-          {!isSticky && (
-            <div className="mt-1 leading-4">
-              <span className="text-xs text-secondary">
-                {formatRelativeTime(createdAt, t)}
-              </span>
-            </div>
-          )}
+
+          <div
+            className={cn(
+              "overflow-hidden transition-[max-height,opacity,transform] duration-250 ease-out",
+              !isSticky
+                ? "mt-1 max-h-6 translate-y-0 opacity-100"
+                : "mt-0 max-h-0 -translate-y-1 opacity-0",
+            )}
+          >
+            <span className="text-xs text-secondary">
+              {formatRelativeTime(createdAt, t)}
+            </span>
+          </div>
         </div>
 
-        {/* 关注 */}
         {!author?.isFollowed && !isSelf && (
-          <div className="ml-3 flex items-center w-auto">
+          <div className="ml-3 flex w-auto items-center">
             <Button
-              className="ml-2 rounded-full px-6 min-w-22"
+              className="ml-2 min-w-18 rounded-full px-4 md:min-w-22 md:px-6"
               onClick={onFollow}
             >
-              <span className="text-xs">关注</span>
+              <span className="text-xs">{tFollow("follow")}</span>
             </Button>
           </div>
         )}

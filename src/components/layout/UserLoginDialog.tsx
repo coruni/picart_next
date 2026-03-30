@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { Dialog, DialogContent } from "../ui/Dialog";
-import { useAppStore, useModalStore, useUserStore } from "@/stores";
-import { MODAL_IDS } from "@/lib/modal-helpers";
+﻿import { userControllerLogin, userControllerRegisterUser, userControllerResetPassword, userControllerSendVerificationCode } from "@/api";
 import { useForm } from "@/hooks/useForm";
-import { Form, FormField } from "../ui/Form";
-import { FloatingInput } from "../ui/FloatingInput";
+import { MODAL_IDS } from "@/lib/modal-helpers";
+import { useAppStore, useModalStore, useUserStore } from "@/stores";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 import { Button } from "../ui/Button";
-import { userControllerLogin, userControllerRegisterUser, userControllerSendVerificationCode, userControllerResetPassword } from "@/api";
+import { Dialog, DialogContent } from "../ui/Dialog";
+import { FloatingInput } from "../ui/FloatingInput";
+import { Form, FormField } from "../ui/Form";
 
 type LoginFormData = {
     account: string;
@@ -63,8 +63,9 @@ export function UserLoginDialog() {
     const loginDialogOpen = useModalStore((state) => state.isOpen(MODAL_IDS.LOGIN));
     const closeModal = useModalStore((state) => state.closeModal);
     const siteConfig = useAppStore((state) => state.siteConfig);
+    const loginLogo = siteConfig?.site_logo || "/placeholder/loginLogo.png";
 
-    // 使用 selector 获取响应式方法
+    // 使用 selector 获取所需状态方法
     const setToken = useUserStore((state) => state.setToken);
     const setUser = useUserStore((state) => state.setUser);
 
@@ -75,7 +76,7 @@ export function UserLoginDialog() {
         const message = extractApiMessage(error);
 
         if (message === "response.error.passwordError") {
-            return "账号或密码错误";
+            return t("passwordError");
         }
 
         if (message && !message.startsWith("response.error.")) {
@@ -241,7 +242,7 @@ export function UserLoginDialog() {
                     }
                 });
 
-                // 重置成功，切换回登录模式
+                // 重置成功后切回登录模式
                 alert(tReset("resetSuccess"));
                 setMode("login");
                 resetForm.reset();
@@ -278,7 +279,7 @@ export function UserLoginDialog() {
             }, 1000);
         } catch (error) {
             setCountdown(0)
-            console.error("发送验证码失败:", error);
+            console.error("Failed to send verification code:", error);
         } finally {
             setIsSendingCode(false);
         }
@@ -329,10 +330,13 @@ export function UserLoginDialog() {
         <Dialog
             open={loginDialogOpen}
             onOpenChange={handleDialogClose}>
-            <DialogContent className="max-w-110 rounded-2xl max-h-[98vh]">
+            <DialogContent className="max-w-110 rounded-2xl max-h-[98vh] bg-card! border border-border!">
                 <div className="flex flex-col">
                     {/* logo */}
-                    <div className="w-50 h-14 mx-auto relative -mt-2 bg-cover bg-center" style={{ backgroundImage: `url(/placeholder/loginLogo.png)` }}>
+                    <div
+                        className="w-50 h-14 mx-auto relative -mt-2 bg-contain bg-center bg-no-repeat"
+                        style={{ backgroundImage: `url(${loginLogo})` }}
+                    >
                     </div>
 
                     {/* 标题 */}
@@ -604,3 +608,5 @@ export function UserLoginDialog() {
         </Dialog>
     );
 }
+
+

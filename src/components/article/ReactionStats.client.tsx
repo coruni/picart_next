@@ -53,8 +53,7 @@ export function ReactionStats({ articleId, initialStats, initialUserReaction }: 
 
             // 从API响应更新状态
             if (data?.code === 200) {
-                console.log('API response:', data);
-                
+
                 // 本地更新逻辑：每个用户只能有一个反应
                 setReactionStats(prev => {
                     const newStats = { ...prev };

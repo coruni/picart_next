@@ -1,14 +1,37 @@
+import localFont from "next/font/local";
 import "./globals.css";
-import { Geist, Geist_Mono } from "next/font/google";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const miSans = localFont({
+  src: [
+    {
+      path: "./fonts/MiSans-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/MiSans-Normal.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "./fonts/MiSans-Semibold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+  ],
+  fallback: [
+    "PingFang SC",
+    "Hiragino Sans GB",
+    "Microsoft YaHei",
+    "HarmonyOS Sans SC",
+    "Noto Sans SC",
+    "Segoe UI",
+    "Helvetica Neue",
+    "Arial",
+  ],
+  variable: "--font-misans",
+  display: "swap",
+  preload: true,
 });
 
 export default function RootLayout({
@@ -18,7 +41,7 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${miSans.className} ${miSans.variable} antialiased`}>
         {children}
       </body>
     </html>

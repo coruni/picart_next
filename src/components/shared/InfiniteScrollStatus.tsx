@@ -1,9 +1,9 @@
 "use client";
 
-import { RefObject } from "react";
-import { Loader2 } from "lucide-react";
-import { cn } from "@/lib";
 import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib";
+import { Loader2 } from "lucide-react";
+import { RefObject } from "react";
 
 type InfiniteScrollStatusProps = {
   observerRef: RefObject<HTMLDivElement | null>;
@@ -76,7 +76,7 @@ export function InfiniteScrollStatus({
       )}
 
       {!hasMore && !isEmpty && allLoadedText && (
-        <div className={cn("flex items-center justify-center py-8 text-sm", endClassName)}>
+        <div className={cn("flex items-center justify-center py-3 text-sm", endClassName)}>
           <div>{allLoadedText}</div>
         </div>
       )}

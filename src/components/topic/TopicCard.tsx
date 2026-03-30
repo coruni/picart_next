@@ -12,15 +12,15 @@ export const TagCard = ({ tag }: TagCardProps) => {
     const t = useTranslations("tagCard")
 
     return (
-        <Link href={`/topic/${tag.id}`} className="p-4 flex items-center space-x-4 rounded-xl cursor-pointer hover:bg-primary/15">
+        <Link href={`/topic/${tag.id}`} className="group p-4 flex items-center space-x-4 rounded-xl cursor-pointer hover:bg-primary/15">
             <div className="flex-1 flex flex-col">
-                <div className="flex items-center space-x-2">
-                    <div className="rounded-full p-1 text-white bg-primary">
+                <div data-auto-translate-content className="flex items-center space-x-2">
+                    <div className="relative flex size-4 shrink-0 items-center justify-center rounded-full bg-primary p-0.5 text-white after:absolute after:bottom-0 after:right-0 after:h-0 after:w-0 after:border-l-[6px] after:border-l-primary after:border-t-[6px] after:border-t-transparent after:content-[''] after:-rotate-90">
                         <Hash size={14} strokeWidth={2} />
                     </div>
                     <span className="font-semibold">{tag.name}</span>
                 </div>
-                <div className="py-2 leading-4">
+                <div data-auto-translate-content className="py-2 leading-4">
                     <span className="text-secondary text-xs">{tag.description}</span>
                 </div>
                 <span className="text-xs text-secondary">

@@ -3,3 +3,4 @@ export { useAppStore } from "./useAppStore";
 export { useModalStore } from "./useModalStore";
 export { useNotificationStore } from "./useNotificationStore";
 export { useDeviceStore } from "./useDeviceStore";
+export { useSearchStore } from "./useSearchStore";

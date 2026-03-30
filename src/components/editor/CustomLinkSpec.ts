@@ -1,4 +1,4 @@
-import { BlotSpec, Action } from "@enzedonline/quill-blot-formatter2";
+import { Action, BlotSpec } from "@enzedonline/quill-blot-formatter2";
 import { EditLinkAction, RemoveLinkAction } from "./actions";
 
 export class CustomLinkSpec extends BlotSpec {

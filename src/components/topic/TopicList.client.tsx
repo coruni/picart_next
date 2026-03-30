@@ -3,9 +3,9 @@
 import { TagList } from "@/types";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { tagControllerFindAll } from "@/api";
+import { usePathname } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { TagCard } from "./TopicCard";
-import { usePathname } from "next/navigation";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { InfiniteScrollStatus } from "@/components/shared";
 

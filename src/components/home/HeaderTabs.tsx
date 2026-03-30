@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { Link } from "@/i18n/routing";
+import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { ChevronDown } from "lucide-react";
-import Image from "next/image";
-import { useTranslations } from "next-intl";
 import { CategoryList } from "@/types";
+import { ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import { useEffect } from "react";
 
 interface TabItem {
   label: string;
@@ -35,7 +34,7 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
   const channels = categories.filter((category) => !category.link);
   const t = useTranslations("headerTabs");
   const pathname = usePathname();
-  const currentPath = pathname.replace(/^\/(zh|en)/, "") || "/";
+  const currentPath = pathname;
 
   useEffect(() => {
     if (currentPath.startsWith("/channel/") && currentPath !== "/channel") {
@@ -78,12 +77,14 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
               <Link
                 href={tab.href}
                 className={cn(
-                  "relative flex h-full items-center gap-1 px-1 pb-2 text-sm font-semibold transition-colors hover:text-foreground group-hover:text-foreground md:text-base",
+                  "relative flex h-full items-center gap-1 px-1  text-sm font-semibold transition-colors hover:text-foreground group-hover:text-foreground md:text-base",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   isActive ? "text-foreground" : "text-secondary",
                 )}
               >
-                <span className={cn("inline-flex items-center", labelClassName)}>
+                <span
+                  className={cn("inline-flex items-center", labelClassName)}
+                >
                   {tab.label}
                   {tab.hasDropdown && (
                     <ChevronDown
@@ -94,7 +95,7 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
                 </span>
                 <span
                   className={cn(
-                    "absolute bottom-0 left-1/2 h-1 w-5 -translate-x-1/2 rounded-full bg-primary transition-opacity",
+                    "absolute -bottom-1 left-1/2 h-1 w-5 -translate-x-1/2 rounded-full bg-primary transition-opacity",
                     isActive
                       ? "opacity-100"
                       : "opacity-0 group-hover:opacity-100",
@@ -103,7 +104,7 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
               </Link>
 
               {tab.hasDropdown && (
-                <div className="absolute top-full left-0 z-50 mt-2 hidden w-80 rounded-xl bg-card opacity-0 shadow-lg invisible transition-all duration-200 group-hover:visible group-hover:opacity-100 md:block">
+                <div className="absolute top-full left-0 z-50 mt-2 hidden w-80 rounded-xl bg-card opacity-0 drop-shadow-2xl border border-border invisible transition-all duration-200 group-hover:visible group-hover:opacity-100 md:block">
                   <div className="max-h-100 overflow-y-auto p-2">
                     <div className="grid gap-2">
                       {channels.map((channel) => {
@@ -118,18 +119,20 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
                             href={channelHref}
                             className="flex h-10 items-center gap-3 rounded-lg p-1 px-2 transition-colors hover:bg-primary/15 hover:text-primary dark:hover:bg-gray-700"
                           >
-                            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-lg">
+                            <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full ring-1 ring-black/5">
                               {channel.avatar ? (
                                 <Image
                                   src={channel.avatar}
                                   alt={channel.name}
                                   width={32}
                                   height={32}
-                                  sizes="32px"
-                                  className="h-full w-full object-cover"
+                                  quality={95}
+                                  loading="eager"
+                                  sizes="(max-width: 768px) 32px, 40px"
+                                  className="h-full w-full rounded-full object-cover"
                                 />
                               ) : (
-                                <div className="size-8 bg-primary/15" />
+                                <div className="size-8 rounded-full bg-primary/15" />
                               )}
                             </div>
                             <span className="text-sm font-medium">

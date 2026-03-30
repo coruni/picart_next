@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { userControllerGetProfile } from "@/api";
 import { getCookie } from "@/lib/cookies";
 import { TOKEN_COOKIE_NAME } from "@/lib/request-auth";
@@ -8,6 +7,7 @@ import { initializeInterceptors } from "@/runtime.config";
 import { useAppStore } from "@/stores";
 import { useUserStore } from "@/stores/useUserStore";
 import type { PublicConfigs, UserProfile } from "@/types";
+import { startTransition, useEffect, useRef, useState } from "react";
 
 interface UserStateProviderProps {
   initialToken: string | null;
@@ -42,17 +42,6 @@ export function UserStateProvider({
       const resolvedToken =
         initialToken || cookieToken || useUserStore.getState().token;
 
-      if (process.env.NODE_ENV === "development") {
-        console.log("[auth][provider] hydration start", {
-          initialToken,
-          cookieToken,
-          resolvedToken,
-          initialUserId: initialUser?.id ?? null,
-          storeToken: token,
-          storeUserId: user?.id ?? null,
-        });
-      }
-
       if (resolvedToken && resolvedToken !== useUserStore.getState().token) {
         setToken(resolvedToken);
       }
@@ -62,37 +51,47 @@ export function UserStateProvider({
         if (!currentUser || currentUser.id !== initialUser.id) {
           setUser(initialUser);
         }
-      } else if (resolvedToken) {
-        try {
-          const response = await userControllerGetProfile();
-          const profile = response?.data?.data || null;
-          if (profile) {
-            setUser(profile);
-          }
-        } catch (error) {
-          if (process.env.NODE_ENV === "development") {
-            console.warn("[auth][provider] client profile fetch failed", {
-              error,
-            });
-          }
-        }
       }
 
       if (initialConfig) {
         setConfig(initialConfig);
       }
 
-      requestAnimationFrame(() => {
-        if (process.env.NODE_ENV === "development") {
-          const currentState = useUserStore.getState();
-          console.log("[auth][provider] hydration end", {
-            token: currentState.token,
-            userId: currentState.user?.id ?? null,
-            isAuthenticated: currentState.isAuthenticated,
-          });
+      setIsInitialized(true);
+
+      if (!initialUser && resolvedToken) {
+        const fetchProfile = async () => {
+          try {
+            const response = await userControllerGetProfile();
+            const profile = response?.data?.data || null;
+
+            if (profile) {
+              startTransition(() => {
+                const currentUser = useUserStore.getState().user;
+                if (!currentUser || currentUser.id !== profile.id) {
+                  setUser(profile);
+                }
+              });
+            }
+          } catch (error) {
+            if (process.env.NODE_ENV === "development") {
+              console.warn("[auth][provider] client profile fetch failed", {
+                error,
+              });
+            }
+          }
+        };
+
+        const schedule = () => {
+          void fetchProfile();
+        };
+
+        if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+          window.requestIdleCallback(schedule);
+        } else {
+          setTimeout(schedule, 0);
         }
-        setIsInitialized(true);
-      });
+      }
     };
 
     void run();

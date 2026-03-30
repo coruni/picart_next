@@ -1,5 +1,6 @@
-import { ProfileEditForm } from "@/components/account/ProfileEditForm.client";
+﻿import { ProfileEditForm } from "@/components/account/ProfileEditForm.client";
 import { serverApi } from "@/lib/server-api";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 export default async function AccountEditPage({
@@ -8,6 +9,7 @@ export default async function AccountEditPage({
   params: Promise<{ id: string; locale: string }>;
 }) {
   const { id, locale } = await params;
+  const t = await getTranslations("profile.edit");
   const { data } = await serverApi.userControllerFindOne({ path: { id } });
 
   if (!data?.data) {
@@ -19,7 +21,7 @@ export default async function AccountEditPage({
       <div className="flex-1 max-w-3xl mx-auto  bg-card rounded-xl">
         <div className="px-6 h-14 flex items-center border-b border-border ">
           <div className="h-full flex-1 flex items-center">
-            <span className="font-bold text-base pr-6">编辑个人资料</span>
+            <span className="font-bold text-base pr-6">{t("title")}</span>
           </div>
         </div>
         <div className="px-4 flex-1 pb-4">

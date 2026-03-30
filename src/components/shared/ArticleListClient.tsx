@@ -3,8 +3,8 @@
 import { ArticleList } from "@/types";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { ArticleCard } from "@/components/article";
+import { usePathname } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
-import { usePathname } from "next/navigation";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { InfiniteScrollStatus } from "./InfiniteScrollStatus";
 
