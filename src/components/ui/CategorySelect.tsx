@@ -21,6 +21,7 @@ type CategorySelectProps = {
   options?: CategoryOption[];
   placeholder?: string;
   className?: string;
+  inputClassName?: string;
   disabled?: boolean;
   parentId?: string;
 };
@@ -29,12 +30,12 @@ const PAGE_SIZE = 12;
 
 const mergeCategoryOptions = (
   baseOptions: CategoryOption[],
-  nextOptions: CategoryOption[],
+  searchOptions: CategoryOption[],
 ) => {
   const seen = new Set(baseOptions.map((option) => option.value));
   return [
     ...baseOptions,
-    ...nextOptions.filter((option) => {
+    ...searchOptions.filter((option) => {
       if (seen.has(option.value)) return false;
       seen.add(option.value);
       return true;
@@ -48,6 +49,7 @@ export const CategorySelect = ({
   options = [],
   placeholder,
   className,
+  inputClassName,
   disabled = false,
   parentId,
 }: CategorySelectProps) => {
@@ -66,13 +68,16 @@ export const CategorySelect = ({
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestAbortControllerRef = useRef<AbortController | null>(null);
   const activeQueryRef = useRef("");
-  const prevSearchQueryRef = useRef("");
+  const initializedRef = useRef(false);
 
+  // 传入的 options 作为固定选项始终显示在顶部
   const resolvedOptions = useMemo(
     () => mergeCategoryOptions(options, fetchedOptions),
     [fetchedOptions, options],
   );
-  const selectedOption = resolvedOptions.find((option) => option.value === value);
+  const selectedOption = resolvedOptions.find(
+    (option) => option.value === value,
+  );
   const normalizedQuery = searchQuery.trim();
 
   const fetchCategories = useCallback(
@@ -161,13 +166,9 @@ export const CategorySelect = ({
     }
 
     const trimmed = searchQuery.trim();
-    const prevTrimmed = prevSearchQueryRef.current.trim();
-    prevSearchQueryRef.current = searchQuery;
 
+    // 空查询时不发请求，由 parentId useEffect 处理初始化
     if (!trimmed) {
-      if (prevTrimmed || fetchedOptions.length === 0) {
-        void fetchCategories("", 1, false);
-      }
       return;
     }
 
@@ -180,18 +181,20 @@ export const CategorySelect = ({
         clearTimeout(searchTimerRef.current);
       }
     };
-  }, [fetchCategories, fetchedOptions.length, searchQuery]);
+  }, [fetchCategories, searchQuery]);
 
   useEffect(() => {
     setSearchQuery("");
     setFetchedOptions([]);
     setHasMore(true);
     setPage(1);
+    initializedRef.current = false;
 
     if (parentId === "") {
       return;
     }
 
+    initializedRef.current = true;
     void fetchCategories("", 1, false);
   }, [fetchCategories, parentId]);
 
@@ -240,14 +243,15 @@ export const CategorySelect = ({
   };
 
   return (
-    <div ref={containerRef} className={cn("relative", className)}>
+    <div ref={containerRef} className={cn("relative  max-w-full", className)}>
       <div
         className={cn(
-          "relative min-h-10 rounded-lg border border-border bg-card px-3 py-2",
-          "flex items-center gap-2",
+          "relative min-h-10  h-full min-w-0 rounded-lg border border-border bg-card px-3 py-2",
+          "flex items-center justify-between gap-2 overflow-hidden",
           "focus-within:border-primary focus-within:ring-primary",
           "hover:border-primary transition-colors",
           disabled && "cursor-not-allowed opacity-50",
+          inputClassName,
         )}
         onClick={() => {
           if (!disabled) {
@@ -257,7 +261,7 @@ export const CategorySelect = ({
         }}
       >
         {selectedOption && !searchQuery ? (
-          <span className="inline-flex h-7.5 min-w-0 max-w-full items-center gap-2 rounded-full bg-muted px-2 py-1">
+          <span className="inline-flex h-7.5 max-w-full shrink items-center gap-2 overflow-hidden rounded-full bg-muted px-2 py-1">
             {selectedOption.avatar ? (
               <Image
                 src={selectedOption.avatar}
@@ -267,7 +271,7 @@ export const CategorySelect = ({
                 className="aspect-square shrink-0 rounded-full object-cover"
               />
             ) : null}
-            <span className="truncate text-xs text-muted-foreground">
+            <span className="truncate text-xs text-muted-foreground hidden md:inline">
               {selectedOption.label}
             </span>
           </span>
@@ -289,58 +293,61 @@ export const CategorySelect = ({
               : placeholder || t("placeholder")
           }
           className={cn(
-            "min-w-0 flex-1 bg-transparent text-sm outline-none",
-            "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+            "min-w-10 flex-1 bg-transparent text-sm outline-none",
+            "placeholder:text-gray-400",
             disabled && "cursor-not-allowed",
+            selectedOption && !searchQuery && "hidden md:block",
           )}
         />
 
-        {selectedOption || searchQuery ? (
+        <div className="flex items-center">
+          <div className="flex size-6 shrink-0 items-center justify-center">
+            {loading ? (
+              <Loader2 className="size-4 animate-spin text-muted-foreground" />
+            ) : selectedOption || searchQuery ? (
+              <button
+                type="button"
+                aria-label={t("placeholder")}
+                onClick={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  handleClear();
+                }}
+                className="flex size-6 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <X size={14} />
+              </button>
+            ) : null}
+          </div>
+
           <button
             type="button"
-            aria-label={t("placeholder")}
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
-              handleClear();
-            }}
-            className="flex size-6 cursor-pointer items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          >
-            <X size={14} />
-          </button>
-        ) : null}
-
-        {loading ? (
-          <Loader2 className="size-4 shrink-0 animate-spin text-muted-foreground" />
-        ) : null}
-
-        <button
-          type="button"
-          onClick={(event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            if (!disabled) {
-              setIsOpen((prev) => !prev);
-              if (!isOpen) {
-                setTimeout(() => inputRef.current?.focus(), 0);
+              if (!disabled) {
+                setIsOpen((prev) => !prev);
+                if (!isOpen) {
+                  setTimeout(() => inputRef.current?.focus(), 0);
+                }
               }
-            }
-          }}
-          disabled={disabled}
-          className="flex size-5 shrink-0 items-center justify-center"
-        >
-          <ChevronDown
-            className={cn(
-              "size-4 text-gray-500 transition-transform",
-              isOpen && "rotate-180",
-            )}
-          />
-        </button>
+            }}
+            disabled={disabled}
+            className="flex size-5 shrink-0 items-center justify-center"
+          >
+            <ChevronDown
+              className={cn(
+                "size-4 text-gray-500 transition-transform",
+                isOpen && "rotate-180",
+              )}
+            />
+          </button>
+        </div>
       </div>
 
       <div
         className={cn(
-          "absolute z-20 mt-1 w-full origin-top",
+          "absolute z-20 mt-1 left-0 right-0 min-w-0 origin-top",
           "overflow-hidden rounded-lg border border-border bg-card shadow-lg",
           "transition-[opacity,transform] duration-160 ease-out will-change-transform",
           isOpen

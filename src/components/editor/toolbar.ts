@@ -332,7 +332,7 @@ export const renderToolbar = ({
     hexInput.type = "text";
     hexInput.placeholder = "#000000";
     hexInput.className =
-      "flex h-6 w-16 rounded-md border bg-card px-2 py-1 text-sm placeholder:text-gray-400 focus:outline-none transition-colors duration-200 border-gray-300 hover:border-primary focus:border-primary flex-shrink-0 flex-1";
+      "flex h-6 w-16 rounded-md border border-primary! bg-card px-2 py-1 text-sm placeholder:text-gray-400 focus:outline-none transition-colors duration-200 border-gray-300 hover:border-primary focus:border-primary flex-shrink-0 flex-1";
     hexInput.maxLength = 7;
     const hexBtn = document.createElement("button");
     hexBtn.className =

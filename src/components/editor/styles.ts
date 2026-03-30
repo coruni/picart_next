@@ -18,6 +18,93 @@ export const quillOverrideStyles = `
     width: 24px !important;
     height: 24px !important;
   }
+  .ql-toolbar [id^="dropdown-"]{
+    min-width:max-content !important;
+  }
+  /* Mobile toolbar button sizes */
+  @media (max-width: 767px) {
+    .ql-snow.ql-toolbar .ql-formats button:not(.h-8) svg,
+    .ql-snow .ql-toolbar .ql-formats button:not(.h-8) svg {
+      width: 20px !important;
+      height: 20px !important;
+    }
+    .ql-snow.ql-toolbar .ql-formats,
+    .ql-snow .ql-toolbar .ql-formats {
+      gap: 0.5rem !important;
+    }
+    .ql-toolbar .tooltip-wrapper .tooltip {
+      display: none !important;
+    }
+    .ql-snow.ql-toolbar button,
+    .ql-snow .ql-toolbar button {
+      padding: 2px !important;
+    }
+    .ql-toolbar {
+      gap:6px !important;
+    }
+    /* Dropdown triggers on mobile */
+    .ql-toolbar .tooltip-wrapper button[class*="px-2"] {
+      padding-left: 6px !important;
+      padding-right: 6px !important;
+    }
+    /* More button on mobile */
+    .ql-toolbar .tooltip-wrapper button.flex.w-full {
+      width: auto !important;
+      min-width: 28px !important;
+      height: 28px !important;
+    }
+    /* Dropdown menus on mobile - prevent overflow (except emoji panel) */
+    .ql-toolbar [id^="dropdown-"]:not(#dropdown-emoji-panel) {
+      min-width: max-content !important;
+      left: auto !important;
+      right: 0 !important;
+    }
+    /* Color dropdown on mobile */
+    .ql-toolbar [id^="dropdown-textColor"],
+    .ql-toolbar [id^="dropdown-bgColor"] {
+      left: auto !important;
+      right: 0 !important;
+      width: auto !important;
+      max-width: calc(100vw - 32px) !important;
+    }
+    /* Emoji panel dropdown on mobile - centered */
+    #dropdown-emoji-panel.emoji-panel-dropdown {
+      left: -400% !important;
+      right: auto !important;
+      width: calc(100vw - 16px) !important;
+      max-width: none !important;
+      min-width: 0 !important;
+    }
+    .emoji-panel-tabs {
+      height: 42px !important;
+      grid-template-columns: 24px minmax(0, 1fr) 24px;
+      gap: 4px;
+    }
+    .emoji-panel-tab {
+      height: 34px !important;
+      width: 44px !important;
+    }
+    .emoji-panel-tab-image {
+      width: 24px;
+      height: 24px;
+    }
+    .emoji-panel-tab-emoji,
+    .emoji-panel-tab-fallback {
+      width: 24px;
+      height: 24px;
+      font-size: 14px;
+    }
+    .emoji-panel-list {
+      height: 220px !important;
+      grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    }
+    .emoji-panel-list .emoji-panel-item {
+      height: 40px !important;
+      width: 40px !important;
+      min-height: 40px !important;
+      min-width: 40px !important;
+    }
+  }
   .ql-toolbar.ql-snow,
   .ql-container.ql-snow
   {
@@ -557,6 +644,4 @@ export const quillOverrideStyles = `
     color: #8592a3;
     font-size: 13px;
   }
-
 `;
-

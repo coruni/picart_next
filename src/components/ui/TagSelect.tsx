@@ -21,6 +21,7 @@ type TagSelectProps = {
   onCustomChange: (value: string[]) => void;
   placeholder?: string;
   className?: string;
+  inputClassName?: string;
   disabled?: boolean;
   initialSelectedOptions?: TagOption[];
 };
@@ -57,6 +58,7 @@ export const TagSelect = ({
   onCustomChange,
   placeholder,
   className,
+  inputClassName,
   disabled = false,
   initialSelectedOptions = [],
 }: TagSelectProps) => {
@@ -294,14 +296,15 @@ export const TagSelect = ({
   };
 
   return (
-    <div ref={containerRef} className={cn("relative", className)}>
+    <div ref={containerRef} className={cn("relative max-w-full", className)}>
       <div
         className={cn(
-          "relative min-h-10 rounded-lg border border-border bg-card px-3 py-2",
+          "relative h-full min-h-10 min-w-0 rounded-lg border border-border bg-card px-3 py-2",
           "flex flex-wrap items-center gap-2",
           "focus-within:border-primary focus-within:ring-primary",
           "hover:border-primary transition-colors",
           disabled && "opacity-50 cursor-not-allowed",
+          inputClassName,
         )}
         onClick={() => {
           if (!disabled) {
@@ -313,7 +316,7 @@ export const TagSelect = ({
         {resolvedSelectedOptions.map((option) => (
           <span
             key={option.value}
-            className="inline-flex max-w-full h-7.5 min-w-0 items-center gap-1 rounded-full bg-muted px-3 py-1"
+            className="inline-flex h-7.5 min-w-0 shrink items-center gap-1 overflow-hidden rounded-full bg-muted px-3 py-1"
           >
             <span className="truncate text-xs text-muted-foreground">
               {option.label}
@@ -338,7 +341,7 @@ export const TagSelect = ({
         {customValue.map((name) => (
           <span
             key={name}
-            className="inline-flex max-w-full h-7.5 min-w-0 items-center gap-1 rounded-full bg-[#eef7ff] px-3 py-1"
+            className="inline-flex h-7.5 min-w-0 shrink items-center gap-1 overflow-hidden rounded-full bg-[#eef7ff] px-3 py-1"
           >
             <span className="truncate text-sm">{name}</span>
             <button
@@ -410,7 +413,7 @@ export const TagSelect = ({
 
       <div
         className={cn(
-          "absolute z-20 mt-1 w-full origin-top",
+          "absolute z-20 mt-1 left-0 right-0 min-w-0 origin-top",
           "rounded-lg border border-border bg-card shadow-lg",
           "overflow-hidden transition-[opacity,transform] duration-160 ease-out will-change-transform",
           isOpen

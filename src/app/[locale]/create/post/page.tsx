@@ -7,6 +7,7 @@ import {
   categoryControllerFindAll,
   uploadControllerUploadFile,
 } from "@/api";
+import { Editor } from "@/components/editor";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
 import { CategoryOption, CategorySelect } from "@/components/ui/CategorySelect";
@@ -17,7 +18,6 @@ import {
   DialogOverlay,
   DialogTitle,
 } from "@/components/ui/Dialog";
-import { Editor } from "@/components/editor";
 import { Form, FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
@@ -698,26 +698,28 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                   label={t("form.publishTo")}
                   className="pt-4"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-stretch gap-2 min-w-0">
                     <CategorySelect
                       value={selectedParentId}
                       onChange={handleParentCategoryChange}
                       options={parentCategories}
                       placeholder={t("form.selectCategory")}
                       disabled={categoriesLoading}
-                      className="flex-1"
+                      className="flex-1 min-w-0"
+                      inputClassName="min-h-12"
                     />
                     {/* 用独立的 showChildSelect 控制显隐，与搜索结果数量解耦 */}
                     {selectedParentId && showChildSelect && (
                       <>
-                        <span className="relative w-3 h-3 shrink-0 before:absolute mx-1 before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-[#b2bdce]" />
+                        <span className="relative w-3 shrink-0 before:absolute mx-1 before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-[#b2bdce]" />
                         <CategorySelect
                           value={values.categoryId}
                           onChange={handleChildCategoryChange}
                           options={childCategories}
                           parentId={selectedParentId}
                           placeholder={t("form.selectSubCategory")}
-                          className="flex-1"
+                          className="flex-1 min-w-0"
+                          inputClassName="min-h-12"
                         />
                       </>
                     )}
@@ -733,6 +735,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                     placeholder={tTag("placeholder")}
                     disabled={false}
                     className="w-full"
+                    inputClassName="min-h-12"
                   />
                 </FormField>
                 <div className="mv-3">

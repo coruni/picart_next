@@ -349,7 +349,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
             placeholder={t("descriptionPlaceholder")}
             maxLength={200}
             rows={4}
-            className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm transition-colors placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-primary focus:border-primary hover:border-primary"
+            className="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm transition-colors placeholder:text-gray-400  focus:outline-none focus:ring-primary focus:border-primary hover:border-primary"
           />
           <div className="text-right text-xs text-gray-400 mt-1">
             {formData.description.length}/200

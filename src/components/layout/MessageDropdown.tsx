@@ -22,7 +22,7 @@ import {
 
 type MessageTab = "all" | "notification" | "private" | "system";
 
-const MIN_MOBILE_SHEET_HEIGHT = 8;
+const MIN_MOBILE_SHEET_HEIGHT = 12;
 const MAX_MOBILE_SHEET_HEIGHT = 92;
 const DEFAULT_MOBILE_SHEET_HEIGHT = 50;
 
@@ -140,7 +140,7 @@ export function MessageDropdown({
 
     setSelectedTab(tab);
 
-    if (isAuthenticated && (messages.length > 0 || mobileOpen)) {
+    if (isAuthenticated) {
       void fetchMessages(tab);
     }
   };
@@ -329,7 +329,7 @@ export function MessageDropdown({
               type="button"
               onClick={() => handleTabChange(tab.value)}
               className={cn(
-                "relative shrink-0 pb-3 pt-3 text-sm font-medium transition-colors cursor-pointer",
+                "relative shrink-0 min-w-12 pb-3 pt-3 px-1 text-sm font-medium transition-colors cursor-pointer",
                 selectedTab === tab.value
                   ? "text-foreground"
                   : "text-secondary hover:text-foreground",
@@ -337,7 +337,7 @@ export function MessageDropdown({
             >
               {tab.label}
               {selectedTab === tab.value && (
-                <span className="absolute bottom-0 left-0 right-0 mx-auto h-1 w-1/2 rounded-full bg-primary" />
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1 w-6 rounded-full bg-primary" />
               )}
             </button>
           ))}

@@ -1,7 +1,7 @@
 "use client";
 
-import { forwardRef, type InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
+import { forwardRef, type InputHTMLAttributes } from "react";
 
 /**
  * 输入框组件属性接口
@@ -50,7 +50,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           type={type}
           className={cn(
             "flex h-10 rounded-lg border bg-card px-3 py-2 text-sm",
-            "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+            "placeholder:text-gray-400",
             "focus:ring-offset-0 outline-none focus:outline-none",
             "disabled:cursor-not-allowed disabled:opacity-50",
             "transition-colors duration-200",
@@ -79,3 +79,4 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = "Input";
 
 export { Input };
+

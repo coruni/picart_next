@@ -659,7 +659,7 @@ export default function CreateImagePage() {
                       maxLength={3000}
                       className={cn(
                         "textarea-resizer min-h-40 w-full rounded-lg border border-border bg-card px-3 py-2 pb-8 text-sm",
-                        "placeholder:text-gray-400 dark:placeholder:text-gray-500",
+                        "placeholder:text-gray-400 ",
                         "focus:ring-offset-0 outline-none focus:outline-none",
                         "transition-colors duration-200",
                         "focus:ring-primary focus:border-primary hover:border-primary",
@@ -788,26 +788,26 @@ export default function CreateImagePage() {
                   label={tPost("form.publishTo")}
                   className="pt-4"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-stretch gap-2">
                     <CategorySelect
                       value={selectedParentId}
                       onChange={handleParentCategoryChange}
                       options={parentCategories}
                       placeholder={tPost("form.selectCategory")}
                       disabled={categoriesLoading}
-                      className="flex-1"
+                      className="flex-1 h-full!"
                     />
                     {/* 用独立的 showChildSelect 控制显隐，与搜索结果数量解耦 */}
                     {selectedParentId && showChildSelect && (
                       <>
-                        <span className="relative w-3 h-3 shrink-0 before:absolute mx-1 before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-[#b2bdce]" />
+                        <span className="relative w-3 h-full shrink-0 before:absolute mx-1 before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-[#b2bdce]" />
                         <CategorySelect
                           value={values.categoryId}
                           onChange={handleChildCategoryChange}
                           options={childCategories}
                           parentId={selectedParentId}
                           placeholder={tPost("form.selectSubCategory")}
-                          className="flex-1"
+                          className="flex-1 h-full!"
                         />
                       </>
                     )}

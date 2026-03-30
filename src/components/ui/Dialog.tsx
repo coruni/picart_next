@@ -213,7 +213,7 @@ export function DialogContent({
         className={cn(
           "fixed left-[50%] top-[50%] z-50 w-full max-w-lg",
           "translate-x-[-50%] translate-y-[-50%]",
-          "rounded-lg border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-800 dark:bg-gray-900",
+          "rounded-lg border bg-card border-border p-6 shadow-xl",
           "animate-in fade-in-0 zoom-in-95 duration-200",
           "max-h-[90vh] overflow-y-auto",
           className,
