@@ -20,7 +20,7 @@ interface AppState {
 export const useAppStore = create<AppState>()(
   persist(
     (set) => ({
-      theme: "system",
+      theme: "system" as const,
       autoTranslateContent: false,
       sidebarOpen: true,
       locale: routing.defaultLocale,
@@ -57,6 +57,12 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: "app-storage",
+      partialize: (state: AppState) => ({
+        theme: state.theme,
+        sidebarOpen: state.sidebarOpen,
+        locale: state.locale,
+        siteConfig: state.siteConfig,
+      }),
     },
   ) as never,
 );
