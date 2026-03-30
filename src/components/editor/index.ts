@@ -1,7 +1,6 @@
 export { CustomImageBlot } from "./blots/CustomImageBlot";
 export { CustomEmojiBlot } from "./blots/CustomEmojiBlot";
-export { CustomImageSpec } from "./CustomImageSpec";
-export { CustomLinkSpec } from "./CustomLinkSpec";
+export { CustomImageSpec, CustomLinkSpec } from "./specs";
 export {
   ReplaceAction,
   ViewAction,
@@ -23,4 +22,5 @@ export {
 } from "./constants";
 export { quillOverrideStyles } from "./styles";
 export { renderToolbar } from "./toolbar";
+export { Editor } from "./Editor";
 export type { EditorProps } from "./types";

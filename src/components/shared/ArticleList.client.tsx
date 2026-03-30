@@ -29,7 +29,7 @@ type ArticleListClientProps = {
      * 是否显示关注按钮
      */
     showFollow?: boolean;
-    
+
     /**
      * 缓存 key，用于区分不同列表
      */
@@ -48,20 +48,20 @@ export const ArticleListClient = ({
 }: ArticleListClientProps) => {
     const t = useTranslations("articleList");
     const pathname = usePathname();
-    
+
     // 生成唯一的缓存 key
     const storageKey = cacheKey || `article-list-${pathname}`;
     const scrollKey = `${storageKey}-scroll`;
-    
+
     // 检测是否是刷新操作并清空缓存（在组件初始化时立即执行）
     const getInitialState = () => {
         if (typeof window === 'undefined') {
             return { articles: initArticles, page: initPage };
         }
-        
+
         // 检测页面加载类型
         const navigationType = (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)?.type;
-        
+
         if (navigationType === 'reload') {
             // 页面刷新，清空缓存
             try {
@@ -72,7 +72,7 @@ export const ArticleListClient = ({
             }
             return { articles: initArticles, page: initPage };
         }
-        
+
         // 尝试从 sessionStorage 恢复状态
         try {
             const cached = sessionStorage.getItem(storageKey);
@@ -86,16 +86,16 @@ export const ArticleListClient = ({
         } catch (e) {
             console.error('Failed to restore cache:', e);
         }
-        
+
         return { articles: initArticles, page: initPage };
     };
-    
+
     const initialState = getInitialState();
     const isPageRefresh = useRef(
-        typeof window !== 'undefined' && 
+        typeof window !== 'undefined' &&
         (performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming)?.type === 'reload'
     );
-    
+
     const [page, setPage] = useState(initialState.page);
     const [articles, setArticles] = useState<ArticleList>(initialState.articles);
     const [loading, setLoading] = useState(false);
@@ -105,11 +105,11 @@ export const ArticleListClient = ({
 
     // Intersection Observer ref
     const observerRef = useRef<HTMLDivElement>(null);
-    
+
     // 保存状态到 sessionStorage
     useEffect(() => {
         if (typeof window === 'undefined') return;
-        
+
         try {
             sessionStorage.setItem(storageKey, JSON.stringify({
                 articles,
@@ -120,11 +120,11 @@ export const ArticleListClient = ({
             console.error('Failed to cache state:', e);
         }
     }, [articles, page, storageKey]);
-    
+
     // 保存滚动位置
     useEffect(() => {
         if (typeof window === 'undefined') return;
-        
+
         const handleScroll = () => {
             try {
                 sessionStorage.setItem(scrollKey, window.scrollY.toString());
@@ -132,18 +132,18 @@ export const ArticleListClient = ({
                 console.error('Failed to save scroll position:', e);
             }
         };
-        
+
         window.addEventListener('scroll', handleScroll, { passive: true });
-        
+
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
     }, [scrollKey]);
-    
+
     // 恢复滚动位置
     useEffect(() => {
         if (typeof window === 'undefined' || scrollRestored || isPageRefresh.current) return;
-        
+
         try {
             const savedScroll = sessionStorage.getItem(scrollKey);
             if (savedScroll) {
@@ -169,7 +169,7 @@ export const ArticleListClient = ({
         setError(null);
 
         try {
-            
+
             const response = await fetchArticles({
                 query: {
                     page: page,

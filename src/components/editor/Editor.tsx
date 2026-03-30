@@ -13,8 +13,7 @@ import { forwardRef, useEffect, useRef, useState } from "react";
 import { prepareRichTextHtmlForEditor, sanitizeRichTextHtml } from "@/lib";
 import { CustomEmojiBlot } from "./blots/CustomEmojiBlot";
 import { CustomImageBlot } from "./blots/CustomImageBlot";
-import { CustomImageSpec } from "./CustomImageSpec";
-import { CustomLinkSpec } from "./CustomLinkSpec";
+import { CustomImageSpec, CustomLinkSpec } from "./specs";
 import type { EditorProps } from "./index";
 import {
   customIcons,

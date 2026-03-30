@@ -1,5 +1,5 @@
 import { Action, BlotSpec } from "@enzedonline/quill-blot-formatter2";
-import { EditLinkAction, RemoveLinkAction } from "./actions";
+import { EditLinkAction, RemoveLinkAction } from "../actions";
 
 export class CustomLinkSpec extends BlotSpec {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { tagControllerFindAll } from "@/api";
 import { usePathname } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
-import { TagCard } from "./TopicCard";
+import { TopicCard } from "./TopicCard";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { InfiniteScrollStatus } from "@/components/shared";
 
@@ -195,7 +195,7 @@ export const TagListClient = ({
         <div className="space-y-4 p-2 pt-0">
             {/* Tag list */}
             {tags.map((tag) => (
-                <TagCard key={tag.id} tag={tag} />
+                <TopicCard key={tag.id} tag={tag} />
             ))}
 
             <InfiniteScrollStatus

@@ -17,7 +17,7 @@ import {
   DialogOverlay,
   DialogTitle,
 } from "@/components/ui/Dialog";
-import { Editor } from "@/components/ui/Editor";
+import { Editor } from "@/components/editor";
 import { Form, FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";

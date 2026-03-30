@@ -1,6 +1,5 @@
 import { Action, ImageSpec, AlignAction } from "@enzedonline/quill-blot-formatter2";
-import type BlotFormatter from "@enzedonline/quill-blot-formatter2";
-import { ReplaceAction, ViewAction, CopyAction, DeleteAction } from "./actions";
+import { ReplaceAction, ViewAction, CopyAction, DeleteAction } from "../actions";
 
 export class CustomImageSpec extends ImageSpec {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

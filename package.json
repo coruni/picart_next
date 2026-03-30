@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^0.34.5",
+    "@types/node": "^22.9.0",
     "@types/quill": "^2.0.14",
     "@types/react": "^19",
     "@types/react-avatar-editor": "^13.0.4",

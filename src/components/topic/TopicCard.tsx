@@ -5,10 +5,10 @@ import { TagList } from "@/types"
 import { ChevronRight, Hash } from "lucide-react"
 import { useTranslations } from "next-intl"
 
-type TagCardProps = {
+type TopicCardProps = {
     tag: TagList[number]
 }
-export const TagCard = ({ tag }: TagCardProps) => {
+export const TopicCard = ({ tag }: TopicCardProps) => {
     const t = useTranslations("tagCard")
 
     return (
