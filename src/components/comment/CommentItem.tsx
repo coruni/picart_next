@@ -84,58 +84,69 @@ export const CommentItem = memo(function CommentItem({
     await onSubmitted?.();
   }, [onSubmitted]);
 
-  const handleToggleLike = useCallback(async (commentId: number | undefined) => {
-    if (!commentId) return;
+  const handleToggleLike = useCallback(
+    async (commentId: number | undefined) => {
+      if (!commentId) return;
 
-    if (!isAuthenticated) {
-      openLoginDialog();
-      return;
-    }
+      if (!isAuthenticated) {
+        openLoginDialog();
+        return;
+      }
 
-    const targetIsMain = commentState.id === commentId;
-    const targetReply = commentState.replies.find((reply) => reply.id === commentId);
-    const previousLiked = targetIsMain
-      ? Boolean(commentState.isLiked)
-      : Boolean(targetReply?.isLiked);
-    const previousLikes = targetIsMain
-      ? commentState.likes || 0
-      : targetReply?.likes || 0;
-    const nextLiked = !previousLiked;
-    const nextLikes = Math.max(0, previousLikes + (nextLiked ? 1 : -1));
+      const targetIsMain = commentState.id === commentId;
+      const targetReply = commentState.replies.find(
+        (reply) => reply.id === commentId,
+      );
+      const previousLiked = targetIsMain
+        ? Boolean(commentState.isLiked)
+        : Boolean(targetReply?.isLiked);
+      const previousLikes = targetIsMain
+        ? commentState.likes || 0
+        : targetReply?.likes || 0;
+      const nextLiked = !previousLiked;
+      const nextLikes = Math.max(0, previousLikes + (nextLiked ? 1 : -1));
 
-    setCommentState((current) =>
-      current.id === commentId
-        ? { ...current, isLiked: nextLiked, likes: nextLikes }
-        : {
-            ...current,
-            replies: current.replies.map((reply) =>
-              reply.id === commentId
-                ? { ...reply, isLiked: nextLiked, likes: nextLikes }
-                : reply,
-            ),
-          },
-    );
-
-    try {
-      await commentControllerLike({
-        path: { id: commentId },
-      });
-    } catch (error) {
       setCommentState((current) =>
         current.id === commentId
-          ? { ...current, isLiked: previousLiked, likes: previousLikes }
+          ? { ...current, isLiked: nextLiked, likes: nextLikes }
           : {
               ...current,
               replies: current.replies.map((reply) =>
                 reply.id === commentId
-                  ? { ...reply, isLiked: previousLiked, likes: previousLikes }
+                  ? { ...reply, isLiked: nextLiked, likes: nextLikes }
                   : reply,
               ),
             },
       );
-      console.error("Failed to like comment:", error);
-    }
-  }, [commentState.id, commentState.isLiked, commentState.likes, commentState.replies, isAuthenticated]);
+
+      try {
+        await commentControllerLike({
+          path: { id: String(commentId) },
+        });
+      } catch (error) {
+        setCommentState((current) =>
+          current.id === commentId
+            ? { ...current, isLiked: previousLiked, likes: previousLikes }
+            : {
+                ...current,
+                replies: current.replies.map((reply) =>
+                  reply.id === commentId
+                    ? { ...reply, isLiked: previousLiked, likes: previousLikes }
+                    : reply,
+                ),
+              },
+        );
+        console.error("Failed to like comment:", error);
+      }
+    },
+    [
+      commentState.id,
+      commentState.isLiked,
+      commentState.likes,
+      commentState.replies,
+      isAuthenticated,
+    ],
+  );
 
   return (
     <article>

@@ -134,7 +134,7 @@ export function ArticleMenu({
 
     setReportSubmitting(true);
     try {
-      await reportControllerCreate({
+      const result = await reportControllerCreate({
         body: {
           type: "ARTICLE",
           category: selectedReason.category,
@@ -143,11 +143,9 @@ export function ArticleMenu({
           reportedUserId: authorId ? Number(authorId) : undefined,
         },
       });
-      setShowReportDialog(false);
-    } catch (error) {
-      console.error("Failed to report article:", error);
+    } catch {
     } finally {
-      setReportSubmitting(false);
+      setShowReportDialog(false);
     }
   };
 

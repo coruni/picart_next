@@ -56,7 +56,7 @@ export const TopicInfo = ({
     <div className="top-header sticky z-10 border-t border-t-border bg-card px-3 md:px-10">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-2 md:gap-4">
         <Avatar
-          url={tag?.avatar || "/placeholder/avatar_placeholder.png"}
+          url={tag?.avatar || "/placeholder/no_tag.webp"}
           className={cn(
             "rounded-xl! transition-[width,height,top] duration-250 ease-out",
             !scrolled
@@ -66,7 +66,23 @@ export const TopicInfo = ({
         />
 
         <div className="relative h-full min-w-0 flex-1">
-          <div className="flex h-full flex-1 items-center overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div
+            className="flex h-full flex-1 items-center overflow-x-auto whitespace-nowrap transition-[opacity,transform] duration-250 ease-out [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          >
+            <div
+              data-auto-translate-content
+              className={cn(
+                "mr-3 flex min-w-0 shrink-0 items-center transition-[opacity,transform] duration-250 ease-out",
+                scrolled
+                  ? "translate-y-0 opacity-100"
+                  : "pointer-events-none -translate-y-2 opacity-0",
+              )}
+            >
+              <span className="truncate text-sm font-semibold text-foreground md:text-base">
+                {tag.name}
+              </span>
+            </div>
+
             <div className="flex cursor-pointer items-center hover:text-primary">
               <span className="text-lg md:text-[22px]">
                 {tag?.articleCount || 0}
@@ -98,9 +114,7 @@ export const TopicInfo = ({
               data-auto-translate-content
               className="mb-0.5 flex items-center space-x-2 md:mb-1"
             >
-              <span className="text-base text-white md:text-xl">
-                {tag.name}
-              </span>
+              <span className="text-base text-white md:text-xl">{tag.name}</span>
             </div>
             <div
               data-auto-translate-content

@@ -12,8 +12,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
-import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
+import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
 import { cn, formatRelativeTime, prepareCommentHtmlForDisplay } from "@/lib";
 import { CommentList } from "@/types";
@@ -105,14 +105,17 @@ export function CommentReplyList({
     setModalOpen(true);
   }, []);
 
-  const handleSortChange = useCallback((nextSortKey: CommentSortKey) => {
-    if (nextSortKey === sortKey) {
-      return;
-    }
+  const handleSortChange = useCallback(
+    (nextSortKey: CommentSortKey) => {
+      if (nextSortKey === sortKey) {
+        return;
+      }
 
-    setIsSortChanging(true);
-    setSortKey(nextSortKey);
-  }, [sortKey]);
+      setIsSortChanging(true);
+      setSortKey(nextSortKey);
+    },
+    [sortKey],
+  );
 
   const sortItems: MenuItem[] = useMemo(
     () => [
@@ -191,9 +194,7 @@ export function CommentReplyList({
       });
 
       return {
-        replies:
-          (response.data?.data?.data as NonNullable<CommentList[number]["replies"]>) ||
-          [],
+        replies: response.data?.data?.data || [],
         total: response.data?.data?.meta?.total || 0,
       };
     },
@@ -206,7 +207,11 @@ export function CommentReplyList({
 
     try {
       const result = await fetchReplies(1);
-      setModalReplies(dedupeRepliesById(result.replies));
+      setModalReplies(
+        dedupeRepliesById(
+          result.replies as unknown as CommentList[number]["replies"],
+        ),
+      );
       setTotal(result.total);
       setPage(2);
       setHasMore(result.replies.length < result.total);
@@ -237,7 +242,10 @@ export function CommentReplyList({
       } else {
         let mergedReplyCount = 0;
         setModalReplies((prev) => {
-          const mergedReplies = dedupeRepliesById([...prev, ...newReplies]);
+          const mergedReplies = dedupeRepliesById([
+            ...prev,
+            ...(newReplies as unknown as CommentList[number]["replies"]),
+          ]);
           mergedReplyCount = mergedReplies.length;
           return mergedReplies;
         });
@@ -281,10 +289,7 @@ export function CommentReplyList({
           previousLiked = Boolean(reply.isLiked);
           previousLikes = reply.likes || 0;
           const nextLiked = !previousLiked;
-          const nextLikes = Math.max(
-            0,
-            previousLikes + (nextLiked ? 1 : -1),
-          );
+          const nextLikes = Math.max(0, previousLikes + (nextLiked ? 1 : -1));
 
           return { ...reply, isLiked: nextLiked, likes: nextLikes };
         }),
