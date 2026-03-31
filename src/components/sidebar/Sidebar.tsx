@@ -1,3 +1,4 @@
+import { cn } from "@/lib";
 import { ArticleDetail } from "@/types";
 import { Banner } from "../ui/Banner";
 import { ArticleCreateWidget } from "./ArticleCreateWidget";
@@ -53,20 +54,19 @@ export async function Sidebar({
 
   return (
     <>
-    <div className="space-y-4">
-      {showLogin && <LoginWidget />}
+      <div className="space-y-4">
+        {showLogin && <LoginWidget />}
 
-      {showAuthorInfo && author && <AuthorInfoWidget author={author} />}
+        {showAuthorInfo && author && <AuthorInfoWidget author={author} />}
 
-      {sidebarItems}
-    </div>
-    {/* Sticky element */}
-    {showSiteContact && (
-        <div className="sticky self-start top-header pt-4">
+        {sidebarItems}
+      </div>
+      {/* Sticky element */}
+      {showSiteContact && (
+        <div className={cn("sticky self-start pt-4", "top-header-tabs")}>
           <SiteContactWidget />
         </div>
       )}
     </>
-    
   );
 }

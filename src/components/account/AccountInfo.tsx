@@ -172,7 +172,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
 
                   <div
                     className={cn(
-                      "absolute top-full right-0 z-20 mt-2 w-40 rounded-xl bg-card p-2 drop-shadow-xl transition-all",
+                      "absolute top-full right-0 z-20 mt-2 w-40 rounded-xl bg-card p-2 drop-shadow-xl transition-all min-w-max",
                       isMobile
                         ? showEditMenu
                           ? "visible opacity-100"
@@ -188,7 +188,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                       <span>{t("editProfile")}</span>
                     </GuardedLink>
                     <div
-                      className="flex cursor-pointer items-center gap-2 rounded-xl p-2 text-sm transition-colors hover:bg-primary/15 hover:text-primary"
+                      className="flex cursor-pointer truncate items-center gap-2 rounded-xl p-2 text-sm transition-colors hover:bg-primary/15 hover:text-primary"
                       onClick={() => {
                         setShowEditMenu(false);
                         setShowBackgroundEditor(true);
