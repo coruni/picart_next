@@ -86,14 +86,14 @@ export function CommentCard({
             <span className="leading-5 font-semibold hover:text-primary">
               {comment?.author?.nickname || comment?.author?.username || ""}
             </span>
-            <span className="mt-1 text-secondary text-sm leading-3.5">
+            <span className="mt-1 text-secondary text-xs leading-3.5">
               {formatRelativeTime(comment?.createdAt || "", t)}
             </span>
           </div>
         </div>
       </div>
       {/* 内容 */}
-      <div className="ml-16 pl-3 pr-4 mt-2 cursor-pointer">
+      <div className="ml-16  pr-4 mt-2 cursor-pointer">
         <div
           className="text-[#000000d9]"
           dangerouslySetInnerHTML={{ __html: safeCommentHtml }}
@@ -102,7 +102,7 @@ export function CommentCard({
 
       {/* 回复了谁 */}
       {comment.parent && (
-        <div className="ml-19 mt-2 pl-1.5 border-l-2 pr-4 border-muted max-h-10">
+        <div className="ml-16 mt-2 pl-1.5 border-l-2 pr-4 border-muted max-h-10">
           <p className="text-secondary text-sm line-clamp-2 text-ellipsis">
             @
             {comment?.parent?.author?.nickname ||
@@ -113,7 +113,7 @@ export function CommentCard({
         </div>
       )}
       {/* 文章信息 */}
-      <div className="ml-16 pl-3 pr-4 mt-3 cursor-pointer">
+      <div className="ml-16 pr-4 mt-3 cursor-pointer">
         <Link
           href={`/article/${comment?.article?.id}`}
           className="flex items-center h-12.5 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-600"
@@ -140,7 +140,7 @@ export function CommentCard({
         </Link>
       </div>
       {/* 底部信息 */}
-      <div className="ml-19 pr-4 mt-4">
+      <div className="ml-16 pr-4 mt-4">
         <div className="flex items-center text-secondary ">
           <span className="text-sm flex-1">
             {comment?.article?.category?.name}
