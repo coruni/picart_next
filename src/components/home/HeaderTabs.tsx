@@ -22,7 +22,11 @@ type HeaderTabsProps = {
 
 function isTabActive(currentPath: string, tabHref: string): boolean {
   if (tabHref === "/") {
-    return currentPath === "/";
+    return ["/", "/follow", "/activity"].includes(currentPath);
+  }
+
+  if (tabHref.startsWith("/channel")) {
+    return currentPath.startsWith("/channel");
   }
 
   return currentPath.startsWith(tabHref);

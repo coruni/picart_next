@@ -208,7 +208,7 @@ export function UserDropdown() {
 
               <div className="p-1">
                 <GuardedLink
-                  href="/profile/privacy"
+                  href="/setting/privacy"
                   className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <div className="flex items-center gap-3">
@@ -225,7 +225,7 @@ export function UserDropdown() {
 
               <div className="p-1">
                 <GuardedLink
-                  href="/profile/blocked-users"
+                  href="/setting/blocked-users"
                   className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <div className="flex items-center gap-3">
