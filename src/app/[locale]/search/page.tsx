@@ -1,5 +1,6 @@
-import { SearchArticleListClient } from "@/components/search/SearchArticleListClient";
+import { SearchArticleListClient } from "@/components/search/SearchArticleList.client";
 import { serverApi } from "@/lib/server-api";
+import { getTranslations } from "next-intl/server";
 
 type SearchPageProps = {
   params: Promise<{
@@ -12,6 +13,7 @@ type SearchPageProps = {
 };
 
 export default async function SearchPage(props: SearchPageProps) {
+  const t = await getTranslations("searchPage");
   const { q = "", category } = await props.searchParams;
   const keyword = q.trim();
 
@@ -33,7 +35,7 @@ export default async function SearchPage(props: SearchPageProps) {
   return (
     <div className="rounded-xl bg-card">
       <div className="p-4 font-semibold">
-        <span>相关帖子</span>
+        <span>{t("relatedArticles")}</span>
       </div>
       <div className="px-6 pb-6">
         <SearchArticleListClient

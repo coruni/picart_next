@@ -34,7 +34,8 @@ export function Header({ categories }: HeaderProps) {
   const shouldUseTransparentHeader = isTransparentBgPage && !scrolled;
 
   // 搜索页不显示搜索框，避免重复
-  const isSearchPage = pathname === "/search";
+  const isSearchPage =
+    pathname === "/search" || pathname.startsWith("/search/");
 
   const actionButtonClassName = cn(
     "flex items-center justify-center rounded-full p-2 transition-colors",

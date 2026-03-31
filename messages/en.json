@@ -156,6 +156,18 @@
     "allLoaded": "All tags loaded",
     "noTags": "No tags"
   },
+  "userList": {
+    "loading": "Loading...",
+    "loadMore": "Scroll to load more",
+    "loadFailed": "Failed to load more users, please try again",
+    "retry": "Retry",
+    "allLoaded": "All users loaded",
+    "noUsers": "No users",
+    "posts": "posts",
+    "followers": "followers",
+    "following": "following",
+    "noBio": "This user has not added a bio yet"
+  },
   "tagCard": {
     "posts": "posts",
     "members": "members"
@@ -409,6 +421,11 @@
     "article": "Posts",
     "topic": "Topics",
     "user": "Users"
+  },
+  "searchPage": {
+    "relatedArticles": "Related Posts",
+    "relatedTopics": "Related Topics",
+    "relatedUsers": "Related Users"
   },
   "messageDropdown": {
     "cleanMessages": "Mark all as read",
