@@ -1,5 +1,6 @@
-import { serverApi } from "@/lib/server-api";
 import { TopicArticleListClient } from "@/components/topic/TopicArticleList.client";
+import { serverApi } from "@/lib/server-api";
+
 type TopicDetailNewPageProps = {
   params: Promise<{
     id: string;
@@ -14,15 +15,17 @@ export default async function TopicDetailNewPage(
   props: TopicDetailNewPageProps,
 ) {
   const { id } = await props.params;
-  // 请求首次数据
+  const sortType = "latest";
+
   const { data } = await serverApi.articleControllerFindAll({
     query: {
       page: 1,
       limit: 10,
       tagId: Number(id),
+      type: sortType,
     },
-    
   });
+
   return (
     <TopicArticleListClient
       initArticles={data?.data.data || []}
@@ -32,7 +35,7 @@ export default async function TopicDetailNewPage(
       fetchParams={{
         query: {
           tagId: id,
-          type: "latest",
+          type: sortType,
         },
       }}
     />
