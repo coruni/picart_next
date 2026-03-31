@@ -2328,6 +2328,7 @@ export type ConfigControllerGetPublicConfigsResponses = {
             telegram_mtproto_proxy_url: string;
             telegram_download_enabled: boolean;
             telegram_max_requests_per_minute: number;
+            site_contact: string;
         };
     };
 };
@@ -2527,6 +2528,10 @@ export type UserControllerFindAllData = {
          */
         limit?: number;
         username?: string;
+        /**
+         * 关键词 username or nickname
+         */
+        keyword?: string;
     };
     url: '/user';
 };
@@ -7015,7 +7020,7 @@ export type CommentControllerFindOneResponses = {
                     createdAt: string;
                     updatedAt: string;
                 };
-                parent?: {
+                parent: {
                     id?: number;
                     content?: string;
                     images?: Array<string>;
@@ -7122,13 +7127,13 @@ export type CommentControllerFindOneResponses = {
                 };
                 rootId: number;
                 replies: Array<{
-                    id?: number;
-                    content?: string;
-                    images?: Array<string>;
-                    likes?: number;
-                    replyCount?: number;
-                    status?: string;
-                    author?: {
+                    id: number;
+                    content: string;
+                    images: Array<string>;
+                    likes: number;
+                    replyCount: number;
+                    status: string;
+                    author: {
                         id: number;
                         username: string;
                         nickname: string;
@@ -7179,7 +7184,7 @@ export type CommentControllerFindOneResponses = {
                         };
                         isMember: boolean;
                     };
-                    article?: {
+                    article: {
                         id: number;
                         title: string;
                         requireLogin: boolean;
@@ -7220,7 +7225,7 @@ export type CommentControllerFindOneResponses = {
                         createdAt: string;
                         updatedAt: string;
                     };
-                    parent?: {
+                    parent: {
                         id: number;
                         content: string;
                         images: string;
@@ -7282,11 +7287,11 @@ export type CommentControllerFindOneResponses = {
                         createdAt: string;
                         updatedAt: string;
                     };
-                    rootId?: number;
-                    createdAt?: string;
-                    updatedAt?: string;
-                    parentId?: number;
-                    isLiked?: boolean;
+                    rootId: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    parentId: number;
+                    isLiked: boolean;
                 }>;
                 createdAt: string;
                 updatedAt: string;

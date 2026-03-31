@@ -103,7 +103,7 @@ export function SearchUserListClient({
 
       const response = await userControllerFindAll({
         query: {
-          username: normalizedKeyword,
+          keyword: normalizedKeyword,
           page: pageToLoad,
           limit: pageSize,
         },

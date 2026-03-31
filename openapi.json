@@ -2164,6 +2164,9 @@
                         },
                         "telegram_max_requests_per_minute": {
                           "type": "integer"
+                        },
+                        "site_contact": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -2232,7 +2235,8 @@
                         "telegram_mtproto_proxy_enabled",
                         "telegram_mtproto_proxy_url",
                         "telegram_download_enabled",
-                        "telegram_max_requests_per_minute"
+                        "telegram_max_requests_per_minute",
+                        "site_contact"
                       ]
                     }
                   },
@@ -2717,6 +2721,15 @@
             "name": "username",
             "in": "query",
             "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "关键词 username or nickname",
             "required": false,
             "schema": {
               "type": "string"

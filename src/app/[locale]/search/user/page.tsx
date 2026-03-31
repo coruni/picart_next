@@ -19,7 +19,7 @@ export default async function SearchUserPage(props: SearchUserPageProps) {
   const response = keyword
     ? await serverApi.userControllerFindAll({
         query: {
-          username: keyword,
+          keyword: keyword,
           page: 1,
           limit: 10,
         },

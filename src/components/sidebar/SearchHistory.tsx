@@ -57,7 +57,7 @@ export function SearchHistory() {
       </div>
 
       {searchHistory.length > 0 ? (
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {searchHistory.map((item) => (
             <button
               key={item}
