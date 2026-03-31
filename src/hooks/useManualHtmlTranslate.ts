@@ -2,7 +2,7 @@
 
 import { useTranslateStore } from "@/stores";
 import { useLocale } from "next-intl";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const TRANSLATE_LOCAL_LANGUAGE = "chinese_simplified";
 const TRANSLATE_LANGUAGE_MAP: Record<string, string> = {
@@ -108,6 +108,7 @@ export function useManualHtmlTranslate({
   >("follow-auto");
   const [translatedHtml, setTranslatedHtml] = useState<string | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
+  const previousAutoTranslateRef = useRef(autoTranslateContent);
 
   const toggleTranslate = useCallback(async () => {
     const targetLanguage = TRANSLATE_LANGUAGE_MAP[locale];
@@ -155,17 +156,32 @@ export function useManualHtmlTranslate({
     setIsTranslating(false);
   }, [resetKey]);
 
+  useEffect(() => {
+    const previousAutoTranslate = previousAutoTranslateRef.current;
+    previousAutoTranslateRef.current = autoTranslateContent;
+
+    if (
+      !previousAutoTranslate &&
+      autoTranslateContent &&
+      manualMode === "translated"
+    ) {
+      setManualMode("follow-auto");
+    }
+  }, [autoTranslateContent, manualMode]);
+
   const isFollowingAuto = manualMode === "follow-auto";
   const shouldAutoTranslate = autoTranslateContent && isFollowingAuto;
   const isTranslated =
     manualMode === "translated" ||
     (autoTranslateContent && manualMode === "follow-auto");
+  const renderMode = shouldAutoTranslate ? "auto" : "static";
 
   return {
-    displayHtml: manualMode === "translated" && translatedHtml ? translatedHtml : html,
+    displayHtml:
+      manualMode === "translated" && translatedHtml ? translatedHtml : html,
     isTranslated,
     isTranslating,
-    renderKey: `${String(resetKey ?? html)}-${manualMode}`,
+    renderKey: `${String(resetKey ?? html)}-${manualMode}-${renderMode}`,
     shouldAutoTranslate,
     toggleTranslate,
   };
