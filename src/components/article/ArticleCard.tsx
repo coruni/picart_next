@@ -75,7 +75,6 @@ export const ArticleCard = ({
             src={article.cover}
             alt={article?.title || "cover"}
             fill
-            wrapperClassName="static!"
             quality={75}
             loading="eager"
             fetchPriority="high"
@@ -119,7 +118,6 @@ export const ArticleCard = ({
               src={previewImages[0]}
               alt={article?.title || "image"}
               fill
-              wrapperClassName="static!"
               quality={75}
               loading="eager"
               fetchPriority="high"
@@ -158,7 +156,6 @@ export const ArticleCard = ({
                 src={img}
                 alt={`${article?.title || "image"} ${idx + 1}`}
                 fill
-                wrapperClassName="static!"
                 quality={75}
                 sizes="31vw"
                 className="object-cover"
@@ -198,7 +195,6 @@ export const ArticleCard = ({
               src={img}
               alt={`${article?.title || "image"} ${idx + 1}`}
               fill
-              wrapperClassName="static!"
               quality={75}
               sizes="20vw"
               className="object-cover"

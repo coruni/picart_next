@@ -8,10 +8,11 @@ const DEFAULT_PLACEHOLDER = "/placeholder/image_placeholder.webp";
 const DEFAULT_ERROR = "/placeholder/image_error.webp";
 const UNOPTIMIZED_HOSTS = new Set(["cf-s3.coslark.org"]);
 
-type ImageWithFallbackProps = ImageProps & {
+type ImageWithFallbackProps = Omit<ImageProps, "onError"> & {
   wrapperClassName?: string;
   placeholderSrc?: string;
   errorSrc?: string;
+  onError?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
 };
 
 export function ImageWithFallback({
@@ -83,9 +84,16 @@ export function ImageWithFallback({
       }
     })();
 
+  // fill 模式：wrapper 使用 absolute 定位覆盖父元素
   if (fill) {
     return (
-      <span ref={wrapperRef} className={cn(" inset-0 block relative h-full w-full", wrapperClassName)}>
+      <span
+        ref={wrapperRef}
+        className={cn(
+          "absolute inset-0 block overflow-hidden",
+          wrapperClassName,
+        )}
+      >
         <Image
           {...rest}
           src={src}
@@ -107,6 +115,44 @@ export function ImageWithFallback({
     );
   }
 
+  // 无尺寸判断
+  const widthNum = typeof width === "number" ? width : Number(width) || 0;
+  const heightNum = typeof height === "number" ? height : Number(height) || 0;
+  const hasDimensions = widthNum > 0 && heightNum > 0;
+
+  // 无尺寸时：宽度填充容器，高度由图片比例决定
+  if (!hasDimensions) {
+    return (
+      <span
+        ref={wrapperRef}
+        className={cn(
+          "relative block w-full overflow-hidden",
+          wrapperClassName,
+        )}
+      >
+        <Image
+          {...rest}
+          src={src}
+          alt={alt}
+          width={1}
+          height={1}
+          unoptimized={true}
+          className={cn("w-full h-auto", imageClassName)}
+          onLoad={handleLoad}
+          onError={handleError}
+        />
+        {status !== "loaded" && (
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-0 block select-none bg-cover bg-center"
+            style={{ backgroundImage: `url(${fallbackSrc})` }}
+          />
+        )}
+      </span>
+    );
+  }
+
+  // 有明确尺寸的情况
   return (
     <span
       ref={wrapperRef}
@@ -119,15 +165,11 @@ export function ImageWithFallback({
         {...rest}
         src={src}
         alt={alt}
-        width={width ?? 0}
-        height={height ?? 0}
+        width={width}
+        height={height}
         unoptimized={shouldDisableOptimization}
-        className={cn("h-auto w-auto", imageClassName)}
-        style={{
-          ...style,
-          width: "auto",
-          height: "auto",
-        }}
+        className={cn("h-auto max-w-full", imageClassName)}
+        style={style}
         onLoad={handleLoad}
         onError={handleError}
       />

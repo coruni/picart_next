@@ -173,6 +173,11 @@ button {
   @apply absolute! left-0! bottom-0!
 }
 
+/* 隐藏 viewerjs 默认 toolbar，只显示自定义 toolbar */
+.viewer-toolbar:not(.custom-viewer-toolbar) {
+  display: none !important;
+}
+
 .viewer-toolbar ul{
   @apply mb-5! bg-[#000000d9] rounded-xl px-3! py-2!  gap-2 inline-flex!
 }
