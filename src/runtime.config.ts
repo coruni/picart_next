@@ -3,10 +3,12 @@ import {
   buildAuthHeaders,
   getRequestAuthState,
 } from "./lib/request-auth";
+import { resilientFetch } from "./lib/resilient-fetch";
 
 export const createClientConfig: CreateClientConfig = (config) => ({
   ...config,
   baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api",
+  fetch: resilientFetch,
 });
 
 let interceptorsInitialized = false;

@@ -8,50 +8,18 @@ import { DecorationControllerFindAllResponse } from "@/types";
 import { decorationControllerFindAll } from "@/api";
 import { CheckCircle2Icon } from "lucide-react";
 import Image from "next/image";
-import { cn } from "@/lib";
+import { cn, formatExpiryTime } from "@/lib";
 import { Button } from "../ui/Button";
 import { Avatar } from "../ui/Avatar";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { InfiniteScrollStatus } from "@/components/shared";
-import { useTranslations } from "next-intl";
-
-function formatExpireTime(
-  timestamp: number | string | undefined,
-  t: (key: string, params?: Record<string, string | number>) => string,
-): string {
-  if (!timestamp) return "";
-
-  const date = new Date(
-    typeof timestamp === "string" ? timestamp : timestamp * 1000,
-  );
-  const now = new Date();
-  const diffDays = Math.floor(
-    (date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
-  );
-
-  if (diffDays < 0) {
-    return t("expired");
-  }
-
-  if (diffDays === 0) {
-    return t("expireToday");
-  }
-
-  if (diffDays <= 30) {
-    return t("expireInDays", { days: diffDays });
-  }
-
-  return date.toLocaleDateString("zh-CN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-}
+import { useLocale, useTranslations } from "next-intl";
 
 type AvatarFrame = DecorationControllerFindAllResponse["data"]["data"][0];
 
 export function UserAvatarFarmeDialog() {
   const t = useTranslations("avatarFrameDialog");
+  const locale = useLocale();
   const avatarFrameDialogOpen = useModalStore((state) =>
     state.isOpen(MODAL_IDS.AVATAR_FRAME),
   );
@@ -206,7 +174,7 @@ export function UserAvatarFarmeDialog() {
                       {selectedFrame.isOwned
                         ? selectedFrame.userIsPermanent
                           ? t("permanent")
-                          : formatExpireTime(selectedFrame.userExpiresAt, t)
+                            : formatExpiryTime(selectedFrame.userExpiresAt, t, locale)
                         : selectedFrame.canDirectEquip
                           ? t("canDirectEquip")
                           : t("notOwned")}

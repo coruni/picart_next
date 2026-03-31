@@ -2,7 +2,7 @@
 
 import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
-import { cn, prepareCommentHtmlForDisplay } from "@/lib";
+import { cn, formatRelativeTime, prepareCommentHtmlForDisplay } from "@/lib";
 import { CommentList } from "@/types";
 import {
   Image as ImageIcon,
@@ -46,6 +46,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   showTranslateButton = false,
 }: CommentReplyItemProps) {
   const tComment = useTranslations("commentList");
+  const tTime = useTranslations("time");
   const replyTarget =
     reply.parent && reply.parent.id !== rootCommentId
       ? {
@@ -196,7 +197,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
 
       <div className="mt-2 flex items-center justify-between text-secondary text-sm">
         <span className="text-xs">
-          {new Date(reply?.createdAt).toLocaleDateString()}
+          {formatRelativeTime(reply?.createdAt, tTime)}
         </span>
         <div className="flex items-center space-x-4">
           <button

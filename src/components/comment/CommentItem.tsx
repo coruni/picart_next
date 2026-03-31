@@ -4,7 +4,7 @@ import { commentControllerLike } from "@/api";
 import { ImageViewer } from "@/components/article/ImageViewer";
 import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
-import { cn, prepareCommentHtmlForDisplay } from "@/lib";
+import { cn, formatRelativeTime, prepareCommentHtmlForDisplay } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
@@ -33,6 +33,7 @@ export const CommentItem = memo(function CommentItem({
   onSubmitted,
 }: CommentItemProps) {
   const tComment = useTranslations("commentList");
+  const tTime = useTranslations("time");
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const [commentState, setCommentState] = useState(data);
   const [viewerVisible, setViewerVisible] = useState(false);
@@ -156,7 +157,7 @@ export const CommentItem = memo(function CommentItem({
             </span>
           </Link>
           <span className="text-xs flex-1 text-muted-foreground">
-            {commentState.createdAt}
+            {formatRelativeTime(commentState.createdAt, tTime)}
           </span>
         </div>
         <div className="flex items-center space-x-2">
@@ -214,7 +215,7 @@ export const CommentItem = memo(function CommentItem({
       <div className="pl-19 pr-6">
         <div className="flex items-center justify-between text-secondary text-sm mt-2">
           <span className="text-xs">
-            {new Date(commentState.createdAt).toLocaleDateString()}
+            {formatRelativeTime(commentState.createdAt, tTime)}
           </span>
           <div className="flex items-center space-x-4">
             <button

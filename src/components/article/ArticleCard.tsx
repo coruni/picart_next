@@ -15,7 +15,7 @@ import {
   Hash,
   MessageCircleMore,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { ArticleMenu } from "./ArticleMenu";
 import { ImageViewer } from "./ImageViewer";
@@ -33,6 +33,7 @@ export const ArticleCard = ({
 }: ArticleCardProps) => {
   const currentUser = useUserStore((state) => state.user);
   const t = useTranslations("time");
+  const locale = useLocale();
   const [viewerVisible, setViewerVisible] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
   const isOwner =
@@ -237,7 +238,7 @@ export const ArticleCard = ({
             </Link>
             <div className="mt-1 leading-4">
               <span className="text-xs text-secondary ">
-                {formatRelativeTime(article.createdAt!, t)} {" - "}
+                {formatRelativeTime(article.createdAt!, t, locale)} {" - "}
                 {article?.category?.name}
               </span>
             </div>

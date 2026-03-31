@@ -1,14 +1,14 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { CheckCircle2Icon, ChevronRight, Clock } from "lucide-react";
 import { decorationControllerGetMyDecorations } from "@/api/sdk.gen";
 import type { DecorationControllerGetMyDecorationsResponse } from "@/api/types.gen";
 import { useModalStore } from "@/stores/useModalStore";
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { UserAvatarFarmeDialog } from "@/components/layout/UserAvatarFarmeDialog";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 
 type DecorationType = "AVATAR_FRAME" | "EMOJI" | "COMMENT_BUBBLE";
@@ -19,6 +19,7 @@ type Decoration =
 export default function AccountDecorationPage() {
   const t = useTranslations("decorationPage");
   const tc = useTranslations("common");
+  const locale = useLocale();
   const [activeType, setActiveType] = useState<DecorationType>("AVATAR_FRAME");
   const [decorations, setDecorations] = useState<Decoration[]>([]);
   const [loading, setLoading] = useState(false);
@@ -113,7 +114,7 @@ export default function AccountDecorationPage() {
                   <Clock size={12} />
                   <span>
                     {decoration.expiresAt
-                      ? decoration.expiresAt
+                      ? formatDate(decoration.expiresAt, locale)
                       : t("permanent")}
                   </span>
                 </div>
@@ -187,7 +188,7 @@ export default function AccountDecorationPage() {
                     <span>{t("permanent")}</span>
                   ) : decoration.expiresAt ? (
                     <span>
-                      {new Date(decoration.expiresAt).toLocaleDateString()} {t("expireAt")}
+                      {formatDate(decoration.expiresAt, locale)} {t("expireAt")}
                     </span>
                   ) : (
                     <span>{t("permanent")}</span>

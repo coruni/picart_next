@@ -6,7 +6,7 @@ import { GuardedLink } from "@/components/shared/GuardedLink";
 import { Button } from "@/components/ui/Button";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { useIsMobile } from "@/hooks";
-import { cn, formatRelativeTime } from "@/lib";
+import { cn, formatRelativeTime, formatShortDate } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { MessageList } from "@/types";
@@ -16,7 +16,7 @@ import {
   MessageCircle,
   Settings,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   useCallback,
   useEffect,
@@ -31,17 +31,6 @@ const MIN_MOBILE_SHEET_HEIGHT = 12;
 const MAX_MOBILE_SHEET_HEIGHT = 92;
 const DEFAULT_MOBILE_SHEET_HEIGHT = 50;
 
-function formatMessageDate(dateString?: string) {
-  if (!dateString) return "";
-
-  const date = new Date(dateString);
-  if (Number.isNaN(date.getTime())) return "";
-
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${month}/${day}`;
-}
-
 export function MessageDropdown({
   isTransparentBgPage,
   scrolled,
@@ -54,6 +43,7 @@ export function MessageDropdown({
   const tSidebar = useTranslations("sidebar");
   const tMsg = useTranslations("messageDropdown");
   const tTime = useTranslations("time");
+  const locale = useLocale();
   const isMobile = useIsMobile();
   const [messages, setMessages] = useState<MessageList>([]);
   const [selectedTab, setSelectedTab] = useState<MessageTab>("all");
@@ -270,8 +260,8 @@ export function MessageDropdown({
               <div className="min-w-0">
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <span className="text-xs font-medium tracking-[0.02em] text-[#a9b7cc]">
-                    {formatMessageDate(message.createdAt || "") ||
-                      formatRelativeTime(message.createdAt || "", tTime)}
+                    {formatShortDate(message.createdAt || "", locale) ||
+                      formatRelativeTime(message.createdAt || "", tTime, locale)}
                   </span>
                   <span className="text-xs text-muted-foreground">
                     {message.type && message.type in messageTypeLabels

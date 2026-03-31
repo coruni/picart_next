@@ -15,7 +15,7 @@ import {
   MessageCircle,
   ThumbsUp,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
 import { Avatar } from "../ui/Avatar";
@@ -38,6 +38,7 @@ export function CommentCard({
   className,
 }: CommentCardProps) {
   const t = useTranslations("time");
+  const locale = useLocale();
   const tComment = useTranslations("commentList");
 
   const isUserComment = "author" in comment;
@@ -87,7 +88,7 @@ export function CommentCard({
               {user?.nickname || user?.username || ""}
             </span>
             <span className="mt-1 text-xs leading-3.5 text-secondary">
-              {formatRelativeTime(comment?.createdAt || "", t)}
+              {formatRelativeTime(comment?.createdAt || "", t, locale)}
             </span>
           </div>
           <button

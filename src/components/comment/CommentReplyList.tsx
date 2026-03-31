@@ -15,7 +15,7 @@ import {
 import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { Link } from "@/i18n/routing";
-import { cn, prepareCommentHtmlForDisplay } from "@/lib";
+import { cn, formatRelativeTime, prepareCommentHtmlForDisplay } from "@/lib";
 import { CommentList } from "@/types";
 import {
   ChevronDown,
@@ -69,6 +69,7 @@ export function CommentReplyList({
   onOpenImageViewer,
 }: CommentReplyListProps) {
   const tComment = useTranslations("commentList");
+  const tTime = useTranslations("time");
   const observerRef = useRef<HTMLDivElement>(null);
   const scrollRootRef = useRef<HTMLDivElement>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -391,7 +392,7 @@ export function CommentReplyList({
                     </span>
                   </Link>
                   <span className="text-xs text-muted-foreground">
-                    {data.createdAt}
+                    {formatRelativeTime(data.createdAt, tTime)}
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -437,7 +438,7 @@ export function CommentReplyList({
               </div>
               <div className="mt-2 flex items-center justify-between text-sm text-secondary">
                 <span className="text-xs">
-                  {new Date(data.createdAt).toLocaleDateString()}
+                  {formatRelativeTime(data.createdAt, tTime)}
                 </span>
                 <div className="flex items-center space-x-4">
                   <button

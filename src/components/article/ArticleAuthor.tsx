@@ -8,7 +8,7 @@ import { Link } from "@/i18n/routing";
 import { cn, formatRelativeTime } from "@/lib/utils";
 import { useUserStore } from "@/stores";
 import type { ArticleDetail } from "@/types";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 type ArticleAuthorProps = {
   author: ArticleDetail["author"];
@@ -23,6 +23,7 @@ export function ArticleAuthor({
 }: ArticleAuthorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const t = useTranslations("time");
+  const locale = useLocale();
   const tFollow = useTranslations("followButton");
   const [stickyThreshold, setStickyThreshold] = useState<number | null>(null);
   const isSticky = useScrollThreshold(stickyThreshold ?? 0, {
@@ -125,7 +126,7 @@ export function ArticleAuthor({
             )}
           >
             <span className="text-xs text-secondary">
-              {formatRelativeTime(createdAt, t)}
+              {formatRelativeTime(createdAt, t, locale)}
             </span>
           </div>
         </div>
