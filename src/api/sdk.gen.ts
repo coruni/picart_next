@@ -942,7 +942,7 @@ export const tagControllerCreate = <ThrowOnError extends boolean = false>(option
 });
 
 /**
- * 关注标签
+ *  关注的标签
  */
 export const tagControllerFollowedList = <ThrowOnError extends boolean = false>(options?: Options<TagControllerFollowedListData, ThrowOnError>) => (options?.client ?? client).get<TagControllerFollowedListResponses, unknown, ThrowOnError>({ url: '/tag/followed/list', ...options });
 

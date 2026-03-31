@@ -5055,7 +5055,7 @@
             "name": "keyword",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -5221,7 +5221,7 @@
             "name": "keyword",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -24637,7 +24637,7 @@
     },
     "/tag/followed/list": {
       "get": {
-        "summary": "关注标签",
+        "summary": " 关注的标签",
         "deprecated": false,
         "description": "",
         "operationId": "tagController_followedList",
@@ -24665,6 +24665,15 @@
           },
           {
             "name": "name",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "userId",
             "in": "query",
             "description": "",
             "required": false,

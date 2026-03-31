@@ -2,6 +2,8 @@
 
 import { userControllerFollow, userControllerUnfollow } from "@/api";
 import { cn } from "@/lib";
+import { MODAL_IDS } from "@/lib/modal-helpers";
+import { useModalStore } from "@/stores";
 import { useUserStore } from "@/stores/useUserStore";
 import { ArticleDetail, ArticleList, UserList } from "@/types";
 import { Check } from "lucide-react";
@@ -37,7 +39,8 @@ export const FollowButtonWithStatus = ({
   const [isHiding, setIsHiding] = useState(false);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  const openModal = useModalStore((state) => state.openModal);
   useEffect(() => {
     return () => {
       if (hideTimerRef.current) {
@@ -63,6 +66,11 @@ export const FollowButtonWithStatus = ({
     event.preventDefault();
     event.stopPropagation();
     event.nativeEvent.stopImmediatePropagation();
+    if (!isAuthenticated) {
+      // 打开登录弹窗
+      openModal(MODAL_IDS.LOGIN);
+      return;
+    }
 
     if (isLoading || isAnimating) {
       return;

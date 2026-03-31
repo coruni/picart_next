@@ -64,7 +64,10 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                 </span>
                 <span className="mx-2 text-[#eceff4] md:mx-3">/</span>
               </div>
-              <div className="flex cursor-pointer items-center hover:text-primary">
+              <GuardedLink
+                href={`/account/${user.id}/followings`}
+                className="flex items-center hover:text-primary"
+              >
                 <span className="text-lg md:text-[22px]">
                   {user.followingCount || 0}
                 </span>
@@ -72,8 +75,11 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                   {t("following")}
                 </span>
                 <span className="mx-2 text-[#eceff4] md:mx-3">/</span>
-              </div>
-              <div className="flex cursor-pointer items-center hover:text-primary">
+              </GuardedLink>
+              <GuardedLink
+                href={`/account/${user.id}/followers`}
+                className="flex items-center hover:text-primary"
+              >
                 <span className="text-lg md:text-[22px]">
                   {user.followerCount || 0}
                 </span>
@@ -81,7 +87,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                   {t("followers")}
                 </span>
                 <span className="mx-2 text-[#eceff4] md:mx-3">/</span>
-              </div>
+              </GuardedLink>
               <div className="flex cursor-pointer items-center hover:text-primary">
                 <span className="text-lg md:text-[22px]">0</span>
                 <span className="ml-1 text-xs text-secondary md:text-sm">

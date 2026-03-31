@@ -3167,7 +3167,7 @@ export type UserControllerGetFollowersData = {
     path: {
         id: string;
     };
-    query: {
+    query?: {
         /**
          * 页码
          */
@@ -3176,7 +3176,7 @@ export type UserControllerGetFollowersData = {
          * 每页数量
          */
         limit?: number;
-        keyword: string;
+        keyword?: string;
     };
     url: '/user/{id}/followers';
 };
@@ -3210,7 +3210,7 @@ export type UserControllerGetFollowingsData = {
     path: {
         id: string;
     };
-    query: {
+    query?: {
         /**
          * 页码
          */
@@ -3219,7 +3219,7 @@ export type UserControllerGetFollowingsData = {
          * 每页数量
          */
         limit?: number;
-        keyword: string;
+        keyword?: string;
     };
     url: '/user/{id}/followings';
 };
@@ -8575,6 +8575,7 @@ export type TagControllerFollowedListData = {
          */
         limit?: number;
         name?: number;
+        userId?: number;
     };
     url: '/tag/followed/list';
 };

@@ -21,7 +21,7 @@ export function AccountTabs() {
       value: "favorite",
       href: `/account/${userId}/favorite`,
     },
-    { label: t("tag"), value: "tag", href: `/account/${userId}/tag` },
+    { label: t("tag"), value: "tag", href: `/account/${userId}/topic` },
   ];
 
   const isActive = (currentPath: string, tabHref: string) => {

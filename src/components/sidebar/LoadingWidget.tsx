@@ -1,10 +1,10 @@
 "use client";
 
+import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Button } from "../ui/Button";
-import { openLoginDialog } from "@/lib/modal-helpers";
-import { useTranslations } from "next-intl";
 
 export const LoginWidget = () => {
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
@@ -13,7 +13,7 @@ export const LoginWidget = () => {
   if (isAuthenticated) return null;
 
   return (
-    <section className="px-4 pt-4 pb-2.5 bg-card rounded-xl ">
+    <section className="px-4 pt-4 pb-2.5 bg-card rounded-xl relative">
       <Image
         src="/sidebar/login/login_widget_left.png"
         alt="login widget left decoration"

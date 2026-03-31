@@ -23,7 +23,7 @@ export function Header({ categories }: HeaderProps) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
   const allowedPages = ["/account/", "/topic/"];
-  const deniedPages = ["/edit", "/decoration"];
+  const deniedPages = ["/edit", "/decoration", "/followers", "/followings"];
   const isTransparentBgPage =
     allowedPages.some((path) => pathname.includes(path)) &&
     !deniedPages.some((path) => pathname.includes(path));

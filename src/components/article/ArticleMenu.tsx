@@ -229,20 +229,20 @@ export function ArticleMenu({
                   <span className="text-sm text-foreground">
                     {reason.label}
                   </span>
-                  <span
+                  <div
                     className={cn(
-                      "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 border-gray-400 dark:border-gray-600",
-                      "group-hover:scale-105 group-hover:border-primary",
+                      "relative flex size-4 shrink-0 items-center justify-center rounded-full border-2 box-border border-gray-400 transition-colors dark:border-gray-600",
+                      "group-hover:border-primary",
                       checked && "border-primary",
                     )}
                   >
                     <span
                       className={cn(
-                        "h-2 w-2 rounded-full bg-primary opacity-0 scale-75 transition-[opacity,transform] ",
-                        checked && "opacity-100 scale-100",
+                        "size-2 rounded-full bg-primary opacity-0 transition-opacity",
+                        checked && "opacity-100",
                       )}
                     />
-                  </span>
+                  </div>
                 </button>
               );
             })}
