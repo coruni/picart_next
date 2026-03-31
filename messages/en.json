@@ -352,7 +352,7 @@
       "uploadButton": "Cover Upload",
       "preview": "Cover Preview",
       "crop": "Crop Cover",
-      "cropHint": "Scroll to zoom · Drag to reposition"
+      "cropHint": "Scroll to zoom 路 Drag to reposition"
     },
     "form": {
       "title": "Title",
@@ -404,7 +404,7 @@
     "zoomOut": "Zoom out",
     "zoomIn": "Zoom in",
     "fitWidth": "Fit width",
-    "rotateLeft90": "Rotate left 90°"
+    "rotateLeft90": "Rotate left 90掳"
   },
   "imageGallery": {
     "clickToView": "Click to view",
@@ -605,4 +605,33 @@
     "zh": "Chinese",
     "en": "English"
   }
-}
+,
+  "setting": {
+    "contact": {
+      "notice": "Please carefully fill in and maintain your contact information. We will keep your information strictly confidential and use it only for account contact, notifications, and necessary service support.",
+      "pending": "User information is still loading, please try again",
+      "email": {
+        "title": "Change Email",
+        "description": "Please enter the email address you currently use. We will keep your information strictly confidential and only use it for account contact and necessary notifications.",
+        "label": "Email Address",
+        "placeholder": "Enter your new email address",
+        "submit": "Save Email",
+        "success": "Email updated",
+        "loadError": "Failed to load email information",
+        "required": "Please enter an email address",
+        "invalid": "Please enter a valid email address",
+        "updateError": "Failed to update email, please try again later"
+      },
+      "address": {
+        "title": "Change Address",
+        "description": "Please provide an accurate contact address. We will keep your information strictly confidential and only use it for account service contact and necessary support.",
+        "label": "Address",
+        "placeholder": "Enter your new address",
+        "submit": "Save Address",
+        "success": "Address updated",
+        "loadError": "Failed to load address information",
+        "required": "Please enter an address",
+        "updateError": "Failed to update address, please try again later"
+      }
+    }
+  }}

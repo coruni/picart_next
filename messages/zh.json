@@ -603,5 +603,34 @@
   "languageSwitcher": {
     "zh": "中文",
     "en": "English"
+  },
+  "setting": {
+    "contact": {
+      "notice": "请认真填写并维护您的联系信息。我们会对您的信息严格保密，仅用于账号联系、通知发送及必要的服务支持，不会用于其他用途。",
+      "pending": "用户信息未加载完成，请稍后重试",
+      "email": {
+        "title": "更改邮箱",
+        "description": "请填写您当前正在使用的邮箱地址。我们会对您的信息严格保密，仅用于账号联系与必要通知。",
+        "label": "邮箱地址",
+        "placeholder": "请输入新的邮箱地址",
+        "submit": "保存邮箱",
+        "success": "邮箱已更新",
+        "loadError": "邮箱信息加载失败",
+        "required": "请输入邮箱地址",
+        "invalid": "请输入有效的邮箱地址",
+        "updateError": "邮箱更新失败，请稍后重试"
+      },
+      "address": {
+        "title": "更改地址",
+        "description": "请填写准确的联系地址信息。我们会对您的信息严格保密，仅用于账号服务联系与必要支持。",
+        "label": "联系地址",
+        "placeholder": "请输入新的联系地址",
+        "submit": "保存地址",
+        "success": "地址已更新",
+        "loadError": "地址信息加载失败",
+        "required": "请输入地址",
+        "updateError": "地址更新失败，请稍后重试"
+      }
+    }
   }
 }

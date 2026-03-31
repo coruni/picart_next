@@ -1,9 +1,10 @@
 ﻿"use client";
 
-import { articleControllerFindHotSearch, articleControllerSearch } from "@/api";
+import { articleControllerSearch } from "@/api";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { usePathname, useRouter } from "@/i18n/routing";
+import { getHotSearchKeywords } from "@/lib/hot-search-client";
 import { cn, debounce } from "@/lib/utils";
 import { useSearchStore } from "@/stores";
 import { CategoryList } from "@/types";
@@ -242,33 +243,8 @@ export function SearchBox({
 
     void (async () => {
       try {
-        const response = await articleControllerFindHotSearch({
-          query: {
-            limit: 8,
-          },
-        });
-
-        const items = response.data?.data?.data;
-        if (!Array.isArray(items)) {
-          setHotSearches(fallbackHotSearches);
-          return;
-        }
-
-        const keywords = items
-          .map((item) => {
-            if (
-              typeof item === "object" &&
-              item !== null &&
-              "keyword" in item &&
-              typeof item.keyword === "string"
-            ) {
-              return item.keyword.trim();
-            }
-            return "";
-          })
-          .filter(Boolean);
-
-        setHotSearches(keywords.length > 0 ? keywords : fallbackHotSearches);
+        const keywords = await getHotSearchKeywords(fallbackHotSearches);
+        setHotSearches(keywords);
       } catch (error) {
         console.error("Hot search error:", error);
         setHotSearches(fallbackHotSearches);
