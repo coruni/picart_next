@@ -8433,8 +8433,8 @@ export type TagControllerFindAllData = {
          */
         limit?: number;
         name?: string;
-        sortBy?: string;
-        sortOrder?: string;
+        sortBy?: 'hot' | 'createdAt';
+        sortOrder?: 'DESC' | 'ASC';
     };
     url: '/tag';
 };
@@ -8460,6 +8460,57 @@ export type TagControllerFindAllResponses = {
                 createdAt: string;
                 updatedAt: string;
                 isFollowed: boolean;
+                randomUsers: Array<{
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: string;
+                    banReason: string;
+                    avatar: string;
+                    description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: string;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
+                    lastLoginAt: string;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    equippedDecorations?: {
+                        COMMENT_BUBBLE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
+                }>;
+                recentArticleCount: number;
             }>;
             meta: {
                 total: number;
@@ -8507,6 +8558,108 @@ export type TagControllerCreateResponses = {
      */
     201: unknown;
 };
+
+export type TagControllerFollowedListData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: {
+        page?: number;
+        /**
+         * 限制
+         */
+        limit?: number;
+        name?: number;
+    };
+    url: '/tag/followed/list';
+};
+
+export type TagControllerFollowedListResponses = {
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<{
+                id: number;
+                name: string;
+                description: string;
+                avatar: string;
+                background: string;
+                cover: string;
+                sort: number;
+                articleCount: number;
+                followCount: number;
+                createdAt: string;
+                updatedAt: string;
+                isFollowed: boolean;
+                randomUsers: Array<{
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: string;
+                    banReason: string;
+                    avatar: string;
+                    description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: string;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
+                    lastLoginAt: string;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    equippedDecorations?: {
+                        COMMENT_BUBBLE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
+                }>;
+                recentArticleCount: number;
+            }>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
+};
+
+export type TagControllerFollowedListResponse = TagControllerFollowedListResponses[keyof TagControllerFollowedListResponses];
 
 export type TagControllerRemoveData = {
     body?: never;
