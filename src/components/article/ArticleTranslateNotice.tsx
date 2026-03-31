@@ -133,9 +133,6 @@ export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }
 
       translate.service?.use?.("client.edge");
       translate.language?.setLocal?.("chinese_simplified");
-      if (translate.selectLanguageTag) {
-        translate.selectLanguageTag.show = false;
-      }
       translate.setDocuments?.(documents);
       translate.listener?.start?.();
       translate.execute(documents);

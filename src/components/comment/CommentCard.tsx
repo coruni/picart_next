@@ -1,14 +1,25 @@
 "use client";
 
-import { Avatar } from "@/components/ui/Avatar";
+import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
-import { sanitizeHtmlForRender } from "@/lib";
+import {
+  cn,
+  prepareCommentHtmlForDisplay,
+  sanitizeHtmlForRender,
+} from "@/lib";
 import { formatRelativeTime } from "@/lib/utils";
 import { CommentList, UserCommentList } from "@/types";
-import { MessageCircle, ThumbsUp } from "lucide-react";
+import {
+  Languages,
+  LoaderCircle,
+  MessageCircle,
+  ThumbsUp,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
+import { Avatar } from "../ui/Avatar";
+
 interface CommentCardProps {
   comment: UserCommentList[number];
   onLike?: (commentId: number) => void;
@@ -22,14 +33,13 @@ export function CommentCard({
   comment,
   onLike,
   onReply,
-  showReplies = true,
-  isReply = false,
+  showReplies: _showReplies = true,
+  isReply: _isReply = false,
   className,
 }: CommentCardProps) {
   const t = useTranslations("time");
   const tComment = useTranslations("commentList");
 
-  // Handle both CommentList and UserCommentList structures
   const isUserComment = "author" in comment;
   const user = isUserComment
     ? (comment as UserCommentList[number]).author
@@ -38,8 +48,23 @@ export function CommentCard({
 
   const [isLiked, setIsLiked] = useState(isLikedValue || false);
   const [likeCount, setLikeCount] = useState(comment.likes || 0);
-  const [showAllReplies, setShowAllReplies] = useState(false);
-  const safeCommentHtml = sanitizeHtmlForRender(String(comment.content || ""));
+
+  const contentHtml = prepareCommentHtmlForDisplay(String(comment.content || ""));
+  const {
+    displayHtml,
+    isTranslated,
+    isTranslating,
+    renderKey,
+    shouldAutoTranslate,
+    toggleTranslate,
+  } = useManualHtmlTranslate({
+    html: contentHtml,
+    resetKey: `account-comment-${comment.id}-${comment.content}`,
+  });
+
+  const safeParentContentHtml = sanitizeHtmlForRender(
+    String(comment.parent?.content || ""),
+  );
 
   const handleLike = () => {
     const newIsLiked = !isLiked;
@@ -52,75 +77,70 @@ export function CommentCard({
     onReply?.(comment?.id || 0);
   };
 
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInMinutes = Math.floor(
-      (now.getTime() - date.getTime()) / (1000 * 60),
-    );
-
-    if (diffInMinutes < 1) return t("justNow");
-    if (diffInMinutes < 60) return t("minutesAgo", { count: diffInMinutes });
-    if (diffInMinutes < 1440)
-      return t("hoursAgo", { count: Math.floor(diffInMinutes / 60) });
-    if (diffInMinutes < 43200)
-      return t("daysAgo", { count: Math.floor(diffInMinutes / 1440) });
-
-    return t("monthDay", {
-      month: date.getMonth() + 1,
-      day: date.getDate(),
-    });
-  };
-
   return (
-    <div className="border-b border-border pb-4">
-      <div className="px-4 mt-4">
-        <div className="flex items-center ">
-          {/* 头像 */}
-          <Avatar
-            className="size-8"
-            url={comment?.author?.avatar || ""}
-          ></Avatar>
-          {/* 信息 */}
-          <div className="ml-3 flex flex-col flex-1 self-stretch justify-start">
+    <div className={cn("border-b border-border pb-4", className)}>
+      <div className="mt-4 px-4">
+        <div className="flex items-center">
+          <Avatar className="size-8" url={user?.avatar || ""} />
+          <div className="ml-3 flex flex-1 flex-col self-stretch justify-start">
             <span className="leading-5 font-semibold hover:text-primary">
-              {comment?.author?.nickname || comment?.author?.username || ""}
+              {user?.nickname || user?.username || ""}
             </span>
-            <span className="mt-1 text-secondary text-xs leading-3.5">
+            <span className="mt-1 text-xs leading-3.5 text-secondary">
               {formatRelativeTime(comment?.createdAt || "", t)}
             </span>
           </div>
+          <button
+            type="button"
+            title={tComment("translate")}
+            className={cn(
+              "flex size-7 cursor-pointer items-center justify-center rounded-lg p-1 text-secondary transition hover:bg-muted hover:text-primary",
+              isTranslated && "bg-muted text-primary",
+              isTranslating && "pointer-events-none opacity-70",
+            )}
+            onClick={() => void toggleTranslate()}
+          >
+            {isTranslating ? (
+              <LoaderCircle size={16} className="animate-spin" />
+            ) : (
+              <Languages size={18} />
+            )}
+          </button>
         </div>
       </div>
-      {/* 内容 */}
-      <div className="ml-16  pr-4 mt-2 cursor-pointer">
+
+      <div className="ml-16 mt-2 cursor-pointer pr-4">
         <div
-          className="text-[#000000d9]"
-          dangerouslySetInnerHTML={{ __html: safeCommentHtml }}
-        ></div>
+          key={renderKey}
+          {...(shouldAutoTranslate
+            ? { "data-auto-translate-comment": true }
+            : {})}
+          dangerouslySetInnerHTML={{ __html: displayHtml }}
+        />
       </div>
 
-      {/* 回复了谁 */}
       {comment.parent && (
-        <div className="ml-16 mt-2 pl-1.5 border-l-2 pr-4 border-muted max-h-10">
-          <p className="text-secondary text-sm line-clamp-2 text-ellipsis">
+        <div className="ml-16 mt-2 max-h-10 border-l-2 border-muted pl-1.5 pr-4">
+          <p className="line-clamp-2 text-ellipsis text-sm text-secondary">
             @
             {comment?.parent?.author?.nickname ||
               comment?.parent?.author?.username ||
               ""}
-            :{comment?.parent?.content || ""}
+            :
+            <span
+              dangerouslySetInnerHTML={{ __html: safeParentContentHtml }}
+            />
           </p>
         </div>
       )}
-      {/* 文章信息 */}
-      <div className="ml-16 pr-4 mt-3 cursor-pointer">
+
+      <div className="ml-16 mt-3 cursor-pointer pr-4">
         <Link
           href={`/article/${comment?.article?.id}`}
-          className="flex items-center h-12.5 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-600"
+          className="flex h-12.5 items-center overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-600"
         >
-          {(!!comment?.article?.cover ||
-            comment?.article?.images?.length > 0) && (
-            <div className="size-12.5 bg-gray-50 relative">
+          {(!!comment?.article?.cover || comment?.article?.images?.length > 0) && (
+            <div className="relative size-12.5 bg-gray-50">
               <Image
                 alt={comment?.article?.title || ""}
                 src={
@@ -129,37 +149,40 @@ export function CommentCard({
                 fill
                 quality={95}
                 className="object-cover"
-              ></Image>
+              />
             </div>
           )}
           <div className="ml-3">
-            <span className="text-secondary line-clamp-1 text-ellipsis">
+            <span className="line-clamp-1 text-ellipsis text-secondary">
               {comment?.article?.title || ""}
             </span>
           </div>
         </Link>
       </div>
-      {/* 底部信息 */}
-      <div className="ml-16 pr-4 mt-4">
-        <div className="flex items-center text-secondary ">
-          <span className="text-sm flex-1">
+
+      <div className="ml-16 mt-4 pr-4">
+        <div className="flex items-center text-secondary">
+          <span className="flex-1 text-sm">
             {comment?.article?.category?.name}
           </span>
           <div className="flex items-center text-sm leading-5">
             <div className="flex items-center space-x-4">
               <div
-                className="flex items-center space-x-1 hover:text-primary cursor-pointer"
+                className="flex cursor-pointer items-center space-x-1 hover:text-primary"
                 onClick={handleReply}
               >
                 <MessageCircle size={18} />
                 <span>{tComment("reply")}</span>
               </div>
               <div
-                className="flex items-center space-x-1 hover:text-primary cursor-pointer"
+                className={cn(
+                  "flex cursor-pointer items-center space-x-1 hover:text-primary",
+                  isLiked && "text-primary",
+                )}
                 onClick={handleLike}
               >
                 <ThumbsUp size={18} />
-                <span>{tComment("like")}</span>
+                <span>{likeCount}</span>
               </div>
             </div>
           </div>

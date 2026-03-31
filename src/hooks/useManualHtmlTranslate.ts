@@ -13,16 +13,6 @@ const MANUAL_TRANSLATE_SELECTOR = "[data-manual-translate-comment]";
 const TRANSLATE_TIMEOUT_MS = 1800;
 const TRANSLATE_SETTLE_MS = 160;
 
-function disableTranslateLanguageSelector() {
-  const translate = window.translate;
-
-  if (translate?.selectLanguageTag) {
-    translate.selectLanguageTag.show = false;
-  }
-
-  document.getElementById("translateSelectLanguage")?.remove();
-}
-
 async function translateHtmlContent(
   html: string,
   targetLanguage: string,
@@ -86,7 +76,6 @@ async function translateHtmlContent(
 
     translate.service?.use?.("client.edge");
     translate.language?.setLocal?.(TRANSLATE_LOCAL_LANGUAGE);
-    disableTranslateLanguageSelector();
     translate.setDocuments?.(documents);
     translate.listener?.start?.();
     translate.execute(documents);

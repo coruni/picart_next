@@ -177,6 +177,7 @@ export function ContentAutoTranslateProvider() {
       return;
     }
 
+    disableTranslateLanguageSelector();
     translate.setDocuments?.(documents);
     translate.execute(documents);
   }, [pathname, scriptReady, autoTranslateContent]);
@@ -223,6 +224,7 @@ export function ContentAutoTranslateProvider() {
           return;
         }
 
+        disableTranslateLanguageSelector();
         translate.setDocuments?.(documents);
         translate.execute(documents);
         translate.changeLanguage?.(targetLanguage);
