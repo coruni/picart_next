@@ -442,6 +442,7 @@
     "notificationSettings": "Notification settings",
     "noMessages": "No messages",
     "untitled": "Untitled message",
+    "clickToJump": "Click to open",
     "tabs": {
       "all": "All",
       "notification": "Notifications",

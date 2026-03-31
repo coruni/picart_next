@@ -10,7 +10,12 @@ import { cn, formatRelativeTime } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { MessageList } from "@/types";
-import { BrushCleaning, MessageCircle, Settings } from "lucide-react";
+import {
+  BrushCleaning,
+  ChevronRight,
+  MessageCircle,
+  Settings,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   useCallback,
@@ -25,6 +30,17 @@ type MessageTab = "all" | "notification" | "private" | "system";
 const MIN_MOBILE_SHEET_HEIGHT = 12;
 const MAX_MOBILE_SHEET_HEIGHT = 92;
 const DEFAULT_MOBILE_SHEET_HEIGHT = 50;
+
+function formatMessageDate(dateString?: string) {
+  if (!dateString) return "";
+
+  const date = new Date(dateString);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${month}/${day}`;
+}
 
 export function MessageDropdown({
   isTransparentBgPage,
@@ -219,80 +235,74 @@ export function MessageDropdown({
     }
 
     return (
-      <>
-        <div
-          className={cn(
-            mobile
-              ? "min-h-0 flex-1 overflow-y-auto overscroll-contain"
-              : "max-h-96 overflow-y-auto",
-          )}
-          style={
-            mobile
-              ? { maxHeight: `calc(${mobileSheetHeight}vh - 104px)` }
-              : undefined
-          }
-        >
-          {isLoading ? (
-            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-              {tCommon("loading")}
-            </div>
-          ) : filteredMessages.length > 0 ? (
-            filteredMessages.map((message) => (
-              <GuardedLink
-                key={message.id}
-                href={`/messages/${message.id}`}
-                onClick={() => mobile && setMobileOpen(false)}
-                className={cn(
-                  "group/message mx-2 my-2 block rounded-xl border px-4 py-3 transition-[border-color,background-color]",
-                  message.isRead
-                    ? "border-border/70 bg-muted/60"
-                    : "border-border/70 bg-card hover:border-primary/20 hover:bg-card",
-                )}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex shrink-0 flex-col items-center gap-2">
-                    <span className="h-10 w-1 rounded-full bg-primary/60" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-2 flex items-center justify-between gap-3">
-                      <span className="inline-flex h-6 shrink-0 items-center rounded-full border border-primary/12 bg-primary/8 px-2.5 text-xs font-medium text-primary">
-                        {message.type && message.type in messageTypeLabels
-                          ? messageTypeLabels[
-                              message.type as Exclude<MessageTab, "all">
-                            ]
-                          : tMsg("tabs.notification")}
-                      </span>
-                      <span className="shrink-0 text-[11px] text-muted-foreground">
-                        {formatRelativeTime(message.createdAt || "", tTime)}
-                      </span>
-                    </div>
-                    <p className="line-clamp-1 text-sm font-semibold text-foreground transition-colors group-hover/message:text-primary">
-                      {message.title || tMsg("untitled")}
-                    </p>
-                    <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">
-                      {message.content}
-                    </p>
-                  </div>
-                </div>
-              </GuardedLink>
-            ))
-          ) : (
-            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-              {tMsg("noMessages")}
-            </div>
-          )}
-        </div>
+      <div
+        className={cn(
+          "px-3 py-2 space-y-3",
+          mobile
+            ? "min-h-0 flex-1 overflow-y-auto overscroll-contain"
+            : "max-h-96 overflow-y-auto",
+        )}
+        style={
+          mobile
+            ? { maxHeight: `calc(${mobileSheetHeight}vh - 104px)` }
+            : undefined
+        }
+      >
+        {isLoading ? (
+          <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+            {tCommon("loading")}
+          </div>
+        ) : filteredMessages.length > 0 ? (
+          filteredMessages.map((message) => (
+            <GuardedLink
+              key={message.id}
+              href={`/messages/${message.id}`}
+              onClick={() => mobile && setMobileOpen(false)}
+              className={cn(
+                "group/message relative block border-b border-border transition-colors last-of-type:border-none",
+                message.isRead ? "bg-card" : "bg-card hover:bg-primary/3",
+              )}
+            >
+              {!message.isRead && (
+                <span className="absolute right-4 top-4 h-3 w-3 rounded-full bg-red-500" />
+              )}
 
-        {/* <div className="border-t border-border p-3">
-          <GuardedLink
-            href="/messages"
-            onClick={() => mobile && setMobileOpen(false)}
-            className="block text-center text-sm font-medium text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300"
-          >
-            {tHeader("viewAllMessages")}
-          </GuardedLink>
-        </div> */}
-      </>
+              <div className="min-w-0">
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <span className="text-xs font-medium tracking-[0.02em] text-[#a9b7cc]">
+                    {formatMessageDate(message.createdAt || "") ||
+                      formatRelativeTime(message.createdAt || "", tTime)}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {message.type && message.type in messageTypeLabels
+                      ? messageTypeLabels[
+                          message.type as Exclude<MessageTab, "all">
+                        ]
+                      : tMsg("tabs.notification")}
+                  </span>
+                </div>
+
+                <p className="pr-8 font-semibold text-foreground transition-colors group-hover/message:text-primary">
+                  {message.title || tMsg("untitled")}
+                </p>
+
+                <p className="mt-3 text-[15px] text-foreground/78">
+                  {message.content}
+                </p>
+
+                <div className="mt-2 pb-2 inline-flex items-center gap-1 text-base font-medium text-primary transition-colors">
+                  <span>{tMsg("clickToJump")}</span>
+                  <ChevronRight className="size-5" strokeWidth={3} />
+                </div>
+              </div>
+            </GuardedLink>
+          ))
+        ) : (
+          <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+            {tMsg("noMessages")}
+          </div>
+        )}
+      </div>
     );
   };
 
@@ -366,7 +376,7 @@ export function MessageDropdown({
         </button>
 
         {!isMobile && (
-          <div className="invisible absolute right-0 z-50 mt-2 w-full min-w-lg rounded-xl border border-border bg-card opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
+          <div className="invisible absolute right-0 z-50 mt-2 w-full min-w-lg rounded-xl overflow-hidden border border-border bg-card opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
             {renderPanel()}
           </div>
         )}
