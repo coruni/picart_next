@@ -426,6 +426,16 @@
     "relatedTopics": "\u76f8\u5173\u8bdd\u9898",
     "relatedUsers": "\u76f8\u5173\u7528\u6237"
   },
+  "searchPanel": {
+    "moreSort": "\u66f4\u591a\u6392\u5e8f",
+    "title": "\u6392\u5e8f",
+    "options": {
+      "relevance": "\u76f8\u5173\u5ea6",
+      "latest": "\u6700\u65b0\u53d1\u5e03",
+      "views": "\u6d4f\u89c8\u6700\u591a",
+      "likes": "\u70b9\u8d5e\u6700\u591a"
+    }
+  },
   "messageDropdown": {
     "cleanMessages": "全部标记为已读",
     "notificationSettings": "消息通知设置",

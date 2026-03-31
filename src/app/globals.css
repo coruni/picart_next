@@ -124,7 +124,7 @@ button {
 }
 
 .right-container {
-  @apply w-84 shrink-0 relative hidden md:block
+  @apply w-84 shrink-0 hidden md:block
 }
 
 /* Swiper custom styles */

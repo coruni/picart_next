@@ -427,6 +427,16 @@
     "relatedTopics": "Related Topics",
     "relatedUsers": "Related Users"
   },
+  "searchPanel": {
+    "moreSort": "More Sort",
+    "title": "Sort",
+    "options": {
+      "relevance": "Relevance",
+      "latest": "Latest",
+      "views": "Most Viewed",
+      "likes": "Most Liked"
+    }
+  },
   "messageDropdown": {
     "cleanMessages": "Mark all as read",
     "notificationSettings": "Notification settings",

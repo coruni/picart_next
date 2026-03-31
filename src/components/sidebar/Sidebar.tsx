@@ -7,6 +7,7 @@ import { LoginWidget } from "./LoadingWidget";
 import { RecommendUserWidget } from "./RecommendUserWidget";
 import { RecommendTagWidget } from "./RecommentTagWidget";
 import { SearchHistory } from "./SearchHistory";
+import { SiteContactWidget } from "./SiteContactWidget";
 
 type SidebarProps = {
   showLogin?: boolean;
@@ -19,6 +20,7 @@ type SidebarProps = {
   showBanner?: boolean;
   randomBanner?: boolean;
   author?: ArticleDetail["author"];
+  showSiteContact?: boolean;
 };
 
 export async function Sidebar({
@@ -32,16 +34,17 @@ export async function Sidebar({
   showBanner = true,
   randomBanner = true,
   author,
+  showSiteContact = true,
 }: SidebarProps) {
   const shouldShowBanner =
     showBanner && (randomBanner ? Math.random() >= 0.5 : true);
 
   const sidebarItems = [
     showArticleCreate ? <ArticleCreateWidget key="article-create" /> : null,
-   
+
     showSearchHistory ? <SearchHistory key="search-history" /> : null,
     showHotSearch ? <HotSearch key="hot-search" /> : null,
-     shouldShowBanner ? (
+    shouldShowBanner ? (
       <Banner key="sidebar-banner" className=" aspect-8/3 w-full rounded-xl" />
     ) : null,
     showRecommendUser ? <RecommendUserWidget key="recommend-user" /> : null,
@@ -49,12 +52,21 @@ export async function Sidebar({
   ].filter(Boolean);
 
   return (
-    <div className="relative space-y-4">
+    <>
+    <div className="space-y-4">
       {showLogin && <LoginWidget />}
 
       {showAuthorInfo && author && <AuthorInfoWidget author={author} />}
 
       {sidebarItems}
     </div>
+    {/* Sticky element */}
+    {showSiteContact && (
+        <div className="sticky self-start top-header pt-4">
+          <SiteContactWidget />
+        </div>
+      )}
+    </>
+    
   );
 }
