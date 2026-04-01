@@ -27,6 +27,7 @@ import {
   Monitor,
   Moon,
   Power,
+  Settings,
   Sun,
   User,
   UserRoundX,
@@ -189,7 +190,6 @@ export function UserDropdown() {
                 </Link>
               </div>
 
-              <div className="p-1">
                 <GuardedLink
                   href="/profile/messages"
                   className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
@@ -200,6 +200,23 @@ export function UserDropdown() {
                     </div>
                     <span className="text-sm font-medium">
                       {tHeader("messageManagement")}
+                    </span>
+                  </div>
+                  <ChevronRight className="size-4" />
+                </GuardedLink>
+              </div>
+
+              <div className="p-1">
+                <GuardedLink
+                  href="/setting"
+                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex shrink-0 items-center justify-center">
+                      <Settings className="size-5" />
+                    </div>
+                    <span className="text-sm font-medium">
+                      {tHeader("settings")}
                     </span>
                   </div>
                   <ChevronRight className="size-4" />
@@ -453,6 +470,19 @@ export function UserDropdown() {
                       <UserRoundX className="size-5" />
                       <span className="text-sm font-medium">
                         {tHeader("blockedUsers")}
+                      </span>
+                    </div>
+                    <ChevronRight className="size-4" />
+                  </GuardedLink>
+                  <GuardedLink
+                    href="/setting"
+                    onClick={closeMobileMenu}
+                    className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Settings className="size-5" />
+                      <span className="text-sm font-medium">
+                        {tHeader("settings")}
                       </span>
                     </div>
                     <ChevronRight className="size-4" />
