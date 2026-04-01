@@ -73,22 +73,30 @@ export const useUserStore = create<UserState>()(
       },
 
       logout: async () => {
-        syncTokenToCookie(null);
-
-        set({
-          user: null,
-          token: null,
-          isAuthenticated: false,
-        });
-
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("user-storage");
-        }
+        const currentToken = useUserStore.getState().token;
 
         try {
-          await userControllerLogout();
+          if (currentToken) {
+            await userControllerLogout({
+              headers: {
+                Authorization: `Bearer ${currentToken}`,
+              },
+            });
+          }
         } catch (error) {
           console.error("Failed to logout on server:", error);
+        } finally {
+          syncTokenToCookie(null);
+
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+          });
+
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("user-storage");
+          }
         }
       },
 
