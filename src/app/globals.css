@@ -243,7 +243,7 @@ button {
 }
 
 .custom-viewer-toolbar {
-  @apply absolute left-1/2 bottom-5 z-[10000] flex -translate-x-1/2 items-center gap-1 rounded-xl bg-black/85 px-3 py-2;
+  @apply absolute left-1/2 bottom-5 z-10000 flex -translate-x-1/2 items-center gap-1 rounded-xl bg-black/85 px-3 py-2;
 }
 
 

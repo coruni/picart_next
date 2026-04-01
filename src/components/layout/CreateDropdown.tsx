@@ -1,10 +1,7 @@
 "use client";
 
 import { GuardedLink } from "@/components/shared/GuardedLink";
-import {
-  Dialog,
-  DialogContent,
-} from "@/components/ui/Dialog";
+import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { useIsMobile } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { ChevronRight, PenIcon } from "lucide-react";
@@ -110,9 +107,14 @@ export function CreateDropdown({
           <GuardedLink
             key={option.href}
             href={option.href}
-            className="group/item flex items-center gap-3 rounded-lg bg-[#F6F9FB] px-4 py-2 whitespace-nowrap transition-colors hover:bg-primary/15 hover:text-primary dark:bg-[#242734]"
+            className="group/item flex items-center gap-3 rounded-lg px-4 py-2 whitespace-nowrap transition-colors hover:bg-primary/15 text-muted-foreground hover:text-primary dark:bg-[#242734]"
           >
-            <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-lg", option.iconBg)}>
+            <div
+              className={cn(
+                "flex size-10 shrink-0 items-center justify-center rounded-lg",
+                option.iconBg,
+              )}
+            >
               <svg
                 className={cn("size-5", option.iconColor)}
                 viewBox={option.iconViewBox}
@@ -135,10 +137,15 @@ export function CreateDropdown({
       key={option.href}
       href={option.href}
       onClick={closeMobileMenu}
-      className="mb-1 flex h-12 items-center justify-between rounded-lg px-3 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+      className="mb-1 flex h-12 items-center justify-between rounded-lg px-3 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
     >
       <div className="flex items-center gap-3">
-        <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-lg", option.iconBg)}>
+        <div
+          className={cn(
+            "flex size-10 shrink-0 items-center justify-center rounded-lg",
+            option.iconBg,
+          )}
+        >
           <svg
             className={cn("size-5", option.iconColor)}
             viewBox={option.iconViewBox}
@@ -171,9 +178,7 @@ export function CreateDropdown({
 
       {/* Mobile dialog menu */}
       <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <DialogContent
-          className="flex max-h-[85vh] w-[calc(100vw-2rem)] max-w-md flex-col overflow-hidden rounded-2xl p-0 animate-in fade-in-0 zoom-in-95 duration-200 md:hidden"
-        >
+        <DialogContent className="flex max-h-[85vh] w-[calc(100vw-2rem)] max-w-md flex-col overflow-hidden rounded-2xl p-0 animate-in fade-in-0 zoom-in-95 duration-200 md:hidden">
           <div className="shrink-0 border-b border-border px-4 py-4">
             <div className="flex items-center gap-3">
               <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10">
@@ -191,9 +196,7 @@ export function CreateDropdown({
           </div>
 
           <div className="min-h-0 flex-1 overflow-y-auto p-3">
-            <div className="p-1">
-              {createOptions.map(renderMobileMenuItem)}
-            </div>
+            <div className="p-1">{createOptions.map(renderMobileMenuItem)}</div>
           </div>
         </DialogContent>
       </Dialog>

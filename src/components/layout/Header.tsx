@@ -46,7 +46,11 @@ export function Header({ categories }: HeaderProps) {
 
   const renderActions = () => (
     <div className="flex items-center gap-4">
-      <CreateDropdown />
+      <CreateDropdown
+        isTransparentBgPage={isTransparentBgPage}
+        scrolled={scrolled}
+        actionButtonClassName={actionButtonClassName}
+      />
       <MessageDropdown
         isTransparentBgPage={isTransparentBgPage}
         scrolled={scrolled}
