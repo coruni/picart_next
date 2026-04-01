@@ -30079,7 +30079,7 @@
                                 "type": "integer"
                               },
                               "senderId": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "receiverId": {
                                 "type": "integer"
@@ -30137,7 +30137,7 @@
                                 "type": "string"
                               },
                               "sender": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "receiver": {
                                 "type": "object",
@@ -30149,7 +30149,7 @@
                                     "type": "string"
                                   },
                                   "nickname": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "status": {
                                     "type": "string"
@@ -30164,10 +30164,10 @@
                                     "type": "string"
                                   },
                                   "description": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "background": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "gender": {
                                     "type": "string"
@@ -30342,7 +30342,7 @@
                                 "type": "integer"
                               },
                               "commentId": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "targetId": {
                                 "type": "integer"
@@ -30353,7 +30353,27 @@
                               "notificationType": {
                                 "type": "string"
                               }
-                            }
+                            },
+                            "required": [
+                              "id",
+                              "senderId",
+                              "receiverId",
+                              "content",
+                              "type",
+                              "isRead",
+                              "isBroadcast",
+                              "title",
+                              "metadata",
+                              "createdAt",
+                              "updatedAt",
+                              "sender",
+                              "receiver",
+                              "articleId",
+                              "commentId",
+                              "targetId",
+                              "targetType",
+                              "notificationType"
+                            ]
                           }
                         },
                         "meta": {
@@ -30639,7 +30659,7 @@
                                 "type": "integer"
                               },
                               "senderId": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "receiverId": {
                                 "type": "integer"
@@ -30697,7 +30717,7 @@
                                 "type": "string"
                               },
                               "sender": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "receiver": {
                                 "type": "object",
@@ -30709,31 +30729,31 @@
                                     "type": "string"
                                   },
                                   "nickname": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "status": {
                                     "type": "string"
                                   },
                                   "banned": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "banReason": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "avatar": {
                                     "type": "string"
                                   },
                                   "description": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "background": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "gender": {
                                     "type": "string"
                                   },
                                   "birthDate": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "articleCount": {
                                     "type": "integer"
@@ -30766,25 +30786,25 @@
                                     "type": "string"
                                   },
                                   "membershipStartDate": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "membershipEndDate": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "lastLoginAt": {
                                     "type": "string"
                                   },
                                   "lastActiveAt": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "inviterId": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "myInviteCode": {
                                     "type": "string"
                                   },
                                   "inviteCode": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "inviteEarnings": {
                                     "type": "string"
@@ -30902,7 +30922,7 @@
                                 "type": "integer"
                               },
                               "commentId": {
-                                "type": "null"
+                                "type": "integer"
                               },
                               "targetId": {
                                 "type": "integer"
@@ -30913,7 +30933,17 @@
                               "notificationType": {
                                 "type": "string"
                               }
-                            }
+                            },
+                            "required": [
+                              "id",
+                              "senderId",
+                              "receiverId",
+                              "content",
+                              "type",
+                              "isRead",
+                              "isBroadcast",
+                              "receiver"
+                            ]
                           }
                         },
                         "meta": {
@@ -31048,7 +31078,7 @@
                           "type": "integer"
                         },
                         "senderId": {
-                          "type": "null"
+                          "type": "integer"
                         },
                         "receiverId": {
                           "type": "integer"
@@ -31106,7 +31136,7 @@
                           "type": "string"
                         },
                         "sender": {
-                          "type": "null"
+                          "type": "integer"
                         },
                         "receiver": {
                           "type": "object",
@@ -31118,31 +31148,31 @@
                               "type": "string"
                             },
                             "nickname": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "status": {
                               "type": "string"
                             },
                             "banned": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "banReason": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "avatar": {
                               "type": "string"
                             },
                             "description": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "background": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "gender": {
                               "type": "string"
                             },
                             "birthDate": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "articleCount": {
                               "type": "integer"
@@ -31175,25 +31205,25 @@
                               "type": "string"
                             },
                             "membershipStartDate": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "membershipEndDate": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "lastLoginAt": {
                               "type": "string"
                             },
                             "lastActiveAt": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "inviterId": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "myInviteCode": {
                               "type": "string"
                             },
                             "inviteCode": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "inviteEarnings": {
                               "type": "string"
@@ -31311,7 +31341,7 @@
                           "type": "integer"
                         },
                         "commentId": {
-                          "type": "null"
+                          "type": "integer"
                         },
                         "targetId": {
                           "type": "integer"
@@ -31594,6 +31624,12 @@
                         "personal": {
                           "type": "integer"
                         },
+                        "notification": {
+                          "type": "integer"
+                        },
+                        "private": {
+                          "type": "integer"
+                        },
                         "broadcast": {
                           "type": "integer"
                         },
@@ -31603,6 +31639,8 @@
                       },
                       "required": [
                         "personal",
+                        "notification",
+                        "private",
                         "broadcast",
                         "total"
                       ]
@@ -31616,6 +31654,364 @@
                 }
               }
             },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/message/private/conversations": {
+      "get": {
+        "summary": "获取当前用户的私信会话列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "MessageController_getPrivateConversations",
+        "tags": [
+          "信息管理"
+        ],
+        "parameters": [
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "游标字符串",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "limit": {
+                              "type": "integer"
+                            },
+                            "hasMore": {
+                              "type": "boolean"
+                            },
+                            "nextCursor": {
+                              "type": "null"
+                            }
+                          },
+                          "required": [
+                            "limit",
+                            "hasMore",
+                            "nextCursor"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "data",
+                        "meta"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/message/private/conversations/{userId}/messages": {
+      "get": {
+        "summary": "获取与指定用户的私信记录",
+        "deprecated": false,
+        "description": "",
+        "operationId": "MessageController_getPrivateConversation",
+        "tags": [
+          "信息管理"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "会话对方用户ID",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "description": "游标字符串",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "limit": {
+                              "type": "integer"
+                            },
+                            "hasMore": {
+                              "type": "boolean"
+                            },
+                            "nextCursor": {
+                              "type": "null"
+                            }
+                          },
+                          "required": [
+                            "limit",
+                            "hasMore",
+                            "nextCursor"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "data",
+                        "meta"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/message/private/blocks": {
+      "get": {
+        "summary": "获取拉黑列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "MessageController_getBlockedUsers",
+        "tags": [
+          "信息管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
             "headers": {}
           }
         },
@@ -31759,7 +32155,8 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MarkAllReadDto"
+                "type": "object",
+                "properties": {}
               }
             }
           },
@@ -31843,6 +32240,404 @@
         },
         "responses": {
           "201": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/message/private/{userId}": {
+      "post": {
+        "summary": "发送私信",
+        "deprecated": false,
+        "description": "",
+        "operationId": "MessageController_sendPrivateMessage",
+        "tags": [
+          "信息管理"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "接收者用户ID",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendPrivateMessageDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/message/private/read-batch": {
+      "post": {
+        "summary": "批量标记私信已读",
+        "deprecated": false,
+        "description": "",
+        "operationId": "MessageController_markPrivateMessagesRead",
+        "tags": [
+          "信息管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchReadPrivateMessagesDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/message/private/recall/{id}": {
+      "post": {
+        "summary": "撤回私信",
+        "deprecated": false,
+        "description": "",
+        "operationId": "MessageController_recallPrivateMessage",
+        "tags": [
+          "信息管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "私信ID",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecallPrivateMessageDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/message/private/block/{userId}": {
+      "post": {
+        "summary": "拉黑私信对象",
+        "deprecated": false,
+        "description": "",
+        "operationId": "MessageController_blockPrivateUser",
+        "tags": [
+          "信息管理"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "目标用户ID",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "取消拉黑私信对象",
+        "deprecated": false,
+        "description": "",
+        "operationId": "MessageController_unblockPrivateUser",
+        "tags": [
+          "信息管理"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "目标用户ID",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
             "description": "",
             "headers": {}
           }
@@ -44295,6 +45090,62 @@
             "type": "boolean",
             "description": "是否启用",
             "default": true
+          }
+        }
+      },
+      "SendPrivateMessageDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "文本内容"
+          },
+          "messageKind": {
+            "type": "string",
+            "description": "消息类型",
+            "enum": [
+              "text",
+              "image",
+              "file",
+              "card"
+            ],
+            "default": "text"
+          },
+          "payload": {
+            "type": "object",
+            "description": "结构化负载",
+            "properties": {}
+          }
+        },
+        "required": [
+          "messageKind"
+        ]
+      },
+      "BatchReadPrivateMessagesDto": {
+        "type": "object",
+        "properties": {
+          "messageIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              1,
+              2,
+              3
+            ]
+          }
+        },
+        "required": [
+          "messageIds"
+        ]
+      },
+      "RecallPrivateMessageDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "撤回原因"
           }
         }
       }

@@ -1692,6 +1692,34 @@ export type UpdateAchievementDto = {
     enabled?: boolean;
 };
 
+export type SendPrivateMessageDto = {
+    /**
+     * 文本内容
+     */
+    content?: string;
+    /**
+     * 消息类型
+     */
+    messageKind: 'text' | 'image' | 'file' | 'card';
+    /**
+     * 结构化负载
+     */
+    payload?: {
+        [key: string]: unknown;
+    };
+};
+
+export type BatchReadPrivateMessagesDto = {
+    messageIds: Array<string>;
+};
+
+export type RecallPrivateMessageDto = {
+    /**
+     * 撤回原因
+     */
+    reason?: string;
+};
+
 export type AppControllerGetHelloData = {
     body?: never;
     headers?: {
@@ -10328,15 +10356,15 @@ export type MessageControllerFindAllResponses = {
         message: string;
         data: {
             data: Array<{
-                id?: number;
-                senderId?: unknown;
-                receiverId?: number;
-                content?: string;
-                type?: string;
-                isRead?: boolean;
-                isBroadcast?: boolean;
-                title?: string;
-                metadata?: {
+                id: number;
+                senderId: number;
+                receiverId: number;
+                content: string;
+                type: string;
+                isRead: boolean;
+                isBroadcast: boolean;
+                title: string;
+                metadata: {
                     targetId: number;
                     articleId: number;
                     likerName: string;
@@ -10344,19 +10372,19 @@ export type MessageControllerFindAllResponses = {
                     targetTitle: string;
                     notificationType: string;
                 };
-                createdAt?: string;
-                updatedAt?: string;
-                sender?: unknown;
-                receiver?: {
+                createdAt: string;
+                updatedAt: string;
+                sender: number;
+                receiver: {
                     id: number;
                     username: string;
-                    nickname: unknown;
+                    nickname: string;
                     status: string;
                     banned: unknown;
                     banReason: unknown;
                     avatar: string;
-                    description: unknown;
-                    background: unknown;
+                    description: string;
+                    background: string;
                     gender: string;
                     birthDate: unknown;
                     articleCount: number;
@@ -10397,11 +10425,11 @@ export type MessageControllerFindAllResponses = {
                         };
                     };
                 };
-                articleId?: number;
-                commentId?: unknown;
-                targetId?: number;
-                targetType?: string;
-                notificationType?: string;
+                articleId: number;
+                commentId: number;
+                targetId: number;
+                targetType: string;
+                notificationType: string;
             }>;
             meta: {
                 total: number;
@@ -10484,13 +10512,13 @@ export type MessageControllerSearchResponses = {
         message: string;
         data: {
             data: Array<{
-                id?: number;
-                senderId?: unknown;
-                receiverId?: number;
-                content?: string;
-                type?: string;
-                isRead?: boolean;
-                isBroadcast?: boolean;
+                id: number;
+                senderId: number;
+                receiverId: number;
+                content: string;
+                type: string;
+                isRead: boolean;
+                isBroadcast: boolean;
                 title?: string;
                 metadata?: {
                     targetId: number;
@@ -10502,19 +10530,19 @@ export type MessageControllerSearchResponses = {
                 };
                 createdAt?: string;
                 updatedAt?: string;
-                sender?: unknown;
-                receiver?: {
+                sender?: number;
+                receiver: {
                     id: number;
                     username: string;
-                    nickname: unknown;
+                    nickname: string;
                     status: string;
-                    banned: unknown;
-                    banReason: unknown;
+                    banned: string;
+                    banReason: string;
                     avatar: string;
-                    description: unknown;
-                    background: unknown;
+                    description: string;
+                    background: string;
                     gender: string;
-                    birthDate: unknown;
+                    birthDate: string;
                     articleCount: number;
                     followerCount: number;
                     followingCount: number;
@@ -10525,13 +10553,13 @@ export type MessageControllerSearchResponses = {
                     membershipLevel: number;
                     membershipLevelName: string;
                     membershipStatus: string;
-                    membershipStartDate: unknown;
-                    membershipEndDate: unknown;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
                     lastLoginAt: string;
-                    lastActiveAt: unknown;
-                    inviterId: unknown;
+                    lastActiveAt: string;
+                    inviterId: string;
                     myInviteCode: string;
-                    inviteCode: unknown;
+                    inviteCode: string;
                     inviteEarnings: string;
                     inviteCount: number;
                     createdAt: string;
@@ -10554,7 +10582,7 @@ export type MessageControllerSearchResponses = {
                     };
                 };
                 articleId?: number;
-                commentId?: unknown;
+                commentId?: number;
                 targetId?: number;
                 targetType?: string;
                 notificationType?: string;
@@ -10617,7 +10645,7 @@ export type MessageControllerFindOneResponses = {
         message: string;
         data: {
             id: number;
-            senderId: unknown;
+            senderId: number;
             receiverId: number;
             content: string;
             type: string;
@@ -10634,19 +10662,19 @@ export type MessageControllerFindOneResponses = {
             };
             createdAt: string;
             updatedAt: string;
-            sender: unknown;
+            sender: number;
             receiver: {
                 id: number;
                 username: string;
-                nickname: unknown;
+                nickname: string;
                 status: string;
-                banned: unknown;
-                banReason: unknown;
+                banned: string;
+                banReason: string;
                 avatar: string;
-                description: unknown;
-                background: unknown;
+                description: string;
+                background: string;
                 gender: string;
-                birthDate: unknown;
+                birthDate: string;
                 articleCount: number;
                 followerCount: number;
                 followingCount: number;
@@ -10657,13 +10685,13 @@ export type MessageControllerFindOneResponses = {
                 membershipLevel: number;
                 membershipLevelName: string;
                 membershipStatus: string;
-                membershipStartDate: unknown;
-                membershipEndDate: unknown;
+                membershipStartDate: string;
+                membershipEndDate: string;
                 lastLoginAt: string;
-                lastActiveAt: unknown;
-                inviterId: unknown;
+                lastActiveAt: string;
+                inviterId: string;
                 myInviteCode: string;
-                inviteCode: unknown;
+                inviteCode: string;
                 inviteEarnings: string;
                 inviteCount: number;
                 createdAt: string;
@@ -10686,7 +10714,7 @@ export type MessageControllerFindOneResponses = {
                 };
             };
             articleId: number;
-            commentId: unknown;
+            commentId: number;
             targetId: number;
             targetType: string;
             notificationType: string;
@@ -10737,6 +10765,8 @@ export type MessageControllerGetUnreadCountResponses = {
         message: string;
         data: {
             personal: number;
+            notification: number;
+            private: number;
             broadcast: number;
             total: number;
         };
@@ -10744,6 +10774,106 @@ export type MessageControllerGetUnreadCountResponses = {
 };
 
 export type MessageControllerGetUnreadCountResponse = MessageControllerGetUnreadCountResponses[keyof MessageControllerGetUnreadCountResponses];
+
+export type MessageControllerGetPrivateConversationsData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: {
+        /**
+         * 游标字符串
+         */
+        cursor?: string;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+    };
+    url: '/message/private/conversations';
+};
+
+export type MessageControllerGetPrivateConversationsResponses = {
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<string>;
+            meta: {
+                limit: number;
+                hasMore: boolean;
+                nextCursor: unknown;
+            };
+        };
+    };
+};
+
+export type MessageControllerGetPrivateConversationsResponse = MessageControllerGetPrivateConversationsResponses[keyof MessageControllerGetPrivateConversationsResponses];
+
+export type MessageControllerGetPrivateConversationData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 会话对方用户ID
+         */
+        userId: string;
+    };
+    query?: {
+        /**
+         * 游标字符串
+         */
+        cursor?: string;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+    };
+    url: '/message/private/conversations/{userId}/messages';
+};
+
+export type MessageControllerGetPrivateConversationResponses = {
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<string>;
+            meta: {
+                limit: number;
+                hasMore: boolean;
+                nextCursor: unknown;
+            };
+        };
+    };
+};
+
+export type MessageControllerGetPrivateConversationResponse = MessageControllerGetPrivateConversationResponses[keyof MessageControllerGetPrivateConversationResponses];
+
+export type MessageControllerGetBlockedUsersData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/message/private/blocks';
+};
+
+export type MessageControllerGetBlockedUsersResponses = {
+    200: unknown;
+};
 
 export type MessageControllerMarkAsReadData = {
     body?: never;
@@ -10768,7 +10898,9 @@ export type MessageControllerMarkAsReadResponses = {
 };
 
 export type MessageControllerMarkAllAsReadData = {
-    body: MarkAllReadDto;
+    body: {
+        [key: string]: unknown;
+    };
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -10798,6 +10930,111 @@ export type MessageControllerBatchOperationData = {
 };
 
 export type MessageControllerBatchOperationResponses = {
+    201: unknown;
+};
+
+export type MessageControllerSendPrivateMessageData = {
+    body: SendPrivateMessageDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 接收者用户ID
+         */
+        userId: string;
+    };
+    query?: never;
+    url: '/message/private/{userId}';
+};
+
+export type MessageControllerSendPrivateMessageResponses = {
+    201: unknown;
+};
+
+export type MessageControllerMarkPrivateMessagesReadData = {
+    body: BatchReadPrivateMessagesDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/message/private/read-batch';
+};
+
+export type MessageControllerMarkPrivateMessagesReadResponses = {
+    201: unknown;
+};
+
+export type MessageControllerRecallPrivateMessageData = {
+    body: RecallPrivateMessageDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 私信ID
+         */
+        id: string;
+    };
+    query?: never;
+    url: '/message/private/recall/{id}';
+};
+
+export type MessageControllerRecallPrivateMessageResponses = {
+    201: unknown;
+};
+
+export type MessageControllerUnblockPrivateUserData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 目标用户ID
+         */
+        userId: string;
+    };
+    query?: never;
+    url: '/message/private/block/{userId}';
+};
+
+export type MessageControllerUnblockPrivateUserResponses = {
+    200: unknown;
+};
+
+export type MessageControllerBlockPrivateUserData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 目标用户ID
+         */
+        userId: string;
+    };
+    query?: never;
+    url: '/message/private/block/{userId}';
+};
+
+export type MessageControllerBlockPrivateUserResponses = {
     201: unknown;
 };
 
