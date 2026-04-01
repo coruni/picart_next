@@ -8,12 +8,12 @@ import {
   MenuItem,
   ReportDialog,
 } from "@/components/shared";
-import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useIsMobile } from "@/hooks";
 import { useAuthNavigation } from "@/hooks/useAuthNavigation";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
+import { cn, formatCompactNumber } from "@/lib";
 import { isAccountSectionHidden } from "@/lib/account-privacy";
-import { cn } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { UserDetail } from "@/types";
@@ -64,6 +64,13 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [reportSubmitting, setReportSubmitting] = useState(false);
   const reportReasons = createDefaultReportReasons(tMenu);
+  const compactNumberLabels = {
+    thousand: t("numberUnits.thousand"),
+    tenThousand: t("numberUnits.tenThousand"),
+    hundredMillion: t("numberUnits.hundredMillion"),
+    million: t("numberUnits.million"),
+    billion: t("numberUnits.billion"),
+  };
 
   const requireAuth = () => {
     if (useUserStore.getState().isAuthenticated) {
@@ -167,7 +174,10 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
             <div className="flex h-full flex-1 items-center overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <div className="flex cursor-pointer items-center hover:text-primary">
                 <span className="text-lg md:text-[22px]">
-                  {user?.articleCount || 0}
+                  {formatCompactNumber(user?.articleCount, {
+                    locale,
+                    labels: compactNumberLabels,
+                  })}
                 </span>
                 <span className="ml-1 text-xs text-secondary md:text-sm">
                   {t("posts")}
@@ -177,7 +187,10 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
               {followingsHidden ? (
                 <div className="flex items-center">
                   <span className="text-lg md:text-[22px]">
-                    {user.followingCount || 0}
+                    {formatCompactNumber(user.followingCount, {
+                      locale,
+                      labels: compactNumberLabels,
+                    })}
                   </span>
                   <span className="ml-1 text-xs text-secondary md:text-sm">
                     {t("following")}
@@ -190,7 +203,10 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                   className="flex items-center hover:text-primary"
                 >
                   <span className="text-lg md:text-[22px]">
-                    {user.followingCount || 0}
+                    {formatCompactNumber(user.followingCount, {
+                      locale,
+                      labels: compactNumberLabels,
+                    })}
                   </span>
                   <span className="ml-1 text-xs text-secondary md:text-sm">
                     {t("following")}
@@ -201,7 +217,10 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
               {followersHidden ? (
                 <div className="flex items-center">
                   <span className="text-lg md:text-[22px]">
-                    {user.followerCount || 0}
+                    {formatCompactNumber(user.followerCount, {
+                      locale,
+                      labels: compactNumberLabels,
+                    })}
                   </span>
                   <span className="ml-1 text-xs text-secondary md:text-sm">
                     {t("followers")}
@@ -214,7 +233,10 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                   className="flex items-center hover:text-primary"
                 >
                   <span className="text-lg md:text-[22px]">
-                    {user.followerCount || 0}
+                    {formatCompactNumber(user.followerCount, {
+                      locale,
+                      labels: compactNumberLabels,
+                    })}
                   </span>
                   <span className="ml-1 text-xs text-secondary md:text-sm">
                     {t("followers")}
@@ -223,7 +245,12 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                 </GuardedLink>
               )}
               <div className="flex cursor-pointer items-center hover:text-primary">
-                <span className="text-lg md:text-[22px]">0</span>
+                <span className="text-lg md:text-[22px]">
+                  {formatCompactNumber(user.likes, {
+                    locale,
+                    labels: compactNumberLabels,
+                  })}
+                </span>
                 <span className="ml-1 text-xs text-secondary md:text-sm">
                   {t("likes")}
                 </span>

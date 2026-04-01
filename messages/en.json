@@ -25,7 +25,14 @@
     "clear": "Clear",
     "noSearchHistory": "No search history",
     "viewAllResults": "View all results",
-    "noResults": "No results found"
+    "noResults": "No results found",
+    "numberUnits": {
+      "thousand": "k",
+      "tenThousand": "w",
+      "hundredMillion": "e",
+      "million": "m",
+      "billion": "b"
+    }
   },
   "nav": {
     "home": "Home",
@@ -655,7 +662,14 @@
     "editBackground": "Change Background",
     "menuTitle": "More Actions",
     "copyLink": "Copy Profile Link",
-    "linkCopied": "Profile link copied"
+    "linkCopied": "Profile link copied",
+    "numberUnits": {
+      "thousand": "k",
+      "tenThousand": "w",
+      "hundredMillion": "e",
+      "million": "m",
+      "billion": "b"
+    }
   },
   "emptyState": {
     "message": "No content yet",
@@ -701,11 +715,22 @@
         "label": "Email Address",
         "placeholder": "Enter your new email address",
         "submit": "Save Email",
+        "modalTitle": "Verify New Email",
+        "modalDescription": "Enter your new email address and the verification code sent to that mailbox.",
         "success": "Email updated",
         "loadError": "Failed to load email information",
         "required": "Please enter an email address",
         "invalid": "Please enter a valid email address",
-        "updateError": "Failed to update email, please try again later"
+        "updateError": "Failed to update email, please try again later",
+        "codeLabel": "Verification Code",
+        "codePlaceholder": "Enter verification code",
+        "codeRequired": "Please enter the verification code",
+        "sendCode": "Send Code",
+        "codeSent": "Verification code sent",
+        "codeSendError": "Failed to send verification code",
+        "resendIn": "{seconds}s",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
       },
       "address": {
         "title": "Change Address",

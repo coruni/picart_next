@@ -1,9 +1,10 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
+import { formatCompactNumber } from "@/lib";
 import { TagList } from "@/types";
 import { ChevronRight, Hash } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 type TopicCardProps = {
@@ -15,10 +16,19 @@ type TopicCardProps = {
 export const TopicCard = ({
   tag,
   showAvatar = false,
-  showMembers = false,
+  showMembers: _showMembers = false,
   loading = "lazy",
 }: TopicCardProps) => {
   const t = useTranslations("tagCard");
+  const tAccountInfo = useTranslations("accountInfo");
+  const locale = useLocale();
+  const compactNumberLabels = {
+    thousand: tAccountInfo("numberUnits.thousand"),
+    tenThousand: tAccountInfo("numberUnits.tenThousand"),
+    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+    million: tAccountInfo("numberUnits.million"),
+    billion: tAccountInfo("numberUnits.billion"),
+  };
 
   return (
     <article className="border-b border-border last-of-type:border-b-0">
@@ -57,7 +67,15 @@ export const TopicCard = ({
                 </span>
               </div>
               <span className="text-xs text-secondary">
-                {tag.articleCount} {t("posts")} / {tag.followCount}{" "}
+                {formatCompactNumber(tag.articleCount, {
+                  locale,
+                  labels: compactNumberLabels,
+                })}{" "}
+                {t("posts")} /{" "}
+                {formatCompactNumber(tag.followCount, {
+                  locale,
+                  labels: compactNumberLabels,
+                })}{" "}
                 {t("members")}
               </span>
             </div>

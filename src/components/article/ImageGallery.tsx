@@ -31,18 +31,20 @@ export function ImageGallery({
   const [overflowingIndexes, setOverflowingIndexes] = useState<number[]>([]);
 
   const syncThumbNavState = (swiper: SwiperType) => {
-    setThumbCanScrollPrev(!swiper.isBeginning);
-    setThumbCanScrollNext(!swiper.isEnd);
+    const wrapperWidth = swiper.wrapperEl?.scrollWidth || 0;
+    const containerWidth = swiper.el?.clientWidth || swiper.width || 0;
+    const hasOverflow = wrapperWidth > containerWidth + 1;
+
+    setThumbHasOverflow(hasOverflow);
+    setThumbCanScrollPrev(hasOverflow && !swiper.isBeginning);
+    setThumbCanScrollNext(hasOverflow && !swiper.isEnd);
   };
 
   useEffect(() => {
     if (!thumbsSwiper || thumbsSwiper.destroyed) return;
 
     const updateOverflow = () => {
-      const wrapperWidth = thumbsSwiper.wrapperEl?.scrollWidth || 0;
-      const containerWidth =
-        thumbsSwiper.el?.clientWidth || thumbsSwiper.width || 0;
-      setThumbHasOverflow(wrapperWidth > containerWidth + 1);
+      syncThumbNavState(thumbsSwiper);
     };
 
     updateOverflow();
@@ -104,17 +106,16 @@ export function ImageGallery({
     <>
       <div className="w-full min-w-0 space-y-2">
         <div className="relative mx-auto w-full min-w-0 overflow-hidden">
-          {thumbHasOverflow && (
+          {thumbHasOverflow && thumbCanScrollPrev ? (
             <button
               type="button"
               aria-label={t("scrollThumbnailsLeft")}
-              className="absolute left-2 top-1/2 z-8 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 disabled:pointer-events-none disabled:opacity-35"
+              className="absolute left-2 top-1/2 z-8 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70"
               onClick={() => thumbsSwiper?.slidePrev()}
-              disabled={!thumbCanScrollPrev}
             >
               <ChevronLeft size={18} />
             </button>
-          )}
+          ) : null}
           <Swiper
             onSwiper={(swiper) => {
               setThumbsSwiper(swiper);
@@ -151,17 +152,16 @@ export function ImageGallery({
               </SwiperSlide>
             ))}
           </Swiper>
-          {thumbHasOverflow && (
+          {thumbHasOverflow && thumbCanScrollNext ? (
             <button
               type="button"
               aria-label={t("scrollThumbnailsRight")}
-              className="absolute right-2 top-1/2 z-8 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70 disabled:pointer-events-none disabled:opacity-35"
+              className="absolute right-2 top-1/2 z-8 flex h-8 w-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-sm transition-opacity hover:bg-black/70"
               onClick={() => thumbsSwiper?.slideNext()}
-              disabled={!thumbCanScrollNext}
             >
               <ChevronRight size={18} />
             </button>
-          )}
+          ) : null}
         </div>
 
         <div className="w-full min-w-0 overflow-hidden rounded-xl">

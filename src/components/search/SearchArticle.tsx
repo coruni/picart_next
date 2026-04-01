@@ -1,9 +1,10 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { cn, prepareRichTextHtmlForSummary } from "@/lib";
+import { cn, formatCompactNumber, prepareRichTextHtmlForSummary } from "@/lib";
 import { ArticleList } from "@/types";
 import { Eye } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 import { Avatar } from "../ui/Avatar";
 
@@ -41,10 +42,19 @@ export function SearchArticle({
   article,
   keyword,
 }: SearchArticleProps) {
+  const locale = useLocale();
+  const tAccountInfo = useTranslations("accountInfo");
   const summaryHtml =
     article.summary && typeof article.summary === "string"
       ? prepareRichTextHtmlForSummary(article.summary)
       : "";
+  const compactNumberLabels = {
+    thousand: tAccountInfo("numberUnits.thousand"),
+    tenThousand: tAccountInfo("numberUnits.tenThousand"),
+    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+    million: tAccountInfo("numberUnits.million"),
+    billion: tAccountInfo("numberUnits.billion"),
+  };
 
   return (
     <article>
@@ -89,7 +99,10 @@ export function SearchArticle({
               <div className="flex items-center text-secondary text-xs">
                 <Eye size={16}/>
                 <span className="ml-1 text-xs text-muted-foreground">
-                  {article.views}
+                  {formatCompactNumber(article.views, {
+                    locale,
+                    labels: compactNumberLabels,
+                  })}
                 </span>
               </div>
             </div>

@@ -5,7 +5,12 @@ import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Avatar } from "@/components/ui/Avatar";
 import { FollowButtonWithStatus } from "@/components/ui/FollowButtonWithStatus";
 import { Link } from "@/i18n/routing";
-import { cn, formatRelativeTime, prepareRichTextHtmlForSummary } from "@/lib";
+import {
+  cn,
+  formatCompactNumber,
+  formatRelativeTime,
+  prepareRichTextHtmlForSummary,
+} from "@/lib";
 import { useUserStore } from "@/stores";
 import type { ArticleDetail, ArticleList } from "@/types";
 import {
@@ -33,6 +38,7 @@ export const ArticleCard = ({
 }: ArticleCardProps) => {
   const currentUser = useUserStore((state) => state.user);
   const t = useTranslations("time");
+  const tAccountInfo = useTranslations("accountInfo");
   const locale = useLocale();
   const [viewerVisible, setViewerVisible] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(0);
@@ -49,6 +55,13 @@ export const ArticleCard = ({
   const previewImages = (article.images || []).filter(
     (url) => !!url && url !== article.cover,
   );
+  const compactNumberLabels = {
+    thousand: tAccountInfo("numberUnits.thousand"),
+    tenThousand: tAccountInfo("numberUnits.tenThousand"),
+    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+    million: tAccountInfo("numberUnits.million"),
+    billion: tAccountInfo("numberUnits.billion"),
+  };
 
   const openImageViewer = (index: number) => {
     setViewerIndex(index);
@@ -302,12 +315,22 @@ export const ArticleCard = ({
       <div className="mt-4 flex items-center text-secondary text-sm">
         <div className="flex items-center flex-1">
           <Eye size={20} />
-          <span className="ml-2 text-xs">{article.views}</span>
+          <span className="ml-2 text-xs">
+            {formatCompactNumber(article.views, {
+              locale,
+              labels: compactNumberLabels,
+            })}
+          </span>
         </div>
         <div className="ml-2 w-20 flex items-center justify-end">
           <div className="flex items-center">
             <MessageCircleMore size={20} />
-            <span className="ml-2 text-xs">{article.commentCount}</span>
+            <span className="ml-2 text-xs">
+              {formatCompactNumber(article.commentCount, {
+                locale,
+                labels: compactNumberLabels,
+              })}
+            </span>
           </div>
         </div>
         <div className="ml-6 flex items-center justify-end">

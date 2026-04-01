@@ -4,6 +4,7 @@ import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
 import {
   cn,
+  formatCompactNumber,
   prepareCommentHtmlForDisplay,
   sanitizeHtmlForRender,
 } from "@/lib";
@@ -38,8 +39,16 @@ export function CommentCard({
   className,
 }: CommentCardProps) {
   const t = useTranslations("time");
+  const tAccountInfo = useTranslations("accountInfo");
   const locale = useLocale();
   const tComment = useTranslations("commentList");
+  const compactNumberLabels = {
+    thousand: tAccountInfo("numberUnits.thousand"),
+    tenThousand: tAccountInfo("numberUnits.tenThousand"),
+    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+    million: tAccountInfo("numberUnits.million"),
+    billion: tAccountInfo("numberUnits.billion"),
+  };
 
   const isUserComment = "author" in comment;
   const user = isUserComment
@@ -183,7 +192,12 @@ export function CommentCard({
                 onClick={handleLike}
               >
                 <ThumbsUp size={18} />
-                <span>{likeCount}</span>
+                <span>
+                  {formatCompactNumber(likeCount, {
+                    locale,
+                    labels: compactNumberLabels,
+                  })}
+                </span>
               </div>
             </div>
           </div>

@@ -6,4 +6,5 @@ export * from "./fingerprint";
 export * from "./cookies";
 export * from "./rich-text";
 export * from "./time";
+export * from "./number";
 

@@ -2,8 +2,9 @@
 
 import { tagControllerFindAll } from "@/api";
 import { Link } from "@/i18n/routing";
+import { formatCompactNumber } from "@/lib";
 import { TagList } from "@/types";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { unstable_cache } from "next/cache";
 
 // 缓存标签数据 1 小时
@@ -28,6 +29,15 @@ const getCachedRecommendTags = unstable_cache(
 
 export const RecommendTagWidget = async () => {
   const t = await getTranslations("sidebar");
+  const tAccountInfo = await getTranslations("accountInfo");
+  const locale = await getLocale();
+  const compactNumberLabels = {
+    thousand: tAccountInfo("numberUnits.thousand"),
+    tenThousand: tAccountInfo("numberUnits.tenThousand"),
+    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+    million: tAccountInfo("numberUnits.million"),
+    billion: tAccountInfo("numberUnits.billion"),
+  };
 
   let tags: TagList = [];
   try {
@@ -66,7 +76,16 @@ export const RecommendTagWidget = async () => {
           </div>
           <div className="mt-1 text-secondary text-xs">
             <span>
-              {tag.articleCount} {t("posts")} / {tag.followCount} {t("members")}
+              {formatCompactNumber(tag.articleCount, {
+                locale,
+                labels: compactNumberLabels,
+              })}{" "}
+              {t("posts")} /{" "}
+              {formatCompactNumber(tag.followCount, {
+                locale,
+                labels: compactNumberLabels,
+              })}{" "}
+              {t("members")}
             </span>
           </div>
         </div>

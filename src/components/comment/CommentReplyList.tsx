@@ -15,7 +15,12 @@ import {
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
-import { cn, formatRelativeTime, prepareCommentHtmlForDisplay } from "@/lib";
+import {
+  cn,
+  formatCompactNumber,
+  formatRelativeTime,
+  prepareCommentHtmlForDisplay,
+} from "@/lib";
 import { CommentList } from "@/types";
 import {
   ChevronDown,
@@ -26,7 +31,7 @@ import {
   MessageCircleMore,
   ThumbsUp,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
@@ -69,7 +74,16 @@ export function CommentReplyList({
   onOpenImageViewer,
 }: CommentReplyListProps) {
   const tComment = useTranslations("commentList");
+  const tAccountInfo = useTranslations("accountInfo");
   const tTime = useTranslations("time");
+  const locale = useLocale();
+  const compactNumberLabels = {
+    thousand: tAccountInfo("numberUnits.thousand"),
+    tenThousand: tAccountInfo("numberUnits.tenThousand"),
+    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+    million: tAccountInfo("numberUnits.million"),
+    billion: tAccountInfo("numberUnits.billion"),
+  };
   const observerRef = useRef<HTMLDivElement>(null);
   const scrollRootRef = useRef<HTMLDivElement>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -463,7 +477,12 @@ export function CommentReplyList({
                     onClick={() => void onToggleLike(data.id)}
                   >
                     <ThumbsUp size={20} />
-                    <span className="text-xs">{data.likes}</span>
+                    <span className="text-xs">
+                      {formatCompactNumber(data.likes, {
+                        locale,
+                        labels: compactNumberLabels,
+                      })}
+                    </span>
                   </button>
                 </div>
               </div>

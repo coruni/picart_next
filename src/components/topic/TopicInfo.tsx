@@ -5,7 +5,7 @@ import { DropdownMenu, MenuItem } from "@/components/shared";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useIsMobile } from "@/hooks";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
-import { cn } from "@/lib";
+import { cn, formatCompactNumber } from "@/lib";
 import { TagDetail } from "@/types";
 import { Copy, MoreHorizontal } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -29,7 +29,15 @@ export const TopicInfo = ({
   });
   const tButton = useTranslations("followButton");
   const t = useTranslations("topicInfo");
+  const tAccountInfo = useTranslations("accountInfo");
   const locale = useLocale();
+  const compactNumberLabels = {
+    thousand: tAccountInfo("numberUnits.thousand"),
+    tenThousand: tAccountInfo("numberUnits.tenThousand"),
+    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+    million: tAccountInfo("numberUnits.million"),
+    billion: tAccountInfo("numberUnits.billion"),
+  };
   const [isFollowed, setIsFollowed] = useState(initialIsFollowed || false);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, copyToClipboard] = useCopyToClipboard();
@@ -105,7 +113,10 @@ export const TopicInfo = ({
 
             <div className="flex cursor-pointer items-center hover:text-primary">
               <span className="text-lg md:text-[22px]">
-                {tag?.articleCount || 0}
+                {formatCompactNumber(tag?.articleCount, {
+                  locale,
+                  labels: compactNumberLabels,
+                })}
               </span>
               <span className="ml-1 text-xs text-secondary md:text-sm">
                 {t("posts")}
@@ -114,7 +125,10 @@ export const TopicInfo = ({
             </div>
             <div className="flex cursor-pointer items-center hover:text-primary">
               <span className="text-lg md:text-[22px]">
-                {tag.followCount || 0}
+                {formatCompactNumber(tag.followCount, {
+                  locale,
+                  labels: compactNumberLabels,
+                })}
               </span>
               <span className="ml-1 text-xs text-secondary md:text-sm">
                 {t("members")}

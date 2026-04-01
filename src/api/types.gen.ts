@@ -2987,6 +2987,7 @@ export type UserControllerFindOneResponses = {
             isFollowed: boolean;
             isMember: boolean;
             equippedDecorations: Decoration;
+            likes: number;
         };
     };
 };
@@ -6256,6 +6257,7 @@ export type ArticleControllerFindHotSearchData = {
          * 限制
          */
         limit?: number;
+        keyword?: string;
     };
     url: '/article/hot-search';
 };

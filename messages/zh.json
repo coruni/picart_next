@@ -645,6 +645,13 @@
     "noSubchannels": "该频道暂无子分类"
   },
   "accountInfo": {
+    "numberUnits": {
+      "thousand": "千",
+      "tenThousand": "万",
+      "hundredMillion": "亿",
+      "million": "百万",
+      "billion": "十亿"
+    },
     "posts": "帖子",
     "following": "关注",
     "followers": "粉丝",
@@ -699,11 +706,22 @@
         "label": "邮箱地址",
         "placeholder": "请输入新的邮箱地址",
         "submit": "保存邮箱",
+        "modalTitle": "验证新邮箱",
+        "modalDescription": "请输入新的邮箱地址，并填写发送到该邮箱的验证码。",
         "success": "邮箱已更新",
         "loadError": "邮箱信息加载失败",
         "required": "请输入邮箱地址",
         "invalid": "请输入有效的邮箱地址",
-        "updateError": "邮箱更新失败，请稍后重试"
+        "updateError": "邮箱更新失败，请稍后重试",
+        "codeLabel": "验证码",
+        "codePlaceholder": "请输入验证码",
+        "codeRequired": "请输入验证码",
+        "sendCode": "发送验证码",
+        "codeSent": "验证码已发送",
+        "codeSendError": "验证码发送失败",
+        "resendIn": "{seconds}秒",
+        "cancel": "取消",
+        "confirm": "确认"
       },
       "address": {
         "title": "更改地址",

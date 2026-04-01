@@ -4188,6 +4188,9 @@
                         },
                         "equippedDecorations": {
                           "$ref": "#/components/schemas/Decoration"
+                        },
+                        "likes": {
+                          "type": "integer"
                         }
                       },
                       "required": [
@@ -4230,7 +4233,8 @@
                         "updatedAt",
                         "isFollowed",
                         "isMember",
-                        "equippedDecorations"
+                        "equippedDecorations",
+                        "likes"
                       ]
                     }
                   },
@@ -15916,6 +15920,15 @@
             "required": false,
             "schema": {
               "type": "integer"
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           },
           {

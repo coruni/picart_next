@@ -14,7 +14,7 @@ export default async function SettingLayout({
   void params;
 
   return (
-    <div className="page-container max-w-3xl!">
+    <div className="page-container max-w-3xl! gap-3! md:gap-6">
       <div
         id="setting-left-panel"
         className="top-header sticky self-start rounded-xl border border-border bg-card px-1 py-3 md:min-w-56 md:px-2 md:py-4"

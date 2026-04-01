@@ -1,23 +1,16 @@
 ﻿"use client";
 
-import { articleControllerSearch } from "@/api";
+import { articleControllerFindHotSearch } from "@/api";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { usePathname, useRouter } from "@/i18n/routing";
-import { getHotSearchKeywords } from "@/lib/hot-search-client";
-import { cn, debounce } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useSearchStore } from "@/stores";
 import { CategoryList } from "@/types";
 import { ChevronDown, Loader2, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-interface SearchResult {
-  id: number;
-  title: string;
-  cover?: string;
-}
 
 export interface SearchBoxParams {
   q: string;
@@ -72,7 +65,6 @@ export function SearchBox({
   syncSearchStore = false,
 }: SearchBoxProps) {
   const t = useTranslations("common");
-  const tSearch = useTranslations("searchBox");
   const router = useRouter();
   const pathname = usePathname();
   const [selectedCategory, setSelectedCategory] = useState<
@@ -81,10 +73,8 @@ export function SearchBox({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchPanelOpen, setIsSearchPanelOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(defaultValue);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [hotSearches, setHotSearches] = useState<string[]>(
-    () => (tSearch.raw("hotSearches") as string[]) || [],
-  );
+  const [hotSearches, setHotSearches] = useState<string[]>([]);
+  const [panelHotSearches, setPanelHotSearches] = useState<string[]>([]);
   const [currentHotSearchIndex, setCurrentHotSearchIndex] = useState(0);
   const [isPlaceholderAnimating, setIsPlaceholderAnimating] = useState(false);
   const [isPlaceholderResetting, setIsPlaceholderResetting] = useState(false);
@@ -98,8 +88,8 @@ export function SearchBox({
 
   const searchBoxRef = useRef<HTMLDivElement>(null!);
   const inputRef = useRef<HTMLInputElement>(null);
-  const searchAbortControllerRef = useRef<AbortController | null>(null);
   const hotSearchLoadedRef = useRef(false);
+  const hotSearchAbortControllerRef = useRef<AbortController | null>(null);
 
   // Close search panel when clicking outside
   useClickOutside<HTMLDivElement>(searchBoxRef, () => {
@@ -112,66 +102,9 @@ export function SearchBox({
     [categories],
   );
 
-  // 搜索建议（防抖）
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const searchSuggestions = useCallback(
-    debounce((query: string) => {
-      (async () => {
-        if (!query.trim()) {
-          searchAbortControllerRef.current?.abort();
-          searchAbortControllerRef.current = null;
-          setIsSearching(false);
-          setSearchResults([]);
-          return;
-        }
-
-        searchAbortControllerRef.current?.abort();
-        const abortController = new AbortController();
-        searchAbortControllerRef.current = abortController;
-
-        setIsSearching(true);
-        try {
-          const response = await articleControllerSearch({
-            query: {
-              keyword: query.trim(),
-              limit: 6,
-              ...(selectedCategory?.id && { categoryId: selectedCategory.id }),
-            },
-            signal: abortController.signal,
-          });
-          if (searchAbortControllerRef.current !== abortController) {
-            return;
-          }
-          setSearchResults(response?.data?.data?.data || []);
-        } catch (error) {
-          if (abortController.signal.aborted) {
-            return;
-          }
-          console.error("Search error:", error);
-          setSearchResults([]);
-        } finally {
-          if (searchAbortControllerRef.current === abortController) {
-            searchAbortControllerRef.current = null;
-            setIsSearching(false);
-          }
-        }
-      })();
-    }, 500),
-    [selectedCategory],
-  );
-
   useEffect(() => {
     setSearchQuery(defaultValue);
   }, [defaultValue]);
-
-  useEffect(() => {
-    if (!defaultValue.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    searchSuggestions(defaultValue);
-  }, [defaultValue, searchSuggestions]);
 
   useEffect(() => {
     if (defaultCategoryId == null) {
@@ -184,14 +117,6 @@ export function SearchBox({
     );
     setSelectedCategory(matchedCategory);
   }, [defaultCategoryId, menuItems]);
-
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      return;
-    }
-
-    searchSuggestions(searchQuery);
-  }, [searchQuery, searchSuggestions, selectedCategory?.id]);
 
   // 默认选中第一个分类或“全部”
   const currentCategory = selectedCategory || {
@@ -207,15 +132,38 @@ export function SearchBox({
     ? ""
     : placeholder || t("search");
 
+  const fetchHotSearches = useCallback(
+    async (keyword?: string, signal?: AbortSignal) => {
+      const response = await articleControllerFindHotSearch({
+        query: {
+          limit: 8,
+          ...(keyword ? { keyword } : {}),
+        },
+        signal,
+      });
 
+      const items = response.data?.data?.data;
+      if (!Array.isArray(items)) {
+        return [];
+      }
 
-  // 清空搜索结果
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setSearchResults([]);
-    }
-  }, [searchQuery]);
+      return items
+        .map((item) => {
+          if (
+            typeof item === "object" &&
+            item !== null &&
+            "keyword" in item &&
+            typeof item.keyword === "string"
+          ) {
+            return item.keyword.trim();
+          }
 
+          return "";
+        })
+        .filter(Boolean);
+    },
+    [],
+  );
   useEffect(() => {
     if (!syncSearchStore) return;
 
@@ -227,30 +175,22 @@ export function SearchBox({
   }, [searchQuery, selectedCategory, setSearchParams, sort, syncSearchStore]);
 
   useEffect(() => {
-    return () => {
-      searchAbortControllerRef.current?.abort();
-    };
-  }, []);
-
-  useEffect(() => {
     if (hotSearchLoadedRef.current) {
       return;
     }
 
     hotSearchLoadedRef.current = true;
 
-    const fallbackHotSearches = (tSearch.raw("hotSearches") as string[]) || [];
-
     void (async () => {
       try {
-        const keywords = await getHotSearchKeywords(fallbackHotSearches);
+        const keywords = await fetchHotSearches();
         setHotSearches(keywords);
+        setPanelHotSearches(keywords);
       } catch (error) {
         console.error("Hot search error:", error);
-        setHotSearches(fallbackHotSearches);
       }
     })();
-  }, [tSearch]);
+  }, [fetchHotSearches]);
 
   useEffect(() => {
     if (hotSearches.length <= 1) {
@@ -279,6 +219,54 @@ export function SearchBox({
       }
     };
   }, [hotSearches]);
+
+  useEffect(() => {
+    if (!isSearchPanelOpen) {
+      hotSearchAbortControllerRef.current?.abort();
+      hotSearchAbortControllerRef.current = null;
+      setIsSearching(false);
+      return;
+    }
+
+    const keyword = searchQuery.trim();
+    const abortController = new AbortController();
+    hotSearchAbortControllerRef.current?.abort();
+    hotSearchAbortControllerRef.current = abortController;
+    const timer = window.setTimeout(() => {
+      setIsSearching(true);
+
+      void fetchHotSearches(keyword, abortController.signal)
+        .then((keywords) => {
+          if (hotSearchAbortControllerRef.current !== abortController) {
+            return;
+          }
+
+          setPanelHotSearches(keywords);
+        })
+        .catch((error) => {
+          if (abortController.signal.aborted) {
+            return;
+          }
+
+          console.error("Search hot keyword error:", error);
+          setPanelHotSearches([]);
+        })
+        .finally(() => {
+          if (hotSearchAbortControllerRef.current === abortController) {
+            hotSearchAbortControllerRef.current = null;
+            setIsSearching(false);
+          }
+        });
+    }, 500);
+
+    return () => {
+      window.clearTimeout(timer);
+      abortController.abort();
+      if (hotSearchAbortControllerRef.current === abortController) {
+        hotSearchAbortControllerRef.current = null;
+      }
+    };
+  }, [fetchHotSearches, isSearchPanelOpen, searchQuery]);
 
   // 跳转到搜索页面
   const goToSearchPage = useCallback(
@@ -311,15 +299,6 @@ export function SearchBox({
     [router, searchHistory, setSearchHistory, selectedCategory, pathname],
   );
 
-  // 跳转到文章详情
-  const goToArticle = useCallback(
-    (articleId: number) => {
-      router.push(`/article/${articleId}`);
-      setIsSearchPanelOpen(false);
-    },
-    [router],
-  );
-
   const handleSearch = (query: string) => {
     const normalizedQuery = query.trim() || currentHotSearchKeyword;
     if (!normalizedQuery) return;
@@ -336,10 +315,6 @@ export function SearchBox({
   const handleInputFocus = () => {
     setIsSearchPanelOpen(true);
     setIsDropdownOpen(false);
-    // 如果下拉面板已打开且已有数据，不再重复请求
-    if (searchQuery.trim() && !(searchResults.length > 0)) {
-      searchSuggestions(searchQuery);
-    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -360,7 +335,6 @@ export function SearchBox({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
-    searchSuggestions(value);
   };
 
   return (
@@ -516,7 +490,7 @@ export function SearchBox({
 
         {/* 搜索面板 */}
         {isSearchPanelOpen && (
-          <div className="absolute top-full left-0 mt-2 w-full bg-card border border-border rounded-xl shadow-lg z-50 max-h-96 overflow-hidden">
+          <div className="absolute top-full left-0 mt-2 w-full bg-card border border-border rounded-md shadow-lg z-50 max-h-96 overflow-hidden">
             <div className="p-4">
               {!searchQuery ? (
                 <>
@@ -575,7 +549,7 @@ export function SearchBox({
                 </>
               ) : (
                 <>
-                  {/* 搜索建议 */}
+                  {/* 热词建议 */}
                   {isSearching ? (
                     <div className="flex items-center justify-center py-8">
                       <Loader2
@@ -583,31 +557,24 @@ export function SearchBox({
                         className="animate-spin text-muted-foreground"
                       />
                     </div>
-                  ) : searchResults.length > 0 ? (
+                  ) : panelHotSearches.length > 0 ? (
                     <div className="space-y-1 -mx-2">
-                      {searchResults.map((article) => (
+                      {panelHotSearches.map((keyword, index) => (
                         <button
-                          key={article.id}
-                          onClick={() => goToArticle(article.id)}
+                          key={`${keyword}-${index}`}
+                          onClick={() => handleSearchFromHistory(keyword)}
                           className="cursor-pointer h-9 px-3 w-full flex-1 text-left rounded-md hover:bg-primary/10 text-nowrap text-ellipsis line-clamp-1 text-sm"
                         >
                           <span className="text-black/65 dark:text-white font-semibold">
-                            {highlightText(article.title, searchQuery)}
+                            {highlightText(keyword, searchQuery)}
                           </span>
                         </button>
                       ))}
-                      {/* 查看更多 */}
-                      <button
-                        onClick={() => goToSearchPage(searchQuery)}
-                        className="w-full text-center py-2 text-sm text-primary hover:underline"
-                      >
-                        {t("viewAllResults")}
-                      </button>
                     </div>
                   ) : (
                     <div className="text-center py-8">
                       <p className="text-sm text-muted-foreground">
-                        {t("noResults")}
+                        {t("noData")}
                       </p>
                     </div>
                   )}

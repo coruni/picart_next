@@ -2,7 +2,12 @@
 
 import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
-import { cn, formatRelativeTime, prepareCommentHtmlForDisplay } from "@/lib";
+import {
+  cn,
+  formatCompactNumber,
+  formatRelativeTime,
+  prepareCommentHtmlForDisplay,
+} from "@/lib";
 import { CommentList } from "@/types";
 import {
   Image as ImageIcon,
@@ -11,7 +16,7 @@ import {
   MessageCircleMore,
   ThumbsUp,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { memo, useCallback } from "react";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
@@ -46,7 +51,16 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   showTranslateButton = false,
 }: CommentReplyItemProps) {
   const tComment = useTranslations("commentList");
+  const tAccountInfo = useTranslations("accountInfo");
   const tTime = useTranslations("time");
+  const locale = useLocale();
+  const compactNumberLabels = {
+    thousand: tAccountInfo("numberUnits.thousand"),
+    tenThousand: tAccountInfo("numberUnits.tenThousand"),
+    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+    million: tAccountInfo("numberUnits.million"),
+    billion: tAccountInfo("numberUnits.billion"),
+  };
   const replyTarget =
     reply.parent && reply.parent.id !== rootCommentId
       ? {
@@ -221,7 +235,12 @@ export const CommentReplyItem = memo(function CommentReplyItem({
             onClick={handleToggleLike}
           >
             <ThumbsUp size={20} />
-            <span className="text-xs">{reply?.likes}</span>
+            <span className="text-xs">
+              {formatCompactNumber(reply?.likes, {
+                locale,
+                labels: compactNumberLabels,
+              })}
+            </span>
           </button>
         </div>
       </div>

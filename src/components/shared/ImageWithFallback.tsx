@@ -169,7 +169,11 @@ export function ImageWithFallback({
         height={height}
         unoptimized={shouldDisableOptimization}
         className={cn("h-auto max-w-full", imageClassName)}
-        style={style}
+        style={{
+          width: "auto",
+          height: "auto",
+          ...style,
+        }}
         onLoad={handleLoad}
         onError={handleError}
       />

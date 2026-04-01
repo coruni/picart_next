@@ -3,9 +3,9 @@
 import { GuardedLink } from "@/components/shared";
 import { Avatar } from "@/components/ui/Avatar";
 import { FollowButtonWithStatus } from "@/components/ui/FollowButtonWithStatus";
-import { cn } from "@/lib";
+import { cn, formatCompactNumber } from "@/lib";
 import { UserList } from "@/types";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 type SearchUserProps = {
   user: UserList[number];
@@ -38,8 +38,17 @@ function highlightText(text: string, keyword?: string) {
 
 export function SearchUser({ user, border, keyword }: SearchUserProps) {
   const t = useTranslations("userList");
+  const tAccountInfo = useTranslations("accountInfo");
+  const locale = useLocale();
   const displayName = user.nickname || user.username;
   const bio = user.description?.trim();
+  const compactNumberLabels = {
+    thousand: tAccountInfo("numberUnits.thousand"),
+    tenThousand: tAccountInfo("numberUnits.tenThousand"),
+    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+    million: tAccountInfo("numberUnits.million"),
+    billion: tAccountInfo("numberUnits.billion"),
+  };
 
   return (
     <article>
@@ -80,13 +89,25 @@ export function SearchUser({ user, border, keyword }: SearchUserProps) {
 
           <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
             <span>
-              {user.articleCount} {t("posts")}
+              {formatCompactNumber(user.articleCount, {
+                locale,
+                labels: compactNumberLabels,
+              })}{" "}
+              {t("posts")}
             </span>
             <span>
-              {user.followerCount} {t("followers")}
+              {formatCompactNumber(user.followerCount, {
+                locale,
+                labels: compactNumberLabels,
+              })}{" "}
+              {t("followers")}
             </span>
             <span>
-              {user.followingCount} {t("following")}
+              {formatCompactNumber(user.followingCount, {
+                locale,
+                labels: compactNumberLabels,
+              })}{" "}
+              {t("following")}
             </span>
           </div>
         </div>

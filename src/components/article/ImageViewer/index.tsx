@@ -118,9 +118,9 @@ export function ImageViewer({
     if (!canvas) return;
 
     const isMobile = isMobileViewport();
-    const leftOffset = isMobile ? 24 : 130;
+    const leftOffset = isMobile ? 0 : 130;
     const rightOffset = isMobile
-      ? 24
+      ? 0
       : enableSidePanel && panelExpandedRef.current
         ? 486
         : 96;
@@ -136,7 +136,7 @@ export function ImageViewer({
     const container = viewerContainerRef.current;
     if (!container) return;
 
-    const offset = isMobileViewport() ? "24px" : "112px";
+    const offset = isMobileViewport() ? "0px" : "112px";
     const prevButton = container.querySelector(
       ".custom-prev-btn",
     ) as HTMLButtonElement | null;

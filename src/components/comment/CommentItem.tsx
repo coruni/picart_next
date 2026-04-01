@@ -4,7 +4,12 @@ import { commentControllerLike } from "@/api";
 import { ImageViewer } from "@/components/article/ImageViewer";
 import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
-import { cn, formatRelativeTime, prepareCommentHtmlForDisplay } from "@/lib";
+import {
+  cn,
+  formatCompactNumber,
+  formatRelativeTime,
+  prepareCommentHtmlForDisplay,
+} from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
@@ -15,7 +20,7 @@ import {
   MessageCircleMore,
   ThumbsUp,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { memo, useCallback, useEffect, useState } from "react";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
@@ -33,7 +38,16 @@ export const CommentItem = memo(function CommentItem({
   onSubmitted,
 }: CommentItemProps) {
   const tComment = useTranslations("commentList");
+  const tAccountInfo = useTranslations("accountInfo");
   const tTime = useTranslations("time");
+  const locale = useLocale();
+  const compactNumberLabels = {
+    thousand: tAccountInfo("numberUnits.thousand"),
+    tenThousand: tAccountInfo("numberUnits.tenThousand"),
+    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+    million: tAccountInfo("numberUnits.million"),
+    billion: tAccountInfo("numberUnits.billion"),
+  };
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const [commentState, setCommentState] = useState(data);
   const [viewerVisible, setViewerVisible] = useState(false);
@@ -250,7 +264,12 @@ export const CommentItem = memo(function CommentItem({
               onClick={() => void handleToggleLike(commentState.id)}
             >
               <ThumbsUp size={20} />
-              <span className="text-xs">{commentState.likes}</span>
+              <span className="text-xs">
+                {formatCompactNumber(commentState.likes, {
+                  locale,
+                  labels: compactNumberLabels,
+                })}
+              </span>
             </button>
           </div>
         </div>
