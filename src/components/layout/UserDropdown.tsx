@@ -14,7 +14,12 @@ import { Switch } from "@/components/ui/Switch";
 import { useIsMobile } from "@/hooks";
 import { Link, routing, usePathname, useRouter } from "@/i18n/routing";
 import { MODAL_IDS } from "@/lib/modal-helpers";
-import { useAppStore, useModalStore, useTranslateStore, useUserStore } from "@/stores";
+import {
+  useAppStore,
+  useModalStore,
+  useTranslateStore,
+  useUserStore,
+} from "@/stores";
 import {
   Check,
   ChevronDown,
@@ -90,7 +95,7 @@ export function UserDropdown() {
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    logout();
+    await logout();
     window.location.reload();
   };
 

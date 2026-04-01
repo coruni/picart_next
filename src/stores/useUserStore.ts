@@ -73,23 +73,23 @@ export const useUserStore = create<UserState>()(
       },
 
       logout: async () => {
-        // 1. 清除 cookie
         syncTokenToCookie(null);
 
-        // 触发退出登录
-        await userControllerLogout();
-        
-        // 2. 清除 localStorage（在 set 之前）
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("user-storage");
-        }
-
-        // 3. 重置状态
         set({
           user: null,
           token: null,
           isAuthenticated: false,
         });
+
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("user-storage");
+        }
+
+        try {
+          await userControllerLogout();
+        } catch (error) {
+          console.error("Failed to logout on server:", error);
+        }
       },
 
       clearStorage: () => {
