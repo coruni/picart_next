@@ -15,6 +15,7 @@ import {
   getPublicCategories,
   getPublicConfig,
 } from "@/lib/seo";
+import { getCurrentUser } from "@/lib/current-user";
 import { getServerCookie } from "@/lib/server-cookies";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -61,6 +62,7 @@ export default async function LocaleLayout({
     getServerCookie(DEVICE_ID_COOKIE_NAME),
     buildAuthHeaders(),
   ]);
+  const initialUser = initialToken ? await getCurrentUser() : null;
   const categories = await getPublicCategories();
   const config = await getPublicConfig();
   void deviceId;
@@ -77,7 +79,7 @@ export default async function LocaleLayout({
 
         <UserStateProvider
           initialToken={initialToken}
-          initialUser={null}
+          initialUser={initialUser}
           initialConfig={config}
         >
           <AuthRouteGuard />

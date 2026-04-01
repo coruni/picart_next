@@ -13,6 +13,8 @@ interface ChannelNavProps {
 
 export function ChannelNav({ channels, currentId }: ChannelNavProps) {
   const [isHidden, setIsHidden] = useState(false);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
   const scrollRef = useRef<HTMLUListElement>(null);
   const activeRef = useRef<HTMLLIElement>(null);
 
@@ -41,6 +43,39 @@ export function ChannelNav({ channels, currentId }: ChannelNavProps) {
     }
   }, [currentId]);
 
+  const updateScrollState = () => {
+    const element = scrollRef.current;
+    if (!element) {
+      return;
+    }
+
+    const { scrollLeft, scrollWidth, clientWidth } = element;
+    setCanScrollLeft(scrollLeft > 4);
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 4);
+  };
+
+  useEffect(() => {
+    updateScrollState();
+
+    const element = scrollRef.current;
+    if (!element) {
+      return;
+    }
+
+    const handleScroll = () => updateScrollState();
+    const resizeObserver = new ResizeObserver(() => updateScrollState());
+
+    element.addEventListener("scroll", handleScroll, { passive: true });
+    resizeObserver.observe(element);
+    window.addEventListener("resize", updateScrollState);
+
+    return () => {
+      element.removeEventListener("scroll", handleScroll);
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateScrollState);
+    };
+  }, [channels.length, currentId]);
+
   const scroll = (direction: "left" | "right") => {
     if (!scrollRef.current) return;
     const scrollAmount = 200;
@@ -60,7 +95,11 @@ export function ChannelNav({ channels, currentId }: ChannelNavProps) {
         <div className="max-w-7xl mx-auto w-full h-full px-8">
           <div className="flex items-center w-full h-full relative">
             {/* 左滑 */}
-            <div className="h-full top-0 -left-6 absolute items-center flex z-10">
+            <div
+              className={`h-full top-0 -left-6 absolute items-center z-10 transition-opacity duration-200 ${
+                canScrollLeft ? "flex opacity-100" : "pointer-events-none hidden opacity-0"
+              }`}
+            >
               <button
                 onClick={() => scroll("left")}
                 className="flex items-center outline-0 focus:none border-2 border-white text-white rounded-md hover:bg-white/10 transition-colors cursor-pointer"
@@ -69,7 +108,11 @@ export function ChannelNav({ channels, currentId }: ChannelNavProps) {
               </button>
             </div>
             {/* 右滑 */}
-            <div className="h-full top-0 -right-6 absolute items-center flex z-10">
+            <div
+              className={`h-full top-0 -right-6 absolute items-center z-10 transition-opacity duration-200 ${
+                canScrollRight ? "flex opacity-100" : "pointer-events-none hidden opacity-0"
+              }`}
+            >
               <button
                 onClick={() => scroll("right")}
                 className="flex items-center outline-0 focus:none border-2 border-white text-white rounded-md hover:bg-white/10 transition-colors cursor-pointer"

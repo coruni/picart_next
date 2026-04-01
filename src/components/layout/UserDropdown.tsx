@@ -14,7 +14,12 @@ import { Switch } from "@/components/ui/Switch";
 import { useIsMobile } from "@/hooks";
 import { Link, routing, usePathname, useRouter } from "@/i18n/routing";
 import { MODAL_IDS } from "@/lib/modal-helpers";
-import { useAppStore, useModalStore, useTranslateStore, useUserStore } from "@/stores";
+import {
+  useAppStore,
+  useModalStore,
+  useTranslateStore,
+  useUserStore,
+} from "@/stores";
 import {
   Check,
   ChevronDown,
@@ -27,6 +32,7 @@ import {
   Monitor,
   Moon,
   Power,
+  Settings,
   Sun,
   User,
   UserRoundX,
@@ -89,7 +95,7 @@ export function UserDropdown() {
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    logout();
+    await logout();
     window.location.reload();
   };
 
@@ -134,7 +140,7 @@ export function UserDropdown() {
         <button
           type="button"
           onClick={() => setOpen(!isOpen)}
-          className="mb-1  cursor-pointer flex h-10 w-full items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+          className="mb-1  cursor-pointer flex h-10 w-full items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
         >
           {trigger}
           <ChevronDown
@@ -175,7 +181,7 @@ export function UserDropdown() {
               <div className="p-1">
                 <Link
                   href={`/account/${user?.id}`}
-                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex shrink-0 items-center justify-center">
@@ -188,11 +194,10 @@ export function UserDropdown() {
                   <ChevronRight className="size-4" />
                 </Link>
               </div>
-
               <div className="p-1">
                 <GuardedLink
                   href="/profile/messages"
-                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex shrink-0 items-center justify-center">
@@ -209,7 +214,7 @@ export function UserDropdown() {
               <div className="p-1">
                 <GuardedLink
                   href="/setting/privacy"
-                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex shrink-0 items-center justify-center">
@@ -226,7 +231,7 @@ export function UserDropdown() {
               <div className="p-1">
                 <GuardedLink
                   href="/setting/blocked-users"
-                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex shrink-0 items-center justify-center">
@@ -234,6 +239,23 @@ export function UserDropdown() {
                     </div>
                     <span className="text-sm font-medium">
                       {tHeader("blockedUsers")}
+                    </span>
+                  </div>
+                  <ChevronRight className="size-4" />
+                </GuardedLink>
+              </div>
+
+              <div className="p-1">
+                <GuardedLink
+                  href="/setting"
+                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex shrink-0 items-center justify-center">
+                      <Settings className="size-5" />
+                    </div>
+                    <span className="text-sm font-medium">
+                      {tHeader("settings")}
                     </span>
                   </div>
                   <ChevronRight className="size-4" />
@@ -247,7 +269,7 @@ export function UserDropdown() {
           </h3>
 
           <div className="group/language relative p-1">
-            <div className="mb-1 flex h-10 cursor-pointer items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary">
+            <div className="mb-1 flex h-10 cursor-pointer items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary">
               <div className="flex items-center gap-3">
                 <div className="flex shrink-0 items-center justify-center">
                   <Globe className="size-5" />
@@ -271,7 +293,7 @@ export function UserDropdown() {
                   key={option.value}
                   type="button"
                   onClick={() => handleLocaleChange(option.value)}
-                  className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                  className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <span className="text-sm font-medium">{option.label}</span>
                   <Check
@@ -285,7 +307,7 @@ export function UserDropdown() {
           </div>
 
           <div className="group/theme relative p-1">
-            <div className="mb-1 flex h-10 cursor-pointer items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary">
+            <div className="mb-1 flex h-10 cursor-pointer items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary">
               <div className="flex items-center gap-3">
                 <div className="flex shrink-0 items-center justify-center rounded-full">
                   <Moon className="size-5" />
@@ -312,7 +334,7 @@ export function UserDropdown() {
                     key={option.value}
                     type="button"
                     onClick={() => handleThemeChange(option.value)}
-                    className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                    className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                   >
                     <div className="flex items-center gap-3">
                       <Icon className="size-4" />
@@ -332,7 +354,7 @@ export function UserDropdown() {
           </div>
 
           <div className="p-1 cursor-pointer">
-            <div className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary">
+            <div className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary">
               <div className="flex items-center gap-3">
                 <div className="flex shrink-0 items-center justify-center rounded-full">
                   <Languages size={20} />
@@ -354,7 +376,7 @@ export function UserDropdown() {
             {isAuthenticated ? (
               <button
                 onClick={() => setLogoutDialogOpen(true)}
-                className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
               >
                 <Power className="size-5" />
                 <span className="text-sm font-medium">{t("logout")}</span>
@@ -362,14 +384,13 @@ export function UserDropdown() {
             ) : (
               <button
                 onClick={handleLoginDialogOpen}
-                className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
               >
                 <LogIn className="size-5" />
                 <span className="text-sm font-medium">{t("login")}</span>
               </button>
             )}
           </div>
-          <UserLoginDialog />
         </div>
       </div>
 
@@ -408,7 +429,7 @@ export function UserDropdown() {
                   <Link
                     href={`/account/${user?.id}`}
                     onClick={closeMobileMenu}
-                    className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                    className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                   >
                     <div className="flex items-center gap-3">
                       <User className="size-5" />
@@ -421,7 +442,7 @@ export function UserDropdown() {
                   <GuardedLink
                     href="/profile/messages"
                     onClick={closeMobileMenu}
-                    className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                    className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                   >
                     <div className="flex items-center gap-3">
                       <MessageCircle className="size-5" />
@@ -432,9 +453,9 @@ export function UserDropdown() {
                     <ChevronRight className="size-4" />
                   </GuardedLink>
                   <GuardedLink
-                    href="/profile/privacy"
+                    href="/setting/privacy"
                     onClick={closeMobileMenu}
-                    className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                    className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                   >
                     <div className="flex items-center gap-3">
                       <Lock className="size-5" />
@@ -445,14 +466,27 @@ export function UserDropdown() {
                     <ChevronRight className="size-4" />
                   </GuardedLink>
                   <GuardedLink
-                    href="/profile/blocked-users"
+                    href="/setting/blocked-users"
                     onClick={closeMobileMenu}
-                    className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                    className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                   >
                     <div className="flex items-center gap-3">
                       <UserRoundX className="size-5" />
                       <span className="text-sm font-medium">
                         {tHeader("blockedUsers")}
+                      </span>
+                    </div>
+                    <ChevronRight className="size-4" />
+                  </GuardedLink>
+                  <GuardedLink
+                    href="/setting"
+                    onClick={closeMobileMenu}
+                    className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Settings className="size-5" />
+                      <span className="text-sm font-medium">
+                        {tHeader("settings")}
                       </span>
                     </div>
                     <ChevronRight className="size-4" />
@@ -483,7 +517,7 @@ export function UserDropdown() {
                     key={option.value}
                     type="button"
                     onClick={() => handleLocaleChange(option.value)}
-                    className="flex cursor-pointer h-10 w-full items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                    className="flex cursor-pointer h-10 w-full items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                   >
                     <span className="text-sm font-medium">{option.label}</span>
                     <Check
@@ -517,7 +551,7 @@ export function UserDropdown() {
                       key={option.value}
                       type="button"
                       onClick={() => handleThemeChange(option.value)}
-                      className="flex cursor-pointer h-10 w-full items-center justify-between rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                      className="flex cursor-pointer h-10 w-full items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                     >
                       <div className="flex items-center gap-3">
                         <Icon className="size-4" />
@@ -537,7 +571,7 @@ export function UserDropdown() {
             )}
 
             <div className="p-1">
-              <div className="mb-1  cursor-pointer flex h-10 items-center justify-between rounded-lg px-2 text-gray-500">
+              <div className="mb-1  cursor-pointer flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground">
                 <div className="flex items-center gap-3">
                   <Languages size={20} />
                   <span className="text-sm font-medium">
@@ -560,7 +594,7 @@ export function UserDropdown() {
                     setMobileMenuOpen(false);
                     setLogoutDialogOpen(true);
                   }}
-                  className="flex cursor-pointer h-10 w-full items-center gap-2 rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                  className="flex cursor-pointer h-10 w-full items-center gap-2 rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <Power className="size-5" />
                   <span className="text-sm font-medium">{t("logout")}</span>
@@ -568,7 +602,7 @@ export function UserDropdown() {
               ) : (
                 <button
                   onClick={handleLoginDialogOpen}
-                  className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-gray-500 transition-colors hover:bg-primary/15 hover:text-primary"
+                  className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <LogIn className="size-5" />
                   <span className="text-sm font-medium">{t("login")}</span>
@@ -576,7 +610,6 @@ export function UserDropdown() {
               )}
             </div>
           </div>
-          <UserLoginDialog />
         </DialogContent>
       </Dialog>
 
@@ -608,6 +641,8 @@ export function UserDropdown() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <UserLoginDialog />
     </>
   );
 }

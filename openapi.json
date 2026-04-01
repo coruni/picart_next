@@ -3024,8 +3024,23 @@
                                   "hideFavorites": {
                                     "type": "boolean"
                                   },
+                                  "hideComments": {
+                                    "type": "boolean"
+                                  },
+                                  "hideCollections": {
+                                    "type": "boolean"
+                                  },
+                                  "hideFollowers": {
+                                    "type": "boolean"
+                                  },
+                                  "hideFollowings": {
+                                    "type": "boolean"
+                                  },
+                                  "hideTags": {
+                                    "type": "boolean"
+                                  },
                                   "remark": {
-                                    "type": "null"
+                                    "type": "string"
                                   },
                                   "createdAt": {
                                     "type": "string"
@@ -3054,6 +3069,11 @@
                                   "enableSmsNotification",
                                   "enablePushNotification",
                                   "hideFavorites",
+                                  "hideComments",
+                                  "hideCollections",
+                                  "hideFollowers",
+                                  "hideFollowings",
+                                  "hideTags",
                                   "remark",
                                   "createdAt",
                                   "updatedAt"
@@ -4099,8 +4119,23 @@
                             "hideFavorites": {
                               "type": "boolean"
                             },
+                            "hideComments": {
+                              "type": "boolean"
+                            },
+                            "hideCollections": {
+                              "type": "boolean"
+                            },
+                            "hideFollowers": {
+                              "type": "boolean"
+                            },
+                            "hideFollowings": {
+                              "type": "boolean"
+                            },
+                            "hideTags": {
+                              "type": "boolean"
+                            },
                             "remark": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "createdAt": {
                               "type": "string"
@@ -4129,6 +4164,11 @@
                             "enableSmsNotification",
                             "enablePushNotification",
                             "hideFavorites",
+                            "hideComments",
+                            "hideCollections",
+                            "hideFollowers",
+                            "hideFollowings",
+                            "hideTags",
                             "remark",
                             "createdAt",
                             "updatedAt"
@@ -4681,8 +4721,23 @@
                             "hideFavorites": {
                               "type": "boolean"
                             },
+                            "hideComments": {
+                              "type": "boolean"
+                            },
+                            "hideCollections": {
+                              "type": "boolean"
+                            },
+                            "hideFollowers": {
+                              "type": "boolean"
+                            },
+                            "hideFollowings": {
+                              "type": "boolean"
+                            },
+                            "hideTags": {
+                              "type": "boolean"
+                            },
                             "remark": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "createdAt": {
                               "type": "string"
@@ -4711,6 +4766,11 @@
                             "enableSmsNotification",
                             "enablePushNotification",
                             "hideFavorites",
+                            "hideComments",
+                            "hideCollections",
+                            "hideFollowers",
+                            "hideFollowings",
+                            "hideTags",
                             "remark",
                             "createdAt",
                             "updatedAt"
@@ -8114,6 +8174,99 @@
             "bearer": []
           }
         ]
+      }
+    },
+    "/user/profile/contact": {
+      "patch": {
+        "summary": "修改邮箱和手机号",
+        "deprecated": false,
+        "description": "已实现邮箱验证，修改邮箱时需要传入验证码\n手机验证等待实现",
+        "operationId": "userController_updateProfileContact",
+        "tags": [
+          "用户管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "verificationCode": {
+                    "type": "string",
+                    "title": "验证码"
+                  }
+                }
+              },
+              "examples": {}
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
       }
     },
     "/user/wallet/transactions": {

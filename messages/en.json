@@ -166,7 +166,11 @@
     "posts": "posts",
     "followers": "followers",
     "following": "following",
-    "noBio": "This user has not added a bio yet"
+    "noBio": "This user has not added a bio yet",
+    "followersHiddenTitle": "Followers list is hidden",
+    "followersHiddenDescription": "This user has enabled privacy restrictions, so the followers list is not available right now",
+    "followingsHiddenTitle": "Following list is hidden",
+    "followingsHiddenDescription": "This user has enabled privacy restrictions, so the following list is not available right now"
   },
   "tagCard": {
     "posts": "posts",
@@ -469,13 +473,15 @@
     "dislikeRecorded": "Your content preference has been recorded",
     "editPost": "Edit Post",
     "reportPost": "Report Post",
+    "reportUser": "Report User",
     "blockUser": "Block User",
     "dislikeType": "I dislike this type of content",
     "moreActions": "More Actions",
     "reportDialog": {
       "title": "Select a reason",
       "close": "Close",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "otherPlaceholder": "Please describe the issue so we can review it faster"
     },
     "reportOptions": {
       "spamSite": "Contains ads or phishing sites",
@@ -486,7 +492,8 @@
       "copyright": "Suspected copyright infringement",
       "impersonation": "Impersonating someone else",
       "communityViolation": "Violates community etiquette",
-      "minorSafety": "Child sexual abuse or exploitation"
+      "minorSafety": "Child sexual abuse or exploitation",
+      "other": "Other"
     }
   },
   "categorySelect": {
@@ -523,9 +530,47 @@
     "dark": "Dark",
     "system": "System"
   },
+  "systemSettingPage": {
+    "themeDescription": "Choose the appearance mode you want to use across the site. Changes apply immediately.",
+    "themeSystemDescription": "Automatically follow your device appearance setting.",
+    "themeLightDescription": "Always use a brighter light interface.",
+    "themeDarkDescription": "Always use a more immersive dark interface.",
+    "languageDescription": "Switch the interface language for navigation, settings, and system copy.",
+    "languageZhDescription": "Use Simplified Chinese across the site interface.",
+    "languageEnDescription": "Use English for navigation and interface text.",
+    "autoTranslateDescription": "Control whether supported recommended content is translated automatically.",
+    "autoTranslateOn": "Enable auto-translate",
+    "autoTranslateOnDescription": "Supported recommended content will be translated automatically on page entry.",
+    "autoTranslateOff": "Disable auto-translate",
+    "autoTranslateOffDescription": "Keep original content language and translate manually when needed."
+  },
+  "privacySettingPage": {
+    "hideFavorites": "Hide my favorites",
+    "hideComments": "Hide my comments",
+    "hideCollections": "Hide my collections",
+    "hideFollowers": "Hide my followers list",
+    "hideFollowings": "Hide my followings list",
+    "hideTags": "Hide followed topics"
+  },
+  "notificationSettingPage": {
+    "enableSystemNotification": "Receive system notifications",
+    "enableCommentNotification": "Receive comment notifications",
+    "enableLikeNotification": "Receive like notifications",
+    "enableFollowNotification": "Receive follow notifications",
+    "enableMessageNotification": "Receive private message notifications",
+    "enableOrderNotification": "Receive order notifications",
+    "enablePaymentNotification": "Receive payment notifications",
+    "enableInviteNotification": "Receive invite notifications",
+    "enableEmailNotification": "Receive email notifications",
+    "enableSmsNotification": "Receive SMS notifications",
+    "enablePushNotification": "Receive push notifications"
+  },
   "topicInfo": {
     "posts": "Posts",
-    "members": "Members"
+    "members": "Members",
+    "menuTitle": "More Actions",
+    "copyLink": "Copy Topic Link",
+    "linkCopied": "Topic link copied"
   },
   "avatarFrameDialog": {
     "title": "Change Avatar Frame",
@@ -574,11 +619,18 @@
     "likes": "Likes",
     "edit": "Edit",
     "editProfile": "Edit Profile",
-    "editBackground": "Change Background"
+    "editBackground": "Change Background",
+    "menuTitle": "More Actions",
+    "copyLink": "Copy Profile Link",
+    "linkCopied": "Profile link copied"
   },
   "emptyState": {
     "message": "No content yet",
     "buttonText": "Go login"
+  },
+  "privacyBlocked": {
+    "title": "This content is hidden by privacy settings",
+    "description": "This user has enabled privacy restrictions, so this content is currently unavailable"
   },
   "reactionPanel": {
     "like": "Like",

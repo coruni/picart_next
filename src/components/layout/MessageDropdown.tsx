@@ -332,7 +332,7 @@ export function MessageDropdown({
                 "relative shrink-0 min-w-12 pb-3 pt-3 px-1 text-sm font-medium transition-colors cursor-pointer",
                 selectedTab === tab.value
                   ? "text-foreground"
-                  : "text-secondary hover:text-foreground",
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {tab.label}

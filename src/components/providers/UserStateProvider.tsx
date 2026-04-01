@@ -39,10 +39,17 @@ export function UserStateProvider({
       await initializeInterceptors();
 
       const cookieToken = getCookie(TOKEN_COOKIE_NAME);
-      const resolvedToken =
-        initialToken || cookieToken || useUserStore.getState().token;
+      const currentStore = useUserStore.getState();
+      const resolvedToken = initialToken ?? cookieToken ?? null;
 
-      if (resolvedToken && resolvedToken !== useUserStore.getState().token) {
+      if (!resolvedToken) {
+        if (currentStore.token || currentStore.user || currentStore.isAuthenticated) {
+          setToken(null);
+          setUser(null);
+        }
+      }
+
+      if (resolvedToken && resolvedToken !== currentStore.token) {
         setToken(resolvedToken);
       }
 
@@ -59,7 +66,9 @@ export function UserStateProvider({
 
       setIsInitialized(true);
 
-      if (!initialUser && resolvedToken) {
+      const currentUser = useUserStore.getState().user;
+
+      if (!initialUser && resolvedToken && !currentUser) {
         const fetchProfile = async () => {
           try {
             const response = await userControllerGetProfile();

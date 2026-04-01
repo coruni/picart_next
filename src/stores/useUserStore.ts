@@ -1,3 +1,4 @@
+import { userControllerLogout } from "@/api";
 import { removeCookie, setCookie } from "@/lib/cookies";
 import type { UserProfile } from "@/types";
 import { create } from "zustand";
@@ -23,20 +24,20 @@ export interface UserState {
  */
 function syncTokenToCookie(token: string | null): void {
   if (typeof window === "undefined") return; // 确保只在客户端执行
-  
+
   if (token) {
     const expires = new Date();
     expires.setDate(expires.getDate() + TOKEN_EXPIRY_DAYS);
     setCookie(TOKEN_COOKIE_NAME, token, {
       expires,
       path: "/",
-      sameSite: "Lax"
+      sameSite: "Lax",
     });
   } else {
     // 删除 cookie
     removeCookie(TOKEN_COOKIE_NAME, {
       path: "/",
-      sameSite: "Lax"
+      sameSite: "Lax",
     });
   }
 }
@@ -71,21 +72,32 @@ export const useUserStore = create<UserState>()(
         });
       },
 
-      logout: () => {
-        // 1. 清除 cookie
-        syncTokenToCookie(null);
-        
-        // 2. 清除 localStorage（在 set 之前）
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("user-storage");
+      logout: async () => {
+        const currentToken = useUserStore.getState().token;
+
+        try {
+          if (currentToken) {
+            await userControllerLogout({
+              headers: {
+                Authorization: `Bearer ${currentToken}`,
+              },
+            });
+          }
+        } catch (error) {
+          console.error("Failed to logout on server:", error);
+        } finally {
+          syncTokenToCookie(null);
+
+          set({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+          });
+
+          if (typeof window !== "undefined") {
+            localStorage.removeItem("user-storage");
+          }
         }
-        
-        // 3. 重置状态
-        set({
-          user: null,
-          token: null,
-          isAuthenticated: false,
-        });
       },
 
       clearStorage: () => {
@@ -106,7 +118,6 @@ export const useUserStore = create<UserState>()(
         token: state.token,
         isAuthenticated: state.isAuthenticated,
       }),
-    }
-  ) as never
+    },
+  ) as never,
 );
-
