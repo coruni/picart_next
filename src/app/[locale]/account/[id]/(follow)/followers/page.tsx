@@ -1,7 +1,11 @@
 import { FollowersListClient } from "@/components/account/FollowersList.client";
+import { PrivacyBlockedPlaceholder } from "@/components/shared";
+import { isAccountSectionHidden } from "@/lib/account-privacy";
+import { getCurrentUserId } from "@/lib/current-user";
 import { serverApi } from "@/lib/server-api";
 import { UserList } from "@/types";
 import { getTranslations } from "next-intl/server";
+import { getAccountUser } from "../../account-user";
 
 export default async function AccountFollowersPage({
   params,
@@ -9,7 +13,21 @@ export default async function AccountFollowersPage({
   params: Promise<{ id: string; locale: string }>;
 }) {
   const { id } = await params;
-  const t = await getTranslations("userList");
+  const [t, accountUser, viewerId] = await Promise.all([
+    getTranslations("userList"),
+    getAccountUser(id),
+    getCurrentUserId(),
+  ]);
+
+  if (isAccountSectionHidden(accountUser, "followers", viewerId)) {
+    return (
+      <PrivacyBlockedPlaceholder
+        title={t("followersHiddenTitle")}
+        description={t("followersHiddenDescription")}
+      />
+    );
+  }
+
   const response = await serverApi.userControllerGetFollowers({
     path: { id },
     query: {

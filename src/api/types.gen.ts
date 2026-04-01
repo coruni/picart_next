@@ -2613,7 +2613,12 @@ export type UserControllerFindAllResponses = {
                     enableSmsNotification: boolean;
                     enablePushNotification: boolean;
                     hideFavorites: boolean;
-                    remark: unknown;
+                    hideComments: boolean;
+                    hideCollections: boolean;
+                    hideFollowers: boolean;
+                    hideFollowings: boolean;
+                    hideTags: boolean;
+                    remark: string;
                     createdAt: string;
                     updatedAt: string;
                 };
@@ -2940,7 +2945,12 @@ export type UserControllerFindOneResponses = {
                 enableSmsNotification: boolean;
                 enablePushNotification: boolean;
                 hideFavorites: boolean;
-                remark: unknown;
+                hideComments: boolean;
+                hideCollections: boolean;
+                hideFollowers: boolean;
+                hideFollowings: boolean;
+                hideTags: boolean;
+                remark: string;
                 createdAt: string;
                 updatedAt: string;
             };
@@ -3088,7 +3098,12 @@ export type UserControllerGetProfileResponses = {
                 enableSmsNotification: boolean;
                 enablePushNotification: boolean;
                 hideFavorites: boolean;
-                remark: unknown;
+                hideComments: boolean;
+                hideCollections: boolean;
+                hideFollowers: boolean;
+                hideFollowings: boolean;
+                hideTags: boolean;
+                remark: string;
                 createdAt: string;
                 updatedAt: string;
             };
@@ -4100,6 +4115,34 @@ export type UserControllerUpdateCommissionSettingsResponses = {
      */
     200: unknown;
 };
+
+export type UserControllerUpdateProfileContactData = {
+    body: {
+        email?: string;
+        phone?: string;
+        /**
+         * 验证码
+         */
+        verificationCode?: string;
+    };
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/user/profile/contact';
+};
+
+export type UserControllerUpdateProfileContactResponses = {
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type UserControllerUpdateProfileContactResponse = UserControllerUpdateProfileContactResponses[keyof UserControllerUpdateProfileContactResponses];
 
 export type UserControllerGetWalletTransactionsData = {
     body?: never;

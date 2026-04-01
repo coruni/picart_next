@@ -166,7 +166,11 @@
     "posts": "posts",
     "followers": "followers",
     "following": "following",
-    "noBio": "This user has not added a bio yet"
+    "noBio": "This user has not added a bio yet",
+    "followersHiddenTitle": "Followers list is hidden",
+    "followersHiddenDescription": "This user has enabled privacy restrictions, so the followers list is not available right now",
+    "followingsHiddenTitle": "Following list is hidden",
+    "followingsHiddenDescription": "This user has enabled privacy restrictions, so the following list is not available right now"
   },
   "tagCard": {
     "posts": "posts",
@@ -579,6 +583,10 @@
   "emptyState": {
     "message": "No content yet",
     "buttonText": "Go login"
+  },
+  "privacyBlocked": {
+    "title": "This content is hidden by privacy settings",
+    "description": "This user has enabled privacy restrictions, so this content is currently unavailable"
   },
   "reactionPanel": {
     "like": "Like",

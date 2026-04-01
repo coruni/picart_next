@@ -4,6 +4,7 @@ export { NavigationTabs } from "./NavigationTabs";
 export type { TabItem } from "./NavigationTabs";
 export { ArticleListClient } from "./ArticleList.client";
 export { EmptyState } from "./EmptyState";
+export { PrivacyBlockedPlaceholder } from "./PrivacyBlockedPlaceholder";
 export { InfiniteScrollStatus } from "./InfiniteScrollStatus";
 export { DropdownMenu } from "./DropdownMenu";
 export type { MenuItem } from "./DropdownMenu";

@@ -4,6 +4,7 @@ import { GuardedLink } from "@/components/shared/GuardedLink";
 import { useIsMobile } from "@/hooks";
 import { useAuthNavigation } from "@/hooks/useAuthNavigation";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
+import { isAccountSectionHidden } from "@/lib/account-privacy";
 import { cn } from "@/lib";
 import { useUserStore } from "@/stores";
 import { UserDetail } from "@/types";
@@ -28,6 +29,8 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
   });
   const localUserId = useUserStore((state) => state.user)?.id;
   const isSelf = user.id === localUserId;
+  const followersHidden = isAccountSectionHidden(user, "followers", localUserId);
+  const followingsHidden = isAccountSectionHidden(user, "followings", localUserId);
   const [showBackgroundEditor, setShowBackgroundEditor] = useState(false);
   const [showEditMenu, setShowEditMenu] = useState(false);
 
@@ -64,30 +67,54 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                 </span>
                 <span className="mx-2 text-[#eceff4] md:mx-3">/</span>
               </div>
-              <GuardedLink
-                href={`/account/${user.id}/followings`}
-                className="flex items-center hover:text-primary"
-              >
-                <span className="text-lg md:text-[22px]">
-                  {user.followingCount || 0}
-                </span>
-                <span className="ml-1 text-xs text-secondary md:text-sm">
-                  {t("following")}
-                </span>
-                <span className="mx-2 text-[#eceff4] md:mx-3">/</span>
-              </GuardedLink>
-              <GuardedLink
-                href={`/account/${user.id}/followers`}
-                className="flex items-center hover:text-primary"
-              >
-                <span className="text-lg md:text-[22px]">
-                  {user.followerCount || 0}
-                </span>
-                <span className="ml-1 text-xs text-secondary md:text-sm">
-                  {t("followers")}
-                </span>
-                <span className="mx-2 text-[#eceff4] md:mx-3">/</span>
-              </GuardedLink>
+              {followingsHidden ? (
+                <div className="flex items-center">
+                  <span className="text-lg md:text-[22px]">
+                    {user.followingCount || 0}
+                  </span>
+                  <span className="ml-1 text-xs text-secondary md:text-sm">
+                    {t("following")}
+                  </span>
+                  <span className="mx-2 text-[#eceff4] md:mx-3">/</span>
+                </div>
+              ) : (
+                <GuardedLink
+                  href={`/account/${user.id}/followings`}
+                  className="flex items-center hover:text-primary"
+                >
+                  <span className="text-lg md:text-[22px]">
+                    {user.followingCount || 0}
+                  </span>
+                  <span className="ml-1 text-xs text-secondary md:text-sm">
+                    {t("following")}
+                  </span>
+                  <span className="mx-2 text-[#eceff4] md:mx-3">/</span>
+                </GuardedLink>
+              )}
+              {followersHidden ? (
+                <div className="flex items-center">
+                  <span className="text-lg md:text-[22px]">
+                    {user.followerCount || 0}
+                  </span>
+                  <span className="ml-1 text-xs text-secondary md:text-sm">
+                    {t("followers")}
+                  </span>
+                  <span className="mx-2 text-[#eceff4] md:mx-3">/</span>
+                </div>
+              ) : (
+                <GuardedLink
+                  href={`/account/${user.id}/followers`}
+                  className="flex items-center hover:text-primary"
+                >
+                  <span className="text-lg md:text-[22px]">
+                    {user.followerCount || 0}
+                  </span>
+                  <span className="ml-1 text-xs text-secondary md:text-sm">
+                    {t("followers")}
+                  </span>
+                  <span className="mx-2 text-[#eceff4] md:mx-3">/</span>
+                </GuardedLink>
+              )}
               <div className="flex cursor-pointer items-center hover:text-primary">
                 <span className="text-lg md:text-[22px]">0</span>
                 <span className="ml-1 text-xs text-secondary md:text-sm">

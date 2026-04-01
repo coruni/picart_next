@@ -5,6 +5,7 @@ import { ReactNode } from "react";
 import { AccountInfo, AccountTabs } from "@/components/account";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { generateAuthorMetadata } from "@/lib";
+import { getCurrentUserId } from "@/lib/current-user";
 import { getAccountUser } from "../account-user";
 
 interface AccountLayoutProps {
@@ -27,7 +28,10 @@ export default async function AccountLayout({
   params,
 }: AccountLayoutProps) {
   const { id } = await params;
-  const user = await getAccountUser(id);
+  const [user, viewerId] = await Promise.all([
+    getAccountUser(id),
+    getCurrentUserId(),
+  ]);
 
   return (
     <>
@@ -53,7 +57,7 @@ export default async function AccountLayout({
         <div className="page-container px-3 pt-3! md:px-0 md:pt-4!">
           <div className="left-container">
             <div className="top-header-tabs sticky z-5 flex h-12 items-center overflow-x-auto rounded-t-xl border-b border-border bg-card px-4 md:h-14 md:px-8">
-              <AccountTabs />
+              <AccountTabs user={user} viewerId={viewerId} />
             </div>
             {children}
           </div>
