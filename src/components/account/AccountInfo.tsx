@@ -1,15 +1,32 @@
-﻿"use client";
+"use client";
 
-import { GuardedLink } from "@/components/shared/GuardedLink";
+import { reportControllerCreate } from "@/api";
+import {
+  createDefaultReportReasons,
+  DropdownMenu,
+  GuardedLink,
+  MenuItem,
+  ReportDialog,
+} from "@/components/shared";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useIsMobile } from "@/hooks";
 import { useAuthNavigation } from "@/hooks/useAuthNavigation";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { isAccountSectionHidden } from "@/lib/account-privacy";
 import { cn } from "@/lib";
+import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { UserDetail } from "@/types";
-import { AudioLines, ChevronDown, Dessert, MoreHorizontal } from "lucide-react";
-import { useTranslations } from "next-intl";
+import {
+  AudioLines,
+  Ban,
+  ChevronDown,
+  Copy,
+  Dessert,
+  MoreHorizontal,
+  ShieldAlert,
+} from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
@@ -21,6 +38,8 @@ type AccountInfoProps = {
 
 export const AccountInfo = ({ user }: AccountInfoProps) => {
   const t = useTranslations("accountInfo");
+  const tMenu = useTranslations("articleMenu");
+  const locale = useLocale();
   const router = useAuthNavigation();
   const isMobile = useIsMobile();
   const scrolled = useScrollThreshold(isMobile ? 152 : 220, {
@@ -29,16 +48,104 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
   });
   const localUserId = useUserStore((state) => state.user)?.id;
   const isSelf = user.id === localUserId;
-  const followersHidden = isAccountSectionHidden(user, "followers", localUserId);
-  const followingsHidden = isAccountSectionHidden(user, "followings", localUserId);
+  const followersHidden = isAccountSectionHidden(
+    user,
+    "followers",
+    localUserId,
+  );
+  const followingsHidden = isAccountSectionHidden(
+    user,
+    "followings",
+    localUserId,
+  );
   const [showBackgroundEditor, setShowBackgroundEditor] = useState(false);
   const [showEditMenu, setShowEditMenu] = useState(false);
+  const [copied, copyToClipboard] = useCopyToClipboard();
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const reportReasons = createDefaultReportReasons(tMenu);
+
+  const requireAuth = () => {
+    if (useUserStore.getState().isAuthenticated) {
+      return true;
+    }
+
+    openLoginDialog();
+    return false;
+  };
 
   const handleToDecoration = () => {
     router.push({
       pathname: `/account/${user.id}/decoration`,
     });
   };
+
+  const handleCopyProfileLink = async () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    await copyToClipboard(
+      `${window.location.origin}/${locale}/account/${user.id}`,
+    );
+  };
+
+  const handleOpenReportDialog = () => {
+    if (!requireAuth()) {
+      return;
+    }
+
+    setShowReportDialog(true);
+  };
+
+  const handleBlockUser = () => {
+    if (!requireAuth()) {
+      return;
+    }
+
+    router.push(`/setting/blocked-users?userId=${user.id}`);
+  };
+
+  const handleReportUser = async (payload: {
+    category: "SPAM" | "ABUSE" | "INAPPROPRIATE" | "COPYRIGHT" | "OTHER";
+    reason: string;
+  }) => {
+    setReportSubmitting(true);
+    try {
+      await reportControllerCreate({
+        body: {
+          type: "USER",
+          category: payload.category,
+          reason: payload.reason,
+          reportedUserId: Number(user.id),
+        },
+      });
+      setShowReportDialog(false);
+    } catch (error) {
+      console.error("Failed to report user:", error);
+    } finally {
+      setReportSubmitting(false);
+    }
+  };
+
+  const accountMenuItems: MenuItem[] = [
+    {
+      label: copied ? t("linkCopied") : t("copyLink"),
+      icon: <Copy size={18} />,
+      onClick: () => void handleCopyProfileLink(),
+    },
+    {
+      label: tMenu("reportUser"),
+      icon: <ShieldAlert size={18} />,
+      onClick: handleOpenReportDialog,
+      className: "text-red-400",
+    },
+    {
+      label: tMenu("blockUser"),
+      icon: <Ban size={18} />,
+      onClick: handleBlockUser,
+    },
+  ];
 
   return (
     <>
@@ -151,14 +258,25 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
           >
             {!isSelf ? (
               <>
-                <div
-                  className={cn(
-                    "flex size-8 cursor-pointer items-center justify-center rounded-full text-white hover:text-primary md:size-9",
-                    !scrolled ? "bg-[#000000a6]" : "bg-gray-50 text-foreground",
-                  )}
-                >
-                  <MoreHorizontal size={18} />
-                </div>
+                <DropdownMenu
+                  title={t("menuTitle")}
+                  items={accountMenuItems}
+                  trigger={
+                    <button
+                      type="button"
+                      className={cn(
+                        "flex size-8 cursor-pointer items-center justify-center rounded-full text-white hover:text-primary md:size-9",
+                        !scrolled
+                          ? "bg-[#000000a6]"
+                          : "bg-gray-50 text-foreground",
+                      )}
+                    >
+                      <MoreHorizontal size={18} />
+                    </button>
+                  }
+                  className="shrink-0"
+                  menuClassName="top-10"
+                />
                 <FollowButtonWithStatus
                   author={user}
                   className="h-8 min-w-18 bg-[#e0e6ff] px-4 text-xs md:h-9 md:px-6 md:text-sm"
@@ -205,11 +323,11 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
 
                   <div
                     className={cn(
-                      "absolute top-full right-0 z-20 mt-2 w-40 rounded-xl bg-card p-2 drop-shadow-xl transition-all min-w-max",
+                      "absolute top-full right-0 z-20 mt-2 min-w-max rounded-xl bg-card p-2 drop-shadow-xl transition-all",
                       isMobile
                         ? showEditMenu
                           ? "visible opacity-100"
-                          : "invisible opacity-0 pointer-events-none"
+                          : "pointer-events-none invisible opacity-0"
                         : "invisible opacity-0 group-hover/edit:visible group-hover/edit:opacity-100",
                     )}
                   >
@@ -221,7 +339,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                       <span>{t("editProfile")}</span>
                     </GuardedLink>
                     <div
-                      className="flex cursor-pointer truncate items-center gap-2 rounded-xl p-2 text-sm transition-colors hover:bg-primary/15 hover:text-primary"
+                      className="flex cursor-pointer items-center gap-2 truncate rounded-xl p-2 text-sm transition-colors hover:bg-primary/15 hover:text-primary"
                       onClick={() => {
                         setShowEditMenu(false);
                         setShowBackgroundEditor(true);
@@ -241,6 +359,14 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
         user={user}
         open={showBackgroundEditor}
         onOpenChange={setShowBackgroundEditor}
+      />
+
+      <ReportDialog
+        open={showReportDialog}
+        onOpenChange={setShowReportDialog}
+        reasons={reportReasons}
+        loading={reportSubmitting}
+        onSubmit={handleReportUser}
       />
     </>
   );

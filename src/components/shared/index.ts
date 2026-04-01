@@ -5,6 +5,8 @@ export type { TabItem } from "./NavigationTabs";
 export { ArticleListClient } from "./ArticleList.client";
 export { EmptyState } from "./EmptyState";
 export { PrivacyBlockedPlaceholder } from "./PrivacyBlockedPlaceholder";
+export { ReportDialog, createDefaultReportReasons } from "./ReportDialog";
+export type { ReportReasonOption } from "./ReportDialog";
 export { InfiniteScrollStatus } from "./InfiniteScrollStatus";
 export { DropdownMenu } from "./DropdownMenu";
 export type { MenuItem } from "./DropdownMenu";

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * 下拉选项接口
  * @interface SelectOption
- * 
+ *
  * @property {string} value - 选项值
  * @property {string} label - 选项显示文本
  */
@@ -19,7 +19,7 @@ export type SelectOption = {
 /**
  * 下拉选择组件属性接口
  * @interface SelectProps
- * 
+ *
  * @property {string} value - 当前选中的值
  * @property {(value: string) => void} onChange - 值变化回调
  * @property {SelectOption[]} options - 选项列表
@@ -39,13 +39,13 @@ type SelectProps = {
 /**
  * 下拉选择组件
  * @component
- * 
+ *
  * 自定义下拉选择组件，支持键盘导航和点击外部关闭
- * 
+ *
  * @example
  * ```tsx
  * const [value, setValue] = useState('');
- * 
+ *
  * <Select
  *   value={value}
  *   onChange={setValue}
@@ -95,7 +95,7 @@ export const Select = ({
   };
 
   return (
-    <div ref={containerRef} className={cn("relative", className)}>
+    <div ref={containerRef} className={cn("relative")}>
       <button
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
@@ -108,6 +108,7 @@ export const Select = ({
           "flex items-center justify-between",
           "bg-card",
           disabled && "opacity-50 cursor-not-allowed",
+          className,
         )}
       >
         <span className={cn(!selectedOption && "text-gray-400")}>

@@ -473,13 +473,15 @@
     "dislikeRecorded": "Your content preference has been recorded",
     "editPost": "Edit Post",
     "reportPost": "Report Post",
+    "reportUser": "Report User",
     "blockUser": "Block User",
     "dislikeType": "I dislike this type of content",
     "moreActions": "More Actions",
     "reportDialog": {
       "title": "Select a reason",
       "close": "Close",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "otherPlaceholder": "Please describe the issue so we can review it faster"
     },
     "reportOptions": {
       "spamSite": "Contains ads or phishing sites",
@@ -490,7 +492,8 @@
       "copyright": "Suspected copyright infringement",
       "impersonation": "Impersonating someone else",
       "communityViolation": "Violates community etiquette",
-      "minorSafety": "Child sexual abuse or exploitation"
+      "minorSafety": "Child sexual abuse or exploitation",
+      "other": "Other"
     }
   },
   "categorySelect": {
@@ -527,9 +530,26 @@
     "dark": "Dark",
     "system": "System"
   },
+  "systemSettingPage": {
+    "themeDescription": "Choose the appearance mode you want to use across the site. Changes apply immediately.",
+    "themeSystemDescription": "Automatically follow your device appearance setting.",
+    "themeLightDescription": "Always use a brighter light interface.",
+    "themeDarkDescription": "Always use a more immersive dark interface.",
+    "languageDescription": "Switch the interface language for navigation, settings, and system copy.",
+    "languageZhDescription": "Use Simplified Chinese across the site interface.",
+    "languageEnDescription": "Use English for navigation and interface text.",
+    "autoTranslateDescription": "Control whether supported recommended content is translated automatically.",
+    "autoTranslateOn": "Enable auto-translate",
+    "autoTranslateOnDescription": "Supported recommended content will be translated automatically on page entry.",
+    "autoTranslateOff": "Disable auto-translate",
+    "autoTranslateOffDescription": "Keep original content language and translate manually when needed."
+  },
   "topicInfo": {
     "posts": "Posts",
-    "members": "Members"
+    "members": "Members",
+    "menuTitle": "More Actions",
+    "copyLink": "Copy Topic Link",
+    "linkCopied": "Topic link copied"
   },
   "avatarFrameDialog": {
     "title": "Change Avatar Frame",
@@ -578,7 +598,10 @@
     "likes": "Likes",
     "edit": "Edit",
     "editProfile": "Edit Profile",
-    "editBackground": "Change Background"
+    "editBackground": "Change Background",
+    "menuTitle": "More Actions",
+    "copyLink": "Copy Profile Link",
+    "linkCopied": "Profile link copied"
   },
   "emptyState": {
     "message": "No content yet",

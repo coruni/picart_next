@@ -1,7 +1,7 @@
-﻿import { ReactNode } from "react";
-import { Sidebar } from "@/components/sidebar/Sidebar";
+﻿import { ChannelNav } from "@/components/channel/ChannelNav";
 import { ChannelTabs } from "@/components/channel/ChannelTabs";
-import { ChannelNav } from "@/components/channel/ChannelNav";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
+import { Sidebar } from "@/components/sidebar/Sidebar";
 import {
   buildLocalizedAlternates,
   generateSiteMetadata,
@@ -9,7 +9,7 @@ import {
   getPublicCategories,
   getPublicConfig,
 } from "@/lib/seo";
-import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
+import { ReactNode } from "react";
 
 interface ChannelLayoutProps {
   children: ReactNode;
@@ -127,7 +127,7 @@ export default async function ChannelLayout({
       <div className="relative z-10 mt-60 w-full">
         <div className="page-container">
           <div className="left-container">
-            <div className="top-header px-10 h-14 flex items-center border-b border-border sticky bg-card z-5 rounded-t-xl">
+            <div className="top-header px-6 h-14 flex items-center border-b border-border sticky bg-card z-5 rounded-t-xl">
               <ChannelTabs parentId={pid}>{currentChannel.children}</ChannelTabs>
             </div>
             {children}

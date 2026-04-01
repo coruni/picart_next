@@ -1,12 +1,14 @@
 "use client";
 
 import { tagControllerFollow, tagControllerUnfollow } from "@/api";
+import { DropdownMenu, MenuItem } from "@/components/shared";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useIsMobile } from "@/hooks";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { cn } from "@/lib";
 import { TagDetail } from "@/types";
-import { MoreHorizontal } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { Copy, MoreHorizontal } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
@@ -27,8 +29,10 @@ export const TopicInfo = ({
   });
   const tButton = useTranslations("followButton");
   const t = useTranslations("topicInfo");
+  const locale = useLocale();
   const [isFollowed, setIsFollowed] = useState(initialIsFollowed || false);
   const [isLoading, setIsLoading] = useState(false);
+  const [copied, copyToClipboard] = useCopyToClipboard();
 
   const handleFollowToggle = async () => {
     if (isLoading) return;
@@ -51,6 +55,22 @@ export const TopicInfo = ({
       setIsLoading(false);
     }
   };
+
+  const handleCopyTopicLink = async () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    await copyToClipboard(`${window.location.origin}/${locale}/topic/${tag.id}`);
+  };
+
+  const topicMenuItems: MenuItem[] = [
+    {
+      label: copied ? t("linkCopied") : t("copyLink"),
+      icon: <Copy size={18} />,
+      onClick: () => void handleCopyTopicLink(),
+    },
+  ];
 
   return (
     <div className="top-header sticky z-10 border-t border-t-border bg-card px-3 md:px-10">
@@ -131,14 +151,23 @@ export const TopicInfo = ({
             !scrolled ? "-translate-y-12 md:-translate-y-14" : "",
           )}
         >
-          <div
-            className={cn(
-              "flex size-8 cursor-pointer items-center justify-center rounded-full text-white hover:text-primary md:size-9",
-              !scrolled ? "bg-[#000000a6]" : "bg-gray-50 text-foreground",
-            )}
-          >
-            <MoreHorizontal size={18} />
-          </div>
+          <DropdownMenu
+            title={t("menuTitle")}
+            items={topicMenuItems}
+            trigger={
+              <button
+                type="button"
+                className={cn(
+                  "flex size-8 cursor-pointer items-center justify-center rounded-full text-white hover:text-primary md:size-9",
+                  !scrolled ? "bg-[#000000a6]" : "bg-gray-50 text-foreground",
+                )}
+              >
+                <MoreHorizontal size={18} />
+              </button>
+            }
+            className="shrink-0"
+            menuClassName="top-10"
+          />
           <Button
             className={cn(
               "h-8 min-w-18 px-4 text-xs md:h-9 md:px-6 md:text-sm",

@@ -472,13 +472,15 @@
     "dislikeRecorded": "已记录你的内容偏好",
     "editPost": "编辑帖子",
     "reportPost": "举报帖子",
+    "reportUser": "举报用户",
     "blockUser": "拉黑用户",
     "dislikeType": "我不喜欢这类内容",
     "moreActions": "更多操作",
     "reportDialog": {
       "title": "选择原因",
       "close": "关闭",
-      "confirm": "确定"
+      "confirm": "确定",
+      "otherPlaceholder": "请补充具体原因，帮助我们更快处理"
     },
     "reportOptions": {
       "spamSite": "含广告及钓鱼网站",
@@ -489,7 +491,8 @@
       "copyright": "涉嫌侵权",
       "impersonation": "仿冒他人",
       "communityViolation": "违反社区礼仪",
-      "minorSafety": "儿童性虐待和性剥削"
+      "minorSafety": "儿童性虐待和性剥削",
+      "other": "其他"
     }
   },
   "categorySelect": {
@@ -526,9 +529,26 @@
     "dark": "深色",
     "system": "跟随系统"
   },
+  "systemSettingPage": {
+    "themeDescription": "选择你希望站点使用的外观模式，切换后会立即在整个站点生效。",
+    "themeSystemDescription": "自动跟随你的设备外观设置。",
+    "themeLightDescription": "始终使用更明亮的浅色界面。",
+    "themeDarkDescription": "始终使用更沉浸的深色界面。",
+    "languageDescription": "切换界面语言后，导航、设置和系统文案会立即更新。",
+    "languageZhDescription": "使用简体中文浏览和操作站点。",
+    "languageEnDescription": "Use English for navigation and interface text.",
+    "autoTranslateDescription": "控制推荐内容和支持翻译的内容是否自动执行翻译。",
+    "autoTranslateOn": "开启自动翻译",
+    "autoTranslateOnDescription": "进入页面后会优先自动翻译支持的推荐内容。",
+    "autoTranslateOff": "关闭自动翻译",
+    "autoTranslateOffDescription": "保留原始内容语言，需要时再手动触发翻译。"
+  },
   "topicInfo": {
     "posts": "帖子",
-    "members": "成员"
+    "members": "成员",
+    "menuTitle": "更多操作",
+    "copyLink": "复制话题链接",
+    "linkCopied": "话题链接已复制"
   },
   "avatarFrameDialog": {
     "title": "更换头像框",
@@ -577,7 +597,10 @@
     "likes": "点赞",
     "edit": "编辑",
     "editProfile": "编辑资料",
-    "editBackground": "更换背景"
+    "editBackground": "更换背景",
+    "menuTitle": "更多操作",
+    "copyLink": "复制个人主页链接",
+    "linkCopied": "个人主页链接已复制"
   },
   "emptyState": {
     "message": "暂无内容",
