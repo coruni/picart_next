@@ -179,7 +179,12 @@ function sanitizeNodeTree(node: Node): void {
           name === "preload" ||
           name === "type" ||
           name === "colspan" ||
-          name === "rowspan";
+          name === "rowspan" ||
+          ((tagName === "h1" ||
+            tagName === "h2" ||
+            tagName === "h3" ||
+            tagName === "h4") &&
+            (name === "id" || name === "data-toc-heading"));
 
         if (!isAllowedAttribute) {
           element.removeAttribute(attr.name);

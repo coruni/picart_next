@@ -3,6 +3,8 @@ import {
   ArticleAuthor,
   ArticleMenu,
   ArticleRichContent,
+  ArticleToc,
+  type ArticleTocItem,
   ArticleTranslateNotice,
   ImageGallery,
   ReactionStats,
@@ -36,6 +38,86 @@ function isLikelyChineseContent(value: string) {
   const letterCount = letterMatches?.length ?? 0;
 
   return chineseCount > 0 && chineseCount >= letterCount;
+}
+
+function decodeHtmlEntities(value: string) {
+  return value
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'");
+}
+
+function stripHeadingHtml(value: string) {
+  return decodeHtmlEntities(
+    value
+      .replace(/<span\b[^>]*class=(["'])[^"']*ql-ui[^"']*\1[^>]*>[\s\S]*?<\/span>/gi, "")
+      .replace(/<br\s*\/?>/gi, " ")
+      .replace(/<[^>]+>/g, " "),
+  )
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function createHeadingSlug(value: string, fallbackIndex: number) {
+  const normalized = value
+    .toLowerCase()
+    .trim()
+    .replace(/[^\p{Letter}\p{Number}\s-]+/gu, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  return normalized || `section-${fallbackIndex + 1}`;
+}
+
+function buildArticleToc(html: string): {
+  html: string;
+  items: ArticleTocItem[];
+} {
+  const items: ArticleTocItem[] = [];
+  const slugCount = new Map<string, number>();
+
+  const nextHtml = html.replace(
+    /<h([1-4])([^>]*)>([\s\S]*?)<\/h\1>/gi,
+    (match, level, attrs = "", innerHtml = "") => {
+      const title = stripHeadingHtml(innerHtml);
+      if (!title) {
+        return match;
+      }
+
+      const existingIdMatch = attrs.match(/\sid=(["'])(.*?)\1/i);
+      let headingId = existingIdMatch?.[2];
+
+      if (!headingId) {
+        const baseSlug = createHeadingSlug(title, items.length);
+        const duplicateCount = slugCount.get(baseSlug) ?? 0;
+        slugCount.set(baseSlug, duplicateCount + 1);
+        headingId =
+          duplicateCount === 0 ? baseSlug : `${baseSlug}-${duplicateCount + 1}`;
+      }
+
+      items.push({
+        id: headingId,
+        level: Number(level),
+        title,
+      });
+
+      if (existingIdMatch) {
+        return `<h${level}${attrs}>${innerHtml}</h${level}>`;
+      }
+
+      return `<h${level}${attrs} id="${headingId}" data-toc-heading="true">${innerHtml}</h${level}>`;
+    },
+  );
+
+  return {
+    html: nextHtml,
+    items,
+  };
 }
 
 type ArticleDetailPageProps = {
@@ -74,12 +156,13 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
     notFound();
   }
 
-  const content = prepareRichTextHtmlForDisplay(
+  const rawContent =
     article?.content?.replace(
       /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
       "",
-    ) || "",
-  );
+    ) || "";
+  const { html: contentWithTocMarkup, items: tocItems } = buildArticleToc(rawContent);
+  const content = prepareRichTextHtmlForDisplay(contentWithTocMarkup);
   const shouldTranslateArticleDetail = !(
     locale === "zh" &&
     isLikelyChineseContent(
@@ -91,9 +174,27 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
 
   return (
     <div className="page-container">
+      {tocItems.length > 0 ? (
+        <aside className="hidden w-64 shrink-0 lg:block ">
+          <ArticleToc
+            items={tocItems}
+            title={t("tocTitle")}
+            openLabel={t("tocOpen")}
+          />
+        </aside>
+      ) : null}
       <div className="left-container " data-auto-translate-article-detail>
         <div className="top-header px-4 h-14 flex items-center border-b rounded-t-xl border-border sticky bg-card  z-15">
           <div className="h-full flex-1 flex items-center">
+            {tocItems.length > 0 ? (
+              <div className="mr-3 lg:hidden">
+                <ArticleToc
+                  items={tocItems}
+                  title={t("tocTitle")}
+                  openLabel={t("tocOpen")}
+                />
+              </div>
+            ) : null}
             <span className="font-bold text-base pr-6">{t("pageTitle")}</span>
           </div>
           <div className="ml-4">

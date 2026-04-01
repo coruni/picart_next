@@ -376,6 +376,10 @@ button {
   margin-top: 0.2rem;
 }
 
+.ql-editor [data-toc-heading="true"] {
+  scroll-margin-top: calc(var(--header-height, 60px) + 128px);
+}
+
 .ql-editor strong {
   font-weight: 600;
   color: color-mix(in srgb, var(--foreground) 100%, transparent);

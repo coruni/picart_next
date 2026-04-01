@@ -499,7 +499,9 @@
     "repostable": "Repost allowed",
     "translatedBy": "Translated by {provider}",
     "viewOriginal": "View original",
-    "viewTranslation": "View translation"
+    "viewTranslation": "View translation",
+    "tocTitle": "Contents",
+    "tocOpen": "Open contents"
   },
   "articleCard": {
     "dislikeContent": "I dislike this content",

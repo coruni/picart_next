@@ -491,7 +491,9 @@
     "repostable": "允许转载",
     "translatedBy": "由 {provider} 翻译",
     "viewOriginal": "查看原文",
-    "viewTranslation": "查看译文"
+    "viewTranslation": "\u67e5\u770b\u8bd1\u6587",
+    "tocTitle": "\u76ee\u5f55",
+    "tocOpen": "\u6253\u5f00\u76ee\u5f55"
   },
   "articleCard": {
     "dislikeContent": "我不喜欢这类内容",

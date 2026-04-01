@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   userControllerGetUserConfig,
@@ -18,6 +18,15 @@ type PrivacyConfigState = {
   hideFollowings: boolean;
   hideTags: boolean;
 };
+
+const PRIVACY_CONFIG_KEYS: Array<keyof PrivacyConfigState> = [
+  "hideFavorites",
+  "hideComments",
+  "hideCollections",
+  "hideFollowers",
+  "hideFollowings",
+  "hideTags",
+];
 
 function SettingItem({
   title,
@@ -51,23 +60,35 @@ function normalizePrivacyConfig(
   };
 }
 
+function hasPrivacyConfig(
+  data?: Partial<PrivacyConfigState> | null,
+): data is Partial<PrivacyConfigState> {
+  return PRIVACY_CONFIG_KEYS.some((key) => typeof data?.[key] === "boolean");
+}
+
 export default function SettingPrivacyPage() {
   const t = useTranslations("privacySettingPage");
   const user = useUserStore((state) => state.user);
   const updateUser = useUserStore((state) => state.updateUser);
+  const storeHasPrivacyConfig = useMemo(
+    () => hasPrivacyConfig(user?.config),
+    [user?.config],
+  );
   const initialConfig = normalizePrivacyConfig(user?.config);
   const [config, setConfig] = useState<PrivacyConfigState>(initialConfig);
+  const [hasLoadedConfig, setHasLoadedConfig] = useState(storeHasPrivacyConfig);
   const [savingKey, setSavingKey] = useState<keyof PrivacyConfigState | null>(
     null,
   );
 
   useEffect(() => {
-    const storeConfig = normalizePrivacyConfig(user?.config);
-    const hasStoreConfig = Object.values(storeConfig).some(Boolean);
+    if (storeHasPrivacyConfig) {
+      setConfig(normalizePrivacyConfig(user?.config));
+      setHasLoadedConfig(true);
+      return;
+    }
 
-    setConfig(storeConfig);
-
-    if (hasStoreConfig) {
+    if (hasLoadedConfig) {
       return;
     }
 
@@ -79,30 +100,34 @@ export default function SettingPrivacyPage() {
         );
 
         setConfig(nextConfig);
-        updateUser({
-          config: {
-            ...user?.config,
-            ...(nextConfig as any),
-          },
-        });
+        setHasLoadedConfig(true);
+        if (user?.config) {
+          updateUser({
+            config: {
+              ...user.config,
+              ...nextConfig,
+            },
+          });
+        }
       } catch (error) {
         console.error("Failed to load privacy config:", error);
       }
     };
 
     void loadConfig();
-  }, [updateUser, user?.config]);
+  }, [hasLoadedConfig, storeHasPrivacyConfig, updateUser, user?.config]);
 
   const handleToggle = async (
     key: keyof PrivacyConfigState,
     nextValue: boolean,
   ) => {
     const previousValue = config[key];
-
-    setConfig((prev) => ({
-      ...prev,
+    const nextConfig = {
+      ...config,
       [key]: nextValue,
-    }));
+    };
+
+    setConfig(nextConfig);
     setSavingKey(key);
 
     try {
@@ -112,18 +137,15 @@ export default function SettingPrivacyPage() {
         },
       });
 
-      const response = await userControllerGetUserConfig();
-      const latestConfig = normalizePrivacyConfig(
-        response.data?.data as Partial<PrivacyConfigState> | undefined,
-      );
-
-      setConfig(latestConfig);
-      updateUser({
-        config: {
-          ...user?.config,
-          ...(latestConfig as any),
-        },
-      });
+      setHasLoadedConfig(true);
+      if (user?.config) {
+        updateUser({
+          config: {
+            ...user.config,
+            ...nextConfig,
+          },
+        });
+      }
     } catch (error) {
       console.error(`Failed to update privacy config for ${key}:`, error);
       setConfig((prev) => ({
