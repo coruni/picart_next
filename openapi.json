@@ -31758,7 +31758,504 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                              "conversationId": {
+                                "type": "integer"
+                              },
+                              "counterpart": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "username": {
+                                    "type": "string"
+                                  },
+                                  "nickname": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "banned": {
+                                    "type": "string"
+                                  },
+                                  "banReason": {
+                                    "type": "string"
+                                  },
+                                  "avatar": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "background": {
+                                    "type": "string"
+                                  },
+                                  "gender": {
+                                    "type": "string"
+                                  },
+                                  "birthDate": {
+                                    "type": "string"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followerCount": {
+                                    "type": "integer"
+                                  },
+                                  "followingCount": {
+                                    "type": "integer"
+                                  },
+                                  "level": {
+                                    "type": "integer"
+                                  },
+                                  "experience": {
+                                    "type": "integer"
+                                  },
+                                  "wallet": {
+                                    "type": "integer"
+                                  },
+                                  "points": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevel": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevelName": {
+                                    "type": "string"
+                                  },
+                                  "membershipStatus": {
+                                    "type": "string"
+                                  },
+                                  "membershipStartDate": {
+                                    "type": "string"
+                                  },
+                                  "membershipEndDate": {
+                                    "type": "string"
+                                  },
+                                  "lastLoginAt": {
+                                    "type": "string"
+                                  },
+                                  "lastActiveAt": {
+                                    "type": "string"
+                                  },
+                                  "inviterId": {
+                                    "type": "string"
+                                  },
+                                  "myInviteCode": {
+                                    "type": "string"
+                                  },
+                                  "inviteCode": {
+                                    "type": "string"
+                                  },
+                                  "inviteEarnings": {
+                                    "type": "string"
+                                  },
+                                  "inviteCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "username",
+                                  "nickname",
+                                  "status",
+                                  "banned",
+                                  "banReason",
+                                  "avatar",
+                                  "description",
+                                  "background",
+                                  "gender",
+                                  "birthDate",
+                                  "articleCount",
+                                  "followerCount",
+                                  "followingCount",
+                                  "level",
+                                  "experience",
+                                  "wallet",
+                                  "points",
+                                  "membershipLevel",
+                                  "membershipLevelName",
+                                  "membershipStatus",
+                                  "membershipStartDate",
+                                  "membershipEndDate",
+                                  "lastLoginAt",
+                                  "lastActiveAt",
+                                  "inviterId",
+                                  "myInviteCode",
+                                  "inviteCode",
+                                  "inviteEarnings",
+                                  "inviteCount",
+                                  "createdAt",
+                                  "updatedAt"
+                                ]
+                              },
+                              "latestMessage": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "conversationId": {
+                                    "type": "integer"
+                                  },
+                                  "senderId": {
+                                    "type": "integer"
+                                  },
+                                  "receiverId": {
+                                    "type": "integer"
+                                  },
+                                  "messageKind": {
+                                    "type": "string"
+                                  },
+                                  "content": {
+                                    "type": "string"
+                                  },
+                                  "payload": {
+                                    "type": "object",
+                                    "properties": {}
+                                  },
+                                  "readAt": {
+                                    "type": "string"
+                                  },
+                                  "recalledAt": {
+                                    "type": "string"
+                                  },
+                                  "recalledById": {
+                                    "type": "string"
+                                  },
+                                  "recallReason": {
+                                    "type": "string"
+                                  },
+                                  "sender": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "username": {
+                                        "type": "string"
+                                      },
+                                      "nickname": {
+                                        "type": "string"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "banned": {
+                                        "type": "null"
+                                      },
+                                      "banReason": {
+                                        "type": "null"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "gender": {
+                                        "type": "string"
+                                      },
+                                      "birthDate": {
+                                        "type": "null"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followerCount": {
+                                        "type": "integer"
+                                      },
+                                      "followingCount": {
+                                        "type": "integer"
+                                      },
+                                      "level": {
+                                        "type": "integer"
+                                      },
+                                      "experience": {
+                                        "type": "integer"
+                                      },
+                                      "wallet": {
+                                        "type": "number"
+                                      },
+                                      "points": {
+                                        "type": "integer"
+                                      },
+                                      "membershipLevel": {
+                                        "type": "integer"
+                                      },
+                                      "membershipLevelName": {
+                                        "type": "string"
+                                      },
+                                      "membershipStatus": {
+                                        "type": "string"
+                                      },
+                                      "membershipStartDate": {
+                                        "type": "null"
+                                      },
+                                      "membershipEndDate": {
+                                        "type": "null"
+                                      },
+                                      "lastLoginAt": {
+                                        "type": "string"
+                                      },
+                                      "lastActiveAt": {
+                                        "type": "null"
+                                      },
+                                      "inviterId": {
+                                        "type": "null"
+                                      },
+                                      "myInviteCode": {
+                                        "type": "string"
+                                      },
+                                      "inviteCode": {
+                                        "type": "null"
+                                      },
+                                      "inviteEarnings": {
+                                        "type": "string"
+                                      },
+                                      "inviteCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "username",
+                                      "nickname",
+                                      "status",
+                                      "banned",
+                                      "banReason",
+                                      "avatar",
+                                      "description",
+                                      "background",
+                                      "gender",
+                                      "birthDate",
+                                      "articleCount",
+                                      "followerCount",
+                                      "followingCount",
+                                      "level",
+                                      "experience",
+                                      "wallet",
+                                      "points",
+                                      "membershipLevel",
+                                      "membershipLevelName",
+                                      "membershipStatus",
+                                      "membershipStartDate",
+                                      "membershipEndDate",
+                                      "lastLoginAt",
+                                      "lastActiveAt",
+                                      "inviterId",
+                                      "myInviteCode",
+                                      "inviteCode",
+                                      "inviteEarnings",
+                                      "inviteCount",
+                                      "createdAt",
+                                      "updatedAt"
+                                    ]
+                                  },
+                                  "receiver": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "username": {
+                                        "type": "string"
+                                      },
+                                      "nickname": {
+                                        "type": "null"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "banned": {
+                                        "type": "null"
+                                      },
+                                      "banReason": {
+                                        "type": "null"
+                                      },
+                                      "avatar": {
+                                        "type": "null"
+                                      },
+                                      "description": {
+                                        "type": "null"
+                                      },
+                                      "background": {
+                                        "type": "null"
+                                      },
+                                      "gender": {
+                                        "type": "string"
+                                      },
+                                      "birthDate": {
+                                        "type": "null"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followerCount": {
+                                        "type": "integer"
+                                      },
+                                      "followingCount": {
+                                        "type": "integer"
+                                      },
+                                      "level": {
+                                        "type": "integer"
+                                      },
+                                      "experience": {
+                                        "type": "integer"
+                                      },
+                                      "wallet": {
+                                        "type": "integer"
+                                      },
+                                      "points": {
+                                        "type": "integer"
+                                      },
+                                      "membershipLevel": {
+                                        "type": "integer"
+                                      },
+                                      "membershipLevelName": {
+                                        "type": "string"
+                                      },
+                                      "membershipStatus": {
+                                        "type": "string"
+                                      },
+                                      "membershipStartDate": {
+                                        "type": "string"
+                                      },
+                                      "membershipEndDate": {
+                                        "type": "string"
+                                      },
+                                      "lastLoginAt": {
+                                        "type": "string"
+                                      },
+                                      "lastActiveAt": {
+                                        "type": "null"
+                                      },
+                                      "inviterId": {
+                                        "type": "null"
+                                      },
+                                      "myInviteCode": {
+                                        "type": "string"
+                                      },
+                                      "inviteCode": {
+                                        "type": "null"
+                                      },
+                                      "inviteEarnings": {
+                                        "type": "string"
+                                      },
+                                      "inviteCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "username",
+                                      "nickname",
+                                      "status",
+                                      "banned",
+                                      "banReason",
+                                      "avatar",
+                                      "description",
+                                      "background",
+                                      "gender",
+                                      "birthDate",
+                                      "articleCount",
+                                      "followerCount",
+                                      "followingCount",
+                                      "level",
+                                      "experience",
+                                      "wallet",
+                                      "points",
+                                      "membershipLevel",
+                                      "membershipLevelName",
+                                      "membershipStatus",
+                                      "membershipStartDate",
+                                      "membershipEndDate",
+                                      "lastLoginAt",
+                                      "lastActiveAt",
+                                      "inviterId",
+                                      "myInviteCode",
+                                      "inviteCode",
+                                      "inviteEarnings",
+                                      "inviteCount",
+                                      "createdAt",
+                                      "updatedAt"
+                                    ]
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string"
+                                  },
+                                  "isRead": {
+                                    "type": "boolean"
+                                  },
+                                  "isRecalled": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "conversationId",
+                                  "senderId",
+                                  "receiverId",
+                                  "messageKind",
+                                  "content",
+                                  "payload",
+                                  "readAt",
+                                  "recalledAt",
+                                  "recalledById",
+                                  "recallReason",
+                                  "sender",
+                                  "receiver",
+                                  "createdAt",
+                                  "updatedAt",
+                                  "type",
+                                  "isRead",
+                                  "isRecalled"
+                                ]
+                              },
+                              "unreadCount": {
+                                "type": "integer"
+                              },
+                              "lastMessageAt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "counterpart",
+                              "latestMessage",
+                              "conversationId",
+                              "unreadCount",
+                              "lastMessageAt"
+                            ]
                           }
                         },
                         "meta": {
@@ -31909,7 +32406,396 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "conversationId": {
+                                "type": "integer"
+                              },
+                              "senderId": {
+                                "type": "integer"
+                              },
+                              "receiverId": {
+                                "type": "integer"
+                              },
+                              "messageKind": {
+                                "type": "string"
+                              },
+                              "content": {
+                                "type": "string"
+                              },
+                              "payload": {
+                                "type": "object",
+                                "properties": {}
+                              },
+                              "readAt": {
+                                "type": "string"
+                              },
+                              "recalledAt": {
+                                "type": "string"
+                              },
+                              "recalledById": {
+                                "type": "string"
+                              },
+                              "recallReason": {
+                                "type": "string"
+                              },
+                              "sender": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "username": {
+                                    "type": "string"
+                                  },
+                                  "nickname": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "banned": {
+                                    "type": "string"
+                                  },
+                                  "banReason": {
+                                    "type": "string"
+                                  },
+                                  "avatar": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "background": {
+                                    "type": "string"
+                                  },
+                                  "gender": {
+                                    "type": "string"
+                                  },
+                                  "birthDate": {
+                                    "type": "string"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followerCount": {
+                                    "type": "integer"
+                                  },
+                                  "followingCount": {
+                                    "type": "integer"
+                                  },
+                                  "level": {
+                                    "type": "integer"
+                                  },
+                                  "experience": {
+                                    "type": "integer"
+                                  },
+                                  "wallet": {
+                                    "type": "number"
+                                  },
+                                  "points": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevel": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevelName": {
+                                    "type": "string"
+                                  },
+                                  "membershipStatus": {
+                                    "type": "string"
+                                  },
+                                  "membershipStartDate": {
+                                    "type": "string"
+                                  },
+                                  "membershipEndDate": {
+                                    "type": "string"
+                                  },
+                                  "lastLoginAt": {
+                                    "type": "string"
+                                  },
+                                  "lastActiveAt": {
+                                    "type": "string"
+                                  },
+                                  "inviterId": {
+                                    "type": "string"
+                                  },
+                                  "myInviteCode": {
+                                    "type": "string"
+                                  },
+                                  "inviteCode": {
+                                    "type": "string"
+                                  },
+                                  "inviteEarnings": {
+                                    "type": "string"
+                                  },
+                                  "inviteCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  },
+                                  "equippedDecorations": {
+                                    "type": "object",
+                                    "properties": {
+                                      "AVATAR_FRAME": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "integer"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "type": {
+                                            "type": "string"
+                                          },
+                                          "imageUrl": {
+                                            "type": "string"
+                                          },
+                                          "rarity": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name",
+                                          "type",
+                                          "imageUrl",
+                                          "rarity"
+                                        ]
+                                      },
+                                      "COMMENT_BUBBLE": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "integer"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "type": {
+                                            "type": "string"
+                                          },
+                                          "imageUrl": {
+                                            "type": "string"
+                                          },
+                                          "rarity": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name",
+                                          "type",
+                                          "imageUrl",
+                                          "rarity"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "AVATAR_FRAME",
+                                      "COMMENT_BUBBLE"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "username",
+                                  "nickname",
+                                  "status",
+                                  "banned",
+                                  "banReason",
+                                  "avatar",
+                                  "description",
+                                  "background",
+                                  "gender",
+                                  "birthDate",
+                                  "articleCount",
+                                  "followerCount",
+                                  "followingCount",
+                                  "level",
+                                  "experience",
+                                  "wallet",
+                                  "points",
+                                  "membershipLevel",
+                                  "membershipLevelName",
+                                  "membershipStatus",
+                                  "membershipStartDate",
+                                  "membershipEndDate",
+                                  "lastLoginAt",
+                                  "lastActiveAt",
+                                  "inviterId",
+                                  "myInviteCode",
+                                  "inviteCode",
+                                  "inviteEarnings",
+                                  "inviteCount",
+                                  "createdAt",
+                                  "updatedAt",
+                                  "equippedDecorations"
+                                ]
+                              },
+                              "receiver": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "username": {
+                                    "type": "string"
+                                  },
+                                  "nickname": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "banned": {
+                                    "type": "string"
+                                  },
+                                  "banReason": {
+                                    "type": "string"
+                                  },
+                                  "avatar": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "background": {
+                                    "type": "string"
+                                  },
+                                  "gender": {
+                                    "type": "string"
+                                  },
+                                  "birthDate": {
+                                    "type": "string"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followerCount": {
+                                    "type": "integer"
+                                  },
+                                  "followingCount": {
+                                    "type": "integer"
+                                  },
+                                  "level": {
+                                    "type": "integer"
+                                  },
+                                  "experience": {
+                                    "type": "integer"
+                                  },
+                                  "wallet": {
+                                    "type": "integer"
+                                  },
+                                  "points": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevel": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevelName": {
+                                    "type": "string"
+                                  },
+                                  "membershipStatus": {
+                                    "type": "string"
+                                  },
+                                  "membershipStartDate": {
+                                    "type": "string"
+                                  },
+                                  "membershipEndDate": {
+                                    "type": "string"
+                                  },
+                                  "lastLoginAt": {
+                                    "type": "string"
+                                  },
+                                  "lastActiveAt": {
+                                    "type": "string"
+                                  },
+                                  "inviterId": {
+                                    "type": "string"
+                                  },
+                                  "myInviteCode": {
+                                    "type": "string"
+                                  },
+                                  "inviteCode": {
+                                    "type": "string"
+                                  },
+                                  "inviteEarnings": {
+                                    "type": "string"
+                                  },
+                                  "inviteCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "username",
+                                  "nickname",
+                                  "status",
+                                  "banned",
+                                  "banReason",
+                                  "avatar",
+                                  "description",
+                                  "background",
+                                  "gender",
+                                  "birthDate",
+                                  "articleCount",
+                                  "followerCount",
+                                  "followingCount",
+                                  "level",
+                                  "experience",
+                                  "wallet",
+                                  "points",
+                                  "membershipLevel",
+                                  "membershipLevelName",
+                                  "membershipStatus",
+                                  "membershipStartDate",
+                                  "membershipEndDate",
+                                  "lastLoginAt",
+                                  "lastActiveAt",
+                                  "inviterId",
+                                  "myInviteCode",
+                                  "inviteCode",
+                                  "inviteEarnings",
+                                  "inviteCount",
+                                  "createdAt",
+                                  "updatedAt"
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string"
+                              },
+                              "isRead": {
+                                "type": "boolean"
+                              },
+                              "isRecalled": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "sender",
+                              "receiver"
+                            ]
                           }
                         },
                         "meta": {
@@ -32012,6 +32898,40 @@
         "responses": {
           "200": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           }
         },
@@ -32325,8 +33245,39 @@
           "required": true
         },
         "responses": {
-          "201": {
+          "400": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "null"
+                    },
+                    "timestamp": {
+                      "type": "string"
+                    },
+                    "path": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data",
+                    "timestamp",
+                    "path"
+                  ]
+                }
+              }
+            },
             "headers": {}
           }
         },

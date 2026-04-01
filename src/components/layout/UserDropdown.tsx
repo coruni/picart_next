@@ -172,8 +172,9 @@ export function UserDropdown() {
           />
         </button>
 
-        <div className="invisible absolute right-0 z-50 mt-2 hidden min-w-90 rounded-xl border border-border bg-card opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100 md:block">
-          {isAuthenticated && (
+        <div className="invisible absolute right-0 z-50 hidden min-w-90 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 md:block">
+          <div className="rounded-xl border border-border bg-card shadow-lg">
+            {isAuthenticated && (
             <>
               <h3 className="px-3 py-4 text-lg font-bold text-foreground">
                 {tHeader("authorInfo")}
@@ -196,7 +197,7 @@ export function UserDropdown() {
               </div>
               <div className="p-1">
                 <GuardedLink
-                  href="/profile/messages"
+                  href="/message"
                   className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <div className="flex items-center gap-3">
@@ -262,134 +263,139 @@ export function UserDropdown() {
                 </GuardedLink>
               </div>
             </>
-          )}
-
-          <h3 className="px-3 py-4 text-lg font-bold text-foreground">
-            {tHeader("systemSettings")}
-          </h3>
-
-          <div className="group/language relative p-1">
-            <div className="mb-1 flex h-10 cursor-pointer items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary">
-              <div className="flex items-center gap-3">
-                <div className="flex shrink-0 items-center justify-center">
-                  <Globe className="size-5" />
-                </div>
-                <span className="text-sm font-medium">
-                  {tHeader("switchLanguage")}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">
-                  {languageOptions.find((option) => option.value === locale)
-                    ?.label || tHeader("currentLanguage")}
-                </span>
-                <ChevronRight className="size-4" />
-              </div>
-            </div>
-
-            <div className="invisible absolute top-0 right-full z-10 mr-1 min-w-36 rounded-xl border border-border bg-card p-1 opacity-0 shadow-lg transition-all duration-150 group-hover/language:visible group-hover/language:opacity-100">
-              {languageOptions.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => handleLocaleChange(option.value)}
-                  className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
-                >
-                  <span className="text-sm font-medium">{option.label}</span>
-                  <Check
-                    className={`size-4 ${
-                      locale === option.value ? "opacity-100" : "opacity-0"
-                    }`}
-                  />
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="group/theme relative p-1">
-            <div className="mb-1 flex h-10 cursor-pointer items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary">
-              <div className="flex items-center gap-3">
-                <div className="flex shrink-0 items-center justify-center rounded-full">
-                  <Moon className="size-5" />
-                </div>
-                <span className="text-sm font-medium">
-                  {tHeader("appearanceSettings")}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm">
-                  {themeOptions.find((option) => option.value === theme)
-                    ?.label || tHeader("followSystem")}
-                </span>
-                <ChevronRight className="size-4" />
-              </div>
-            </div>
-
-            <div className="invisible absolute top-0 right-full z-10 mr-1 min-w-40 rounded-xl border border-border bg-card p-1 opacity-0 shadow-lg transition-all duration-150 group-hover/theme:visible group-hover/theme:opacity-100">
-              {themeOptions.map((option) => {
-                const Icon = option.icon;
-
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    onClick={() => handleThemeChange(option.value)}
-                    className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon className="size-4" />
-                      <span className="text-sm font-medium">
-                        {option.label}
-                      </span>
-                    </div>
-                    <Check
-                      className={`size-4 ${
-                        theme === option.value ? "opacity-100" : "opacity-0"
-                      }`}
-                    />
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="p-1 cursor-pointer">
-            <div className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary">
-              <div className="flex items-center gap-3">
-                <div className="flex shrink-0 items-center justify-center rounded-full">
-                  <Languages size={20} />
-                </div>
-                <span className="text-sm font-medium">
-                  {tHeader("autoTranslate")}
-                </span>
-              </div>
-              <Switch
-                checked={autoTranslateContent}
-                onCheckedChange={setAutoTranslateContent}
-              />
-            </div>
-          </div>
-
-          <div className="my-2 border-t border-border" />
-
-          <div className="px-1 pb-2">
-            {isAuthenticated ? (
-              <button
-                onClick={() => setLogoutDialogOpen(true)}
-                className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
-              >
-                <Power className="size-5" />
-                <span className="text-sm font-medium">{t("logout")}</span>
-              </button>
-            ) : (
-              <button
-                onClick={handleLoginDialogOpen}
-                className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
-              >
-                <LogIn className="size-5" />
-                <span className="text-sm font-medium">{t("login")}</span>
-              </button>
             )}
+
+            <h3 className="px-3 py-4 text-lg font-bold text-foreground">
+              {tHeader("systemSettings")}
+            </h3>
+
+            <div className="group/language relative p-1">
+              <div className="mb-1 flex h-10 cursor-pointer items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary">
+                <div className="flex items-center gap-3">
+                  <div className="flex shrink-0 items-center justify-center">
+                    <Globe className="size-5" />
+                  </div>
+                  <span className="text-sm font-medium">
+                    {tHeader("switchLanguage")}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">
+                    {languageOptions.find((option) => option.value === locale)
+                      ?.label || tHeader("currentLanguage")}
+                  </span>
+                  <ChevronRight className="size-4" />
+                </div>
+              </div>
+
+              <div className="invisible absolute top-0 right-full z-10 pr-1 opacity-0 transition-all duration-150 group-hover/language:visible group-hover/language:opacity-100">
+                <div className="min-w-36 rounded-xl border border-border bg-card p-1 shadow-lg">
+                  {languageOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => handleLocaleChange(option.value)}
+                      className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
+                    >
+                      <span className="text-sm font-medium">{option.label}</span>
+                      <Check
+                        className={`size-4 ${
+                          locale === option.value ? "opacity-100" : "opacity-0"
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="group/theme relative p-1">
+              <div className="mb-1 flex h-10 cursor-pointer items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary">
+                <div className="flex items-center gap-3">
+                  <div className="flex shrink-0 items-center justify-center rounded-full">
+                    <Moon className="size-5" />
+                  </div>
+                  <span className="text-sm font-medium">
+                    {tHeader("appearanceSettings")}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">
+                    {themeOptions.find((option) => option.value === theme)
+                      ?.label || tHeader("followSystem")}
+                  </span>
+                  <ChevronRight className="size-4" />
+                </div>
+              </div>
+
+              <div className="invisible absolute top-0 right-full z-10 pr-1 opacity-0 transition-all duration-150 group-hover/theme:visible group-hover/theme:opacity-100">
+                <div className="min-w-40 rounded-xl border border-border bg-card p-1 shadow-lg">
+                  {themeOptions.map((option) => {
+                    const Icon = option.icon;
+
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => handleThemeChange(option.value)}
+                        className="flex h-10 w-full cursor-pointer items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon className="size-4" />
+                          <span className="text-sm font-medium">
+                            {option.label}
+                          </span>
+                        </div>
+                        <Check
+                          className={`size-4 ${
+                            theme === option.value ? "opacity-100" : "opacity-0"
+                          }`}
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            <div className="p-1 cursor-pointer">
+              <div className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary">
+                <div className="flex items-center gap-3">
+                  <div className="flex shrink-0 items-center justify-center rounded-full">
+                    <Languages size={20} />
+                  </div>
+                  <span className="text-sm font-medium">
+                    {tHeader("autoTranslate")}
+                  </span>
+                </div>
+                <Switch
+                  checked={autoTranslateContent}
+                  onCheckedChange={setAutoTranslateContent}
+                />
+              </div>
+            </div>
+
+            <div className="my-2 border-t border-border" />
+
+            <div className="px-1 pb-2">
+              {isAuthenticated ? (
+                <button
+                  onClick={() => setLogoutDialogOpen(true)}
+                  className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
+                >
+                  <Power className="size-5" />
+                  <span className="text-sm font-medium">{t("logout")}</span>
+                </button>
+              ) : (
+                <button
+                  onClick={handleLoginDialogOpen}
+                  className="flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
+                >
+                  <LogIn className="size-5" />
+                  <span className="text-sm font-medium">{t("login")}</span>
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -440,7 +446,7 @@ export function UserDropdown() {
                     <ChevronRight className="size-4" />
                   </Link>
                   <GuardedLink
-                    href="/profile/messages"
+                    href="/message"
                     onClick={closeMobileMenu}
                     className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                   >
@@ -646,3 +652,4 @@ export function UserDropdown() {
     </>
   );
 }
+

@@ -605,3 +605,45 @@ button {
 .dark .textarea-resizer {
   color-scheme: dark;
 }
+
+.floating-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.floating-scrollbar-overlay {
+  margin-right: -14px;
+  padding-right: 14px;
+}
+
+.floating-scrollbar:hover {
+  scrollbar-color: color-mix(in oklab, var(--color-foreground) 18%, transparent)
+    transparent;
+}
+
+.floating-scrollbar::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.floating-scrollbar::-webkit-scrollbar-track,
+.floating-scrollbar::-webkit-scrollbar-track-piece {
+  background: transparent;
+}
+
+.floating-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border: 3px solid transparent;
+  border-radius: 9999px;
+  background-clip: padding-box;
+  transition: background-color 160ms ease;
+}
+
+.floating-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--color-foreground) 18%, transparent);
+  background-clip: padding-box;
+}
+
+.floating-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}

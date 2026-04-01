@@ -1,35 +1,32 @@
 "use client";
 
-import { messageControllerMarkAllAsRead, messageControllerSearch } from "@/api";
 import { EmptyState } from "@/components/shared";
 import { GuardedLink } from "@/components/shared/GuardedLink";
+import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { useIsMobile } from "@/hooks";
 import { cn, formatRelativeTime, formatShortDate } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
-import { useUserStore } from "@/stores";
-import { MessageList } from "@/types";
-import {
-  BrushCleaning,
-  ChevronRight,
-  MessageCircle,
-  Settings,
-} from "lucide-react";
+import { resolveMessagePreviewText } from "@/components/message/MessageCenter.utils";
+import { useMessageNotificationStore, useUserStore } from "@/stores";
+import type { MessageTab } from "@/stores/useMessageNotificationStore";
+import { BrushCleaning, MessageCircle, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-} from "react";
-
-type MessageTab = "all" | "notification" | "private" | "system";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 const MIN_MOBILE_SHEET_HEIGHT = 12;
 const MAX_MOBILE_SHEET_HEIGHT = 92;
 const DEFAULT_MOBILE_SHEET_HEIGHT = 50;
+
+function hasUnreadMessage(message: { isRead?: boolean; unreadCount?: number }) {
+  return !message.isRead || Number(message.unreadCount || 0) > 0;
+}
+
+function getUnreadBadgeText(message: { unreadCount?: number }) {
+  const count = Number(message.unreadCount || 0);
+  return count > 0 ? String(count) : "•";
+}
 
 export function MessageDropdown({
   isTransparentBgPage,
@@ -45,17 +42,37 @@ export function MessageDropdown({
   const tTime = useTranslations("time");
   const locale = useLocale();
   const isMobile = useIsMobile();
-  const [messages, setMessages] = useState<MessageList>([]);
-  const [selectedTab, setSelectedTab] = useState<MessageTab>("all");
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSheetHeight, setMobileSheetHeight] = useState(
     DEFAULT_MOBILE_SHEET_HEIGHT,
   );
-  const [page] = useState(1);
-  const [limit] = useState(10);
+  const [dropdownTab, setDropdownTab] = useState<MessageTab>("all");
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  const token = useUserStore((state) => state.token);
+  const messages = useMessageNotificationStore((state) => state.dropdownMessages);
+  const unreadCount = useMessageNotificationStore((state) => state.unreadCount);
+  const isLoading = useMessageNotificationStore((state) => state.dropdownIsLoading);
+  const hasLoadedDropdownMessages = useMessageNotificationStore(
+    (state) => state.hasLoadedDropdownMessages,
+  );
+  const dropdownLoadedTab = useMessageNotificationStore(
+    (state) => state.dropdownLoadedTab,
+  );
+  const fetchDropdownMessages = useMessageNotificationStore(
+    (state) => state.fetchDropdownMessages,
+  );
+  const fetchUnreadCount = useMessageNotificationStore(
+    (state) => state.fetchUnreadCount,
+  );
+  const markAllAsRead = useMessageNotificationStore(
+    (state) => state.markAllAsRead,
+  );
+  const initializeSocket = useMessageNotificationStore(
+    (state) => state.initializeSocket,
+  );
+  const resetNotifications = useMessageNotificationStore(
+    (state) => state.reset,
+  );
   const dragStartYRef = useRef<number | null>(null);
   const dragStartHeightRef = useRef<number>(MIN_MOBILE_SHEET_HEIGHT);
   const mobileSheetHeightRef = useRef<number>(MIN_MOBILE_SHEET_HEIGHT);
@@ -66,17 +83,27 @@ export function MessageDropdown({
     { value: "private", label: tMsg("tabs.private") },
     { value: "system", label: tMsg("tabs.system") },
   ];
-
-  const messageTypeLabels: Record<Exclude<MessageTab, "all">, string> = {
-    notification: tMsg("tabs.notification"),
-    private: tMsg("tabs.private"),
-    system: tMsg("tabs.system"),
+  const previewCopy = {
+    emptyThread: tMsg("center.emptyThread"),
+    imageOnlyPreview: tMsg("center.imageOnlyPreview"),
+    recalledPreview: tMsg("center.recalledPreview"),
   };
 
   useEffect(() => {
-    setMessages([]);
-    setSelectedTab("all");
-  }, [isAuthenticated]);
+    if (!isAuthenticated || !token) {
+      resetNotifications();
+      return;
+    }
+
+    initializeSocket(token);
+    void fetchUnreadCount();
+  }, [
+    fetchUnreadCount,
+    initializeSocket,
+    isAuthenticated,
+    resetNotifications,
+    token,
+  ]);
 
   useEffect(() => {
     if (!isMobile && mobileOpen) {
@@ -95,37 +122,14 @@ export function MessageDropdown({
   }, [mobileSheetHeight]);
 
   const filteredMessages = messages;
-
-  const fetchMessages = useCallback(
-    async (tab: MessageTab = selectedTab) => {
-      if (!isAuthenticated || isLoading) return;
-
-      setIsLoading(true);
-      try {
-        const { data } = await messageControllerSearch({
-          query: {
-            page,
-            limit,
-            ...(tab !== "all" ? { type: tab } : {}),
-          },
-        });
-        const nextMessages = data?.data.data || [];
-        setMessages(nextMessages);
-        setUnreadCount(
-          nextMessages.filter((message) => !message.isRead).length,
-        );
-      } catch (error) {
-        console.error("Failed to fetch messages:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [isAuthenticated, isLoading, limit, page, selectedTab],
-  );
+  const shouldFetchDropdownData =
+    isAuthenticated &&
+    !isLoading &&
+    (!hasLoadedDropdownMessages || dropdownLoadedTab !== dropdownTab);
 
   const handleMouseEnter = () => {
-    if (!isMobile && isAuthenticated && messages.length === 0) {
-      void fetchMessages();
+    if (!isMobile && shouldFetchDropdownData) {
+      void fetchDropdownMessages(dropdownTab);
     }
   };
 
@@ -136,26 +140,23 @@ export function MessageDropdown({
 
     setMobileOpen(true);
 
-    if (isAuthenticated && messages.length === 0) {
-      void fetchMessages();
+    if (shouldFetchDropdownData) {
+      void fetchDropdownMessages(dropdownTab);
     }
   };
 
   const handleTabChange = (tab: MessageTab) => {
-    if (tab === selectedTab) return;
+    if (tab === dropdownTab) return;
 
-    setSelectedTab(tab);
+    setDropdownTab(tab);
 
     if (isAuthenticated) {
-      void fetchMessages(tab);
+      void fetchDropdownMessages(tab);
     }
   };
 
   const handleCleanMessage = async () => {
-    await messageControllerMarkAllAsRead({
-      body: selectedTab === "all" ? {} : { type: selectedTab },
-    });
-    await fetchMessages();
+    await markAllAsRead(dropdownTab);
   };
 
   const clampSheetHeight = (nextHeight: number) =>
@@ -227,7 +228,7 @@ export function MessageDropdown({
     return (
       <div
         className={cn(
-          "px-3 py-2 space-y-3",
+          "px-3 py-2",
           mobile
             ? "min-h-0 flex-1 overflow-y-auto overscroll-contain"
             : "max-h-96 overflow-y-auto",
@@ -243,50 +244,51 @@ export function MessageDropdown({
             {tCommon("loading")}
           </div>
         ) : filteredMessages.length > 0 ? (
-          filteredMessages.map((message) => (
-            <GuardedLink
-              key={message.id}
-              href={`/messages/${message.id}`}
-              onClick={() => mobile && setMobileOpen(false)}
-              className={cn(
-                "group/message relative block border-b border-border transition-colors last-of-type:border-none",
-                message.isRead ? "bg-card" : "bg-card hover:bg-primary/3",
-              )}
-            >
-              {!message.isRead && (
-                <span className="absolute right-4 top-4 h-3 w-3 rounded-full bg-red-500" />
-              )}
+          filteredMessages.map((message) => {
+            const previewText = resolveMessagePreviewText(message, previewCopy);
 
-              <div className="min-w-0">
-                <div className="mb-2 flex items-center justify-between gap-3">
-                  <span className="text-xs font-medium tracking-[0.02em] text-[#a9b7cc]">
-                    {formatShortDate(message.createdAt || "", locale) ||
-                      formatRelativeTime(message.createdAt || "", tTime, locale)}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {message.type && message.type in messageTypeLabels
-                      ? messageTypeLabels[
-                          message.type as Exclude<MessageTab, "all">
-                        ]
-                      : tMsg("tabs.notification")}
-                  </span>
+            return (
+              <GuardedLink
+                key={message.id}
+                href={message.href}
+                onClick={() => mobile && setMobileOpen(false)}
+                className={cn(
+                  "mb-1.5 flex items-start gap-3 rounded-md px-3 py-3 text-left transition-all",
+                  hasUnreadMessage(message)
+                    ? "bg-primary/8 hover:bg-primary/12"
+                    : "hover:bg-muted/60",
+                )}
+              >
+                <div className="relative shrink-0">
+                  <Avatar
+                    url={message.avatarUrl}
+                    className="size-10"
+                    alt={message.title}
+                  />
+                  {hasUnreadMessage(message) ? (
+                    <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-semibold text-foreground">
+                      {getUnreadBadgeText(message)}
+                    </span>
+                  ) : null}
                 </div>
 
-                <p className="pr-8 font-semibold text-foreground transition-colors group-hover/message:text-primary">
-                  {message.title || tMsg("untitled")}
-                </p>
-
-                <p className="mt-3 text-[15px] text-foreground/78">
-                  {message.content}
-                </p>
-
-                <div className="mt-2 pb-2 inline-flex items-center gap-1 text-base font-medium text-primary transition-colors">
-                  <span>{tMsg("clickToJump")}</span>
-                  <ChevronRight className="size-5" strokeWidth={3} />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="truncate font-semibold text-foreground">
+                      {message.title || tMsg("untitled")}
+                    </p>
+                    <span className="shrink-0 text-xs text-secondary">
+                      {formatShortDate(message.createdAt || "", locale) ||
+                        formatRelativeTime(message.createdAt || "", tTime, locale)}
+                    </span>
+                  </div>
+                  <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
+                    {previewText}
+                  </p>
                 </div>
-              </div>
-            </GuardedLink>
-          ))
+              </GuardedLink>
+            );
+          })
         ) : (
           <div className="px-4 py-8 text-center text-sm text-muted-foreground">
             {tMsg("noMessages")}
@@ -298,7 +300,7 @@ export function MessageDropdown({
 
   const renderPanel = (mobile = false) => (
     <div className={cn(mobile && "flex h-full min-h-0 flex-col")}>
-      <div className="shrink-0 flex items-center justify-between border-b border-border p-4 pt-5">
+      <div className="flex shrink-0 items-center justify-between border-b border-border p-4 pt-5">
         <h3 className="flex-1 font-semibold text-foreground">
           {tHeader("messages")}
         </h3>
@@ -329,15 +331,15 @@ export function MessageDropdown({
               type="button"
               onClick={() => handleTabChange(tab.value)}
               className={cn(
-                "relative shrink-0 min-w-12 pb-3 pt-3 px-1 text-sm font-medium transition-colors cursor-pointer",
-                selectedTab === tab.value
+                "relative shrink-0 min-w-12 cursor-pointer px-1 pb-3 pt-3 text-sm font-medium transition-colors",
+                dropdownTab === tab.value
                   ? "text-foreground"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
               {tab.label}
-              {selectedTab === tab.value && (
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1 w-6 rounded-full bg-primary" />
+              {dropdownTab === tab.value && (
+                <span className="absolute bottom-0 left-1/2 h-1 w-6 -translate-x-1/2 rounded-full bg-primary" />
               )}
             </button>
           ))}
@@ -361,20 +363,25 @@ export function MessageDropdown({
         >
           <MessageCircle className="size-5" />
           {unreadCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-error-500" />
+            <span className="absolute right-1 top-1 flex size-2 items-center justify-center">
+              <span className="absolute size-3 rounded-full bg-red-400/40 animate-ping [animation-duration:2s]" />
+              <span className="relative block size-2 rounded-full bg-red-400" />
+            </span>
           )}
         </button>
 
         {!isMobile && (
-          <div className="invisible absolute right-0 z-50 mt-2 w-full min-w-lg rounded-xl overflow-hidden border border-border bg-card opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
-            {renderPanel()}
+          <div className="invisible absolute right-0 z-50 w-full min-w-lg pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+            <div className="overflow-hidden rounded-xl border border-border bg-card shadow-lg">
+              {renderPanel()}
+            </div>
           </div>
         )}
       </div>
 
       <Dialog open={isMobile && mobileOpen} onOpenChange={setMobileOpen}>
         <DialogContent
-          className="top-auto bottom-0 left-0 right-0 max-w-none overflow-hidden translate-x-0 translate-y-0 rounded-b-none rounded-t-2xl border-x-0 border-b-0 p-0 animate-in slide-in-from-bottom duration-300 ease-out md:hidden"
+          className="top-auto bottom-0 left-0 right-0 max-w-none translate-x-0 translate-y-0 overflow-hidden rounded-b-none rounded-t-2xl border-x-0 border-b-0 p-0 animate-in slide-in-from-bottom duration-300 ease-out md:hidden"
           style={
             {
               height: `${mobileSheetHeight}vh`,
@@ -384,7 +391,7 @@ export function MessageDropdown({
           }
         >
           <div
-            className="flex justify-center py-2 touch-none"
+            className="flex touch-none justify-center py-2"
             onPointerDown={(e) => handleSheetPointerDown(e.clientY)}
           >
             <span className="h-1.5 w-12 rounded-full bg-border" />

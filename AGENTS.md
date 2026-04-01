@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
 ## Build & Development Commands
 
@@ -114,7 +114,7 @@ NEXT_PUBLIC_APP_URL=         # Site domain
 
 ## Project Skills
 
-Project-level skills are located in `.claude/skills/`. Use these instead of global skills when available:
+Project-level skills are located in `.Codex/skills/`. Use these instead of global skills when available:
 
 - `picart-dev` - PicArt development assistant (API, stores, i18n, editor)
 - `mcp-builder` - Building MCP servers

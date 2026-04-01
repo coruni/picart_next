@@ -101,33 +101,35 @@ export function CreateDropdown({
   ];
 
   const renderDesktopMenu = () => (
-    <div className="absolute right-0 z-50 mt-2 invisible w-auto min-w-xs rounded-xl border border-border bg-card opacity-0 shadow-lg transition-all duration-200 group-hover:visible group-hover:opacity-100">
-      <div className="space-y-2 p-3">
-        {createOptions.map((option) => (
-          <GuardedLink
-            key={option.href}
-            href={option.href}
-            className="group/item flex items-center gap-3 rounded-lg px-4 py-2 whitespace-nowrap transition-colors hover:bg-primary/15 text-muted-foreground hover:text-primary dark:bg-[#242734]"
-          >
-            <div
-              className={cn(
-                "flex size-10 shrink-0 items-center justify-center rounded-lg",
-                option.iconBg,
-              )}
+    <div className="invisible absolute right-0 z-50 w-auto min-w-xs pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+      <div className="rounded-xl border border-border bg-card shadow-lg">
+        <div className="space-y-2 p-3">
+          {createOptions.map((option) => (
+            <GuardedLink
+              key={option.href}
+              href={option.href}
+              className="group/item flex items-center gap-3 rounded-lg px-4 py-2 whitespace-nowrap transition-colors hover:bg-primary/15 text-muted-foreground hover:text-primary dark:bg-[#242734]"
             >
-              <svg
-                className={cn("size-5", option.iconColor)}
-                viewBox={option.iconViewBox}
-                version="1.1"
-                xmlns="http://www.w3.org/2000/svg"
+              <div
+                className={cn(
+                  "flex size-10 shrink-0 items-center justify-center rounded-lg",
+                  option.iconBg,
+                )}
               >
-                {option.iconPaths || option.iconPath}
-              </svg>
-            </div>
-            <span className="flex-1 text-sm font-medium">{option.label}</span>
-            <ChevronRight className="size-4 transition-colors" />
-          </GuardedLink>
-        ))}
+                <svg
+                  className={cn("size-5", option.iconColor)}
+                  viewBox={option.iconViewBox}
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  {option.iconPaths || option.iconPath}
+                </svg>
+              </div>
+              <span className="flex-1 text-sm font-medium">{option.label}</span>
+              <ChevronRight className="size-4 transition-colors" />
+            </GuardedLink>
+          ))}
+        </div>
       </div>
     </div>
   );

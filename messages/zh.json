@@ -156,20 +156,20 @@
     "noTags": "暂无标签"
   },
   "userList": {
-    "loading": "\u52a0\u8f7d\u4e2d...",
-    "loadMore": "\u6eda\u52a8\u52a0\u8f7d\u66f4\u591a",
-    "loadFailed": "\u52a0\u8f7d\u66f4\u591a\u7528\u6237\u5931\u8d25\uff0c\u8bf7\u91cd\u8bd5",
-    "retry": "\u91cd\u8bd5",
-    "allLoaded": "\u5df2\u52a0\u8f7d\u5168\u90e8\u7528\u6237",
-    "noUsers": "\u6682\u65e0\u7528\u6237",
-    "posts": "\u5e16\u5b50",
-    "followers": "\u7c89\u4e1d",
-    "following": "\u5173\u6ce8",
-    "noBio": "\u8fd9\u4e2a\u7528\u6237\u8fd8\u6ca1\u6709\u4e2a\u6027\u7b7e\u540d",
-    "followersHiddenTitle": "\u7c89\u4e1d\u5217\u8868\u5df2\u88ab\u9690\u85cf",
-    "followersHiddenDescription": "\u8be5\u7528\u6237\u5f00\u542f\u4e86\u9690\u79c1\u9650\u5236\uff0c\u6682\u65f6\u65e0\u6cd5\u67e5\u770b\u7c89\u4e1d\u5217\u8868",
-    "followingsHiddenTitle": "\u5173\u6ce8\u5217\u8868\u5df2\u88ab\u9690\u85cf",
-    "followingsHiddenDescription": "\u8be5\u7528\u6237\u5f00\u542f\u4e86\u9690\u79c1\u9650\u5236\uff0c\u6682\u65f6\u65e0\u6cd5\u67e5\u770b\u5173\u6ce8\u5217\u8868"
+    "loading": "加载中...",
+    "loadMore": "滚动加载更多",
+    "loadFailed": "加载更多用户失败，请重试",
+    "retry": "重试",
+    "allLoaded": "已加载全部用户",
+    "noUsers": "暂无用户",
+    "posts": "帖子",
+    "followers": "粉丝",
+    "following": "关注",
+    "noBio": "这个用户还没有个性签名",
+    "followersHiddenTitle": "粉丝列表已被隐藏",
+    "followersHiddenDescription": "该用户开启了隐私限制，暂时无法查看粉丝列表",
+    "followingsHiddenTitle": "关注列表已被隐藏",
+    "followingsHiddenDescription": "该用户开启了隐私限制，暂时无法查看关注列表"
   },
   "tagCard": {
     "posts": "投稿数",
@@ -426,18 +426,18 @@
     "user": "用户"
   },
   "searchPage": {
-    "relatedArticles": "\u76f8\u5173\u5e16\u5b50",
-    "relatedTopics": "\u76f8\u5173\u8bdd\u9898",
-    "relatedUsers": "\u76f8\u5173\u7528\u6237"
+    "relatedArticles": "相关帖子",
+    "relatedTopics": "相关话题",
+    "relatedUsers": "相关用户"
   },
   "searchPanel": {
-    "moreSort": "\u66f4\u591a\u6392\u5e8f",
-    "title": "\u6392\u5e8f",
+    "moreSort": "更多排序",
+    "title": "排序",
     "options": {
-      "relevance": "\u76f8\u5173\u5ea6",
-      "latest": "\u6700\u65b0\u53d1\u5e03",
-      "views": "\u6d4f\u89c8\u6700\u591a",
-      "likes": "\u70b9\u8d5e\u6700\u591a"
+      "relevance": "相关度",
+      "latest": "最新发布",
+      "views": "浏览最多",
+      "likes": "点赞最多"
     }
   },
   "messageDropdown": {
@@ -451,6 +451,39 @@
       "notification": "通知",
       "private": "私信",
       "system": "系统"
+    },
+    "center": {
+      "title": "消息中心",
+      "subtitle": "私信和站内信统一查看",
+      "searchPlaceholder": "搜索会话或通知",
+      "chatList": "聊天列表",
+      "detailPlaceholder": "选择左侧会话或通知查看详情",
+      "privatePlaceholder": "选择一个私信会话开始查看消息",
+      "noConversation": "暂无会话",
+      "noMessages": "暂无消息",
+      "noResults": "没有匹配结果",
+      "markAll": "全部已读",
+      "privateHeader": "私信会话",
+      "notificationHeader": "消息详情",
+      "realtime": "实时同步中",
+      "emptyThread": "当前会话还没有更多消息",
+      "lastSeenRecently": "最近上线",
+      "composerPlaceholder": "输入消息...",
+      "unreadSuffix": "未读",
+      "uploadImage": "上传图片",
+      "removeImage": "移除图片",
+      "uploadingImage": "上传中...",
+      "imageMessage": "图片消息",
+      "jumpToLatest": "贴到底部",
+      "newMessagesSuffix": "条新消息",
+      "online": "在线",
+      "lastSeenAt": "最后在线 {time}",
+      "recall": "撤回",
+      "recalledMessage": "你撤回了一条消息",
+      "recalledMessageByOther": "对方撤回了一条消息",
+      "recalledPreview": "撤回了一条消息",
+      "recallReasonDefault": "发错了",
+      "imageOnlyPreview": "[图片]"
     }
   },
   "articleDetail": {

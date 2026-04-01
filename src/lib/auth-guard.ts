@@ -1,5 +1,6 @@
-export const PROTECTED_PREFIXES = [
+﻿export const PROTECTED_PREFIXES = [
   "/create",
+  "/message",
   "/messages",
   "/profile",
   "/setting",

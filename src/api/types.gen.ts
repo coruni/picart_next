@@ -10802,7 +10802,133 @@ export type MessageControllerGetPrivateConversationsResponses = {
         code: number;
         message: string;
         data: {
-            data: Array<string>;
+            data: Array<{
+                conversationId: number;
+                counterpart: {
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: string;
+                    banReason: string;
+                    avatar: string;
+                    description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: string;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
+                    lastLoginAt: string;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                latestMessage: {
+                    id: number;
+                    conversationId: number;
+                    senderId: number;
+                    receiverId: number;
+                    messageKind: string;
+                    content: string;
+                    payload: {
+                        [key: string]: unknown;
+                    };
+                    readAt: string;
+                    recalledAt: string;
+                    recalledById: string;
+                    recallReason: string;
+                    sender: {
+                        id: number;
+                        username: string;
+                        nickname: string;
+                        status: string;
+                        banned: unknown;
+                        banReason: unknown;
+                        avatar: string;
+                        description: string;
+                        background: string;
+                        gender: string;
+                        birthDate: unknown;
+                        articleCount: number;
+                        followerCount: number;
+                        followingCount: number;
+                        level: number;
+                        experience: number;
+                        wallet: number;
+                        points: number;
+                        membershipLevel: number;
+                        membershipLevelName: string;
+                        membershipStatus: string;
+                        membershipStartDate: unknown;
+                        membershipEndDate: unknown;
+                        lastLoginAt: string;
+                        lastActiveAt: unknown;
+                        inviterId: unknown;
+                        myInviteCode: string;
+                        inviteCode: unknown;
+                        inviteEarnings: string;
+                        inviteCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                    receiver: {
+                        id: number;
+                        username: string;
+                        nickname: unknown;
+                        status: string;
+                        banned: unknown;
+                        banReason: unknown;
+                        avatar: unknown;
+                        description: unknown;
+                        background: unknown;
+                        gender: string;
+                        birthDate: unknown;
+                        articleCount: number;
+                        followerCount: number;
+                        followingCount: number;
+                        level: number;
+                        experience: number;
+                        wallet: number;
+                        points: number;
+                        membershipLevel: number;
+                        membershipLevelName: string;
+                        membershipStatus: string;
+                        membershipStartDate: string;
+                        membershipEndDate: string;
+                        lastLoginAt: string;
+                        lastActiveAt: unknown;
+                        inviterId: unknown;
+                        myInviteCode: string;
+                        inviteCode: unknown;
+                        inviteEarnings: string;
+                        inviteCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                    createdAt: string;
+                    updatedAt: string;
+                    type: string;
+                    isRead: boolean;
+                    isRecalled: boolean;
+                };
+                unreadCount: number;
+                lastMessageAt: string;
+            }>;
             meta: {
                 limit: number;
                 hasMore: boolean;
@@ -10846,7 +10972,110 @@ export type MessageControllerGetPrivateConversationResponses = {
         code: number;
         message: string;
         data: {
-            data: Array<string>;
+            data: Array<{
+                id?: number;
+                conversationId?: number;
+                senderId?: number;
+                receiverId?: number;
+                messageKind?: string;
+                content?: string;
+                payload?: {
+                    [key: string]: unknown;
+                };
+                readAt?: string;
+                recalledAt?: string;
+                recalledById?: string;
+                recallReason?: string;
+                sender: {
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: string;
+                    banReason: string;
+                    avatar: string;
+                    description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: string;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
+                    lastLoginAt: string;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    equippedDecorations: {
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                        COMMENT_BUBBLE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
+                };
+                receiver: {
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: string;
+                    banReason: string;
+                    avatar: string;
+                    description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: string;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
+                    lastLoginAt: string;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                createdAt?: string;
+                updatedAt?: string;
+                type?: string;
+                isRead?: boolean;
+                isRecalled?: boolean;
+            }>;
             meta: {
                 limit: number;
                 hasMore: boolean;
@@ -10872,8 +11101,16 @@ export type MessageControllerGetBlockedUsersData = {
 };
 
 export type MessageControllerGetBlockedUsersResponses = {
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<string>;
+        };
+    };
 };
+
+export type MessageControllerGetBlockedUsersResponse = MessageControllerGetBlockedUsersResponses[keyof MessageControllerGetBlockedUsersResponses];
 
 export type MessageControllerMarkAsReadData = {
     body?: never;
@@ -10951,9 +11188,17 @@ export type MessageControllerSendPrivateMessageData = {
     url: '/message/private/{userId}';
 };
 
-export type MessageControllerSendPrivateMessageResponses = {
-    201: unknown;
+export type MessageControllerSendPrivateMessageErrors = {
+    400: {
+        code: number;
+        message: string;
+        data: unknown;
+        timestamp: string;
+        path: string;
+    };
 };
+
+export type MessageControllerSendPrivateMessageError = MessageControllerSendPrivateMessageErrors[keyof MessageControllerSendPrivateMessageErrors];
 
 export type MessageControllerMarkPrivateMessagesReadData = {
     body: BatchReadPrivateMessagesDto;

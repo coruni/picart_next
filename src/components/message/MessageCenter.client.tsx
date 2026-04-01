@@ -1,0 +1,864 @@
+"use client";
+
+import {
+  messageControllerGetPrivateConversation,
+  messageControllerMarkPrivateMessagesRead,
+  uploadControllerUploadFile,
+} from "@/api";
+import type {
+  ComposerImageItem,
+  MessageCenterCopy,
+  MessageCenterTabItem,
+  PrivateHistoryItem,
+  PrivateMessagePayload,
+  PrivateRealtimePayload,
+  PrivateUserStatus,
+} from "@/components/message/MessageCenter.types";
+import { usePathname, useRouter } from "@/i18n/routing";
+import { useIsMobile } from "@/hooks";
+import {
+  getMessageDayKey,
+  getMessageDayLabel,
+} from "@/components/message/MessageCenter.utils";
+import { MessageConversationList } from "@/components/message/MessageConversationList";
+import { MessageDetailPane } from "@/components/message/MessageDetailPane";
+import { messageSocketClient } from "@/lib/message-socket";
+import { useMessageNotificationStore, useUserStore } from "@/stores";
+import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+
+type PrivateHistorySourceItem = {
+  id?: number;
+  senderId?: number | null;
+  receiverId?: number | null;
+  messageKind?: string;
+  content?: string;
+  payload?: PrivateMessagePayload;
+  createdAt?: string;
+  isRead?: boolean;
+  recalledAt?: string;
+  recallReason?: string;
+  isRecalled?: boolean;
+};
+
+function resolveMessageImageUrl(
+  payload?: PrivateMessagePayload,
+): string | null {
+  if (
+    Array.isArray(payload?.urls) &&
+    payload.urls.length > 0 &&
+    typeof payload.urls[0] === "string" &&
+    payload.urls[0].trim()
+  ) {
+    return payload.urls[0];
+  }
+
+  if (!payload) {
+    return null;
+  }
+
+  if (typeof payload.imageUrl === "string" && payload.imageUrl.trim()) {
+    return payload.imageUrl;
+  }
+
+  if (typeof payload.url === "string" && payload.url.trim()) {
+    return payload.url;
+  }
+
+  return null;
+}
+
+function buildPrivateHistoryCursor(items: PrivateHistoryItem[]): string | null {
+  const oldestItem = items[0];
+
+  if (
+    !oldestItem?.id ||
+    !oldestItem.createdAt ||
+    typeof window === "undefined"
+  ) {
+    return null;
+  }
+
+  try {
+    return window.btoa(
+      JSON.stringify({
+        time: oldestItem.createdAt,
+        id: oldestItem.id,
+      }),
+    );
+  } catch {
+    return null;
+  }
+}
+
+function resolvePrivateHistoryCursor(
+  nextCursor: unknown,
+  items: PrivateHistoryItem[],
+): string | null {
+  if (typeof nextCursor === "string" && nextCursor.trim()) {
+    return nextCursor;
+  }
+
+  return buildPrivateHistoryCursor(items);
+}
+
+function normalizePrivateHistoryItem(
+  item: PrivateHistorySourceItem,
+): PrivateHistoryItem | null {
+  if (!item.id) {
+    return null;
+  }
+
+  const imageUrl = resolveMessageImageUrl(item.payload);
+  if (!item.content && !imageUrl && !item.isRecalled) {
+    return null;
+  }
+
+  return {
+    id: item.id,
+    senderId: item.senderId ?? undefined,
+    receiverId: item.receiverId ?? undefined,
+    content: item.content,
+    messageKind: item.messageKind,
+    payload: item.payload,
+    createdAt: item.createdAt,
+    isRead: item.isRead,
+    recalledAt: item.recalledAt,
+    recallReason: item.recallReason,
+    isRecalled: item.isRecalled,
+  };
+}
+
+export function MessageCenterClient() {
+  const tCommon = useTranslations("common");
+  const tMsg = useTranslations("messageDropdown");
+  const tTime = useTranslations("time");
+  const locale = useLocale();
+  const isMobile = useIsMobile();
+  const router = useRouter();
+  const pathname = usePathname();
+  const copy: MessageCenterCopy = {
+    title: tMsg("center.title"),
+    subtitle: tMsg("center.subtitle"),
+    searchPlaceholder: tMsg("center.searchPlaceholder"),
+    chatList: tMsg("center.chatList"),
+    detailPlaceholder: tMsg("center.detailPlaceholder"),
+    privatePlaceholder: tMsg("center.privatePlaceholder"),
+    noConversation: tMsg("center.noConversation"),
+    noMessages: tMsg("center.noMessages"),
+    noResults: tMsg("center.noResults"),
+    markAll: tMsg("center.markAll"),
+    privateHeader: tMsg("center.privateHeader"),
+    notificationHeader: tMsg("center.notificationHeader"),
+    realtime: tMsg("center.realtime"),
+    emptyThread: tMsg("center.emptyThread"),
+    lastSeenRecently: tMsg("center.lastSeenRecently"),
+    composerPlaceholder: tMsg("center.composerPlaceholder"),
+    unreadSuffix: tMsg("center.unreadSuffix"),
+    uploadImage: tMsg("center.uploadImage"),
+    removeImage: tMsg("center.removeImage"),
+    uploadingImage: tMsg("center.uploadingImage"),
+    imageMessage: tMsg("center.imageMessage"),
+    jumpToLatest: tMsg("center.jumpToLatest"),
+    newMessagesSuffix: tMsg("center.newMessagesSuffix"),
+    online: tMsg("center.online"),
+    recall: tMsg("center.recall"),
+    recalledMessage: tMsg("center.recalledMessage"),
+    recalledMessageByOther: tMsg("center.recalledMessageByOther"),
+    recalledPreview: tMsg("center.recalledPreview"),
+    recallReasonDefault: tMsg("center.recallReasonDefault"),
+    imageOnlyPreview: tMsg("center.imageOnlyPreview"),
+  };
+  const searchParams = useSearchParams();
+  const queryTab = searchParams.get("tab");
+  const queryItemId = Number(searchParams.get("item"));
+  const user = useUserStore((state) => state.user);
+  const token = useUserStore((state) => state.token);
+  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  const messages = useMessageNotificationStore((state) => state.centerMessages);
+  const selectedTab = useMessageNotificationStore((state) => state.selectedTab);
+  const unreadCount = useMessageNotificationStore((state) => state.unreadCount);
+  const socketConnected = useMessageNotificationStore(
+    (state) => state.socketConnected,
+  );
+  const isLoading = useMessageNotificationStore((state) => state.isLoading);
+  const fetchMessages = useMessageNotificationStore(
+    (state) => state.fetchMessages,
+  );
+  const fetchUnreadCount = useMessageNotificationStore(
+    (state) => state.fetchUnreadCount,
+  );
+  const markAllAsRead = useMessageNotificationStore(
+    (state) => state.markAllAsRead,
+  );
+  const setSelectedTab = useMessageNotificationStore(
+    (state) => state.setSelectedTab,
+  );
+  const initializeSocket = useMessageNotificationStore(
+    (state) => state.initializeSocket,
+  );
+  const resetNotifications = useMessageNotificationStore(
+    (state) => state.reset,
+  );
+
+  const [search, setSearch] = useState("");
+  const deferredSearch = useDeferredValue(search);
+  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+  const [privateHistory, setPrivateHistory] = useState<PrivateHistoryItem[]>(
+    [],
+  );
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [privateHistoryCursor, setPrivateHistoryCursor] = useState<
+    string | null
+  >(null);
+  const [hasMorePrivateHistory, setHasMorePrivateHistory] = useState(false);
+  const [isLoadingOlderHistory, setIsLoadingOlderHistory] = useState(false);
+  const [composerValue, setComposerValue] = useState("");
+  const [composerImages, setComposerImages] = useState<ComposerImageItem[]>([]);
+  const [isSending, setIsSending] = useState(false);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const [selectedUserStatus, setSelectedUserStatus] =
+    useState<PrivateUserStatus | null>(null);
+  const composerImagesRef = useRef<ComposerImageItem[]>([]);
+
+  const tabs: MessageCenterTabItem[] = [
+    { value: "all", label: tMsg("tabs.all") },
+    { value: "notification", label: tMsg("tabs.notification") },
+    { value: "private", label: tMsg("tabs.private") },
+    { value: "system", label: tMsg("tabs.system") },
+  ];
+
+  const initialTab =
+    queryTab === "all" ||
+    queryTab === "notification" ||
+    queryTab === "private" ||
+    queryTab === "system"
+      ? queryTab
+      : "all";
+
+  useEffect(() => {
+    if (!isAuthenticated || !token) {
+      resetNotifications();
+      return;
+    }
+
+    initializeSocket(token);
+    void fetchUnreadCount();
+    setSelectedTab(initialTab);
+    void fetchMessages(initialTab);
+  }, [
+    fetchMessages,
+    fetchUnreadCount,
+    initialTab,
+    initializeSocket,
+    isAuthenticated,
+    resetNotifications,
+    setSelectedTab,
+    token,
+  ]);
+
+  const filteredMessages = useMemo(() => {
+    const keyword = deferredSearch.trim().toLowerCase();
+    if (!keyword) {
+      return messages;
+    }
+
+    return messages.filter((item) =>
+      [item.title, item.content].some((value) =>
+        value?.toLowerCase().includes(keyword),
+      ),
+    );
+  }, [deferredSearch, messages]);
+
+  const selectedItem = useMemo(() => {
+    return messages.find((item) => item.id === selectedItemId) || null;
+  }, [messages, selectedItemId]);
+
+  const selectedPrivateCounterpartId =
+    selectedItem?.type === "private"
+      ? (selectedItem.counterpartId ?? null)
+      : null;
+
+  useEffect(() => {
+    if (queryItemId) {
+      setSelectedItemId(queryItemId);
+      return;
+    }
+
+    if (!isMobile && !selectedItemId && filteredMessages.length > 0) {
+      setSelectedItemId(filteredMessages[0].id);
+    }
+  }, [filteredMessages, isMobile, queryItemId, selectedItemId]);
+
+  const isMobileDetailOpen = isMobile && Boolean(selectedItem);
+
+  const handleBackToList = () => {
+    setSelectedItemId(null);
+
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.delete("item");
+
+    const nextQuery = nextParams.toString();
+    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname);
+  };
+
+  const handleTabChange = (tab: MessageCenterTabItem["value"]) => {
+    setSelectedTab(tab);
+    setSelectedItemId(null);
+    void fetchMessages(tab);
+
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.set("tab", tab);
+    nextParams.delete("item");
+
+    const nextQuery = nextParams.toString();
+    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname);
+  };
+
+  useEffect(() => {
+    composerImagesRef.current = composerImages;
+  }, [composerImages]);
+
+  useEffect(() => {
+    if (!selectedPrivateCounterpartId) {
+      setPrivateHistory([]);
+      setPrivateHistoryCursor(null);
+      setHasMorePrivateHistory(false);
+      setSelectedUserStatus(null);
+      setComposerValue("");
+      setComposerImages((current) => {
+        current.forEach((item) => URL.revokeObjectURL(item.previewUrl));
+        return [];
+      });
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadHistory = async () => {
+      setDetailLoading(true);
+      try {
+        const restResponse = await messageControllerGetPrivateConversation({
+          path: { userId: String(selectedPrivateCounterpartId) },
+          query: { limit: 100 },
+        });
+        const nextHistorySource = restResponse?.data?.data?.data || [];
+        const nextMeta = restResponse?.data?.data?.meta;
+
+        const nextHistory = nextHistorySource
+          .map(normalizePrivateHistoryItem)
+          .filter((item): item is PrivateHistoryItem => item !== null)
+          .sort((a, b) => {
+            const aTime = new Date(a.createdAt || 0).getTime();
+            const bTime = new Date(b.createdAt || 0).getTime();
+            return aTime - bTime;
+          });
+
+        if (cancelled) {
+          return;
+        }
+
+        setPrivateHistory(nextHistory);
+        setHasMorePrivateHistory(Boolean(nextMeta?.hasMore));
+        setPrivateHistoryCursor(
+          resolvePrivateHistoryCursor(nextMeta?.nextCursor, nextHistory),
+        );
+
+        const unreadIds = nextHistory
+          .filter(
+            (item) =>
+              item.receiverId != null &&
+              user?.id != null &&
+              Number(item.receiverId) === Number(user.id) &&
+              !item.isRead,
+          )
+          .map((item) => item.id);
+
+        if (unreadIds.length > 0) {
+          const socket = messageSocketClient.instance;
+          if (socket?.connected) {
+            socket.emit("readPrivateMessages", { messageIds: unreadIds });
+          } else {
+            await messageControllerMarkPrivateMessagesRead({
+              body: {
+                messageIds: unreadIds as unknown as string[],
+              },
+            });
+          }
+
+          useMessageNotificationStore.setState((state) => ({
+            centerMessages: state.centerMessages.map((message) =>
+              message.id === selectedItemId
+                ? { ...message, isRead: true, unreadCount: 0 }
+                : message,
+            ),
+          }));
+
+          void fetchUnreadCount();
+        }
+      } catch (error) {
+        console.error("Failed to fetch private history:", error);
+        if (!cancelled) {
+          setPrivateHistory([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setDetailLoading(false);
+        }
+      }
+    };
+
+    void loadHistory();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    fetchUnreadCount,
+    selectedItemId,
+    selectedPrivateCounterpartId,
+    user?.id,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      composerImagesRef.current.forEach((item) => {
+        URL.revokeObjectURL(item.previewUrl);
+      });
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!selectedPrivateCounterpartId) {
+      setSelectedUserStatus(null);
+      return;
+    }
+
+    const socket = messageSocketClient.instance;
+    if (!socket?.connected) {
+      return;
+    }
+
+    const targetUserId = Number(selectedPrivateCounterpartId);
+
+    const handleUserStatus = (payload: {
+      userId?: number;
+      isOnline?: boolean;
+      lastSeenAt?: string | null;
+    }) => {
+      if (Number(payload.userId || 0) !== targetUserId) {
+        return;
+      }
+
+      setSelectedUserStatus({
+        userId: targetUserId,
+        isOnline: Boolean(payload.isOnline),
+        lastSeenAt: payload.lastSeenAt ?? null,
+      });
+    };
+
+    socket.on("userStatus", handleUserStatus);
+    socket.on("userStatusChanged", handleUserStatus);
+    socket.emit("subscribeUserStatus", { userId: targetUserId });
+
+    return () => {
+      socket.emit("unsubscribeUserStatus", { userId: targetUserId });
+      socket.off("userStatus", handleUserStatus);
+      socket.off("userStatusChanged", handleUserStatus);
+    };
+  }, [selectedPrivateCounterpartId, socketConnected]);
+
+  const handleLoadOlderHistory = async () => {
+    if (
+      !selectedPrivateCounterpartId ||
+      !privateHistoryCursor ||
+      !hasMorePrivateHistory ||
+      isLoadingOlderHistory
+    ) {
+      return;
+    }
+
+    setIsLoadingOlderHistory(true);
+
+    try {
+      const restResponse = await messageControllerGetPrivateConversation({
+        path: { userId: String(selectedPrivateCounterpartId) },
+        query: {
+          cursor: privateHistoryCursor,
+          limit: 100,
+        },
+      });
+
+      const olderHistorySource = restResponse?.data?.data?.data || [];
+      const olderMeta = restResponse?.data?.data?.meta;
+
+      const olderHistory = olderHistorySource
+        .map(normalizePrivateHistoryItem)
+        .filter((item): item is PrivateHistoryItem => item !== null)
+        .sort((a, b) => {
+          const aTime = new Date(a.createdAt || 0).getTime();
+          const bTime = new Date(b.createdAt || 0).getTime();
+          return aTime - bTime;
+        });
+
+      let mergedHistory: PrivateHistoryItem[] = privateHistory;
+
+      if (olderHistory.length > 0) {
+        mergedHistory = (() => {
+          const merged = [...olderHistory, ...privateHistory];
+          const unique = new Map<number, PrivateHistoryItem>();
+
+          for (const item of merged) {
+            unique.set(item.id, item);
+          }
+
+          return Array.from(unique.values()).sort((a, b) => {
+            const aTime = new Date(a.createdAt || 0).getTime();
+            const bTime = new Date(b.createdAt || 0).getTime();
+            return aTime - bTime;
+          });
+        })();
+
+        setPrivateHistory(mergedHistory);
+      }
+
+      setHasMorePrivateHistory(
+        olderHistory.length > 0 && Boolean(olderMeta?.hasMore),
+      );
+      setPrivateHistoryCursor(
+        olderHistory.length > 0
+          ? resolvePrivateHistoryCursor(olderMeta?.nextCursor, mergedHistory)
+          : null,
+      );
+    } catch (error) {
+      console.error("Failed to load older private history:", error);
+    } finally {
+      setIsLoadingOlderHistory(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!selectedPrivateCounterpartId) {
+      return;
+    }
+
+    const socket = messageSocketClient.instance;
+    if (!socket) {
+      return;
+    }
+
+    const handlePrivateMessage = (payload: PrivateRealtimePayload) => {
+      const senderId = Number(payload.senderId || 0);
+      const receiverId = Number(payload.receiverId || 0);
+      const counterpartId = Number(selectedPrivateCounterpartId || 0);
+      const viewerId = Number(user?.id || 0);
+      const matched =
+        (senderId === counterpartId && receiverId === viewerId) ||
+        (senderId === viewerId && receiverId === counterpartId);
+
+      const imageUrl = resolveMessageImageUrl(payload.payload);
+
+      if (
+        !matched ||
+        !payload.id ||
+        (!payload.content && !imageUrl && !payload.isRecalled)
+      ) {
+        return;
+      }
+
+      setPrivateHistory((prev) => {
+        const nextItem: PrivateHistoryItem = {
+          id: payload.id,
+          senderId,
+          receiverId,
+          content: payload.content,
+          messageKind: payload.messageKind,
+          payload: payload.payload,
+          createdAt: payload.createdAt,
+          isRead: payload.isRead,
+          recalledAt: payload.recalledAt,
+          recallReason: payload.recallReason,
+          isRecalled: payload.isRecalled,
+        };
+
+        if (prev.some((item) => item.id === nextItem.id)) {
+          return prev;
+        }
+
+        return [...prev, nextItem];
+      });
+    };
+
+    const handlePrivateMessageRecalled = (payload: {
+      id?: number;
+      recalledAt?: string;
+      recallReason?: string;
+      isRecalled?: boolean;
+    }) => {
+      if (!payload.id) {
+        return;
+      }
+
+      setPrivateHistory((prev) =>
+        prev.map((item) =>
+          item.id === payload.id
+            ? {
+                ...item,
+                isRecalled: true,
+                recalledAt: payload.recalledAt ?? item.recalledAt,
+                recallReason: payload.recallReason ?? item.recallReason,
+              }
+            : item,
+        ),
+      );
+    };
+
+    socket.on("privateMessage", handlePrivateMessage);
+    socket.on("privateMessageRecalled", handlePrivateMessageRecalled);
+    return () => {
+      socket.off("privateMessage", handlePrivateMessage);
+      socket.off("privateMessageRecalled", handlePrivateMessageRecalled);
+    };
+  }, [selectedPrivateCounterpartId, user?.id]);
+
+  const groupedPrivateHistory = useMemo(() => {
+    return privateHistory.map((item, index) => {
+      const previousItem = privateHistory[index - 1];
+      const dayKey = getMessageDayKey(item.createdAt);
+      const previousDayKey = getMessageDayKey(previousItem?.createdAt);
+
+      return {
+        item,
+        showDayDivider: index === 0 || dayKey !== previousDayKey,
+        dayLabel: getMessageDayLabel(item.createdAt, locale),
+      };
+    });
+  }, [locale, privateHistory]);
+
+  const handlePickComposerImages = (files: FileList | null) => {
+    if (!files?.length) {
+      return;
+    }
+
+    const nextFiles = Array.from(files).filter((file) =>
+      file.type.startsWith("image/"),
+    );
+    if (!nextFiles.length) {
+      return;
+    }
+
+    setIsUploadingImages(true);
+
+    void (async () => {
+      const drafts = nextFiles.map((file) => ({
+        id:
+          typeof crypto !== "undefined" && "randomUUID" in crypto
+            ? crypto.randomUUID()
+            : `${Date.now()}-${Math.random()}`,
+        file,
+        previewUrl: URL.createObjectURL(file),
+      }));
+
+      setComposerImages((current) => [
+        ...current,
+        ...drafts.map((draft) => ({
+          id: draft.id,
+          previewUrl: draft.previewUrl,
+          uploading: true,
+          fileName: draft.file.name,
+        })),
+      ]);
+
+      try {
+        for (const draft of drafts) {
+          try {
+            const response = await uploadControllerUploadFile({
+              headers: {
+                "Content-Type": null,
+              },
+              bodySerializer: (body) => {
+                const formData = new FormData();
+                formData.append("file", body.file);
+                return formData
+              },
+              body: { file: draft.file },
+            });
+            const uploadedUrl = response?.data?.data?.[0]?.url;
+
+            if (!uploadedUrl) {
+              throw new Error("Missing uploaded file url");
+            }
+
+            setComposerImages((current) =>
+              current.map((item) =>
+                item.id === draft.id
+                  ? {
+                      ...item,
+                      uploadedUrl,
+                      uploading: false,
+                    }
+                  : item,
+              ),
+            );
+          } catch (error) {
+            URL.revokeObjectURL(draft.previewUrl);
+            setComposerImages((current) =>
+              current.filter((item) => item.id !== draft.id),
+            );
+            console.error("Failed to upload private image:", error);
+          }
+        }
+      } finally {
+        setIsUploadingImages(false);
+      }
+    })();
+  };
+
+  const handleRemoveComposerImage = (id: string) => {
+    setComposerImages((current) => {
+      const target = current.find((item) => item.id === id);
+      if (target) {
+        URL.revokeObjectURL(target.previewUrl);
+      }
+      return current.filter((item) => item.id !== id);
+    });
+  };
+
+  const handleSendPrivateMessage = async () => {
+    const content = composerValue.trim();
+    const readyImages = composerImages.filter(
+      (item) => !item.uploading && item.uploadedUrl,
+    );
+    const socket = messageSocketClient.instance;
+
+    if (
+      (!content && readyImages.length === 0) ||
+      !selectedPrivateCounterpartId ||
+      !socket?.connected ||
+      isSending ||
+      isUploadingImages
+    ) {
+      return;
+    }
+
+    setIsSending(true);
+
+    try {
+      if (readyImages.length > 0) {
+        const uploadedUrls = readyImages
+          .map((item) => item.uploadedUrl)
+          .filter((url): url is string => Boolean(url));
+
+        socket.emit("sendMessage", {
+          toUserId: selectedPrivateCounterpartId,
+          type: "private",
+          messageKind: "image",
+          content: content || undefined,
+          payload: {
+            url: uploadedUrls[0],
+            urls: uploadedUrls,
+          },
+        });
+
+        readyImages.forEach((item) => {
+          URL.revokeObjectURL(item.previewUrl);
+        });
+      } else if (content) {
+        socket.emit("sendMessage", {
+          toUserId: selectedPrivateCounterpartId,
+          type: "private",
+          messageKind: "text",
+          content,
+        });
+      }
+
+      setComposerValue("");
+      setComposerImages([]);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleRecallPrivateMessage = async (messageId: number) => {
+    const socket = messageSocketClient.instance;
+
+    if (!socket?.connected || !messageId) {
+      return;
+    }
+
+    socket.emit("recallPrivateMessage", {
+      messageId,
+      reason: copy.recallReasonDefault,
+    });
+
+    setPrivateHistory((prev) =>
+      prev.map((item) =>
+        item.id === messageId
+          ? {
+              ...item,
+              isRecalled: true,
+              recalledAt: new Date().toISOString(),
+              recallReason: copy.recallReasonDefault,
+            }
+          : item,
+      ),
+    );
+  };
+
+  return (
+    <div className="page-container h-[calc(100dvh-var(--header-height,60px))] overflow-hidden pb-0!">
+      <div className="left-container h-[calc(100dvh-var(--header-height,60px)-16px)] min-h-0 overflow-hidden rounded-2xl border border-border/70 bg-card">
+        <div className="grid h-full min-h-0 md:grid-cols-[348px_minmax(0,1fr)]">
+          <MessageConversationList
+            copy={copy}
+            filteredMessages={filteredMessages}
+            isLoading={isLoading}
+            isMobileDetailOpen={isMobileDetailOpen}
+            locale={locale}
+            onTabChange={handleTabChange}
+            search={search}
+            selectedItemId={selectedItemId}
+            selectedTab={selectedTab}
+            setSearch={setSearch}
+            setSelectedItemId={setSelectedItemId}
+            socketConnected={socketConnected}
+            tabs={tabs}
+            tCommon={tCommon}
+            tMsg={tMsg}
+            tTime={tTime}
+          />
+          <MessageDetailPane
+            composerValue={composerValue}
+            composerImages={composerImages}
+            copy={copy}
+            detailLoading={detailLoading}
+            hasMoreHistory={hasMorePrivateHistory}
+            isMobileDetailOpen={isMobileDetailOpen}
+            groupedPrivateHistory={groupedPrivateHistory}
+            handleRecallPrivateMessage={handleRecallPrivateMessage}
+            handleSendPrivateMessage={handleSendPrivateMessage}
+            isLoadingOlderHistory={isLoadingOlderHistory}
+            isSending={isSending}
+            isUploadingImages={isUploadingImages}
+            locale={locale}
+            markAllAsRead={markAllAsRead}
+            onPickComposerImages={handlePickComposerImages}
+            onLoadOlderHistory={handleLoadOlderHistory}
+            onRemoveComposerImage={handleRemoveComposerImage}
+            onBackToList={handleBackToList}
+            selectedItem={selectedItem}
+            selectedUserStatus={selectedUserStatus}
+            selectedTab={selectedTab}
+            setComposerValue={setComposerValue}
+            tCommon={tCommon}
+            tMsg={tMsg}
+            tTime={tTime}
+            unreadCount={unreadCount}
+            userId={user?.id}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
