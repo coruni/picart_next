@@ -391,7 +391,6 @@ export function UserDropdown() {
               </button>
             )}
           </div>
-          <UserLoginDialog />
         </div>
       </div>
 
@@ -611,7 +610,6 @@ export function UserDropdown() {
               )}
             </div>
           </div>
-          <UserLoginDialog />
         </DialogContent>
       </Dialog>
 
@@ -643,6 +641,8 @@ export function UserDropdown() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <UserLoginDialog />
     </>
   );
 }
