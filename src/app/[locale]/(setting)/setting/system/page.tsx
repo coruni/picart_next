@@ -14,7 +14,7 @@ function SettingItem({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-4 py-2 md:flex-row md:items-center md:justify-between md:gap-6">
+    <div className="flex py-2 gap-4 items-center justify-between">
       <div className="min-w-0 flex-1">
         <div className="text-sm font-semibold text-muted-foreground ">
           {title}

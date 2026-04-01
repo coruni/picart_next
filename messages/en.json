@@ -544,6 +544,27 @@
     "autoTranslateOff": "Disable auto-translate",
     "autoTranslateOffDescription": "Keep original content language and translate manually when needed."
   },
+  "privacySettingPage": {
+    "hideFavorites": "Hide my favorites",
+    "hideComments": "Hide my comments",
+    "hideCollections": "Hide my collections",
+    "hideFollowers": "Hide my followers list",
+    "hideFollowings": "Hide my followings list",
+    "hideTags": "Hide followed topics"
+  },
+  "notificationSettingPage": {
+    "enableSystemNotification": "Receive system notifications",
+    "enableCommentNotification": "Receive comment notifications",
+    "enableLikeNotification": "Receive like notifications",
+    "enableFollowNotification": "Receive follow notifications",
+    "enableMessageNotification": "Receive private message notifications",
+    "enableOrderNotification": "Receive order notifications",
+    "enablePaymentNotification": "Receive payment notifications",
+    "enableInviteNotification": "Receive invite notifications",
+    "enableEmailNotification": "Receive email notifications",
+    "enableSmsNotification": "Receive SMS notifications",
+    "enablePushNotification": "Receive push notifications"
+  },
   "topicInfo": {
     "posts": "Posts",
     "members": "Members",
