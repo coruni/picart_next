@@ -6,6 +6,7 @@ import { InfiniteScrollStatus } from "@/components/shared";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import type { CollectionControllerGetCollectionItemsResponse } from "@/api";
 import { useTranslations } from "next-intl";
+import type { ComponentProps } from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
 
 type CollectionItem = NonNullable<
@@ -97,7 +98,11 @@ export function CollectionArticleListClient({
   return (
     <div className="space-y-4">
       {articles.map((article) => (
-        <ArticleCard key={article.id} article={article} showFollow={false} />
+        <ArticleCard
+          key={article.id}
+          article={article as ArticleCardArticle}
+          showFollow={false}
+        />
       ))}
 
       <InfiniteScrollStatus
@@ -120,3 +125,4 @@ export function CollectionArticleListClient({
     </div>
   );
 }
+  type ArticleCardArticle = ComponentProps<typeof ArticleCard>["article"];

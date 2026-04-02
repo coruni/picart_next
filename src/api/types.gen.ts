@@ -4525,6 +4525,7 @@ export type ArticleControllerFindAllData = {
         categoryId?: number;
         type?: string;
         tagId?: number;
+        status?: string;
     };
     url: '/article';
 };
@@ -14717,3 +14718,94 @@ export type CollectionControllerAddToCollectionResponses = {
 };
 
 export type CollectionControllerAddToCollectionResponse = CollectionControllerAddToCollectionResponses[keyof CollectionControllerAddToCollectionResponses];
+
+export type StatisticsControllerGetOverviewData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/statistics/overview';
+};
+
+export type StatisticsControllerGetOverviewResponses = {
+    /**
+     * 获取成功
+     */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            users: {
+                total: number;
+                active: number;
+                banned: number;
+                activeMembers: number;
+                todayNew: number;
+            };
+            content: {
+                articles: number;
+                publishedArticles: number;
+                pendingArticles: number;
+                comments: number;
+                publishedComments: number;
+                collections: number;
+                publicCollections: number;
+                todayArticles: number;
+                todayComments: number;
+            };
+            orders: {
+                paidCount: number;
+                paidRevenue: number;
+                todayPaidCount: number;
+                todayPaidRevenue: number;
+            };
+            moderation: {
+                pendingReports: number;
+                processingReports: number;
+                pendingArticles: number;
+            };
+            engagement: {
+                articleViews: number;
+                articleLikes: number;
+                articleFavorites: number;
+                articleComments: number;
+                commentLikes: number;
+                commentReplies: number;
+                collectionViews: number;
+                collectionItems: number;
+            };
+        };
+    };
+};
+
+export type StatisticsControllerGetOverviewResponse = StatisticsControllerGetOverviewResponses[keyof StatisticsControllerGetOverviewResponses];
+
+export type StatisticsControllerGetTrendsData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: {
+        /**
+         * 统计天数，默认 7 天，最大 30 天
+         */
+        days?: number;
+    };
+    url: '/statistics/trends';
+};
+
+export type StatisticsControllerGetTrendsResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};

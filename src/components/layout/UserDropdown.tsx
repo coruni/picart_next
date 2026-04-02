@@ -25,6 +25,7 @@ import {
   ChevronDown,
   ChevronRight,
   Globe,
+  LayoutDashboard,
   Languages,
   Lock,
   LogIn,
@@ -195,10 +196,26 @@ export function UserDropdown() {
                   <ChevronRight className="size-4" />
                 </Link>
               </div>
-              <div className="p-1">
-                <GuardedLink
-                  href="/message"
-                  className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
+                <div className="p-1">
+                  <GuardedLink
+                    href="/dashboard"
+                    className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex shrink-0 items-center justify-center">
+                        <LayoutDashboard className="size-5" />
+                      </div>
+                      <span className="text-sm font-medium">
+                        {tHeader("dashboard")}
+                      </span>
+                    </div>
+                    <ChevronRight className="size-4" />
+                  </GuardedLink>
+                </div>
+                <div className="p-1">
+                  <GuardedLink
+                    href="/message"
+                    className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex shrink-0 items-center justify-center">
@@ -445,6 +462,19 @@ export function UserDropdown() {
                     </div>
                     <ChevronRight className="size-4" />
                   </Link>
+                  <GuardedLink
+                    href="/dashboard"
+                    onClick={closeMobileMenu}
+                    className="mb-1 flex h-10 items-center justify-between rounded-lg px-2 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
+                  >
+                    <div className="flex items-center gap-3">
+                      <LayoutDashboard className="size-5" />
+                      <span className="text-sm font-medium">
+                        {tHeader("dashboard")}
+                      </span>
+                    </div>
+                    <ChevronRight className="size-4" />
+                  </GuardedLink>
                   <GuardedLink
                     href="/message"
                     onClick={closeMobileMenu}

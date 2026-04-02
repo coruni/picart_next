@@ -793,7 +793,7 @@ export function MessageDetailPane({
               ) : null}
             </div>
 
-            <div className="min-w-0 border-t border-border/70 bg-background/92 md:px-3 py-3 backdrop-blur">
+            <div className="min-w-0 border-t border-border bg-background/92 md:px-3 py-3 backdrop-blur">
               {composerImages.length > 0 ? (
                 <div className="mb-3 flex flex-wrap gap-2">
                   {composerImages.map((item) => (

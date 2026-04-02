@@ -1,4 +1,4 @@
-import { Header } from "@/components/layout/Header";
+import { AppChrome } from "@/components/layout/AppChrome.client";
 import { AuthRouteGuard } from "@/components/providers/AuthRouteGuard";
 import { ContentAutoTranslateProvider } from "@/components/providers/ContentAutoTranslateProvider";
 import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
@@ -83,8 +83,7 @@ export default async function LocaleLayout({
           initialConfig={config}
         >
           <AuthRouteGuard />
-          <Header categories={categories} />
-          <main className="flex flex-1 flex-col min-h-screen">{children}</main>
+          <AppChrome categories={categories}>{children}</AppChrome>
         </UserStateProvider>
       </NextIntlClientProvider>
     </>

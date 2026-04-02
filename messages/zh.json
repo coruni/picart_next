@@ -50,6 +50,7 @@
     "loginPrompt": "登录以查看更多功能",
     "myInfo": "我的信息",
     "personalPage": "个人主页",
+    "dashboard": "工作台",
     "messageManagement": "信息管理",
     "privacySettings": "隐私设置",
     "blockedUsers": "屏蔽用户管理",
@@ -249,6 +250,73 @@
     "viewMore": "查看更多",
     "loadError": "加载失败",
     "authorInfo": "作者信息"
+  },
+  "dashboard": {
+    "metaTitle": "工作台",
+    "metaDescription": "查看你的账户状态、内容表现和快捷操作。",
+    "eyebrow": "Dashboard",
+    "title": "{name}，欢迎回来",
+    "description": "这里集中展示你的账户概况、近期内容动态以及常用操作入口，保持创作和互动节奏。",
+    "loading": "正在加载工作台...",
+    "errorTitle": "工作台加载失败",
+    "errorDescription": "当前无法获取你的工作台数据，请稍后重试。",
+    "retry": "重新加载",
+    "shell": {
+      "eyebrow": "Workspace",
+      "title": "Dashboard",
+      "description": "从这里快速切换到创作、消息和账号管理。",
+      "accountEntry": "查看个人主页"
+    },
+    "nav": {
+      "overview": "概览",
+      "createPost": "发帖",
+      "createImage": "发图",
+      "messages": "消息",
+      "settings": "设置"
+    },
+    "overview": {
+      "wallet": "钱包余额",
+      "streak": "连续签到",
+      "browse": "浏览统计",
+      "messages": "未读消息",
+      "signedToday": "今日已签到",
+      "unsignedToday": "今日未签到",
+      "totalViews": "累计浏览",
+      "unreadSuffix": "条未读"
+    },
+    "quickActions": {
+      "title": "快捷操作",
+      "description": "直接前往最常用的创作和管理入口。",
+      "createPost": "发布帖子",
+      "createImage": "发布图片",
+      "messages": "查看消息",
+      "settings": "账户设置"
+    },
+    "profile": {
+      "editProfile": "编辑资料",
+      "viewProfile": "查看主页",
+      "posts": "帖子",
+      "followers": "粉丝",
+      "following": "关注",
+      "membership": "会员状态",
+      "membershipFallback": "普通用户",
+      "membershipActive": "已开通",
+      "membershipInactive": "未开通"
+    },
+    "recent": {
+      "title": "最近浏览",
+      "description": "你最近访问过的内容会优先出现在这里。",
+      "empty": "最近还没有浏览记录。"
+    },
+    "favorites": {
+      "title": "最近收藏",
+      "description": "快速回到你标记过的重要内容。",
+      "empty": "你还没有收藏任何内容。"
+    },
+    "metrics": {
+      "views": "浏览",
+      "favorites": "收藏"
+    }
   },
   "time": {
     "justNow": "刚刚",

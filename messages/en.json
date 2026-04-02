@@ -57,6 +57,7 @@
     "loginPrompt": "Login to see more features",
     "myInfo": "My Information",
     "personalPage": "Personal Page",
+    "dashboard": "Dashboard",
     "messageManagement": "Message Management",
     "privacySettings": "Privacy Settings",
     "blockedUsers": "Blocked Users Management",
@@ -257,6 +258,73 @@
     "viewMore": "View More",
     "loadError": "Failed to load",
     "authorInfo": "Author Info"
+  },
+  "dashboard": {
+    "metaTitle": "Dashboard",
+    "metaDescription": "Check your account status, content performance, and quick actions.",
+    "eyebrow": "Dashboard",
+    "title": "Welcome back, {name}",
+    "description": "Your account overview, recent content activity, and the actions you use most are all gathered here.",
+    "loading": "Loading dashboard...",
+    "errorTitle": "Failed to load dashboard",
+    "errorDescription": "We couldn't load your dashboard data right now. Please try again later.",
+    "retry": "Reload",
+    "shell": {
+      "eyebrow": "Workspace",
+      "title": "Dashboard",
+      "description": "Jump quickly between creation, messages, and account management.",
+      "accountEntry": "Open profile"
+    },
+    "nav": {
+      "overview": "Overview",
+      "createPost": "Create Post",
+      "createImage": "Create Image",
+      "messages": "Messages",
+      "settings": "Settings"
+    },
+    "overview": {
+      "wallet": "Wallet Balance",
+      "streak": "Sign-in Streak",
+      "browse": "Browse Stats",
+      "messages": "Unread Messages",
+      "signedToday": "Signed in today",
+      "unsignedToday": "Not signed in today",
+      "totalViews": "Total views",
+      "unreadSuffix": "unread"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "description": "Jump straight into the flows you use most.",
+      "createPost": "Create Post",
+      "createImage": "Create Image",
+      "messages": "Open Messages",
+      "settings": "Account Settings"
+    },
+    "profile": {
+      "editProfile": "Edit Profile",
+      "viewProfile": "View Profile",
+      "posts": "Posts",
+      "followers": "Followers",
+      "following": "Following",
+      "membership": "Membership",
+      "membershipFallback": "Standard User",
+      "membershipActive": "Active",
+      "membershipInactive": "Inactive"
+    },
+    "recent": {
+      "title": "Recently Viewed",
+      "description": "Content you opened recently appears here first.",
+      "empty": "You have no recent browsing history yet."
+    },
+    "favorites": {
+      "title": "Recent Favorites",
+      "description": "Jump back into the content you saved.",
+      "empty": "You have not favorited any content yet."
+    },
+    "metrics": {
+      "views": "views",
+      "favorites": "fav"
+    }
   },
   "time": {
     "justNow": "just now",

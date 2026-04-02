@@ -34,6 +34,7 @@ type SelectProps = {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  dropdownPlacement?: "top" | "bottom";
 };
 
 /**
@@ -64,6 +65,7 @@ export const Select = ({
   placeholder = "Select...",
   className,
   disabled = false,
+  dropdownPlacement = "bottom",
 }: SelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -125,12 +127,13 @@ export const Select = ({
       {isOpen && (
         <div
           className={cn(
-            "absolute z-20 w-full mt-1",
+            "absolute z-20 w-full",
             "bg-card",
             "drop-shadow-lg",
-            "rounded-lg ",
+            "rounded-lg",
             "max-h-60 overflow-auto",
             "py-2",
+            dropdownPlacement === "top" ? "bottom-full mb-1" : "top-full mt-1",
           )}
         >
           {options.map((option) => (

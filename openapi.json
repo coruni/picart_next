@@ -68,6 +68,9 @@
     },
     {
       "name": "合集管理"
+    },
+    {
+      "name": "统计模块"
     }
   ],
   "paths": {
@@ -9125,6 +9128,15 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           },
           {
@@ -44893,6 +44905,333 @@
         "responses": {
           "200": {
             "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/statistics/overview": {
+      "get": {
+        "summary": "获取后台统计概览",
+        "deprecated": false,
+        "description": "",
+        "operationId": "StatisticsController_getOverview",
+        "tags": [
+          "统计模块"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "users": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "active": {
+                              "type": "integer"
+                            },
+                            "banned": {
+                              "type": "integer"
+                            },
+                            "activeMembers": {
+                              "type": "integer"
+                            },
+                            "todayNew": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "total",
+                            "active",
+                            "banned",
+                            "activeMembers",
+                            "todayNew"
+                          ]
+                        },
+                        "content": {
+                          "type": "object",
+                          "properties": {
+                            "articles": {
+                              "type": "integer"
+                            },
+                            "publishedArticles": {
+                              "type": "integer"
+                            },
+                            "pendingArticles": {
+                              "type": "integer"
+                            },
+                            "comments": {
+                              "type": "integer"
+                            },
+                            "publishedComments": {
+                              "type": "integer"
+                            },
+                            "collections": {
+                              "type": "integer"
+                            },
+                            "publicCollections": {
+                              "type": "integer"
+                            },
+                            "todayArticles": {
+                              "type": "integer"
+                            },
+                            "todayComments": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "articles",
+                            "publishedArticles",
+                            "pendingArticles",
+                            "comments",
+                            "publishedComments",
+                            "collections",
+                            "publicCollections",
+                            "todayArticles",
+                            "todayComments"
+                          ]
+                        },
+                        "orders": {
+                          "type": "object",
+                          "properties": {
+                            "paidCount": {
+                              "type": "integer"
+                            },
+                            "paidRevenue": {
+                              "type": "integer"
+                            },
+                            "todayPaidCount": {
+                              "type": "integer"
+                            },
+                            "todayPaidRevenue": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "paidCount",
+                            "paidRevenue",
+                            "todayPaidCount",
+                            "todayPaidRevenue"
+                          ]
+                        },
+                        "moderation": {
+                          "type": "object",
+                          "properties": {
+                            "pendingReports": {
+                              "type": "integer"
+                            },
+                            "processingReports": {
+                              "type": "integer"
+                            },
+                            "pendingArticles": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "pendingReports",
+                            "processingReports",
+                            "pendingArticles"
+                          ]
+                        },
+                        "engagement": {
+                          "type": "object",
+                          "properties": {
+                            "articleViews": {
+                              "type": "integer"
+                            },
+                            "articleLikes": {
+                              "type": "integer"
+                            },
+                            "articleFavorites": {
+                              "type": "integer"
+                            },
+                            "articleComments": {
+                              "type": "integer"
+                            },
+                            "commentLikes": {
+                              "type": "integer"
+                            },
+                            "commentReplies": {
+                              "type": "integer"
+                            },
+                            "collectionViews": {
+                              "type": "integer"
+                            },
+                            "collectionItems": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "articleViews",
+                            "articleLikes",
+                            "articleFavorites",
+                            "articleComments",
+                            "commentLikes",
+                            "commentReplies",
+                            "collectionViews",
+                            "collectionItems"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "users",
+                        "content",
+                        "orders",
+                        "moderation",
+                        "engagement"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/statistics/trends": {
+      "get": {
+        "summary": "获取最近趋势统计",
+        "deprecated": false,
+        "description": "",
+        "operationId": "StatisticsController_getTrends",
+        "tags": [
+          "统计模块"
+        ],
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "description": "统计天数，默认 7 天，最大 30 天",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "maximum": 30,
+              "default": 7,
+              "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
             "headers": {}
           }
         },
