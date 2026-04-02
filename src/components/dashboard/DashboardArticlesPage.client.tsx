@@ -1,9 +1,11 @@
 "use client";
 
-import { articleControllerFindAll } from "@/api";
-import { Link } from "@/i18n/routing";
+import { articleControllerFindAll, articleControllerRemove } from "@/api";
+import { DropdownMenu, type MenuItem } from "@/components/shared";
+import { Link, useRouter } from "@/i18n/routing";
+import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
@@ -15,9 +17,11 @@ import { useDashboardGuard } from "./useDashboardGuard";
 import { formatDashboardCount, formatDashboardDate } from "./utils";
 
 export function DashboardArticlesPage() {
+  const router = useRouter();
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
+  const [refreshKey, setRefreshKey] = useState(0);
   const statusValueEnum = useMemo(
     () => ({
       DRAFT: { text: copy.status.DRAFT },
@@ -95,8 +99,60 @@ export function DashboardArticlesPage() {
         valueEnum: statusValueEnum,
         render: (item) => <DashboardStatusBadge value={item.status} />,
       },
+      {
+        key: "action",
+        header: copy.columns.action,
+        hideInSearch: true,
+        render: (item) => {
+          const menuItems: MenuItem[] = [
+            {
+              label: copy.common.edit,
+              icon: <PencilLine size={16} />,
+              onClick: () => {
+                router.push(
+                  item.type === "image"
+                    ? `/create/image?articleId=${item.id}`
+                    : `/create/post?articleId=${item.id}`,
+                );
+              },
+            },
+            {
+              label: copy.common.delete,
+              icon: <Trash2 size={16} />,
+              className: "text-red-500",
+              onClick: async () => {
+                if (!window.confirm(copy.common.deleteConfirm)) {
+                  return;
+                }
+
+                await articleControllerRemove({
+                  path: { id: String(item.id) },
+                });
+                setRefreshKey((current) => current + 1);
+              },
+            },
+          ];
+
+          return (
+            <DropdownMenu
+              title={copy.columns.action}
+              items={menuItems}
+              trigger={
+                <button
+                  type="button"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <MoreHorizontal size={16} />
+                </button>
+              }
+              className="inline-flex"
+              menuClassName="top-8"
+            />
+          );
+        },
+      },
     ],
-    [copy, locale, statusValueEnum],
+    [copy, locale, router, statusValueEnum],
   );
 
   if (!ready) {
@@ -106,6 +162,7 @@ export function DashboardArticlesPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
+        key={refreshKey}
         title={copy.pages.articles.title}
         columns={columns}
         request={async ({ current, pageSize, ...rest }) => {

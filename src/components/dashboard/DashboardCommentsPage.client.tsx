@@ -1,11 +1,14 @@
 "use client";
 
-import { commentControllerFindAllComments } from "@/api";
+import { commentControllerFindAllComments, commentControllerRemove, commentControllerUpdate } from "@/api";
+import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { Link } from "@/i18n/routing";
 import { prepareCommentHtmlForDisplay } from "@/lib";
+import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
+import { DashboardEditDialog, type DashboardEditField } from "./DashboardEditDialog.client";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
@@ -19,6 +22,14 @@ export function DashboardCommentsPage() {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
+  const [editingItem, setEditingItem] = useState<DashboardCommentItem | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const editFields = useMemo<DashboardEditField[]>(
+    () => [{ name: "content", label: copy.columns.content, type: "textarea" }],
+    [copy],
+  );
 
   const columns = useMemo<DashboardTableColumn<DashboardCommentItem>[]>(
     () => [
@@ -93,6 +104,52 @@ export function DashboardCommentsPage() {
         hideInSearch: true,
         render: (item) => <DashboardStatusBadge value={item.status} />,
       },
+      {
+        key: "action",
+        header: copy.columns.action,
+        hideInSearch: true,
+        render: (item) => {
+          const menuItems: MenuItem[] = [
+            {
+              label: copy.common.edit,
+              icon: <PencilLine size={16} />,
+              onClick: () => setEditingItem(item),
+            },
+            {
+              label: copy.common.delete,
+              icon: <Trash2 size={16} />,
+              className: "text-red-500",
+              onClick: async () => {
+                if (!window.confirm(copy.common.deleteConfirm)) {
+                  return;
+                }
+
+                await commentControllerRemove({
+                  path: { id: String(item.id) },
+                });
+                setRefreshKey((current) => current + 1);
+              },
+            },
+          ];
+
+          return (
+            <DropdownMenu
+              title={copy.columns.action}
+              items={menuItems}
+              trigger={
+                <button
+                  type="button"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <MoreHorizontal size={16} />
+                </button>
+              }
+              className="inline-flex"
+              menuClassName="top-8"
+            />
+          );
+        },
+      },
     ],
     [copy, locale],
   );
@@ -104,6 +161,7 @@ export function DashboardCommentsPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
+        key={refreshKey}
         title={copy.pages.comments.title}
         columns={columns}
         request={async ({ current, pageSize, keyword }) => {
@@ -126,6 +184,40 @@ export function DashboardCommentsPage() {
         getRowKey={(item) => item.id}
         emptyText={copy.empty.comments}
         className="h-full"
+      />
+      <DashboardEditDialog
+        open={Boolean(editingItem)}
+        title={`${copy.common.edit} ${copy.pages.comments.title}`}
+        fields={editFields}
+        initialValues={{
+          content: editingItem?.content,
+        }}
+        loading={submitting}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditingItem(null);
+          }
+        }}
+        onSubmit={async (values) => {
+          if (!editingItem?.id) {
+            return;
+          }
+
+          setSubmitting(true);
+
+          try {
+            await commentControllerUpdate({
+              path: { id: String(editingItem.id) },
+              body: {
+                content: values.content as string | undefined,
+              },
+            });
+            setEditingItem(null);
+            setRefreshKey((current) => current + 1);
+          } finally {
+            setSubmitting(false);
+          }
+        }}
       />
     </DashboardPageFrame>
   );

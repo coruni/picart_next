@@ -1,8 +1,14 @@
 "use client";
 
-import { orderControllerGetAllOrders } from "@/api";
+import {
+  orderControllerCancelOrder,
+  orderControllerGetAllOrders,
+  orderControllerRequestRefund,
+} from "@/api";
+import { DropdownMenu, type MenuItem } from "@/components/shared";
+import { MoreHorizontal, RotateCcw, XCircle } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
@@ -17,6 +23,7 @@ export function DashboardOrdersPage() {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const statusValueEnum = useMemo(
     () => ({
@@ -90,6 +97,69 @@ export function DashboardOrdersPage() {
           </div>
         ),
       },
+      {
+        key: "action",
+        header: copy.columns.action,
+        hideInSearch: true,
+        render: (item) => {
+          const menuItems: MenuItem[] = [];
+
+          if (item.status === "PENDING") {
+            menuItems.push({
+              label: "Cancel order",
+              icon: <XCircle size={16} />,
+              onClick: async () => {
+                if (!window.confirm("Cancel this order?")) {
+                  return;
+                }
+
+                await orderControllerCancelOrder({
+                  path: { id: String(item.id) },
+                });
+                setRefreshKey((current) => current + 1);
+              },
+            });
+          }
+
+          if (item.status === "PAID") {
+            menuItems.push({
+              label: "Refund",
+              icon: <RotateCcw size={16} />,
+              onClick: async () => {
+                if (!window.confirm("Request refund?")) {
+                  return;
+                }
+
+                await orderControllerRequestRefund({
+                  path: { id: String(item.id) },
+                });
+                setRefreshKey((current) => current + 1);
+              },
+            });
+          }
+
+          if (!menuItems.length) {
+            return <span className="text-sm text-muted-foreground">-</span>;
+          }
+
+          return (
+            <DropdownMenu
+              title={copy.columns.action}
+              items={menuItems}
+              trigger={
+                <button
+                  type="button"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <MoreHorizontal size={16} />
+                </button>
+              }
+              className="inline-flex"
+              menuClassName="top-8"
+            />
+          );
+        },
+      },
     ],
     [copy, statusValueEnum],
   );
@@ -101,6 +171,7 @@ export function DashboardOrdersPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
+        key={refreshKey}
         title={copy.pages.orders.title}
         columns={columns}
         request={async ({ current, pageSize, keyword, status }) => {

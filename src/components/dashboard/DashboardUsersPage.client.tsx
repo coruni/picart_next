@@ -1,11 +1,14 @@
 "use client";
 
-import { userControllerFindAll } from "@/api";
+import { userControllerFindAll, userControllerRemove, userControllerUpdate } from "@/api";
+import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { Avatar } from "@/components/ui/Avatar";
 import { Link } from "@/i18n/routing";
+import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
+import { DashboardEditDialog, type DashboardEditField } from "./DashboardEditDialog.client";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
@@ -23,6 +26,30 @@ export function DashboardUsersPage() {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
+  const [editingItem, setEditingItem] = useState<DashboardUserItem | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const editFields = useMemo<DashboardEditField[]>(
+    () => [
+      { name: "username", label: "Username" },
+      { name: "nickname", label: copy.columns.name },
+      { name: "avatar", label: "Avatar", type: "image" },
+      { name: "background", label: "Background", type: "image" },
+      { name: "description", label: copy.columns.description, type: "textarea" },
+      {
+        name: "status",
+        label: copy.columns.status,
+        type: "select",
+        options: [
+          { value: "ACTIVE", label: "ACTIVE" },
+          { value: "INACTIVE", label: "INACTIVE" },
+          { value: "BANNED", label: "BANNED" },
+        ],
+      },
+    ],
+    [copy],
+  );
 
   const columns = useMemo<DashboardTableColumn<DashboardUserItem>[]>(
     () => [
@@ -107,6 +134,52 @@ export function DashboardUsersPage() {
           </span>
         ),
       },
+      {
+        key: "action",
+        header: copy.columns.action,
+        hideInSearch: true,
+        render: (item) => {
+          const menuItems: MenuItem[] = [
+            {
+              label: copy.common.edit,
+              icon: <PencilLine size={16} />,
+              onClick: () => setEditingItem(item),
+            },
+            {
+              label: copy.common.delete,
+              icon: <Trash2 size={16} />,
+              className: "text-red-500",
+              onClick: async () => {
+                if (!window.confirm(copy.common.deleteConfirm)) {
+                  return;
+                }
+
+                await userControllerRemove({
+                  path: { id: String(item.id) },
+                });
+                setRefreshKey((current) => current + 1);
+              },
+            },
+          ];
+
+          return (
+            <DropdownMenu
+              title={copy.columns.action}
+              items={menuItems}
+              trigger={
+                <button
+                  type="button"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <MoreHorizontal size={16} />
+                </button>
+              }
+              className="inline-flex"
+              menuClassName="top-8"
+            />
+          );
+        },
+      },
     ],
     [copy, locale],
   );
@@ -118,6 +191,7 @@ export function DashboardUsersPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
+        key={refreshKey}
         title={copy.pages.users.title}
         columns={columns}
         request={async ({ current, pageSize, keyword }) => {
@@ -140,6 +214,50 @@ export function DashboardUsersPage() {
         getRowKey={(item) => item.id}
         emptyText={copy.empty.users}
         className="h-full"
+      />
+      <DashboardEditDialog
+        open={Boolean(editingItem)}
+        title={`${copy.common.edit} ${copy.pages.users.title}`}
+        fields={editFields}
+        initialValues={{
+          username: editingItem?.username,
+          nickname: editingItem?.nickname,
+          avatar: editingItem?.avatar,
+          background: editingItem?.background,
+          description: editingItem?.description,
+          status: editingItem?.status,
+        }}
+        loading={submitting}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditingItem(null);
+          }
+        }}
+        onSubmit={async (values) => {
+          if (!editingItem?.id) {
+            return;
+          }
+
+          setSubmitting(true);
+
+          try {
+            await userControllerUpdate({
+              path: { id: String(editingItem.id) },
+              body: {
+                username: values.username as string | undefined,
+                nickname: values.nickname as string | undefined,
+                avatar: values.avatar as string | undefined,
+                background: values.background as string | undefined,
+                description: values.description as string | undefined,
+                status: values.status as "ACTIVE" | "INACTIVE" | "BANNED" | undefined,
+              },
+            });
+            setEditingItem(null);
+            setRefreshKey((current) => current + 1);
+          } finally {
+            setSubmitting(false);
+          }
+        }}
       />
     </DashboardPageFrame>
   );
