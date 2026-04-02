@@ -378,7 +378,7 @@ export function DashboardEditDialog({
             })}
           </Form>
         </div>
-        <DialogFooter className="shrink-0 mt-2! border-t border-border px-5 py-4">
+        <DialogFooter className="shrink-0 mt-2! border-t border-border px-5 py-4 gap-4!">
           <Button
             variant="outline"
             className="h-7 rounded-full px-4"
