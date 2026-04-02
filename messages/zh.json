@@ -564,6 +564,11 @@
     "message": "该用户还没有公开合集"
   },
   "accountCollectionList": {
+    "title": "合集",
+    "subtitle": "整理你的文章内容，集中展示给读者",
+    "createButton": "创建合集",
+    "addArticleButton": "加入文章",
+    "editButton": "编辑合集",
     "posts": "帖子",
     "followers": "粉丝",
     "empty": "暂无合集",
@@ -572,7 +577,61 @@
     "loadMore": "加载更多",
     "retry": "重试",
     "allLoaded": "已经到底了",
-    "loadFailed": "合集加载失败，请稍后重试"
+    "loadFailed": "合集加载失败，请稍后重试",
+    "dialog": {
+      "create": {
+        "title": "创建合集",
+        "subtitle": "为相关文章建立一个清晰的整理入口",
+        "submitFailed": "创建合集失败，请稍后重试"
+      },
+      "edit": {
+        "title": "编辑合集",
+        "subtitle": "更新合集名称、描述和公开设置",
+        "submitFailed": "更新合集失败，请稍后重试"
+      },
+      "fields": {
+        "coverLabel": "合集封面",
+        "coverHint": "封面会用于合集头图，头像预览会优先使用合集头像，没有时回退到封面",
+        "coverPreviewAlt": "合集封面预览",
+        "avatarPreviewAlt": "合集头像预览",
+        "avatarEditorTitle": "裁剪合集头像",
+        "avatarEditorHint": "拖动和缩放图片，调整合集头像显示区域",
+        "coverEditorTitle": "裁剪合集封面",
+        "coverEditorHint": "拖动和缩放图片，调整合集封面显示区域",
+        "uploadAvatar": "上传头像",
+        "replaceAvatar": "更换头像",
+        "uploadCover": "上传封面",
+        "replaceCover": "更换封面",
+        "removeCover": "移除封面",
+        "nameLabel": "合集名称",
+        "namePlaceholder": "输入合集名称",
+        "descriptionLabel": "合集描述",
+        "descriptionPlaceholder": "简单介绍这个合集的内容和主题",
+        "publicLabel": "公开展示",
+        "publicHint": "开启后，其他用户可以在你的主页看到这个合集",
+        "nameRequired": "请先填写合集名称"
+      },
+      "actions": {
+        "cancel": "取消",
+        "confirm": "确认",
+        "create": "创建",
+        "edit": "保存"
+      }
+    },
+    "addArticlesDialog": {
+      "title": "加入文章",
+      "subtitle": "选择你已发布的文章，将它们加入当前合集",
+      "searchPlaceholder": "搜索文章标题",
+      "search": "搜索",
+      "empty": "暂无可加入的文章",
+      "noCover": "无封面",
+      "inCollection": "已在合集",
+      "loadMore": "加载更多",
+      "loading": "加载中",
+      "loadFailed": "文章加载失败，请稍后重试",
+      "updateFailed": "更新合集文章失败，请稍后重试",
+      "confirm": "保存变更（新增 {count}，移除 {removeCount}）"
+    }
   },
   "themeSwitcher": {
     "light": "浅色",

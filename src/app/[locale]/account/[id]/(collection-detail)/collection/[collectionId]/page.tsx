@@ -1,8 +1,13 @@
-import { CollectionArticleListClient } from "@/components/account";
+import {
+  CollectionAddArticlesButton,
+  CollectionArticleListClient,
+  CollectionDetailEditButton,
+} from "@/components/account";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Avatar } from "@/components/ui/Avatar";
 import { Link } from "@/i18n/routing";
 import { cn, formatCompactNumber } from "@/lib";
+import { getCurrentUserId } from "@/lib/current-user";
 import { generateCollectionMetadata } from "@/lib/seo";
 import { serverApi } from "@/lib/server-api";
 import { Metadata } from "next";
@@ -34,11 +39,12 @@ export default async function CollectionDetailPage({
   params: Promise<{ id: string; collectionId: string; locale: string }>;
 }) {
   const { collectionId } = await params;
-  const [tCollection, tAccountInfo, locale, collection, itemsResponse] =
+  const [tCollection, tAccountInfo, locale, currentUserId, collection, itemsResponse] =
     await Promise.all([
       getTranslations("accountCollectionList"),
       getTranslations("accountInfo"),
       getLocale(),
+      getCurrentUserId(),
       getCollectionDetail(collectionId),
       serverApi.collectionControllerGetCollectionItems({
         path: { id: Number(collectionId) },
@@ -64,13 +70,34 @@ export default async function CollectionDetailPage({
   return (
     <>
       <div className="rounded-t-xl bg-card sticky top-header z-10">
-        <div className="border-b border-border px-4 py-4 font-semibold">
+        <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-4 font-semibold">
           <span>{collection.name}</span>
+          {currentUserId === String(collection.userId) ? (
+            <div className="flex items-center gap-3">
+              <CollectionAddArticlesButton
+                collectionId={collection.id}
+                currentUserId={String(collection.userId)}
+              />
+              <CollectionDetailEditButton
+                collection={{
+                  id: collection.id,
+                  name: collection.name,
+                  description: collection.description || "",
+                  isPublic: collection.isPublic,
+                  avatar:
+                    typeof collection.avatar === "string"
+                      ? collection.avatar
+                      : "",
+                  cover: collection.cover || "",
+                }}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
       <section className="overflow-hidden bg-card mb-2">
-        <div className="relative h-42 w-full bg-muted">
-          {collection.cover && (
+        {collection.cover && (
+          <div className="relative h-42 w-full bg-muted">
             <ImageWithFallback
               fill
               quality={95}
@@ -78,11 +105,17 @@ export default async function CollectionDetailPage({
               alt={collection.name}
               className="object-cover"
             />
-          )}
-          <div className="absolute inset-0 bg-linear-to-t from-black/45 via-black/10 to-transparent" />
-        </div>
 
-        <div className="relative px-4 pb-5 border-b border-border">
+            <div className="absolute inset-0 bg-linear-to-t from-black/45 via-black/10 to-transparent" />
+          </div>
+        )}
+
+        <div
+          className={cn(
+            "relative px-4 pb-5 border-b border-border",
+            !collection.cover && "pt-5",
+          )}
+        >
           <div
             className={cn(
               " flex items-start gap-4",

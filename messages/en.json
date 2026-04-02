@@ -572,6 +572,11 @@
     "message": "This user has no public collections yet"
   },
   "accountCollectionList": {
+    "title": "Collections",
+    "subtitle": "Organize your articles into curated groups",
+    "createButton": "Create collection",
+    "addArticleButton": "Add articles",
+    "editButton": "Edit collection",
     "posts": "Posts",
     "followers": "Followers",
     "empty": "No collections yet",
@@ -580,7 +585,61 @@
     "loadMore": "Load more",
     "retry": "Retry",
     "allLoaded": "All loaded",
-    "loadFailed": "Failed to load collections, please try again"
+    "loadFailed": "Failed to load collections, please try again",
+    "dialog": {
+      "create": {
+        "title": "Create collection",
+        "subtitle": "Build a dedicated space for related articles",
+        "submitFailed": "Failed to create collection, please try again"
+      },
+      "edit": {
+        "title": "Edit collection",
+        "subtitle": "Update the collection name, description, and visibility",
+        "submitFailed": "Failed to update collection, please try again"
+      },
+      "fields": {
+        "coverLabel": "Collection cover",
+        "coverHint": "The cover is used as the collection header. The avatar preview falls back to the cover when no collection avatar is available.",
+        "coverPreviewAlt": "Collection cover preview",
+        "avatarPreviewAlt": "Collection avatar preview",
+        "avatarEditorTitle": "Crop collection avatar",
+        "avatarEditorHint": "Drag and zoom the image to adjust the avatar crop",
+        "coverEditorTitle": "Crop collection cover",
+        "coverEditorHint": "Drag and zoom the image to adjust the cover crop",
+        "uploadAvatar": "Upload avatar",
+        "replaceAvatar": "Replace avatar",
+        "uploadCover": "Upload cover",
+        "replaceCover": "Replace cover",
+        "removeCover": "Remove cover",
+        "nameLabel": "Collection name",
+        "namePlaceholder": "Enter a collection name",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Briefly describe what this collection is about",
+        "publicLabel": "Publicly visible",
+        "publicHint": "When enabled, other users can see this collection on your profile",
+        "nameRequired": "Please enter a collection name"
+      },
+      "actions": {
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "create": "Create",
+        "edit": "Save"
+      }
+    },
+    "addArticlesDialog": {
+      "title": "Add articles",
+      "subtitle": "Choose published articles to add to this collection",
+      "searchPlaceholder": "Search article titles",
+      "search": "Search",
+      "empty": "No articles available to add",
+      "noCover": "No cover",
+      "inCollection": "In collection",
+      "loadMore": "Load more",
+      "loading": "Loading",
+      "loadFailed": "Failed to load articles, please try again",
+      "updateFailed": "Failed to update collection articles, please try again",
+      "confirm": "Save changes (add {count}, remove {removeCount})"
+    }
   },
   "themeSwitcher": {
     "light": "Light",

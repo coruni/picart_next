@@ -1752,6 +1752,7 @@ export type CreateCollectionDto = {
      * 收藏夹名称
      */
     name: string;
+    avatar?: string;
     /**
      * 收藏夹描述
      */
@@ -1775,6 +1776,7 @@ export type UpdateCollectionDto = {
      * 收藏夹名称
      */
     name?: string;
+    avatar?: string;
     /**
      * 收藏夹描述
      */
@@ -4883,6 +4885,24 @@ export type ArticleControllerFindOneResponses = {
                 dislike: number;
             };
             userReaction: string;
+            collection: {
+                id: number;
+                name: string;
+                description: string;
+                avatar: unknown;
+                cover: string;
+                isPublic: boolean;
+                sort: number;
+                itemCount: number;
+                views: number;
+                createdAt: string;
+                updatedAt: string;
+                navigation: {
+                    prev: unknown;
+                    next: unknown;
+                };
+            };
+            isFavorited: boolean;
         };
     };
 };

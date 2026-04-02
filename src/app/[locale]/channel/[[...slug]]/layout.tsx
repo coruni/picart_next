@@ -2,6 +2,7 @@
 import { ChannelTabs } from "@/components/channel/ChannelTabs";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Sidebar } from "@/components/sidebar/Sidebar";
+import { APP_NAME } from "@/constants";
 import {
   buildLocalizedAlternates,
   generateSiteMetadata,
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: ChannelLayoutProps) {
   }
 
   const config = await getPublicConfig();
-  const siteName = config?.site_name || "PicArt";
+  const siteName = config?.site_name || APP_NAME;
 
   const title = currentChannel.name;
   const description =

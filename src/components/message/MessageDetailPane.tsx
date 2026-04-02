@@ -15,6 +15,7 @@ import {
   Ban,
   ChevronDown,
   MessageCircleMore,
+  MoreVertical,
   Paperclip,
   SendHorizontal,
   ShieldAlert,
@@ -500,30 +501,15 @@ export function MessageDetailPane({
                 items={userMenuItems}
                 trigger={({ isOpen }) => (
                   <Button
-                    variant="ghost"
                     size="sm"
                     className={cn(
-                      "rounded-full px-2.5 transition-colors duration-180",
+                      "rounded-full p-1!",
                       isOpen && "bg-muted text-primary",
                     )}
                     disabled={blockSubmitting || reportSubmitting}
                   >
                     <span className="sr-only">{tMenu("moreActions")}</span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="size-4"
-                      aria-hidden="true"
-                    >
-                      <circle cx="12" cy="12" r="1" />
-                      <circle cx="12" cy="5" r="1" />
-                      <circle cx="12" cy="19" r="1" />
-                    </svg>
+                    <MoreVertical size={16} />
                   </Button>
                 )}
               />

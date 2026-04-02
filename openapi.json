@@ -10361,6 +10361,76 @@
                         },
                         "userReaction": {
                           "type": "string"
+                        },
+                        "collection": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "avatar": {
+                              "type": "null"
+                            },
+                            "cover": {
+                              "type": "string"
+                            },
+                            "isPublic": {
+                              "type": "boolean"
+                            },
+                            "sort": {
+                              "type": "integer"
+                            },
+                            "itemCount": {
+                              "type": "integer"
+                            },
+                            "views": {
+                              "type": "integer"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            },
+                            "navigation": {
+                              "type": "object",
+                              "properties": {
+                                "prev": {
+                                  "type": "null"
+                                },
+                                "next": {
+                                  "type": "null"
+                                }
+                              },
+                              "required": [
+                                "prev",
+                                "next"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "description",
+                            "avatar",
+                            "cover",
+                            "isPublic",
+                            "sort",
+                            "itemCount",
+                            "views",
+                            "createdAt",
+                            "updatedAt",
+                            "navigation"
+                          ]
+                        },
+                        "isFavorited": {
+                          "type": "boolean"
                         }
                       },
                       "required": [
@@ -10395,7 +10465,9 @@
                         "isPaid",
                         "imageCount",
                         "reactionStats",
-                        "userReaction"
+                        "userReaction",
+                        "collection",
+                        "isFavorited"
                       ]
                     }
                   },
@@ -43163,7 +43235,7 @@
             "in": "path",
             "description": "合集ID",
             "required": true,
-            "example": 0,
+            "example": 2,
             "schema": {
               "type": "number"
             }
@@ -43494,6 +43566,80 @@
         },
         "security": []
       },
+      "delete": {
+        "summary": "删除合集",
+        "deprecated": false,
+        "description": "",
+        "operationId": "CollectionController_remove",
+        "tags": [
+          "合集管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "合集ID",
+            "required": true,
+            "example": 0,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
       "patch": {
         "summary": "更新合集",
         "deprecated": false,
@@ -43566,80 +43712,6 @@
           },
           "required": true
         },
-        "responses": {
-          "200": {
-            "description": "",
-            "headers": {}
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      },
-      "delete": {
-        "summary": "删除合集",
-        "deprecated": false,
-        "description": "",
-        "operationId": "CollectionController_remove",
-        "tags": [
-          "合集管理"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "合集ID",
-            "required": true,
-            "example": 0,
-            "schema": {
-              "type": "number"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "",
@@ -47493,6 +47565,9 @@
             "description": "收藏夹名称",
             "maxLength": 100
           },
+          "avatar": {
+            "type": "string"
+          },
           "description": {
             "type": "string",
             "description": "收藏夹描述"
@@ -47523,6 +47598,9 @@
             "type": "string",
             "description": "收藏夹名称",
             "maxLength": 100
+          },
+          "avatar": {
+            "type": "string"
           },
           "description": {
             "type": "string",

@@ -1,8 +1,15 @@
 "use client";
 
+import {
+    articleControllerFavoriteArticle,
+    articleControllerUnfavoriteArticle,
+} from "@/api";
 import { formatCompactNumber } from "@/lib";
-import { MessageCircleMore, Star, ExternalLink } from "lucide-react";
+import { openLoginDialog } from "@/lib/modal-helpers";
+import { useUserStore } from "@/stores";
+import { ExternalLink, MessageCircleMore, Star } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { ReactionPanel } from "./ReactionPanel.client";
 
 type ReactionStats = {
@@ -19,6 +26,7 @@ type ArticleActionsProps = {
     articleId: number;
     commentCount: number;
     favoriteCount: number;
+    initialIsFavorited?: boolean;
     reactionStats: ReactionStats;
     userReaction?: string;
     likes: number;
@@ -28,12 +36,27 @@ export function ArticleActions({
     articleId,
     commentCount,
     favoriteCount,
+    initialIsFavorited = false,
     reactionStats,
     userReaction,
-    likes
+    likes,
 }: ArticleActionsProps) {
     const locale = useLocale();
     const tAccountInfo = useTranslations("accountInfo");
+    const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+    const [isFavorited, setIsFavorited] = useState(initialIsFavorited);
+    const [currentFavoriteCount, setCurrentFavoriteCount] =
+        useState(favoriteCount);
+    const [favoriteSubmitting, setFavoriteSubmitting] = useState(false);
+
+    useEffect(() => {
+        setIsFavorited(initialIsFavorited);
+    }, [initialIsFavorited]);
+
+    useEffect(() => {
+        setCurrentFavoriteCount(favoriteCount);
+    }, [favoriteCount]);
+
     const compactNumberLabels = {
         thousand: tAccountInfo("numberUnits.thousand"),
         tenThousand: tAccountInfo("numberUnits.tenThousand"),
@@ -41,31 +64,90 @@ export function ArticleActions({
         million: tAccountInfo("numberUnits.million"),
         billion: tAccountInfo("numberUnits.billion"),
     };
+
+    const handleToggleFavorite = async () => {
+        if (!isAuthenticated) {
+            openLoginDialog();
+            return;
+        }
+
+        if (favoriteSubmitting) {
+            return;
+        }
+
+        const previousIsFavorited = isFavorited;
+        const nextIsFavorited = !previousIsFavorited;
+
+        setFavoriteSubmitting(true);
+        setIsFavorited(nextIsFavorited);
+        setCurrentFavoriteCount((prev) =>
+            Math.max(prev + (nextIsFavorited ? 1 : -1), 0),
+        );
+
+        try {
+            if (nextIsFavorited) {
+                await articleControllerFavoriteArticle({
+                    path: { id: String(articleId) },
+                });
+            } else {
+                await articleControllerUnfavoriteArticle({
+                    path: { id: String(articleId) },
+                });
+            }
+        } catch (error) {
+            console.error("Failed to toggle article favorite:", error);
+            setIsFavorited(previousIsFavorited);
+            setCurrentFavoriteCount((prev) =>
+                Math.max(prev + (previousIsFavorited ? 1 : -1), 0),
+            );
+        } finally {
+            setFavoriteSubmitting(false);
+        }
+    };
+
     return (
-        <div className="mt-4 py-6 flex items-center justify-evenly">
-            {/* 评论 */}
-            <div className="flex flex-col items-center justify-center group cursor-pointer">
-                <div className="rounded-full group-hover:bg-primary/15 p-1">
+        <div className="mt-4 flex items-center justify-evenly py-6">
+            <div className="group flex cursor-pointer flex-col items-center justify-center">
+                <div className="rounded-full p-1 group-hover:bg-primary/15">
                     <MessageCircleMore className="text-secondary" />
                 </div>
-                <span className="text-secondary text-sm">
-                    {formatCompactNumber(commentCount, { locale, labels: compactNumberLabels })}
+                <span className="text-sm text-secondary">
+                    {formatCompactNumber(commentCount, {
+                        locale,
+                        labels: compactNumberLabels,
+                    })}
                 </span>
             </div>
 
-            {/* 收藏 */}
-            <div className="flex flex-col items-center justify-center group cursor-pointer">
-                <div className="rounded-full group-hover:bg-primary/15 p-1">
-                    <Star className="text-secondary" />
+            <button
+                type="button"
+                onClick={() => void handleToggleFavorite()}
+                disabled={favoriteSubmitting}
+                className="group flex cursor-pointer flex-col items-center justify-center disabled:opacity-60"
+            >
+                <div className="rounded-full p-1 group-hover:bg-primary/15">
+                    <Star
+                        className={
+                            isFavorited
+                                ? "fill-current text-primary"
+                                : "text-secondary"
+                        }
+                    />
                 </div>
-                <span className="text-secondary text-sm">
-                    {formatCompactNumber(favoriteCount, { locale, labels: compactNumberLabels })}
+                <span
+                    className={
+                        isFavorited ? "text-sm text-primary" : "text-sm text-secondary"
+                    }
+                >
+                    {formatCompactNumber(currentFavoriteCount, {
+                        locale,
+                        labels: compactNumberLabels,
+                    })}
                 </span>
-            </div>
+            </button>
 
-            {/* 反应 */}
-            <div className="flex flex-col items-center justify-center group cursor-pointer">
-                <div className="rounded-full group-hover:bg-primary/15 p-1">
+            <div className="group flex cursor-pointer flex-col items-center justify-center">
+                <div className="rounded-full p-1 group-hover:bg-primary/15">
                     <ReactionPanel
                         showCount={false}
                         articleId={articleId}
@@ -73,18 +155,23 @@ export function ArticleActions({
                         userReaction={userReaction}
                     />
                 </div>
-                <span className="text-secondary text-sm">
-                    {formatCompactNumber(likes, { locale, labels: compactNumberLabels })}
+                <span className="text-sm text-secondary">
+                    {formatCompactNumber(likes, {
+                        locale,
+                        labels: compactNumberLabels,
+                    })}
                 </span>
             </div>
 
-            {/* 分享 */}
-            <div className="flex flex-col items-center justify-center group cursor-pointer">
-                <div className="rounded-full group-hover:bg-primary/15 p-1">
+            <div className="group flex cursor-pointer flex-col items-center justify-center">
+                <div className="rounded-full p-1 group-hover:bg-primary/15">
                     <ExternalLink className="text-secondary" />
                 </div>
-                <span className="text-secondary text-sm">
-                    {formatCompactNumber(likes, { locale, labels: compactNumberLabels })}
+                <span className="text-sm text-secondary">
+                    {formatCompactNumber(likes, {
+                        locale,
+                        labels: compactNumberLabels,
+                    })}
                 </span>
             </div>
         </div>

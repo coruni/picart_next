@@ -1,5 +1,6 @@
 import { configControllerGetPublicConfigs } from "@/api";
 import { categoryControllerFindAll } from "@/api";
+import { APP_NAME } from "@/constants";
 import { routing } from "@/i18n/routing";
 import { ArticleDetail, CollectionDetail, TagDetail, UserDetail } from "@/types";
 import { unstable_cache } from "next/cache";
@@ -95,16 +96,16 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
   const config = await getPublicConfig();
 
   if (!config) {
-    return {
-      title: {
-        default: "PicArt",
-        template: "%s | PicArt",
+      return {
+        title: {
+        default: APP_NAME,
+        template: `%s | ${APP_NAME}`,
       },
       description: "A modern image sharing platform",
       keywords: ["image", "art", "sharing", "community"],
-      authors: [{ name: "PicArt Team" }],
-      creator: "PicArt",
-      publisher: "PicArt",
+      authors: [{ name: `${APP_NAME} Team` }],
+      creator: APP_NAME,
+      publisher: APP_NAME,
       formatDetection: {
         email: false,
         address: false,
@@ -112,20 +113,20 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
       },
       metadataBase: getMetadataBase(),
       alternates: buildLocalizedAlternates(locale, "/"),
-      openGraph: {
-        type: "website",
-        locale,
-        url: getLocalizedPath(locale, "/"),
-        siteName: "PicArt",
-        title: "PicArt",
-        description: "A modern image sharing platform",
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: "PicArt",
-        description: "A modern image sharing platform",
-        creator: "@picart",
-      },
+        openGraph: {
+          type: "website",
+          locale,
+          url: getLocalizedPath(locale, "/"),
+        siteName: APP_NAME,
+        title: APP_NAME,
+          description: "A modern image sharing platform",
+        },
+        twitter: {
+          card: "summary_large_image",
+        title: APP_NAME,
+          description: "A modern image sharing platform",
+          creator: "@picart",
+        },
       robots: {
         index: true,
         follow: true,
@@ -154,15 +155,15 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
 
   return {
     title: {
-      default: `${config.site_name || "PicArt"} | ${config.site_subtitle || "PicArt"}`,
-      template: `%s | ${config.site_name || "PicArt"}`,
+      default: `${config.site_name || APP_NAME} | ${config.site_subtitle || APP_NAME}`,
+      template: `%s | ${config.site_name || APP_NAME}`,
     },
     description:
       config.site_description || config.site_subtitle || "A modern image sharing platform",
     keywords: keywords.length > 0 ? keywords : undefined,
-    authors: [{ name: config.site_name || "PicArt Team" }],
-    creator: config.site_name || "PicArt",
-    publisher: config.site_name || "PicArt",
+    authors: [{ name: config.site_name || `${APP_NAME} Team` }],
+    creator: config.site_name || APP_NAME,
+    publisher: config.site_name || APP_NAME,
     formatDetection: {
       email: false,
       address: false,
@@ -174,8 +175,8 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
       type: "website",
       locale,
       url: getLocalizedPath(locale, "/"),
-      siteName: config.site_name || "PicArt",
-      title: config.site_name || "PicArt",
+      siteName: config.site_name || APP_NAME,
+      title: config.site_name || APP_NAME,
       description:
         config.site_description || config.site_subtitle || "A modern image sharing platform",
       images: config.site_logo
@@ -184,14 +185,14 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
               url: config.site_logo,
               width: 1200,
               height: 630,
-              alt: config.site_name || "PicArt",
+              alt: config.site_name || APP_NAME,
             },
           ]
         : undefined,
     },
     twitter: {
       card: "summary_large_image",
-      title: config.site_name || "PicArt",
+      title: config.site_name || APP_NAME,
       description:
         config.site_description || config.site_subtitle || "A modern image sharing platform",
       images: config.site_logo ? [config.site_logo] : undefined,
@@ -228,7 +229,7 @@ export async function generateArticleMetadata(
   locale: string = "zh",
 ): Promise<Metadata> {
   const config = await getPublicConfig();
-  const siteName = config?.site_name || "PicArt";
+  const siteName = config?.site_name || APP_NAME;
 
   if (!article) {
     return generateSiteMetadata(locale);
@@ -286,7 +287,7 @@ export async function generateAuthorMetadata(
   locale: string = "zh",
 ): Promise<Metadata> {
   const config = await getPublicConfig();
-  const siteName = config?.site_name || "PicArt";
+  const siteName = config?.site_name || APP_NAME;
   const path = `/account/${author.id}`;
 
   const keywords = splitKeywords([
@@ -335,7 +336,7 @@ export async function generateTopicMetadata(
   locale: string = "zh",
 ): Promise<Metadata> {
   const config = await getPublicConfig();
-  const siteName = config?.site_name || "PicArt";
+  const siteName = config?.site_name || APP_NAME;
   const path = "/topic";
 
   const keywords = splitKeywords([
@@ -378,7 +379,7 @@ export async function generateTagMetadata(
   locale: string = "zh",
 ): Promise<Metadata> {
   const config = await getPublicConfig();
-  const siteName = config?.site_name || "PicArt";
+  const siteName = config?.site_name || APP_NAME;
   const path = `/topic/${tag.id}`;
 
   const keywords = splitKeywords([
@@ -430,7 +431,7 @@ export async function generateCollectionMetadata(
   locale: string = "zh",
 ): Promise<Metadata> {
   const config = await getPublicConfig();
-  const siteName = config?.site_name || "PicArt";
+  const siteName = config?.site_name || APP_NAME;
 
   if (!collection) {
     return generateSiteMetadata(locale);
@@ -497,7 +498,7 @@ export async function generateCreatePostMetadata(
   locale: string = "zh",
 ): Promise<Metadata> {
   const config = await getPublicConfig();
-  const siteName = config?.site_name || "PicArt";
+  const siteName = config?.site_name || APP_NAME;
   const path = "/create/post";
 
   const keywords = splitKeywords([
@@ -543,7 +544,7 @@ export async function generateCreateImageMetadata(
   locale: string = "zh",
 ): Promise<Metadata> {
   const config = await getPublicConfig();
-  const siteName = config?.site_name || "PicArt";
+  const siteName = config?.site_name || APP_NAME;
   const path = "/create/image";
 
   const keywords = splitKeywords([

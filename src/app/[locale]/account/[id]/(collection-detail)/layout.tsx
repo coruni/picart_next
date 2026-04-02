@@ -15,7 +15,7 @@ export default async function CollectionDetailLayout({
     <div className="page-container">
       <div className="left-container">{children}</div>
       <div className="right-container">
-        <Sidebar />
+        <Sidebar showArticleCreate={false} />
       </div>
     </div>
   );

@@ -33,7 +33,8 @@ export const FollowButtonWithStatus = ({
 }: FollowButtonWithStatusProps) => {
   const t = useTranslations("followButton");
   const user = useUserStore((state) => state.user);
-  const [isFollowed, setIsFollowed] = useState(author?.isFollowed || false);
+  const initialIsFollowed = Boolean(author?.isFollowed);
+  const [isFollowed, setIsFollowed] = useState(initialIsFollowed);
   const [isLoading, setIsLoading] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isHiding, setIsHiding] = useState(false);
@@ -41,6 +42,21 @@ export const FollowButtonWithStatus = ({
   const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const openModal = useModalStore((state) => state.openModal);
+  useEffect(() => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
+    if (resetTimerRef.current) {
+      clearTimeout(resetTimerRef.current);
+      resetTimerRef.current = null;
+    }
+
+    setIsFollowed(initialIsFollowed);
+    setIsAnimating(false);
+    setIsHiding(false);
+  }, [initialIsFollowed, author?.id]);
+
   useEffect(() => {
     return () => {
       if (hideTimerRef.current) {

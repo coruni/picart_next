@@ -294,6 +294,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             articleId={article.id!}
             commentCount={article.commentCount!}
             favoriteCount={article.favoriteCount || 0}
+            initialIsFavorited={Boolean(article.isFavorited)}
             reactionStats={article.reactionStats!}
             userReaction={article.userReaction}
             likes={article.likes!}

@@ -1,6 +1,6 @@
 "use server";
 
-import { userControllerFindAll } from "@/api";
+import { serverApi } from "@/lib/server-api";
 import { UserList } from "@/types";
 import { Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -14,7 +14,7 @@ export const RecommendUserWidget = async () => {
 
   let users: UserList = [];
   try {
-    const { data } = await userControllerFindAll({
+    const { data } = await serverApi.userControllerFindAll({
       query: {
         page: 1,
         limit: 3,
@@ -36,6 +36,8 @@ export const RecommendUserWidget = async () => {
   }
 
   const userCard = (user: UserList[number]) => {
+    const isFollowed = Boolean(user.isFollowed);
+
     return (
       <GuardedLink
         href={`/account/${user.id}`}
@@ -49,9 +51,11 @@ export const RecommendUserWidget = async () => {
               {user?.nickname || user?.username}
             </span>
           </div>
-          <FollowButtonWithStatus className="min-w-13 max-w-16" author={user}>
-            <Plus size={16} strokeWidth={3} />
-          </FollowButtonWithStatus>
+          {!isFollowed && (
+            <FollowButtonWithStatus className="min-w-13 max-w-16" author={user}>
+              <Plus size={16} strokeWidth={3} />
+            </FollowButtonWithStatus>
+          )}
         </div>
         <div className="grid grid-cols-3 gap-2 pb-2">
           {user.articles?.map((article) => (
