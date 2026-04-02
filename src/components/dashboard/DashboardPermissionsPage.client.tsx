@@ -1,11 +1,10 @@
 "use client";
 
-import { permissionControllerFindAll, permissionControllerUpdate } from "@/api";
+import { permissionControllerFindAll, permissionControllerRemove } from "@/api";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
-import { DashboardEditDialog, type DashboardEditField } from "./DashboardEditDialog.client";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
@@ -17,17 +16,7 @@ export function DashboardPermissionsPage() {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
-  const [editingItem, setEditingItem] = useState<DashboardPermissionItem | null>(null);
-  const [submitting, setSubmitting] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-
-  const editFields = useMemo<DashboardEditField[]>(
-    () => [
-      { name: "name", label: copy.columns.name },
-      { name: "description", label: copy.columns.description, type: "textarea" },
-    ],
-    [copy],
-  );
 
   const columns = useMemo<DashboardTableColumn<DashboardPermissionItem>[]>(
     () => [
@@ -62,9 +51,18 @@ export function DashboardPermissionsPage() {
             variant="outline"
             size="sm"
             className="h-7 rounded-full px-4"
-            onClick={() => setEditingItem(item)}
+            onClick={async () => {
+              if (!window.confirm(copy.common.deleteConfirm)) {
+                return;
+              }
+
+              await permissionControllerRemove({
+                path: { id: String(item.id) },
+              });
+              setRefreshKey((current) => current + 1);
+            }}
           >
-            {copy.common.edit}
+            {copy.common.delete}
           </Button>
         ),
       },
@@ -108,42 +106,6 @@ export function DashboardPermissionsPage() {
         getRowKey={(item) => item.id}
         emptyText={copy.empty.permissions}
         className="h-full"
-      />
-      <DashboardEditDialog
-        open={Boolean(editingItem)}
-        title={`${copy.common.edit} · ${copy.pages.permissions.title}`}
-        fields={editFields}
-        initialValues={{
-          name: editingItem?.name,
-          description: editingItem?.description,
-        }}
-        loading={submitting}
-        onOpenChange={(open) => {
-          if (!open) {
-            setEditingItem(null);
-          }
-        }}
-        onSubmit={async (values) => {
-          if (!editingItem) {
-            return;
-          }
-
-          setSubmitting(true);
-
-          try {
-            await permissionControllerUpdate({
-              path: { id: String(editingItem.id) },
-              body: {
-                name: values.name as string | undefined,
-                description: values.description as string | undefined,
-              },
-            });
-            setEditingItem(null);
-            setRefreshKey((current) => current + 1);
-          } finally {
-            setSubmitting(false);
-          }
-        }}
       />
     </DashboardPageFrame>
   );

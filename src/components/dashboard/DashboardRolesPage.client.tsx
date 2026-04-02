@@ -1,6 +1,10 @@
 "use client";
 
-import { roleControllerFindWithPagination, roleControllerUpdate } from "@/api";
+import {
+  roleControllerFindWithPagination,
+  roleControllerRemove,
+  roleControllerUpdate,
+} from "@/api";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
@@ -108,14 +112,34 @@ export function DashboardRolesPage() {
         header: copy.columns.action,
         hideInSearch: true,
         render: (item) => (
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-7 rounded-full px-4"
-            onClick={() => setEditingItem(item)}
-          >
-            {copy.common.edit}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 rounded-full px-4"
+              onClick={() => setEditingItem(item)}
+            >
+              {copy.common.edit}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 rounded-full px-4"
+              disabled={item.isSystem}
+              onClick={async () => {
+                if (item.isSystem || !window.confirm(copy.common.deleteConfirm)) {
+                  return;
+                }
+
+                await roleControllerRemove({
+                  path: { id: String(item.id) },
+                });
+                setRefreshKey((current) => current + 1);
+              }}
+            >
+              {copy.common.delete}
+            </Button>
+          </div>
         ),
       },
     ],

@@ -3,6 +3,7 @@
 import { Select } from "@/components/ui/Select";
 import { cn } from "@/lib";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "../ui/Button";
 
 const DEFAULT_ELLIPSIS_WIDTH_CLASS = "w-[420px] max-w-[420px]";
 
@@ -262,28 +263,29 @@ export function DashboardTable<T>({
               </div>
             </div>
             <div className="flex w-full items-center gap-3 flex-1 justify-end">
-              <button
+              <Button
                 type="button"
-                className="inline-flex truncate h-7 flex-1 items-center justify-center rounded-full border border-primary hover:bg-primary hover:text-white/90 px-4 text-sm font-medium  transition-colors text-primary disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
+                variant="outline"
+                className="h-7 rounded-full"
                 disabled={pagination.previousDisabled}
                 onClick={pagination.onPrevious}
               >
                 {paginationLabels.previous}
-              </button>
+              </Button>
               <div className="text-secondary text-xs">
                 {paginationLabels.page
                   .replace("{page}", String(pagination.page))
                   .replace("{totalPages}", String(pagination.totalPages))}
               </div>
 
-              <button
+              <Button
                 type="button"
-                className="inline-flex truncate h-7 flex-1 items-center justify-center rounded-full border border-primary hover:bg-primary hover:text-white/90 px-4 text-sm font-medium  transition-colors text-primary disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
-                disabled={pagination.nextDisabled}
+                variant="outline"
+                className="h-7 rounded-full"
                 onClick={pagination.onNext}
               >
                 {paginationLabels.next}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

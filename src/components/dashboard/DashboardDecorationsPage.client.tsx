@@ -1,6 +1,10 @@
 "use client";
 
-import { decorationControllerFindAll, decorationControllerUpdate } from "@/api";
+import {
+  decorationControllerFindAll,
+  decorationControllerRemove,
+  decorationControllerUpdate,
+} from "@/api";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "next-intl";
@@ -32,8 +36,8 @@ export function DashboardDecorationsPage() {
         { value: "COMMENT_BUBBLE", label: "COMMENT_BUBBLE" },
       ] },
       { name: "description", label: copy.columns.description, type: "textarea" },
-      { name: "imageUrl", label: "Image URL" },
-      { name: "previewUrl", label: "Preview URL" },
+      { name: "imageUrl", label: "Image", type: "image" },
+      { name: "previewUrl", label: "Preview", type: "image" },
       { name: "rarity", label: copy.columns.rarity, type: "select", options: [
         { value: "COMMON", label: "COMMON" },
         { value: "RARE", label: "RARE" },
@@ -129,14 +133,33 @@ export function DashboardDecorationsPage() {
         header: copy.columns.action,
         hideInSearch: true,
         render: (item) => (
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-7 rounded-full px-4"
-            onClick={() => setEditingItem(item)}
-          >
-            {copy.common.edit}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 rounded-full px-4"
+              onClick={() => setEditingItem(item)}
+            >
+              {copy.common.edit}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 rounded-full px-4"
+              onClick={async () => {
+                if (!window.confirm(copy.common.deleteConfirm)) {
+                  return;
+                }
+
+                await decorationControllerRemove({
+                  path: { id: String(item.id) },
+                });
+                setRefreshKey((current) => current + 1);
+              }}
+            >
+              {copy.common.delete}
+            </Button>
+          </div>
         ),
       },
     ],

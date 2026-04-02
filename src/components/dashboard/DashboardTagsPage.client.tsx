@@ -1,6 +1,6 @@
 "use client";
 
-import { tagControllerFindAll, tagControllerUpdate } from "@/api";
+import { tagControllerFindAll, tagControllerRemove, tagControllerUpdate } from "@/api";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Link } from "@/i18n/routing";
@@ -31,9 +31,9 @@ export function DashboardTagsPage() {
     () => [
       { name: "name", label: copy.columns.name },
       { name: "description", label: copy.columns.description, type: "textarea" },
-      { name: "avatar", label: "Avatar URL" },
-      { name: "background", label: "Background URL" },
-      { name: "cover", label: "Cover URL" },
+      { name: "avatar", label: "Avatar", type: "image" },
+      { name: "background", label: "Background", type: "image" },
+      { name: "cover", label: "Cover", type: "image" },
       { name: "sort", label: copy.columns.sort, type: "number", step: 1 },
     ],
     [copy],
@@ -101,14 +101,33 @@ export function DashboardTagsPage() {
         header: copy.columns.action,
         hideInSearch: true,
         render: (item) => (
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-7 rounded-full px-4"
-            onClick={() => setEditingItem(item)}
-          >
-            {copy.common.edit}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 rounded-full px-4"
+              onClick={() => setEditingItem(item)}
+            >
+              {copy.common.edit}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 rounded-full px-4"
+              onClick={async () => {
+                if (!window.confirm(copy.common.deleteConfirm)) {
+                  return;
+                }
+
+                await tagControllerRemove({
+                  path: { id: String(item.id) },
+                });
+                setRefreshKey((current) => current + 1);
+              }}
+            >
+              {copy.common.delete}
+            </Button>
+          </div>
         ),
       },
     ],

@@ -1,6 +1,10 @@
 "use client";
 
-import { achievementControllerFindAll, achievementControllerUpdate } from "@/api";
+import {
+  achievementControllerFindAll,
+  achievementControllerRemove,
+  achievementControllerUpdate,
+} from "@/api";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "next-intl";
@@ -29,7 +33,7 @@ export function DashboardAchievementsPage() {
       { name: "code", label: copy.columns.code },
       { name: "name", label: copy.columns.name },
       { name: "description", label: copy.columns.description, type: "textarea" },
-      { name: "icon", label: "Icon URL" },
+      { name: "icon", label: "Icon", type: "image" },
       {
         name: "type",
         label: copy.columns.type,
@@ -134,14 +138,33 @@ export function DashboardAchievementsPage() {
         hideInSearch: true,
         render: (item) =>
           item.id ? (
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 rounded-full px-4"
-              onClick={() => setEditingItem(item)}
-            >
-              {copy.common.edit}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 rounded-full px-4"
+                onClick={() => setEditingItem(item)}
+              >
+                {copy.common.edit}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 rounded-full px-4"
+                onClick={async () => {
+                  if (!window.confirm(copy.common.deleteConfirm)) {
+                    return;
+                  }
+
+                  await achievementControllerRemove({
+                    path: { id: String(item.id) },
+                  });
+                  setRefreshKey((current) => current + 1);
+                }}
+              >
+                {copy.common.delete}
+              </Button>
+            </div>
           ) : (
             <span className="text-sm text-muted-foreground">-</span>
           ),

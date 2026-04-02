@@ -1,6 +1,10 @@
 "use client";
 
-import { bannerControllerFindAll, bannerControllerUpdate } from "@/api";
+import {
+  bannerControllerFindAll,
+  bannerControllerRemove,
+  bannerControllerUpdate,
+} from "@/api";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "next-intl";
@@ -46,7 +50,7 @@ export function DashboardBannersPage() {
         label: copy.columns.description,
         type: "textarea",
       },
-      { name: "imageUrl", label: "Image URL" },
+      { name: "imageUrl", label: "Image", type: "image" },
       { name: "linkUrl", label: copy.columns.link },
       {
         name: "sortOrder",
@@ -133,18 +137,41 @@ export function DashboardBannersPage() {
         header: copy.columns.action,
         hideInSearch: true,
         render: (item) =>
-          item.id ? (
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 rounded-full px-4"
-              onClick={() => setEditingItem(item)}
-            >
-              {copy.common.edit}
-            </Button>
-          ) : (
-            <span className="text-sm text-muted-foreground">-</span>
-          ),
+          (() => {
+            const bannerId = item.id;
+
+            return typeof bannerId === "number" ? (
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 rounded-full px-4"
+                  onClick={() => setEditingItem(item)}
+                >
+                  {copy.common.edit}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 rounded-full px-4"
+                  onClick={async () => {
+                    if (!window.confirm(copy.common.deleteConfirm)) {
+                      return;
+                    }
+
+                    await bannerControllerRemove({
+                      path: { id: bannerId },
+                    });
+                    setRefreshKey((current) => current + 1);
+                  }}
+                >
+                  {copy.common.delete}
+                </Button>
+              </div>
+            ) : (
+              <span className="text-sm text-muted-foreground">-</span>
+            );
+          })(),
       },
     ],
     [copy, statusValueEnum],

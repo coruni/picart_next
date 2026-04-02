@@ -1,6 +1,10 @@
 "use client";
 
-import { reportControllerFindAll, reportControllerUpdate } from "@/api";
+import {
+  reportControllerFindAll,
+  reportControllerRemove,
+  reportControllerUpdate,
+} from "@/api";
 import { Button } from "@/components/ui/Button";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
@@ -182,14 +186,33 @@ export function DashboardReportsPage() {
             getNumberField(item, "id") || Number(getStringField(item, "id"));
 
           return Number.isFinite(reportId) && reportId > 0 ? (
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 rounded-full px-4"
-              onClick={() => setEditingItem(item)}
-            >
-              {copy.common.edit}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 rounded-full px-4"
+                onClick={() => setEditingItem(item)}
+              >
+                {copy.common.edit}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 rounded-full px-4"
+                onClick={async () => {
+                  if (!window.confirm(copy.common.deleteConfirm)) {
+                    return;
+                  }
+
+                  await reportControllerRemove({
+                    path: { id: String(reportId) },
+                  });
+                  setRefreshKey((current) => current + 1);
+                }}
+              >
+                {copy.common.delete}
+              </Button>
+            </div>
           ) : (
             <span className="text-sm text-muted-foreground">-</span>
           );
