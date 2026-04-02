@@ -4,9 +4,11 @@ import {
   achievementControllerFindAll,
   achievementControllerRemove,
   achievementControllerUpdate,
+  decorationControllerFindAll,
 } from "@/api";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
-import { Button } from "@/components/ui/Button";
+import { DropdownMenu } from "@/components/shared";
+import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
@@ -33,7 +35,13 @@ export function DashboardAchievementsPage() {
       { name: "code", label: copy.columns.code },
       { name: "name", label: copy.columns.name },
       { name: "description", label: copy.columns.description, type: "textarea" },
-      { name: "icon", label: "Icon", type: "image" },
+      {
+        name: "icon",
+        label: "Icon",
+        type: "image",
+        imagePreviewClassName: "aspect-square h-auto w-full max-w-52",
+        imageObjectFit: "contain",
+      },
       {
         name: "type",
         label: copy.columns.type,
@@ -59,12 +67,48 @@ export function DashboardAchievementsPage() {
       },
       { name: "rewardPoints", label: "Reward Points", type: "number", step: 1 },
       { name: "rewardExp", label: "Reward Exp", type: "number", step: 1 },
-      { name: "rewardDecorationId", label: "Reward Decoration ID", type: "number", step: 1 },
+      {
+        name: "rewardDecorationId",
+        label: "Reward Decoration ID",
+        type: "select",
+        searchable: true,
+        searchPlaceholder: copy.filters.decorationPlaceholder,
+        options:
+          editingItem?.rewardDecorationId == null
+            ? [{ value: "", label: "-" }]
+            : [
+                {
+                  value: String(editingItem.rewardDecorationId),
+                  label: String(editingItem.rewardDecorationId),
+                },
+              ],
+        loadOptions: async (keyword) => {
+          const response = await decorationControllerFindAll({
+            query: {
+              page: 1,
+              limit: 100,
+              keyword: keyword || undefined,
+            },
+          });
+
+          const rows = response?.data?.data?.data || [];
+
+          return [
+            { value: "", label: "-" },
+            ...rows
+              .filter((item) => item.id != null)
+              .map((item) => ({
+                value: String(item.id),
+                label: item.name || String(item.id),
+              })),
+          ];
+        },
+      },
       { name: "hidden", label: "Hidden", type: "switch" },
       { name: "sort", label: copy.columns.sort, type: "number", step: 1 },
       { name: "enabled", label: copy.columns.enabled, type: "switch" },
     ],
-    [copy],
+    [copy, editingItem?.rewardDecorationId],
   );
 
   const columns = useMemo<DashboardTableColumn<DashboardAchievementItem>[]>(
@@ -82,7 +126,7 @@ export function DashboardAchievementsPage() {
                   src={item.icon}
                   alt={item.name || "achievement"}
                   fill
-                  className="object-cover"
+                  className="object-contain p-2"
                 />
               ) : null}
             </div>
@@ -138,33 +182,41 @@ export function DashboardAchievementsPage() {
         hideInSearch: true,
         render: (item) =>
           item.id ? (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-7 rounded-full px-4"
-                onClick={() => setEditingItem(item)}
-              >
-                {copy.common.edit}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-7 rounded-full px-4"
-                onClick={async () => {
-                  if (!window.confirm(copy.common.deleteConfirm)) {
-                    return;
-                  }
+            <DropdownMenu
+              title={copy.columns.action}
+              items={[
+                {
+                  label: copy.common.edit,
+                  icon: <PencilLine size={16} />,
+                  onClick: () => setEditingItem(item),
+                },
+                {
+                  label: copy.common.delete,
+                  icon: <Trash2 size={16} />,
+                  className: "text-red-500",
+                  onClick: async () => {
+                    if (!window.confirm(copy.common.deleteConfirm)) {
+                      return;
+                    }
 
-                  await achievementControllerRemove({
-                    path: { id: String(item.id) },
-                  });
-                  setRefreshKey((current) => current + 1);
-                }}
-              >
-                {copy.common.delete}
-              </Button>
-            </div>
+                    await achievementControllerRemove({
+                      path: { id: String(item.id) },
+                    });
+                    setRefreshKey((current) => current + 1);
+                  },
+                },
+              ]}
+              trigger={
+                <button
+                  type="button"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <MoreHorizontal size={16} />
+                </button>
+              }
+              className="inline-flex"
+              menuClassName="top-8"
+            />
           ) : (
             <span className="text-sm text-muted-foreground">-</span>
           ),
@@ -220,7 +272,10 @@ export function DashboardAchievementsPage() {
           rarity: editingItem?.rarity,
           rewardPoints: editingItem?.rewardPoints,
           rewardExp: editingItem?.rewardExp,
-          rewardDecorationId: editingItem?.rewardDecorationId,
+          rewardDecorationId:
+            editingItem?.rewardDecorationId == null
+              ? ""
+              : String(editingItem.rewardDecorationId),
           hidden: editingItem?.hidden,
           sort: editingItem?.sort,
           enabled: editingItem?.enabled,
@@ -261,7 +316,11 @@ export function DashboardAchievementsPage() {
                   | undefined,
                 rewardPoints: values.rewardPoints as number | undefined,
                 rewardExp: values.rewardExp as number | undefined,
-                rewardDecorationId: values.rewardDecorationId as number | undefined,
+                rewardDecorationId:
+                  typeof values.rewardDecorationId === "string" &&
+                  values.rewardDecorationId
+                    ? Number(values.rewardDecorationId)
+                    : undefined,
                 hidden: values.hidden as boolean | undefined,
                 sort: values.sort as number | undefined,
                 enabled: values.enabled as boolean | undefined,

@@ -5,7 +5,8 @@ import {
   roleControllerRemove,
   roleControllerUpdate,
 } from "@/api";
-import { Button } from "@/components/ui/Button";
+import { DropdownMenu, type MenuItem } from "@/components/shared";
+import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
@@ -111,22 +112,19 @@ export function DashboardRolesPage() {
         key: "action",
         header: copy.columns.action,
         hideInSearch: true,
-        render: (item) => (
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 rounded-full px-4"
-              onClick={() => setEditingItem(item)}
-            >
-              {copy.common.edit}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 rounded-full px-4"
-              disabled={item.isSystem}
-              onClick={async () => {
+        render: (item) => {
+          const menuItems: MenuItem[] = [
+            {
+              label: copy.common.edit,
+              icon: <PencilLine size={16} />,
+              onClick: () => setEditingItem(item),
+            },
+            {
+              label: copy.common.delete,
+              icon: <Trash2 size={16} />,
+              className: "text-red-500",
+              disabled: item.isSystem,
+              onClick: async () => {
                 if (item.isSystem || !window.confirm(copy.common.deleteConfirm)) {
                   return;
                 }
@@ -135,12 +133,27 @@ export function DashboardRolesPage() {
                   path: { id: String(item.id) },
                 });
                 setRefreshKey((current) => current + 1);
-              }}
-            >
-              {copy.common.delete}
-            </Button>
-          </div>
-        ),
+              },
+            },
+          ];
+
+          return (
+            <DropdownMenu
+              title={copy.columns.action}
+              items={menuItems}
+              trigger={
+                <button
+                  type="button"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <MoreHorizontal size={16} />
+                </button>
+              }
+              className="inline-flex"
+              menuClassName="top-8"
+            />
+          );
+        },
       },
     ],
     [copy, statusValueEnum],

@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { useLocale } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import { DashboardDataPanel } from "./DashboardDataPanel";
 import {
@@ -105,6 +105,11 @@ export function DashboardProTable<T>({
   >({});
   const [queryExpanded, setQueryExpanded] = useState(false);
   const [visibleSearchCount, setVisibleSearchCount] = useState(3);
+  const requestRef = useRef(request);
+
+  useEffect(() => {
+    requestRef.current = request;
+  }, [request]);
 
   useEffect(() => {
     setDraftQueryValues(initialQueryValues);
@@ -150,7 +155,7 @@ export function DashboardProTable<T>({
       setError(false);
 
       try {
-        const result = await request({
+        const result = await requestRef.current({
           current: page,
           pageSize,
           ...queryValues,
@@ -187,7 +192,7 @@ export function DashboardProTable<T>({
     return () => {
       mounted = false;
     };
-  }, [enabled, page, pageSize, queryValues, reloadKey, request]);
+  }, [enabled, page, pageSize, queryValues, reloadKey]);
 
   const resolvedAction =
     typeof action === "function"

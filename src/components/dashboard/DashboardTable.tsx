@@ -13,6 +13,7 @@ export type DashboardTableColumn<T> = {
   key: string;
   header: string;
   className?: string;
+  width?: number | string;
   render: (row: T) => React.ReactNode;
   dataIndex?: string;
   hideInSearch?: boolean;
@@ -73,6 +74,29 @@ export function DashboardTable<T>({
     column.ellipsis
       ? column.ellipsisClassName || DEFAULT_ELLIPSIS_WIDTH_CLASS
       : undefined;
+  const getColumnWidth = (column: DashboardTableColumn<T>) => {
+    if (column.width !== undefined) {
+      return typeof column.width === "number"
+        ? { width: `${column.width}px` }
+        : { width: column.width };
+    }
+
+    if (column.key === "action") {
+      return { width: "84px" };
+    }
+
+    if (column.key === "status") {
+      return { width: "120px" };
+    }
+
+    if (column.key === "updatedAt") {
+      return { width: "132px" };
+    }
+
+    return undefined;
+  };
+  const isActionColumn = (column: DashboardTableColumn<T>) =>
+    column.key === "action";
 
   const cellPadding =
     density === "small"
@@ -190,9 +214,11 @@ export function DashboardTable<T>({
                   return (
                     <th
                       key={column.key}
+                      style={getColumnWidth(column)}
                       className={cn(
                         "sticky top-0 z-10 border-b border-border bg-card text-left text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground",
                         cellPadding,
+                        isActionColumn(column) && "text-right",
                         column.className,
                         getEllipsisWidthClass(column),
                       )}
@@ -214,9 +240,11 @@ export function DashboardTable<T>({
                   return (
                     <td
                       key={column.key}
+                      style={getColumnWidth(column)}
                       className={cn(
                         "border-b border-border/70 last:border-b-0",
                         cellPadding,
+                        isActionColumn(column) && "[&>*]:ml-auto [&>*]:w-fit",
                         column.className,
                         getEllipsisWidthClass(column),
                       )}

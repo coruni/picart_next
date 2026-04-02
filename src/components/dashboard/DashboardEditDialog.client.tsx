@@ -14,8 +14,9 @@ import { Form, FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Switch } from "@/components/ui/Switch";
+import { useClickOutside } from "@/hooks";
 import { cn } from "@/lib";
-import { ImagePlus } from "lucide-react";
+import { ChevronDown, ImagePlus, Loader2, Search, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 import AvatarEditor from "react-avatar-editor";
@@ -35,8 +36,13 @@ export type DashboardEditField = {
   type?: DashboardEditFieldType;
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
+  searchable?: boolean;
+  searchPlaceholder?: string;
+  loadOptions?: (keyword: string) => Promise<Array<{ value: string; label: string }>>;
   min?: number;
   step?: number;
+  imagePreviewClassName?: string;
+  imageObjectFit?: "cover" | "contain";
 };
 
 type ImageEditorMode = "avatar" | "background" | "raw";
@@ -50,6 +56,187 @@ type DashboardEditDialogProps = {
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: Record<string, string | number | boolean | undefined>) => Promise<void> | void;
 };
+
+function DashboardSearchSelectField({
+  field,
+  value,
+  onChange,
+}: {
+  field: DashboardEditField;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [keyword, setKeyword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [asyncOptions, setAsyncOptions] = useState<Array<{ value: string; label: string }>>(
+    field.options || [],
+  );
+  const containerRef = useRef<HTMLDivElement>(null);
+  const requestIdRef = useRef(0);
+
+  useClickOutside(containerRef, () => setIsOpen(false));
+
+  useEffect(() => {
+    setAsyncOptions(field.options || []);
+  }, [field.options]);
+
+  useEffect(() => {
+    if (!field.searchable || !field.loadOptions || !isOpen) {
+      return;
+    }
+
+    const currentRequestId = ++requestIdRef.current;
+    setLoading(true);
+
+    const timer = setTimeout(() => {
+      void field
+        .loadOptions?.(keyword.trim())
+        .then((nextOptions) => {
+          if (requestIdRef.current !== currentRequestId) {
+            return;
+          }
+
+          setAsyncOptions(nextOptions);
+        })
+        .finally(() => {
+          if (requestIdRef.current === currentRequestId) {
+            setLoading(false);
+          }
+        });
+    }, 250);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [field, isOpen, keyword]);
+
+  const resolvedOptions = asyncOptions;
+  const selectedOption = resolvedOptions.find((option) => option.value === value);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <div
+        className={cn(
+          "relative min-h-10 h-full min-w-0 rounded-lg border border-border bg-card px-3 py-2",
+          "flex items-center justify-between gap-2 overflow-hidden",
+          "focus-within:border-primary focus-within:ring-primary",
+          "hover:border-primary transition-colors",
+        )}
+        onClick={() => setIsOpen(true)}
+      >
+        <span
+          className={cn(
+            "min-w-0 flex-1 truncate text-sm",
+            !selectedOption && "text-gray-400",
+          )}
+        >
+          {selectedOption?.label || field.placeholder || "Select..."}
+        </span>
+        {value ? (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onChange("");
+              setKeyword("");
+            }}
+            className="flex size-6 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <X size={14} />
+          </button>
+        ) : null}
+        <button
+          type="button"
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            setIsOpen((previous) => !previous);
+          }}
+          className="flex size-5 shrink-0 items-center justify-center"
+        >
+          <ChevronDown
+            className={cn(
+              "size-4 text-gray-500 transition-transform",
+              isOpen && "rotate-180",
+            )}
+          />
+        </button>
+      </div>
+
+      <div
+        className={cn(
+          "absolute z-30 mt-1 left-0 right-0 min-w-0 origin-top overflow-hidden rounded-lg border border-border bg-card shadow-lg transition-[opacity,transform] duration-160 ease-out",
+          isOpen ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0",
+        )}
+      >
+        <div className="border-b border-border/70 px-2 py-2">
+          <div
+            className={cn(
+              "relative min-h-10 h-full min-w-0 rounded-lg border border-border bg-card px-3 py-2",
+              "flex items-center justify-between gap-2 overflow-hidden",
+              "focus-within:border-primary focus-within:ring-primary",
+              "hover:border-primary transition-colors",
+            )}
+          >
+            <Search className="size-4 shrink-0 text-muted-foreground" />
+            <input
+              type="text"
+              value={keyword}
+              onChange={(event) => setKeyword(event.target.value)}
+              placeholder={field.searchPlaceholder || field.placeholder}
+              className="min-w-10 flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400"
+            />
+            <div className="flex items-center">
+              <div className="flex size-6 shrink-0 items-center justify-center">
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                ) : keyword ? (
+                  <button
+                    type="button"
+                    onClick={() => setKeyword("")}
+                    className="flex size-6 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  >
+                    <X size={14} />
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="max-h-64 overflow-auto px-2 py-2">
+          {loading ? (
+            <div className="flex items-center justify-center gap-2 px-3 py-6 text-sm text-muted-foreground">
+              <Loader2 className="size-4 animate-spin" />
+              <span>Loading...</span>
+            </div>
+          ) : resolvedOptions.length ? (
+            resolvedOptions.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  onChange(option.value);
+                  setIsOpen(false);
+                  setKeyword("");
+                }}
+                className={cn(
+                  "mb-1 flex w-full items-center rounded-xl px-3 py-2 text-left text-sm transition-colors hover:bg-primary/10",
+                  option.value === value && "bg-primary/10 text-primary",
+                )}
+              >
+                <span className="truncate">{option.label}</span>
+              </button>
+            ))
+          ) : (
+            <div className="px-3 py-6 text-center text-sm text-muted-foreground">-</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function DashboardEditDialog({
   open,
@@ -307,28 +494,48 @@ export function DashboardEditDialog({
                     </div>
                   ) : null}
                   {type === "select" ? (
-                    <Select
-                      value={typeof value === "string" ? value : ""}
-                      onChange={(nextValue) =>
-                        setValues((previous) => ({
-                          ...previous,
-                          [field.name]: nextValue,
-                        }))
-                      }
-                      options={field.options || []}
-                      placeholder={field.placeholder}
-                    />
+                    field.searchable && field.loadOptions ? (
+                      <DashboardSearchSelectField
+                        field={field}
+                        value={typeof value === "string" ? value : ""}
+                        onChange={(nextValue) =>
+                          setValues((previous) => ({
+                            ...previous,
+                            [field.name]: nextValue,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <Select
+                        value={typeof value === "string" ? value : ""}
+                        onChange={(nextValue) =>
+                          setValues((previous) => ({
+                            ...previous,
+                            [field.name]: nextValue,
+                          }))
+                        }
+                        options={field.options || []}
+                        placeholder={field.placeholder}
+                      />
+                    )
                   ) : null}
                   {type === "image" ? (
                     <div className="space-y-3">
                       {typeof value === "string" && value ? (
-                        <div className="relative h-36 overflow-hidden rounded-xl border border-border/70 bg-card">
+                        <div
+                          className={cn(
+                            "relative h-36 overflow-hidden rounded-xl border border-border/70 bg-card",
+                            field.imagePreviewClassName,
+                          )}
+                        >
                           <ImageWithFallback
                             src={value}
                             alt={field.label}
                             fill
                             className={cn(
-                              "object-cover",
+                              field.imageObjectFit === "contain"
+                                ? "object-contain"
+                                : "object-cover",
                               getImageEditorMode(field) === "avatar" &&
                                 "object-contain p-4",
                             )}

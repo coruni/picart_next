@@ -84,15 +84,13 @@ export function DropdownMenu({
 
       <div
         className={cn(
-          // transition 属性固定在静态类里，不随 isOpen 变化
-          "absolute top-8 z-10 min-w-50 w-max rounded-xl border border-border/70 bg-card/96 shadow-[0_18px_48px_rgba(15,23,42,0.16)] backdrop-blur-sm will-change-[opacity,transform] transform-gpu transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "absolute top-8 z-10 min-w-50 w-max rounded-xl border border-border/70 bg-card shadow-lg transition-[opacity,transform] duration-150 ease-out",
           position === "right"
             ? "right-0 origin-top-right"
             : "left-0 origin-top-left",
-          // 只切换视觉状态，不切换 transition 配置
           isOpen
-            ? "translate-y-0 scale-100 opacity-100"
-            : "pointer-events-none -translate-y-1 scale-95 opacity-0",
+            ? "translate-y-0 opacity-100"
+            : "pointer-events-none -translate-y-1 opacity-0",
           menuClassName,
         )}
         role="menu"

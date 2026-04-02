@@ -6,7 +6,8 @@ import {
   decorationControllerUpdate,
 } from "@/api";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
-import { Button } from "@/components/ui/Button";
+import { DropdownMenu, type MenuItem } from "@/components/shared";
+import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
@@ -36,8 +37,20 @@ export function DashboardDecorationsPage() {
         { value: "COMMENT_BUBBLE", label: "COMMENT_BUBBLE" },
       ] },
       { name: "description", label: copy.columns.description, type: "textarea" },
-      { name: "imageUrl", label: "Image", type: "image" },
-      { name: "previewUrl", label: "Preview", type: "image" },
+      {
+        name: "imageUrl",
+        label: "Image",
+        type: "image",
+        imagePreviewClassName: "aspect-square h-auto w-full max-w-52",
+        imageObjectFit: "contain",
+      },
+      {
+        name: "previewUrl",
+        label: "Preview",
+        type: "image",
+        imagePreviewClassName: "aspect-square h-auto w-full max-w-52",
+        imageObjectFit: "contain",
+      },
       { name: "rarity", label: copy.columns.rarity, type: "select", options: [
         { value: "COMMON", label: "COMMON" },
         { value: "RARE", label: "RARE" },
@@ -132,21 +145,18 @@ export function DashboardDecorationsPage() {
         key: "action",
         header: copy.columns.action,
         hideInSearch: true,
-        render: (item) => (
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 rounded-full px-4"
-              onClick={() => setEditingItem(item)}
-            >
-              {copy.common.edit}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-7 rounded-full px-4"
-              onClick={async () => {
+        render: (item) => {
+          const menuItems: MenuItem[] = [
+            {
+              label: copy.common.edit,
+              icon: <PencilLine size={16} />,
+              onClick: () => setEditingItem(item),
+            },
+            {
+              label: copy.common.delete,
+              icon: <Trash2 size={16} />,
+              className: "text-red-500",
+              onClick: async () => {
                 if (!window.confirm(copy.common.deleteConfirm)) {
                   return;
                 }
@@ -155,12 +165,27 @@ export function DashboardDecorationsPage() {
                   path: { id: String(item.id) },
                 });
                 setRefreshKey((current) => current + 1);
-              }}
-            >
-              {copy.common.delete}
-            </Button>
-          </div>
-        ),
+              },
+            },
+          ];
+
+          return (
+            <DropdownMenu
+              title={copy.columns.action}
+              items={menuItems}
+              trigger={
+                <button
+                  type="button"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <MoreHorizontal size={16} />
+                </button>
+              }
+              className="inline-flex"
+              menuClassName="top-8"
+            />
+          );
+        },
       },
     ],
     [copy],

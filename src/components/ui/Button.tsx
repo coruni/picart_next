@@ -75,7 +75,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         "border-2 border-primary text-primary enabled:hover:bg-primary enabled:hover:text-white focus:ring-primary",
       ghost: "text-foreground enabled:hover:bg-muted focus:ring-muted",
       danger:
-        "bg-error-500 text-white enabled:hover:bg-error-600 focus:ring-error-500 shadow-sm enabled:hover:shadow-md",
+        "bg-red-400 text-white enabled:hover:bg-red-500 focus:ring-red-400 shadow-sm ",
     };
 
     const sizes = {

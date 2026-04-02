@@ -1,9 +1,8 @@
 "use client";
 
-import { permissionControllerFindAll, permissionControllerRemove } from "@/api";
-import { Button } from "@/components/ui/Button";
+import { permissionControllerFindAll } from "@/api";
 import { useLocale } from "next-intl";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { getDashboardCopy } from "./copy";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
@@ -16,7 +15,6 @@ export function DashboardPermissionsPage() {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
-  const [refreshKey, setRefreshKey] = useState(0);
 
   const columns = useMemo<DashboardTableColumn<DashboardPermissionItem>[]>(
     () => [
@@ -42,30 +40,6 @@ export function DashboardPermissionsPage() {
           </div>
         ),
       },
-      {
-        key: "action",
-        header: copy.columns.action,
-        hideInSearch: true,
-        render: (item) => (
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-7 rounded-full px-4"
-            onClick={async () => {
-              if (!window.confirm(copy.common.deleteConfirm)) {
-                return;
-              }
-
-              await permissionControllerRemove({
-                path: { id: String(item.id) },
-              });
-              setRefreshKey((current) => current + 1);
-            }}
-          >
-            {copy.common.delete}
-          </Button>
-        ),
-      },
     ],
     [copy],
   );
@@ -77,7 +51,6 @@ export function DashboardPermissionsPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
-        key={refreshKey}
         title={copy.pages.permissions.title}
         columns={columns}
         request={async ({ current, pageSize, keyword }) => {
