@@ -1,8 +1,11 @@
 "use client";
 
 import {
+  messageControllerBlockPrivateUser,
   messageControllerGetPrivateConversation,
   messageControllerMarkPrivateMessagesRead,
+  reportControllerCreate,
+  userControllerFindOne,
   uploadControllerUploadFile,
 } from "@/api";
 import type {
@@ -14,6 +17,7 @@ import type {
   PrivateRealtimePayload,
   PrivateUserStatus,
 } from "@/components/message/MessageCenter.types";
+import { openLoginDialog } from "@/lib/modal-helpers";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { useIsMobile } from "@/hooks";
 import {
@@ -173,6 +177,7 @@ export function MessageCenterClient() {
   const searchParams = useSearchParams();
   const queryTab = searchParams.get("tab");
   const queryItemId = Number(searchParams.get("item"));
+  const queryUserId = Number(searchParams.get("userId"));
   const user = useUserStore((state) => state.user);
   const token = useUserStore((state) => state.token);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
@@ -218,8 +223,16 @@ export function MessageCenterClient() {
   const [composerImages, setComposerImages] = useState<ComposerImageItem[]>([]);
   const [isSending, setIsSending] = useState(false);
   const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [blockSubmitting, setBlockSubmitting] = useState(false);
   const [selectedUserStatus, setSelectedUserStatus] =
     useState<PrivateUserStatus | null>(null);
+  const [pendingPrivateTarget, setPendingPrivateTarget] = useState<{
+    id: number;
+    title: string;
+    avatarUrl?: string;
+    counterpartId: number;
+  } | null>(null);
   const composerImagesRef = useRef<ComposerImageItem[]>([]);
 
   const tabs: MessageCenterTabItem[] = [
@@ -230,12 +243,59 @@ export function MessageCenterClient() {
   ];
 
   const initialTab =
-    queryTab === "all" ||
+    queryUserId
+      ? "private"
+      : queryTab === "all" ||
     queryTab === "notification" ||
     queryTab === "private" ||
     queryTab === "system"
-      ? queryTab
-      : "all";
+        ? queryTab
+        : "all";
+
+  const existingQueryConversation = useMemo(() => {
+    if (!queryUserId) {
+      return null;
+    }
+
+    return (
+      messages.find(
+        (item) =>
+          item.type === "private" &&
+          Number(item.counterpartId || 0) === Number(queryUserId),
+      ) || null
+    );
+  }, [messages, queryUserId]);
+
+  const pendingPrivateItem = useMemo(() => {
+    if (!pendingPrivateTarget) {
+      return null;
+    }
+
+    return {
+      id: pendingPrivateTarget.id,
+      type: "private" as const,
+      title: pendingPrivateTarget.title,
+      content: "",
+      createdAt: "",
+      isRead: true,
+      href: `/message?tab=private&userId=${pendingPrivateTarget.counterpartId}`,
+      avatarUrl: pendingPrivateTarget.avatarUrl,
+      counterpartId: pendingPrivateTarget.counterpartId,
+      unreadCount: 0,
+    };
+  }, [pendingPrivateTarget]);
+
+  const displayedMessages = useMemo(() => {
+    if (
+      !pendingPrivateItem ||
+      existingQueryConversation ||
+      messages.some((item) => item.id === pendingPrivateItem.id)
+    ) {
+      return messages;
+    }
+
+    return [pendingPrivateItem, ...messages];
+  }, [existingQueryConversation, messages, pendingPrivateItem]);
 
   useEffect(() => {
     if (!isAuthenticated || !token) {
@@ -261,19 +321,19 @@ export function MessageCenterClient() {
   const filteredMessages = useMemo(() => {
     const keyword = deferredSearch.trim().toLowerCase();
     if (!keyword) {
-      return messages;
+      return displayedMessages;
     }
 
-    return messages.filter((item) =>
+    return displayedMessages.filter((item) =>
       [item.title, item.content].some((value) =>
         value?.toLowerCase().includes(keyword),
       ),
     );
-  }, [deferredSearch, messages]);
+  }, [deferredSearch, displayedMessages]);
 
   const selectedItem = useMemo(() => {
-    return messages.find((item) => item.id === selectedItemId) || null;
-  }, [messages, selectedItemId]);
+    return displayedMessages.find((item) => item.id === selectedItemId) || null;
+  }, [displayedMessages, selectedItemId]);
 
   const selectedPrivateCounterpartId =
     selectedItem?.type === "private"
@@ -286,10 +346,27 @@ export function MessageCenterClient() {
       return;
     }
 
+    if (existingQueryConversation) {
+      setSelectedItemId(existingQueryConversation.id);
+      return;
+    }
+
+    if (pendingPrivateItem) {
+      setSelectedItemId(pendingPrivateItem.id);
+      return;
+    }
+
     if (!isMobile && !selectedItemId && filteredMessages.length > 0) {
       setSelectedItemId(filteredMessages[0].id);
     }
-  }, [filteredMessages, isMobile, queryItemId, selectedItemId]);
+  }, [
+    existingQueryConversation,
+    filteredMessages,
+    isMobile,
+    pendingPrivateItem,
+    queryItemId,
+    selectedItemId,
+  ]);
 
   const isMobileDetailOpen = isMobile && Boolean(selectedItem);
 
@@ -298,9 +375,53 @@ export function MessageCenterClient() {
 
     const nextParams = new URLSearchParams(searchParams.toString());
     nextParams.delete("item");
+    nextParams.delete("userId");
 
     const nextQuery = nextParams.toString();
     router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname);
+  };
+
+  const requireAuth = () => {
+    if (isAuthenticated) {
+      return true;
+    }
+
+    openLoginDialog();
+    return false;
+  };
+
+  const removeSelectedPrivateConversation = () => {
+    if (!selectedItem || selectedItem.type !== "private") {
+      return;
+    }
+
+    const selectedConversationId = selectedItem.id;
+    const selectedCounterpartId = Number(selectedItem.counterpartId || 0);
+
+    useMessageNotificationStore.setState((state) => ({
+      centerMessages: state.centerMessages.filter((message) => {
+        if (message.type !== "private") {
+          return true;
+        }
+
+        return (
+          message.id !== selectedConversationId &&
+          Number(message.counterpartId || 0) !== selectedCounterpartId
+        );
+      }),
+      dropdownMessages: state.dropdownMessages.filter((message) => {
+        if (message.type !== "private") {
+          return true;
+        }
+
+        return (
+          message.id !== selectedConversationId &&
+          Number(message.counterpartId || 0) !== selectedCounterpartId
+        );
+      }),
+    }));
+
+    handleBackToList();
   };
 
   const handleTabChange = (tab: MessageCenterTabItem["value"]) => {
@@ -311,9 +432,100 @@ export function MessageCenterClient() {
     const nextParams = new URLSearchParams(searchParams.toString());
     nextParams.set("tab", tab);
     nextParams.delete("item");
+    nextParams.delete("userId");
 
     const nextQuery = nextParams.toString();
     router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname);
+  };
+
+  useEffect(() => {
+    if (!queryUserId || !isAuthenticated) {
+      setPendingPrivateTarget(null);
+      return;
+    }
+
+    if (existingQueryConversation) {
+      setPendingPrivateTarget(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadTargetUser = async () => {
+      try {
+        const response = await userControllerFindOne({
+          path: { id: String(queryUserId) },
+        });
+        const targetUser = response?.data?.data;
+
+        if (cancelled || !targetUser?.id) {
+          return;
+        }
+
+        setPendingPrivateTarget({
+          id: -Number(targetUser.id),
+          title: targetUser.nickname || targetUser.username || tMsg("untitled"),
+          avatarUrl: targetUser.avatar || undefined,
+          counterpartId: Number(targetUser.id),
+        });
+      } catch (error) {
+        console.error("Failed to load private message target:", error);
+        if (!cancelled) {
+          setPendingPrivateTarget(null);
+        }
+      }
+    };
+
+    void loadTargetUser();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [existingQueryConversation, isAuthenticated, queryUserId, tMsg]);
+
+  const handleReportSelectedUser = async (payload: {
+    category: "SPAM" | "ABUSE" | "INAPPROPRIATE" | "COPYRIGHT" | "OTHER";
+    reason: string;
+  }) => {
+    if (!selectedPrivateCounterpartId || !requireAuth()) {
+      return;
+    }
+
+    setReportSubmitting(true);
+    try {
+      await reportControllerCreate({
+        body: {
+          type: "USER",
+          category: payload.category,
+          reason: payload.reason,
+          reportedUserId: Number(selectedPrivateCounterpartId),
+        },
+      });
+    } catch (error) {
+      console.error("Failed to report private user:", error);
+      throw error;
+    } finally {
+      setReportSubmitting(false);
+    }
+  };
+
+  const handleBlockSelectedUser = async () => {
+    if (!selectedPrivateCounterpartId || !requireAuth() || blockSubmitting) {
+      return;
+    }
+
+    setBlockSubmitting(true);
+    try {
+      await messageControllerBlockPrivateUser({
+        path: { userId: String(selectedPrivateCounterpartId) },
+      });
+      removeSelectedPrivateConversation();
+      void fetchUnreadCount();
+    } catch (error) {
+      console.error("Failed to block private user:", error);
+    } finally {
+      setBlockSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -829,6 +1041,7 @@ export function MessageCenterClient() {
             tTime={tTime}
           />
           <MessageDetailPane
+            blockSubmitting={blockSubmitting}
             composerValue={composerValue}
             composerImages={composerImages}
             copy={copy}
@@ -843,10 +1056,13 @@ export function MessageCenterClient() {
             isUploadingImages={isUploadingImages}
             locale={locale}
             markAllAsRead={markAllAsRead}
+            onBlockSelectedUser={handleBlockSelectedUser}
             onPickComposerImages={handlePickComposerImages}
             onLoadOlderHistory={handleLoadOlderHistory}
             onRemoveComposerImage={handleRemoveComposerImage}
+            onReportSelectedUser={handleReportSelectedUser}
             onBackToList={handleBackToList}
+            reportSubmitting={reportSubmitting}
             selectedItem={selectedItem}
             selectedUserStatus={selectedUserStatus}
             selectedTab={selectedTab}

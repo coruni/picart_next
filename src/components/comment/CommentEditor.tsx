@@ -545,7 +545,7 @@ export function CommentEditor({
             "[&_.ql-container]:border-0 [&_.ql-container]:rounded-2xl",
             "[&_.ql-container.ql-snow]:border-none!",
             "[&_.ql-editor]:min-h-24 [&_.ql-editor]:px-5 [&_.ql-editor]:py-4 [&_.ql-editor]:text-sm [&_.ql-editor]:leading-6",
-            "[&_.ql-editor.ql-blank::before]:left-5 [&_.ql-editor.ql-blank::before]:right-5 [&_.ql-editor.ql-blank::before]:font-sans [&_.ql-editor.ql-blank::before]:text-sm [&_.ql-editor.ql-blank::before]:font-normal [&_.ql-editor.ql-blank::before]:leading-6 [&_.ql-editor.ql-blank::before]:text-muted-foreground [&_.ql-editor.ql-blank::before]:not-italic",
+            "[&_.ql-editor.ql-blank::before]:left-5 [&_.ql-editor.ql-blank::before]:right-5 [&_.ql-editor.ql-blank::before]:font-sans [&_.ql-editor.ql-blank::before]:text-sm [&_.ql-editor.ql-blank::before]:font-normal [&_.ql-editor.ql-blank::before]:leading-6 [&_.ql-editor.ql-blank::before]:text-muted-foreground [&_.ql-editor.ql-blank::before]:not-italic!",
           )}
         >
           <div ref={containerRef} />

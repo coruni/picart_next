@@ -62,16 +62,8 @@ function stripHeadingHtml(value: string) {
     .trim();
 }
 
-function createHeadingSlug(value: string, fallbackIndex: number) {
-  const normalized = value
-    .toLowerCase()
-    .trim()
-    .replace(/[^\p{Letter}\p{Number}\s-]+/gu, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-
-  return normalized || `section-${fallbackIndex + 1}`;
+function createHeadingSlug(_value: string, fallbackIndex: number) {
+  return `section-${fallbackIndex + 1}`;
 }
 
 function buildArticleToc(html: string): {
@@ -79,7 +71,6 @@ function buildArticleToc(html: string): {
   items: ArticleTocItem[];
 } {
   const items: ArticleTocItem[] = [];
-  const slugCount = new Map<string, number>();
 
   const nextHtml = html.replace(
     /<h([1-4])([^>]*)>([\s\S]*?)<\/h\1>/gi,
@@ -93,11 +84,7 @@ function buildArticleToc(html: string): {
       let headingId = existingIdMatch?.[2];
 
       if (!headingId) {
-        const baseSlug = createHeadingSlug(title, items.length);
-        const duplicateCount = slugCount.get(baseSlug) ?? 0;
-        slugCount.set(baseSlug, duplicateCount + 1);
-        headingId =
-          duplicateCount === 0 ? baseSlug : `${baseSlug}-${duplicateCount + 1}`;
+        headingId = createHeadingSlug(title, items.length);
       }
 
       items.push({

@@ -10,7 +10,6 @@ import {
 } from "@/components/shared";
 import { useIsMobile } from "@/hooks";
 import { useAuthNavigation } from "@/hooks/useAuthNavigation";
-import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { cn, formatCompactNumber } from "@/lib";
 import { isAccountSectionHidden } from "@/lib/account-privacy";
@@ -21,8 +20,8 @@ import {
   AudioLines,
   Ban,
   ChevronDown,
-  Copy,
   Dessert,
+  MessageCircleMore,
   MoreHorizontal,
   ShieldAlert,
 } from "lucide-react";
@@ -60,9 +59,9 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
   );
   const [showBackgroundEditor, setShowBackgroundEditor] = useState(false);
   const [showEditMenu, setShowEditMenu] = useState(false);
-  const [copied, copyToClipboard] = useCopyToClipboard();
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [isFollowed, setIsFollowed] = useState(Boolean(user.isFollowed));
   const reportReasons = createDefaultReportReasons(tMenu);
   const compactNumberLabels = {
     thousand: t("numberUnits.thousand"),
@@ -87,14 +86,12 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
     });
   };
 
-  const handleCopyProfileLink = async () => {
-    if (typeof window === "undefined") {
+  const handleStartPrivateMessage = () => {
+    if (!requireAuth() || !isFollowed) {
       return;
     }
 
-    await copyToClipboard(
-      `${window.location.origin}/${locale}/account/${user.id}`,
-    );
+    router.push(`/message?tab=private&userId=${user.id}`);
   };
 
   const handleOpenReportDialog = () => {
@@ -137,9 +134,10 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
 
   const accountMenuItems: MenuItem[] = [
     {
-      label: copied ? t("linkCopied") : t("copyLink"),
-      icon: <Copy size={18} />,
-      onClick: () => void handleCopyProfileLink(),
+      label: isFollowed ? t("startMessage") : t("followToMessage"),
+      icon: <MessageCircleMore size={18} />,
+      onClick: handleStartPrivateMessage,
+      disabled: !isFollowed,
     },
     {
       label: tMenu("reportUser"),
@@ -307,6 +305,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                 <FollowButtonWithStatus
                   author={user}
                   className="h-8 min-w-18 bg-[#e0e6ff] px-4 text-xs md:h-9 md:px-6 md:text-sm"
+                  onFollowChange={setIsFollowed}
                 />
               </>
             ) : (

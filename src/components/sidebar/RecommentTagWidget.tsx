@@ -1,15 +1,15 @@
 "use server";
 
-import { tagControllerFindAll } from "@/api";
 import { Link } from "@/i18n/routing";
 import { formatCompactNumber } from "@/lib";
+import { serverApi } from "@/lib/server-api";
 import { TagList } from "@/types";
 import { getLocale, getTranslations } from "next-intl/server";
 import { unstable_cache } from "next/cache";
 
 // 缓存标签数据 1 小时
 async function fetchRecommendTags() {
-  const response = await tagControllerFindAll({
+  const response = await serverApi.tagControllerFindAll({
     query: {
       page: 1,
       limit: 4,
@@ -19,7 +19,7 @@ async function fetchRecommendTags() {
 }
 
 const getCachedRecommendTags = unstable_cache(
-  fetchRecommendTags,
+   fetchRecommendTags,
   ["recommend-tags"],
   {
     revalidate: 3600, // 1 hour

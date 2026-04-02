@@ -222,9 +222,9 @@ export function ArticleCommentList({
           position="left"
           title=""
           trigger={
-            <button className="inline-flex shrink-0 w-fit items-center gap-1.5 text-sm font-medium text-foreground transition hover:text-primary">
+            <button className="inline-flex shrink-0 w-fit items-center gap-1.5 text-sm  text-muted-foreground font-semibold transition hover:text-primary">
               <span className=" w-max">{currentSortLabel}</span>
-              <ChevronDown className="size-4 text-[#aeb8c7]" />
+              <ChevronDown className="size-4" />
             </button>
           }
           items={sortItems}

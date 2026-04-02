@@ -27,6 +27,16 @@ type ArticleTocProps = {
 
 const MOBILE_TOC_ANIMATION_MS = 300;
 const TOC_SCROLL_OFFSET = 132;
+const TOC_ACTIVE_LOCK_MS = 520;
+const TOC_INITIAL_HASH_RETRY_MS = 48;
+
+function clearLocationHash() {
+  window.history.replaceState(
+    null,
+    "",
+    `${window.location.pathname}${window.location.search}`,
+  );
+}
 
 function scrollToHeading(id: string, behavior: ScrollBehavior = "smooth") {
   const element = document.getElementById(id);
@@ -75,7 +85,10 @@ function TocNav({
 
     items.forEach((item, index) => {
       const nextItem = items[index + 1];
-      nextChildMap.set(item.id, Boolean(nextItem && nextItem.level > item.level));
+      nextChildMap.set(
+        item.id,
+        Boolean(nextItem && nextItem.level > item.level),
+      );
     });
 
     return nextChildMap;
@@ -172,7 +185,9 @@ function TocNav({
             )}
           >
             <ListTree size={16} className="text-secondary" />
-            <div className=" text-sm font-semibold text-foreground">{title}</div>
+            <div className=" text-sm font-semibold text-foreground">
+              {title}
+            </div>
           </button>
           {enableCollapse && onToggleCollapsed ? (
             <button
@@ -194,7 +209,7 @@ function TocNav({
 
       <nav
         className={cn(
-          "space-y-1.5 overflow-y-auto px-3 transition-[max-height,opacity,padding] duration-200",
+          "space-y-1 overflow-y-auto px-3 transition-[max-height,opacity,padding] duration-200",
           enableCollapse && collapsed
             ? "max-h-0 pb-0 opacity-0"
             : "max-h-[70vh] pb-3 opacity-100",
@@ -204,54 +219,54 @@ function TocNav({
           const hidden = hiddenItemIds.has(item.id);
 
           return (
-          <div
-            key={item.id}
-            className={cn(
-              "flex w-full items-start gap-2 overflow-hidden rounded-md px-3 text-sm transition-[max-height,opacity,padding,margin] duration-200 ease-out",
-              item.level === 1 && "font-medium",
-              item.level > 1 && "text-muted-foreground",
-              item.level === 2 && "pl-6",
-              item.level === 3 && "pl-9",
-              item.level >= 4 && "pl-12",
-              activeId === item.id && "bg-primary/15 text-primary",
-              hidden
-                ? "pointer-events-none max-h-0 py-0 opacity-0"
-                : "max-h-16 py-2 opacity-100",
-            )}
-          >
-            {childMap.get(item.id) ? (
+            <div
+              key={item.id}
+              className={cn(
+                "flex w-full items-start gap-2 overflow-hidden rounded-md px-3 text-sm transition-[max-height,opacity,padding,margin] duration-200 ease-out",
+                item.level === 1 && "font-medium",
+                item.level > 1 && "text-muted-foreground",
+                item.level === 2 && "pl-6",
+                item.level === 3 && "pl-9",
+                item.level >= 4 && "pl-12",
+                activeId === item.id && "bg-primary/15 text-primary",
+                hidden
+                  ? "pointer-events-none max-h-0 py-0 opacity-0"
+                  : "max-h-16 py-2 opacity-100",
+              )}
+            >
+              {childMap.get(item.id) ? (
+                <button
+                  type="button"
+                  onClick={() => toggleItemCollapsed(item.id)}
+                  className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-foreground"
+                  aria-label={
+                    collapsedItemIds.includes(item.id)
+                      ? "Expand section"
+                      : "Collapse section"
+                  }
+                >
+                  <ChevronDown
+                    className={cn(
+                      "size-3 transition-transform duration-200",
+                      collapsedItemIds.includes(item.id)
+                        ? "-rotate-90"
+                        : "rotate-0",
+                    )}
+                  />
+                </button>
+              ) : (
+                <span className="size-4 shrink-0" />
+              )}
               <button
                 type="button"
-                onClick={() => toggleItemCollapsed(item.id)}
-                className="mt-0.5 inline-flex size-4 shrink-0 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:text-foreground"
-                aria-label={
-                  collapsedItemIds.includes(item.id)
-                    ? "Expand section"
-                    : "Collapse section"
-                }
+                onPointerDown={(event) => handlePointerDown(event, item.id)}
+                onKeyDown={(event) => handleKeyDown(event, item.id)}
+                onClick={() => handleClick(item.id)}
+                className="flex min-w-0 flex-1 touch-manipulation items-start text-left hover:text-primary"
               >
-                <ChevronDown
-                  className={cn(
-                    "size-3 transition-transform duration-200",
-                    collapsedItemIds.includes(item.id)
-                      ? "-rotate-90"
-                      : "rotate-0",
-                  )}
-                />
+                <span className="line-clamp-2">{item.title}</span>
               </button>
-            ) : (
-              <span className="size-4 shrink-0" />
-            )}
-            <button
-              type="button"
-              onPointerDown={(event) => handlePointerDown(event, item.id)}
-              onKeyDown={(event) => handleKeyDown(event, item.id)}
-              onClick={() => handleClick(item.id)}
-              className="flex min-w-0 flex-1 touch-manipulation items-start text-left hover:text-primary"
-            >
-              <span className="line-clamp-2">{item.title}</span>
-            </button>
-          </div>
+            </div>
           );
         })}
       </nav>
@@ -267,7 +282,32 @@ export function ArticleToc({ items, title, openLabel }: ArticleTocProps) {
   const [activeId, setActiveId] = useState<string | null>(items[0]?.id ?? null);
   const [resolvedItems, setResolvedItems] = useState(items);
   const resolveItemsFrameRef = useRef<number | null>(null);
+  const activeLockTimerRef = useRef<number | null>(null);
+  const activeLockIdRef = useRef<string | null>(null);
   const ids = useMemo(() => items.map((item) => item.id), [items]);
+
+  const releaseActiveLock = useCallback(() => {
+    if (activeLockTimerRef.current !== null) {
+      window.clearTimeout(activeLockTimerRef.current);
+      activeLockTimerRef.current = null;
+    }
+
+    activeLockIdRef.current = null;
+  }, []);
+
+  const lockActiveId = useCallback((id: string) => {
+    setActiveId(id);
+    activeLockIdRef.current = id;
+
+    if (activeLockTimerRef.current !== null) {
+      window.clearTimeout(activeLockTimerRef.current);
+    }
+
+    activeLockTimerRef.current = window.setTimeout(() => {
+      activeLockIdRef.current = null;
+      activeLockTimerRef.current = null;
+    }, TOC_ACTIVE_LOCK_MS);
+  }, []);
 
   const resolveHeadingItems = useCallback(() => {
     setResolvedItems((previous) => {
@@ -296,6 +336,12 @@ export function ArticleToc({ items, title, openLabel }: ArticleTocProps) {
   useEffect(() => {
     setResolvedItems(items);
   }, [items]);
+
+  useEffect(() => {
+    return () => {
+      releaseActiveLock();
+    };
+  }, [releaseActiveLock]);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -418,10 +464,15 @@ export function ArticleToc({ items, title, openLabel }: ArticleTocProps) {
       window.location.hash.replace(/^#/, ""),
     );
     if (initialHash) {
-      setActiveId(initialHash);
-      const frame = window.requestAnimationFrame(() => {
-        scrollToHeading(initialHash, "auto");
-      });
+      lockActiveId(initialHash);
+      const didScrollImmediately = scrollToHeading(initialHash, "auto");
+      clearLocationHash();
+      const retryTimer = !didScrollImmediately
+        ? window.setTimeout(() => {
+            scrollToHeading(initialHash, "auto");
+            clearLocationHash();
+          }, TOC_INITIAL_HASH_RETRY_MS)
+        : null;
 
       return () => {
         mutationObserver.disconnect();
@@ -429,10 +480,13 @@ export function ArticleToc({ items, title, openLabel }: ArticleTocProps) {
           window.cancelAnimationFrame(resolveItemsFrameRef.current);
           resolveItemsFrameRef.current = null;
         }
-        window.cancelAnimationFrame(frame);
+        if (retryTimer !== null) {
+          window.clearTimeout(retryTimer);
+        }
       };
     }
 
+    releaseActiveLock();
     setActiveId(items[0]?.id ?? null);
     return () => {
       mutationObserver.disconnect();
@@ -441,7 +495,7 @@ export function ArticleToc({ items, title, openLabel }: ArticleTocProps) {
         resolveItemsFrameRef.current = null;
       }
     };
-  }, [ids, items, resolveHeadingItems]);
+  }, [ids, items, lockActiveId, releaseActiveLock, resolveHeadingItems]);
 
   useEffect(() => {
     if (resolvedItems.length === 0) {
@@ -460,6 +514,10 @@ export function ArticleToc({ items, title, openLabel }: ArticleTocProps) {
 
     const observer = new IntersectionObserver(
       (entries) => {
+        if (activeLockIdRef.current) {
+          return;
+        }
+
         const visible = entries
           .filter((entry) => entry.isIntersecting)
           .sort(
@@ -482,16 +540,18 @@ export function ArticleToc({ items, title, openLabel }: ArticleTocProps) {
     return () => observer.disconnect();
   }, [ids, resolvedItems.length]);
 
-  const handleItemClick = useCallback((id: string) => {
-    const exists = document.getElementById(id);
-    if (!exists) {
-      return;
-    }
+  const handleItemClick = useCallback(
+    (id: string) => {
+      const exists = document.getElementById(id);
+      if (!exists) {
+        return;
+      }
 
-    scrollToHeading(id);
-    window.history.replaceState(null, "", `#${encodeURIComponent(id)}`);
-    setActiveId(id);
-  }, []);
+      lockActiveId(id);
+      scrollToHeading(id);
+    },
+    [lockActiveId],
+  );
 
   if (items.length === 0) {
     return null;
@@ -539,8 +599,9 @@ export function ArticleToc({ items, title, openLabel }: ArticleTocProps) {
                 )}
               >
                 <div className="flex h-full flex-col bg-card">
-                  <div className="flex h-14 items-center justify-between border-b border-border px-4 mb-2">
-                    <div className="text-sm font-semibold text-foreground">
+                  <div className="flex h-14 items-center justify-between border-b border-border px-4 mb-1">
+                    <div className="text-sm  text-muted-foreground font-semibold flex items-center">
+                      <ListTree size={16} />
                       {title}
                     </div>
                     <button

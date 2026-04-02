@@ -1,19 +1,27 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
+import {
+  createDefaultReportReasons,
+  DropdownMenu,
+  ReportDialog,
+  type MenuItem,
+} from "@/components/shared";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { cn, formatRelativeTime, formatShortDate } from "@/lib";
 import {
   ArrowLeft,
+  Ban,
   ChevronDown,
   MessageCircleMore,
-  MoreVertical,
   Paperclip,
   SendHorizontal,
+  ShieldAlert,
   Undo2,
   X,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type {
   MessageDetailPaneProps,
@@ -60,6 +68,7 @@ function resolveMessageImageUrls(payload?: PrivateMessagePayload): string[] {
 }
 
 export function MessageDetailPane({
+  blockSubmitting,
   composerValue,
   composerImages,
   copy,
@@ -74,10 +83,13 @@ export function MessageDetailPane({
   isUploadingImages,
   locale,
   markAllAsRead,
+  onBlockSelectedUser,
   onLoadOlderHistory,
   onPickComposerImages,
   onRemoveComposerImage,
+  onReportSelectedUser,
   onBackToList,
+  reportSubmitting,
   selectedItem,
   selectedUserStatus,
   selectedTab,
@@ -88,6 +100,7 @@ export function MessageDetailPane({
   unreadCount,
   userId,
 }: MessageDetailPaneProps) {
+  const tMenu = useTranslations("articleMenu");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const scrollViewportRef = useRef<HTMLDivElement | null>(null);
@@ -102,6 +115,7 @@ export function MessageDetailPane({
   const needsInitialScrollToBottomRef = useRef(false);
   const [showJumpToBottom, setShowJumpToBottom] = useState(false);
   const [pendingMessageCount, setPendingMessageCount] = useState(0);
+  const [showReportDialog, setShowReportDialog] = useState(false);
   const [messageMenu, setMessageMenu] = useState<{
     messageId: number;
     x: number;
@@ -130,6 +144,25 @@ export function MessageDetailPane({
               ),
             })
           : copy.lastSeenRecently;
+  const reportReasons = createDefaultReportReasons(tMenu);
+  const userMenuItems: MenuItem[] =
+    selectedItem?.type === "private"
+      ? [
+          {
+            label: tMenu("reportUser"),
+            icon: <ShieldAlert size={18} />,
+            onClick: () => setShowReportDialog(true),
+            className: "text-red-400",
+            disabled: reportSubmitting,
+          },
+          {
+            label: tMenu("blockUser"),
+            icon: <Ban size={18} />,
+            onClick: () => void onBlockSelectedUser(),
+            disabled: blockSubmitting,
+          },
+        ]
+      : [];
 
   function stickToBottom(behavior: ScrollBehavior = "auto") {
     const viewport = scrollViewportRef.current;
@@ -345,6 +378,7 @@ export function MessageDetailPane({
     setShowJumpToBottom(false);
     needsInitialScrollToBottomRef.current = true;
     setMessageMenu(null);
+    setShowReportDialog(false);
   }, [selectedItem?.id]);
 
   useEffect(() => {
@@ -429,430 +463,483 @@ export function MessageDetailPane({
   }
 
   return (
-    <section
-      className={cn(
-        "min-h-0 min-w-0 flex-1 flex-col bg-background md:flex",
-        isMobileDetailOpen ? "flex" : "hidden",
-      )}
-    >
-      <div className="flex min-w-0 shrink-0 items-center justify-between border-b border-border md:px-4 py-3 md:px-5">
-        <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="rounded-full p-2 md:hidden"
-            onClick={onBackToList}
-            aria-label={copy.chatList}
-          >
-            <ArrowLeft className="size-4" />
-          </Button>
-          <Avatar
-            url={selectedItem.avatarUrl}
-            className="size-9"
-            alt={selectedItem.title}
-          />
-          <div className="min-w-0">
-            <h2 className="truncate text-sm font-semibold text-foreground">
-              {selectedItem.title || tMsg("untitled")}
-            </h2>
-            <p className="text-xs text-muted-foreground">{statusLabel}</p>
-          </div>
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <Button variant="ghost" size="sm" className="rounded-full px-2.5">
-            <MoreVertical className="size-4" />
-          </Button>
-          <Button
-            className="hidden rounded-full md:inline-flex"
-            onClick={() => void markAllAsRead(selectedTab)}
-          >
-            {copy.markAll}
-          </Button>
-        </div>
-      </div>
-
-      {selectedItem.type === "private" ? (
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-          <div className="relative min-h-0 min-w-0 flex-1">
-            <div
-              ref={scrollViewportRef}
-              className="h-full min-h-0 min-w-0 overflow-x-hidden overflow-y-auto py-4 md:border-r md:border-border md:px-6 md:py-5"
-              style={{ scrollbarWidth: "none" }}
+    <>
+      <section
+        className={cn(
+          "min-h-0 min-w-0 flex-1 flex-col bg-background md:flex",
+          isMobileDetailOpen ? "flex" : "hidden",
+        )}
+      >
+        <div className="flex min-w-0 shrink-0 items-center justify-between border-b border-border md:pl-4 pt-4 pb-1 md:pr-1">
+          <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="rounded-full p-2 md:hidden"
+              onClick={onBackToList}
+              aria-label={copy.chatList}
             >
-              {detailLoading ? (
-                <div className="text-sm text-muted-foreground">
-                  {tCommon("loading")}
-                </div>
-              ) : groupedPrivateHistory.length > 0 ? (
-                <div className="flex flex-col gap-3">
-                  <div
-                    ref={topLoadTriggerRef}
-                    className="h-px w-full shrink-0"
-                  />
-                  {isLoadingOlderHistory ? (
-                    <div className="flex justify-center py-1 text-xs text-muted-foreground">
-                      {tCommon("loading")}
-                    </div>
-                  ) : null}
-
-                  {groupedPrivateHistory.map(
-                    ({ item, showDayDivider, dayLabel }) => {
-                      const isOwn =
-                        Number(item.senderId || 0) === Number(userId || 0);
-                      const canRecall = isOwn && !item.isRecalled;
-                      const imageUrls = resolveMessageImageUrls(item.payload);
-                      const hasText = Boolean(item.content?.trim());
-                      const isRecalled = Boolean(item.isRecalled);
-
-                      return (
-                        <div key={item.id}>
-                          {showDayDivider && dayLabel ? (
-                            <div className="mb-3 flex justify-center">
-                              <span className="rounded-full bg-muted px-3 py-1 text-xs text-foreground/70 backdrop-blur-sm">
-                                {dayLabel}
-                              </span>
-                            </div>
-                          ) : null}
-
-                          <div
-                            className={cn(
-                              "flex min-w-0",
-                              isOwn ? "justify-end" : "justify-start",
-                            )}
-                          >
-                            <div
-                              role={canRecall ? "button" : undefined}
-                              tabIndex={canRecall ? 0 : undefined}
-                              onContextMenu={(event) => {
-                                if (!canRecall) {
-                                  return;
-                                }
-
-                                event.preventDefault();
-                                openMessageMenu(
-                                  item.id,
-                                  event.clientX,
-                                  event.clientY,
-                                );
-                              }}
-                              onTouchStart={(event) => {
-                                if (!canRecall) {
-                                  return;
-                                }
-
-                                const touch = event.touches[0];
-                                if (!touch) {
-                                  return;
-                                }
-
-                                clearLongPressTimer();
-                                longPressTimerRef.current = window.setTimeout(
-                                  () => {
-                                    openMessageMenu(
-                                      item.id,
-                                      touch.clientX,
-                                      touch.clientY,
-                                    );
-                                  },
-                                  420,
-                                );
-                              }}
-                              onTouchEnd={clearLongPressTimer}
-                              onTouchMove={clearLongPressTimer}
-                              onTouchCancel={clearLongPressTimer}
-                              onKeyDown={(event) => {
-                                if (!canRecall) {
-                                  return;
-                                }
-
-                                if (
-                                  event.key === "Enter" ||
-                                  event.key === " "
-                                ) {
-                                  event.preventDefault();
-                                  const rect =
-                                    event.currentTarget.getBoundingClientRect();
-                                  openMessageMenu(
-                                    item.id,
-                                    rect.right - 16,
-                                    rect.top + 12,
-                                  );
-                                }
-                              }}
-                              className={cn(
-                                "min-w-0 max-w-[82%] rounded-2xl p-2 md:max-w-[78%]",
-                                canRecall &&
-                                  "cursor-context-menu outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
-                                isOwn
-                                  ? "rounded-br-md bg-primary/90 text-white/90 dark:bg-card"
-                                  : "rounded-bl-md bg-white dark:bg-card",
-                              )}
-                            >
-                              {!isRecalled && imageUrls.length > 0 ? (
-                                <div
-                                  className={cn(
-                                    "grid gap-1.5 overflow-hidden rounded-xl",
-                                    imageUrls.length === 1
-                                      ? "grid-cols-1"
-                                      : "grid-cols-2",
-                                  )}
-                                >
-                                  {imageUrls.map((url, index) => (
-                                    <img
-                                      key={`${item.id}-${url}-${index}`}
-                                      src={url}
-                                      alt={copy.imageMessage}
-                                      onLoad={() => {
-                                        if (
-                                          needsInitialScrollToBottomRef.current
-                                        ) {
-                                          stickToBottom();
-                                        }
-                                      }}
-                                      className={cn(
-                                        "block w-full rounded-xl object-cover",
-                                        imageUrls.length === 1
-                                          ? "max-h-80"
-                                          : "aspect-square max-h-44",
-                                      )}
-                                    />
-                                  ))}
-                                </div>
-                              ) : null}
-
-                              {isRecalled ? (
-                                <div className="relative min-w-0 pr-8">
-                                  <p
-                                    className={cn(
-                                      "whitespace-pre-wrap text-sm italic leading-6",
-                                      isOwn
-                                        ? "text-white/75"
-                                        : "text-muted-foreground",
-                                    )}
-                                  >
-                                    {isOwn
-                                      ? copy.recalledMessage
-                                      : copy.recalledMessageByOther}
-                                  </p>
-                                  <div
-                                    className={cn(
-                                      "pointer-events-none absolute bottom-0 right-0 flex items-center justify-end gap-1 text-[10px] dark:text-secondary",
-                                      isOwn
-                                        ? "text-white/80"
-                                        : "text-secondary",
-                                    )}
-                                  >
-                                    <span>
-                                      {formatMessageClock(item.createdAt)}
-                                    </span>
-                                  </div>
-                                </div>
-                              ) : hasText ? (
-                                <div
-                                  className={cn(
-                                    "relative min-w-0 pr-8",
-                                    imageUrls.length > 0 ? "mt-2" : "",
-                                  )}
-                                >
-                                  <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6">
-                                    {item.content}
-                                  </p>
-                                  <div
-                                    className={cn(
-                                      "pointer-events-none absolute bottom-0 right-0 flex items-center justify-end gap-1 text-[10px] dark:text-secondary",
-                                      isOwn
-                                        ? "text-white/80"
-                                        : "text-secondary",
-                                    )}
-                                  >
-                                    <span>
-                                      {formatMessageClock(item.createdAt)}
-                                    </span>
-                                  </div>
-                                </div>
-                              ) : (
-                                <div
-                                  className={cn(
-                                    "mt-1 flex justify-end text-[10px] dark:text-secondary",
-                                    isOwn ? "text-white/80" : "text-secondary",
-                                  )}
-                                >
-                                  <span>
-                                    {formatMessageClock(item.createdAt)}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    },
-                  )}
-                  <div ref={bottomAnchorRef} className="h-px w-full shrink-0" />
-                </div>
-              ) : (
-                <div className="text-sm text-muted-foreground">
-                  {copy.privatePlaceholder}
-                </div>
-              )}
+              <ArrowLeft className="size-4" />
+            </Button>
+            <Avatar
+              url={selectedItem.avatarUrl}
+              className="size-9"
+              alt={selectedItem.title}
+            />
+            <div className="min-w-0">
+              <h2 className="truncate text-sm font-semibold text-foreground">
+                {selectedItem.title || tMsg("untitled")}
+              </h2>
+              <p className="text-xs text-muted-foreground">{statusLabel}</p>
             </div>
-
-            {showJumpToBottom ? (
-              <button
-                type="button"
-                onClick={handleJumpToBottom}
-                className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full border border-border bg-background/96 px-3 py-2 text-xs font-medium text-foreground shadow-lg backdrop-blur transition-colors hover:bg-background"
-              >
-                <ChevronDown className="size-4" />
-                <span>
-                  {pendingMessageCount > 0
-                    ? `${pendingMessageCount} ${copy.newMessagesSuffix}`
-                    : copy.jumpToLatest}
-                </span>
-              </button>
-            ) : null}
-
-            {messageMenu ? (
-              <div
-                ref={messageMenuRef}
-                className="fixed z-50 min-w-44 overflow-hidden rounded-2xl border border-border/70 bg-background/98 p-1.5 shadow-[0_18px_48px_rgba(15,23,42,0.18)] backdrop-blur-sm"
-                style={{
-                  left: `${messageMenu.x}px`,
-                  top: `${messageMenu.y}px`,
-                }}
-              >
-                <button
-                  type="button"
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-foreground transition-colors hover:bg-muted"
-                  onClick={() => {
-                    setMessageMenu(null);
-                    void handleRecallPrivateMessage(messageMenu.messageId);
-                  }}
-                >
-                  <Undo2 className="size-4 text-muted-foreground" />
-                  <span>{copy.recall}</span>
-                </button>
-              </div>
-            ) : null}
           </div>
-
-          <div className="min-w-0 border-t border-border/70 bg-background/92 md:px-3 py-3 backdrop-blur">
-            {composerImages.length > 0 ? (
-              <div className="mb-3 flex flex-wrap gap-2">
-                {composerImages.map((item) => (
-                  <div
-                    key={item.id}
-                    className="relative overflow-hidden rounded-2xl border border-border bg-card"
+          <div className="flex shrink-0 items-center gap-2">
+            {selectedItem.type === "private" ? (
+              <DropdownMenu
+                title={tMenu("moreActions")}
+                items={userMenuItems}
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-full px-2.5"
+                    disabled={blockSubmitting || reportSubmitting}
                   >
-                    <img
-                      src={item.previewUrl}
-                      alt={item.fileName || copy.imageMessage}
-                      className="size-20 object-cover"
+                    <span className="sr-only">{tMenu("moreActions")}</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="size-4"
+                      aria-hidden="true"
+                    >
+                      <circle cx="12" cy="12" r="1" />
+                      <circle cx="12" cy="5" r="1" />
+                      <circle cx="12" cy="19" r="1" />
+                    </svg>
+                  </Button>
+                }
+              />
+            ) : null}
+            <Button
+              className="hidden rounded-full md:inline-flex"
+              onClick={() => void markAllAsRead(selectedTab)}
+            >
+              {copy.markAll}
+            </Button>
+          </div>
+        </div>
+
+        {selectedItem.type === "private" ? (
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <div className="relative min-h-0 min-w-0 flex-1">
+              <div
+                ref={scrollViewportRef}
+                className="h-full min-h-0 min-w-0 overflow-x-hidden overflow-y-auto py-4 md:border-r md:border-border md:pl-4 md:py-4 md:pr-1"
+                style={{ scrollbarWidth: "none" }}
+              >
+                {detailLoading ? (
+                  <div className="text-sm text-muted-foreground">
+                    {tCommon("loading")}
+                  </div>
+                ) : groupedPrivateHistory.length > 0 ? (
+                  <div className="flex flex-col gap-3">
+                    <div
+                      ref={topLoadTriggerRef}
+                      className="h-px w-full shrink-0"
                     />
-                    {item.uploading ? (
-                      <div className="absolute inset-0 flex items-center justify-center bg-background/70 text-[11px] text-foreground">
-                        {copy.uploadingImage}
+                    {isLoadingOlderHistory ? (
+                      <div className="flex justify-center py-1 text-xs text-muted-foreground">
+                        {tCommon("loading")}
                       </div>
                     ) : null}
-                    <button
-                      type="button"
-                      onClick={() => onRemoveComposerImage(item.id)}
-                      className="absolute right-1 top-1 rounded-full bg-background/85 p-1 text-foreground transition-colors hover:bg-background"
-                      aria-label={copy.removeImage}
-                    >
-                      <X className="size-3.5" />
-                    </button>
+
+                    {groupedPrivateHistory.map(
+                      ({ item, showDayDivider, dayLabel }) => {
+                        const isOwn =
+                          Number(item.senderId || 0) === Number(userId || 0);
+                        const canRecall = isOwn && !item.isRecalled;
+                        const imageUrls = resolveMessageImageUrls(item.payload);
+                        const hasText = Boolean(item.content?.trim());
+                        const isRecalled = Boolean(item.isRecalled);
+
+                        return (
+                          <div key={item.id}>
+                            {showDayDivider && dayLabel ? (
+                              <div className="mb-3 flex justify-center">
+                                <span className="rounded-full bg-muted px-3 py-1 text-xs text-foreground/70 backdrop-blur-sm">
+                                  {dayLabel}
+                                </span>
+                              </div>
+                            ) : null}
+
+                            <div
+                              className={cn(
+                                "flex min-w-0",
+                                isOwn ? "justify-end" : "justify-start",
+                              )}
+                            >
+                              <div
+                                role={canRecall ? "button" : undefined}
+                                tabIndex={canRecall ? 0 : undefined}
+                                onContextMenu={(event) => {
+                                  if (!canRecall) {
+                                    return;
+                                  }
+
+                                  event.preventDefault();
+                                  openMessageMenu(
+                                    item.id,
+                                    event.clientX,
+                                    event.clientY,
+                                  );
+                                }}
+                                onTouchStart={(event) => {
+                                  if (!canRecall) {
+                                    return;
+                                  }
+
+                                  const touch = event.touches[0];
+                                  if (!touch) {
+                                    return;
+                                  }
+
+                                  clearLongPressTimer();
+                                  longPressTimerRef.current = window.setTimeout(
+                                    () => {
+                                      openMessageMenu(
+                                        item.id,
+                                        touch.clientX,
+                                        touch.clientY,
+                                      );
+                                    },
+                                    420,
+                                  );
+                                }}
+                                onTouchEnd={clearLongPressTimer}
+                                onTouchMove={clearLongPressTimer}
+                                onTouchCancel={clearLongPressTimer}
+                                onKeyDown={(event) => {
+                                  if (!canRecall) {
+                                    return;
+                                  }
+
+                                  if (
+                                    event.key === "Enter" ||
+                                    event.key === " "
+                                  ) {
+                                    event.preventDefault();
+                                    const rect =
+                                      event.currentTarget.getBoundingClientRect();
+                                    openMessageMenu(
+                                      item.id,
+                                      rect.right - 16,
+                                      rect.top + 12,
+                                    );
+                                  }
+                                }}
+                                className={cn(
+                                  "min-w-0 max-w-[82%] rounded-2xl p-2 md:max-w-[78%]",
+                                  canRecall &&
+                                    "cursor-context-menu outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
+                                  isOwn
+                                    ? "rounded-br-md bg-primary/90 text-white/90 dark:bg-card"
+                                    : "rounded-bl-md bg-white dark:bg-card",
+                                )}
+                              >
+                                {!isRecalled && imageUrls.length > 0 ? (
+                                  <div
+                                    className={cn(
+                                      "grid gap-1.5 overflow-hidden rounded-xl",
+                                      imageUrls.length === 1
+                                        ? "grid-cols-1"
+                                        : "grid-cols-2",
+                                    )}
+                                  >
+                                    {imageUrls.map((url, index) => (
+                                      <img
+                                        key={`${item.id}-${url}-${index}`}
+                                        src={url}
+                                        alt={copy.imageMessage}
+                                        onLoad={() => {
+                                          if (
+                                            needsInitialScrollToBottomRef.current
+                                          ) {
+                                            stickToBottom();
+                                          }
+                                        }}
+                                        className={cn(
+                                          "block w-full rounded-xl object-cover",
+                                          imageUrls.length === 1
+                                            ? "max-h-80"
+                                            : "aspect-square max-h-44",
+                                        )}
+                                      />
+                                    ))}
+                                  </div>
+                                ) : null}
+
+                                {isRecalled ? (
+                                  <div className="relative min-w-0 pr-8">
+                                    <p
+                                      className={cn(
+                                        "whitespace-pre-wrap text-sm italic leading-6",
+                                        isOwn
+                                          ? "text-white/75"
+                                          : "text-muted-foreground",
+                                      )}
+                                    >
+                                      {isOwn
+                                        ? copy.recalledMessage
+                                        : copy.recalledMessageByOther}
+                                    </p>
+                                    <div
+                                      className={cn(
+                                        "pointer-events-none absolute bottom-0 right-0 flex items-center justify-end gap-1 text-[10px] dark:text-secondary",
+                                        isOwn
+                                          ? "text-white/80"
+                                          : "text-secondary",
+                                      )}
+                                    >
+                                      <span>
+                                        {formatMessageClock(item.createdAt)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ) : hasText ? (
+                                  <div
+                                    className={cn(
+                                      "relative min-w-0 pr-8",
+                                      imageUrls.length > 0 ? "mt-2" : "",
+                                    )}
+                                  >
+                                    <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6">
+                                      {item.content}
+                                    </p>
+                                    <div
+                                      className={cn(
+                                        "pointer-events-none absolute bottom-0 right-0 flex items-center justify-end gap-1 text-[10px] dark:text-secondary",
+                                        isOwn
+                                          ? "text-white/80"
+                                          : "text-secondary",
+                                      )}
+                                    >
+                                      <span>
+                                        {formatMessageClock(item.createdAt)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div
+                                    className={cn(
+                                      "mt-1 flex justify-end text-[10px] dark:text-secondary",
+                                      isOwn
+                                        ? "text-white/80"
+                                        : "text-secondary",
+                                    )}
+                                  >
+                                    <span>
+                                      {formatMessageClock(item.createdAt)}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      },
+                    )}
+                    <div
+                      ref={bottomAnchorRef}
+                      className="h-px w-full shrink-0"
+                    />
                   </div>
-                ))}
+                ) : (
+                  <div className="text-sm text-muted-foreground">
+                    {copy.privatePlaceholder}
+                  </div>
+                )}
               </div>
-            ) : null}
 
-            <div className="flex min-w-0 items-end gap-3 rounded-xl border border-border/70 bg-card px-3 py-1">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={(event) => {
-                  onPickComposerImages(event.target.files);
-                  event.currentTarget.value = "";
-                }}
-              />
-
-              <div className="flex h-full shrink-0 items-end">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="rounded-full p-2"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isSending}
-                  aria-label={copy.uploadImage}
+              {showJumpToBottom ? (
+                <button
+                  type="button"
+                  onClick={handleJumpToBottom}
+                  className="absolute bottom-4 right-4 inline-flex items-center gap-2 rounded-full border border-border bg-background/96 px-3 py-2 text-xs font-medium text-foreground shadow-lg backdrop-blur transition-colors hover:bg-background"
                 >
-                  <Paperclip size={16} />
-                </Button>
-              </div>
+                  <ChevronDown className="size-4" />
+                  <span>
+                    {pendingMessageCount > 0
+                      ? `${pendingMessageCount} ${copy.newMessagesSuffix}`
+                      : copy.jumpToLatest}
+                  </span>
+                </button>
+              ) : null}
 
-              <div className="flex min-h-9 min-w-0 flex-1 items-center overflow-hidden">
-                <textarea
-                  style={{ scrollbarWidth: "none" }}
-                  ref={textareaRef}
-                  rows={1}
-                  value={composerValue}
-                  onChange={(event) => setComposerValue(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (
-                      event.key === "Enter" &&
-                      event.shiftKey &&
-                      !event.nativeEvent.isComposing
-                    ) {
-                      event.preventDefault();
-                      void handleSendPrivateMessage();
-                    }
+              {messageMenu ? (
+                <div
+                  ref={messageMenuRef}
+                  className="fixed z-50 min-w-44 overflow-hidden rounded-2xl border border-border/70 bg-background/98 p-1.5 shadow-[0_18px_48px_rgba(15,23,42,0.18)] backdrop-blur-sm"
+                  style={{
+                    left: `${messageMenu.x}px`,
+                    top: `${messageMenu.y}px`,
                   }}
-                  placeholder={copy.composerPlaceholder}
-                  className="textarea-resizer block max-h-36 min-h-6 w-full resize-none border-0 bg-transparent px-0 py-0 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground"
-                />
-              </div>
-              <div className="flex h-full shrink-0 items-end pb-2">
-                <Button
-                  onClick={() => void handleSendPrivateMessage()}
-                  variant="primary"
-                  size="sm"
-                  className="rounded-full px-4 self-end"
-                  disabled={
-                    isSending ||
-                    isUploadingImages ||
-                    (!composerValue.trim() &&
-                      composerImages.every((item) => !item.uploadedUrl))
-                  }
-                  loading={isSending}
                 >
-                  <SendHorizontal className="size-4" />
-                </Button>
+                  <button
+                    type="button"
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm text-foreground transition-colors hover:bg-muted"
+                    onClick={() => {
+                      setMessageMenu(null);
+                      void handleRecallPrivateMessage(messageMenu.messageId);
+                    }}
+                  >
+                    <Undo2 className="size-4 text-muted-foreground" />
+                    <span>{copy.recall}</span>
+                  </button>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="min-w-0 border-t border-border/70 bg-background/92 md:px-3 py-3 backdrop-blur">
+              {composerImages.length > 0 ? (
+                <div className="mb-3 flex flex-wrap gap-2">
+                  {composerImages.map((item) => (
+                    <div
+                      key={item.id}
+                      className="relative overflow-hidden rounded-2xl border border-border bg-card"
+                    >
+                      <img
+                        src={item.previewUrl}
+                        alt={item.fileName || copy.imageMessage}
+                        className="size-20 object-cover"
+                      />
+                      {item.uploading ? (
+                        <div className="absolute inset-0 flex items-center justify-center bg-background/70 text-[11px] text-foreground">
+                          {copy.uploadingImage}
+                        </div>
+                      ) : null}
+                      <button
+                        type="button"
+                        onClick={() => onRemoveComposerImage(item.id)}
+                        className="absolute right-1 top-1 rounded-full bg-background/85 p-1 text-foreground transition-colors hover:bg-background"
+                        aria-label={copy.removeImage}
+                      >
+                        <X className="size-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
+              <div className="flex min-w-0 items-end gap-3 rounded-xl border border-border/70 bg-card px-3 py-1">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={(event) => {
+                    onPickComposerImages(event.target.files);
+                    event.currentTarget.value = "";
+                  }}
+                />
+
+                <div className="flex h-full shrink-0 items-end">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-full p-2"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isSending}
+                    aria-label={copy.uploadImage}
+                  >
+                    <Paperclip size={16} />
+                  </Button>
+                </div>
+
+                <div className="flex min-h-9 min-w-0 flex-1 items-center overflow-hidden">
+                  <textarea
+                    style={{ scrollbarWidth: "none" }}
+                    ref={textareaRef}
+                    rows={1}
+                    value={composerValue}
+                    onChange={(event) => setComposerValue(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (
+                        event.key === "Enter" &&
+                        event.shiftKey &&
+                        !event.nativeEvent.isComposing
+                      ) {
+                        event.preventDefault();
+                        void handleSendPrivateMessage();
+                      }
+                    }}
+                    placeholder={copy.composerPlaceholder}
+                    className="textarea-resizer block max-h-36 min-h-6 w-full resize-none border-0 bg-transparent px-0 py-0 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground"
+                  />
+                </div>
+                <div className="flex h-full shrink-0 ">
+                  <Button
+                    onClick={() => void handleSendPrivateMessage()}
+                    variant="primary"
+                    size="sm"
+                    className="rounded-full px-4 self-end"
+                    disabled={
+                      isSending ||
+                      isUploadingImages ||
+                      (!composerValue.trim() &&
+                        composerImages.every((item) => !item.uploadedUrl))
+                    }
+                    loading={isSending}
+                  >
+                    <SendHorizontal className="size-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 md:px-6 md:py-6">
-          <div className="rounded-2xl border border-border/70 bg-card/96 p-4 shadow-sm md:rounded-3xl md:p-6">
-            <div className="mb-4 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
-              {typeLabel}
-            </div>
-            <h3 className="text-2xl font-semibold text-foreground">
-              {selectedItem.title || tMsg("untitled")}
-            </h3>
-            <p className="mt-3 text-sm text-muted-foreground">
-              {formatShortDate(selectedItem.createdAt || "", locale) ||
-                formatRelativeTime(selectedItem.createdAt || "", tTime, locale)}
-            </p>
-            <div className="mt-6 whitespace-pre-wrap wrap-break-word text-[15px] leading-7 text-foreground">
-              {selectedItem.content || copy.detailPlaceholder}
+        ) : (
+          <div className="min-h-0 flex-1 overflow-y-auto md:py-4 md:pl-4 md:pr-1">
+            <div className="rounded-xl border border-border/70 bg-card/96 px-3 py-2">
+              <div className="flex items-center justify-between gap-4">
+                <div className="mb-4 flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                  {typeLabel}
+                </div>
+                <p className="text-xs text-secondary">
+                  {formatShortDate(selectedItem.createdAt || "", locale) ||
+                    formatRelativeTime(
+                      selectedItem.createdAt || "",
+                      tTime,
+                      locale,
+                    )}
+                </p>
+              </div>
+
+              <h3 className="font-semibold text-foreground">
+                {selectedItem.title || tMsg("untitled")}
+              </h3>
+
+              <div className="mt-2 whitespace-pre-wrap wrap-break-word text-sm leading-7 text-secondary">
+                {selectedItem.content || copy.detailPlaceholder}
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </section>
+        )}
+      </section>
+      <ReportDialog
+        open={showReportDialog}
+        onOpenChange={setShowReportDialog}
+        reasons={reportReasons}
+        loading={reportSubmitting}
+        onSubmit={async (payload) => {
+          await onReportSelectedUser(payload);
+          setShowReportDialog(false);
+        }}
+      />
+    </>
   );
 }

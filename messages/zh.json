@@ -662,8 +662,8 @@
     "editProfile": "编辑资料",
     "editBackground": "更换背景",
     "menuTitle": "更多操作",
-    "copyLink": "复制个人主页链接",
-    "linkCopied": "个人主页链接已复制"
+    "startMessage": "发起私信",
+    "followToMessage": "关注后可私信"
   },
   "emptyState": {
     "message": "暂无内容",

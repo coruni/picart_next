@@ -126,10 +126,17 @@ export type MessageDetailPaneProps = {
   isUploadingImages: boolean;
   locale: string;
   markAllAsRead: (tab?: MessageTab) => Promise<void>;
+  onBlockSelectedUser: () => Promise<void>;
   onPickComposerImages: (files: FileList | null) => void;
   onLoadOlderHistory: () => Promise<void>;
   onRemoveComposerImage: (id: string) => void;
+  onReportSelectedUser: (payload: {
+    category: "SPAM" | "ABUSE" | "INAPPROPRIATE" | "COPYRIGHT" | "OTHER";
+    reason: string;
+  }) => Promise<void>;
   onBackToList: () => void;
+  blockSubmitting: boolean;
+  reportSubmitting: boolean;
   selectedItem: MessageDropdownItem | null;
   selectedUserStatus: PrivateUserStatus | null;
   selectedTab: MessageTab;

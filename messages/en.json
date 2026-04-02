@@ -663,8 +663,8 @@
     "editProfile": "Edit Profile",
     "editBackground": "Change Background",
     "menuTitle": "More Actions",
-    "copyLink": "Copy Profile Link",
-    "linkCopied": "Profile link copied",
+    "startMessage": "Send Message",
+    "followToMessage": "Follow to Message",
     "numberUnits": {
       "thousand": "k",
       "tenThousand": "w",

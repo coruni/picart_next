@@ -1,5 +1,6 @@
 "use client";
 
+import { useIsMobile } from "@/hooks";
 import { useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -25,10 +26,12 @@ export function ArticleAuthor({
   const t = useTranslations("time");
   const locale = useLocale();
   const tFollow = useTranslations("followButton");
+  const isMobile = useIsMobile();
+  const hysteresis = isMobile ? 18 : 24;
   const [stickyThreshold, setStickyThreshold] = useState<number | null>(null);
   const isSticky = useScrollThreshold(stickyThreshold ?? 0, {
     enabled: stickyThreshold !== null,
-    hysteresis: 8,
+    hysteresis,
   });
   const isSelf = useUserStore((state) => state.user)?.id === author.id || false;
 
@@ -44,16 +47,25 @@ export function ArticleAuthor({
     const updateThreshold = () => {
       frameId = 0;
 
-      const rootStyle = getComputedStyle(document.documentElement);
-      const headerHeight = Number.parseFloat(
-        rootStyle.getPropertyValue("--header-height"),
+      const stickyHost = container.parentElement;
+      const stickyHostTop = stickyHost
+        ? Number.parseFloat(getComputedStyle(stickyHost).top)
+        : Number.NaN;
+      const rootHeaderHeight = Number.parseFloat(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--header-height",
+        ),
       );
-      const stickyTopOffset = (Number.isFinite(headerHeight) ? headerHeight : 60) + 56;
+      const stickyTopOffset = Number.isFinite(stickyHostTop)
+        ? stickyHostTop
+        : Number.isFinite(rootHeaderHeight)
+          ? rootHeaderHeight + 56
+          : 116;
       const rect = container.getBoundingClientRect();
       const absoluteTop = window.scrollY + rect.top;
       const nextThreshold = Math.max(
         0,
-        Math.round(absoluteTop - stickyTopOffset),
+        Math.round(absoluteTop - stickyTopOffset - hysteresis),
       );
 
       setStickyThreshold((previous) =>
@@ -88,7 +100,7 @@ export function ArticleAuthor({
       window.removeEventListener("resize", requestThresholdUpdate);
       window.removeEventListener("load", requestThresholdUpdate);
     };
-  }, []);
+  }, [hysteresis]);
 
   return (
     <div
