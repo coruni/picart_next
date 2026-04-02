@@ -65,7 +65,7 @@ export function DashboardTableToolbar<T>({
   ];
 
   const toolButtonClass =
-    "inline-flex size-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground";
+    "inline-flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground";
 
   return (
     <div className="flex items-center justify-between gap-3  px-3 py-2.5">

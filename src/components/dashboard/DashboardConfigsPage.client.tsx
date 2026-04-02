@@ -213,7 +213,7 @@ function ConfigCard({
 
         <Button
           variant="primary"
-          className="rounded-full px-4"
+          className="h-7 rounded-full px-4"
           onClick={onSave}
           loading={saving}
           disabled={!dirty || uploading}
@@ -609,7 +609,7 @@ export function DashboardConfigsPage() {
               </div>
               <Button
                 variant="outline"
-                className="rounded-full px-4"
+                className="h-7 rounded-full px-4"
                 onClick={() => void loadAllConfigs(false)}
               >
                 {copy.common.refresh}

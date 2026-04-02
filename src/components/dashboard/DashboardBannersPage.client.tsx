@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/Button";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
-import { DashboardEditDialog, type DashboardEditField } from "./DashboardEditDialog.client";
+import {
+  DashboardEditDialog,
+  type DashboardEditField,
+} from "./DashboardEditDialog.client";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
@@ -20,7 +23,9 @@ export function DashboardBannersPage() {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
-  const [editingItem, setEditingItem] = useState<DashboardBannerItem | null>(null);
+  const [editingItem, setEditingItem] = useState<DashboardBannerItem | null>(
+    null,
+  );
   const [submitting, setSubmitting] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -36,10 +41,19 @@ export function DashboardBannersPage() {
   const editFields = useMemo<DashboardEditField[]>(
     () => [
       { name: "title", label: copy.columns.title },
-      { name: "description", label: copy.columns.description, type: "textarea" },
+      {
+        name: "description",
+        label: copy.columns.description,
+        type: "textarea",
+      },
       { name: "imageUrl", label: "Image URL" },
       { name: "linkUrl", label: copy.columns.link },
-      { name: "sortOrder", label: copy.columns.sort, type: "number", step: 1 },
+      {
+        name: "sortOrder",
+        label: copy.columns.sort,
+        type: "number",
+        step: 1,
+      },
       {
         name: "status",
         label: copy.columns.status,
@@ -101,7 +115,9 @@ export function DashboardBannersPage() {
         header: copy.columns.sort,
         hideInSearch: true,
         render: (item) => (
-          <div className="text-sm text-muted-foreground">{item.sortOrder ?? 0}</div>
+          <div className="text-sm text-muted-foreground">
+            {item.sortOrder ?? 0}
+          </div>
         ),
       },
       {
@@ -118,7 +134,12 @@ export function DashboardBannersPage() {
         hideInSearch: true,
         render: (item) =>
           item.id ? (
-            <Button variant="outline" size="sm" onClick={() => setEditingItem(item)}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 rounded-full px-4"
+              onClick={() => setEditingItem(item)}
+            >
               {copy.common.edit}
             </Button>
           ) : (
@@ -159,8 +180,12 @@ export function DashboardBannersPage() {
             }
 
             return (
-              String(item.title || "").toLowerCase().includes(normalizedKeyword) ||
-              String(item.description || "").toLowerCase().includes(normalizedKeyword)
+              String(item.title || "")
+                .toLowerCase()
+                .includes(normalizedKeyword) ||
+              String(item.description || "")
+                .toLowerCase()
+                .includes(normalizedKeyword)
             );
           });
 
@@ -171,7 +196,8 @@ export function DashboardBannersPage() {
           };
         }}
         getRowKey={(item) =>
-          item.id || `${item.title || "banner"}-${item.linkUrl || item.imageUrl || ""}`
+          item.id ||
+          `${item.title || "banner"}-${item.linkUrl || item.imageUrl || ""}`
         }
         emptyText={copy.empty.banners}
         className="h-full"

@@ -283,7 +283,7 @@ export function DashboardProTable<T>({
           {hasExpandableQuery ? (
             <button
               type="button"
-              className="inline-flex h-9 items-center justify-center rounded-lg px-2 text-sm font-medium text-primary transition-colors hover:bg-primary/8"
+              className="inline-flex h-7 items-center justify-center rounded-full px-4 text-sm font-medium text-primary transition-colors hover:bg-primary/8"
               onClick={() => setQueryExpanded((value) => !value)}
               aria-expanded={queryExpanded}
             >
@@ -334,7 +334,7 @@ export function DashboardProTable<T>({
             </div>
             <button
               type="button"
-              className="inline-flex h-9 items-center justify-center rounded-full border border-border/70 px-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="inline-flex h-7 items-center justify-center rounded-full border border-border/70 px-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               onClick={() => setReloadKey((current) => current + 1)}
             >
               {copy.common.retry}

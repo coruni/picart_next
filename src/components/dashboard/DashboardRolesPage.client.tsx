@@ -108,7 +108,12 @@ export function DashboardRolesPage() {
         header: copy.columns.action,
         hideInSearch: true,
         render: (item) => (
-          <Button variant="outline" size="sm" onClick={() => setEditingItem(item)}>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-7 rounded-full px-4"
+            onClick={() => setEditingItem(item)}
+          >
             {copy.common.edit}
           </Button>
         ),

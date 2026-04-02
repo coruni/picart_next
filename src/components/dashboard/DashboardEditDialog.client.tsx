@@ -207,11 +207,17 @@ export function DashboardEditDialog({
           </Form>
         </div>
         <DialogFooter className="shrink-0 border-t border-border px-5 py-4">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>
+          <Button
+            variant="ghost"
+            className="h-7 rounded-full px-4"
+            onClick={() => onOpenChange(false)}
+            disabled={loading}
+          >
             {copy.common.cancel}
           </Button>
           <Button
             variant="primary"
+            className="h-7 rounded-full px-4"
             loading={loading}
             onClick={() => {
               void onSubmit(
