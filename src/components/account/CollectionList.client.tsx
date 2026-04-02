@@ -8,7 +8,7 @@ import { Link } from "@/i18n/routing";
 import { formatCompactNumber } from "@/lib";
 import { ChevronRight, FolderClosed } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type CollectionListItem = NonNullable<
   CollectionControllerFindAllResponse["data"]["data"]
@@ -45,6 +45,7 @@ export function CollectionListClient({
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initCollections.length < initTotal);
   const [error, setError] = useState<string | null>(null);
+  const hasBootstrappedRef = useRef(false);
   const compactNumberLabels = {
     thousand: tAccountInfo("numberUnits.thousand"),
     tenThousand: tAccountInfo("numberUnits.tenThousand"),
@@ -102,6 +103,46 @@ export function CollectionListClient({
       }
     },
   });
+
+  useEffect(() => {
+    if (hasBootstrappedRef.current || initCollections.length > 0) {
+      return;
+    }
+
+    hasBootstrappedRef.current = true;
+
+    const bootstrapCollections = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await collectionControllerFindAll({
+          query: {
+            page: 1,
+            limit: pageSize,
+            userId,
+          },
+        });
+
+        const firstPageCollections =
+          (response.data?.data?.data as AccountCollectionItem[] | undefined) ||
+          [];
+        const responseTotal = response.data?.data?.meta?.total || 0;
+
+        setCollections(firstPageCollections);
+        setPage(2);
+        setHasMore(firstPageCollections.length < responseTotal);
+      } catch (loadError) {
+        console.error("Failed to bootstrap account collections:", loadError);
+        setError(t("loadFailed"));
+        setHasMore(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void bootstrapCollections();
+  }, [initCollections.length, pageSize, t, userId]);
 
   if (collections.length === 0) {
     return (
