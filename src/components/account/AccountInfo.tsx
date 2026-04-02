@@ -286,19 +286,20 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                 <DropdownMenu
                   title={t("menuTitle")}
                   items={accountMenuItems}
-                  trigger={
+                  trigger={({ isOpen }) => (
                     <button
                       type="button"
                       className={cn(
-                        "flex size-8 cursor-pointer items-center justify-center rounded-full text-white hover:text-primary md:size-9",
+                        "flex size-8 cursor-pointer items-center justify-center rounded-full transition-[background-color,color,transform] duration-180 ease-out hover:text-primary md:size-9",
                         !scrolled
                           ? "bg-[#000000a6]"
                           : "bg-gray-50 text-foreground",
+                        isOpen && "scale-105 text-primary",
                       )}
                     >
                       <MoreHorizontal size={18} />
                     </button>
-                  }
+                  )}
                   className="shrink-0"
                   menuClassName="top-10"
                 />

@@ -382,7 +382,7 @@ export function CommentReplyList({
       </div>
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="w-[calc(100vw-2rem)] max-w-3xl rounded-2xl p-0">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-3xl rounded-xl p-0">
           <DialogHeader className="px-6 py-4 mb-0!">
             <DialogTitle className="text-sm font-semibold text-left">
               {tComment.has("viewCommentTitle")
@@ -502,12 +502,16 @@ export function CommentReplyList({
                   className="w-fit text-sm"
                   position="left"
                   title=""
-                  trigger={
-                    <button className="inline-flex w-fit shrink-0 items-center gap-1.5 text-sm font-medium text-foreground transition hover:text-primary">
+                  trigger={({ isOpen }) => (
+                    <button className="inline-flex w-fit shrink-0 items-center gap-1.5 text-sm font-semibold text-muted-foreground transition hover:text-primary">
                       <span className="w-max">{currentSortLabel}</span>
-                      <ChevronDown className="size-4 text-[#aeb8c7]" />
+                      <ChevronDown
+                        className={`size-4 text-[#aeb8c7] transition-transform duration-180 ease-out ${
+                          isOpen ? "rotate-180" : ""
+                        }`}
+                      />
                     </button>
-                  }
+                  )}
                   items={sortItems}
                   menuClassName="top-9 min-w-0 rounded-xl border border-border bg-card drop-shadow-lg"
                 />

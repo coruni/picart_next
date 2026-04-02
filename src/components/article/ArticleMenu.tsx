@@ -8,11 +8,12 @@ import {
   ReportDialog,
 } from "@/components/shared";
 import { useRouter } from "@/i18n/routing";
+import { cn } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import {
   Ban,
-  FileWarning,
+  HeartOff,
   MoreHorizontal,
   PencilLine,
   ShieldAlert,
@@ -118,7 +119,7 @@ export function ArticleMenu({
         },
         {
           label: t("dislikeType"),
-          icon: <FileWarning size={18} />,
+          icon: <HeartOff size={18} />,
           onClick: handleDislikeContent,
         },
       ];
@@ -126,11 +127,23 @@ export function ArticleMenu({
   return (
     <>
       <DropdownMenu
-        trigger={
-          <button className="flex cursor-pointer items-center transition-colors hover:text-primary">
-            <MoreHorizontal size={20} strokeWidth={2} />
+        trigger={({ isOpen }) => (
+          <button
+            className={cn(
+              "flex cursor-pointer items-center transition-[color,transform] duration-180 ease-out hover:text-primary",
+              isOpen && "text-primary",
+            )}
+          >
+            <MoreHorizontal
+              size={20}
+              strokeWidth={2}
+              className={cn(
+                "transition-transform duration-180 ease-out",
+                isOpen && "scale-105",
+              )}
+            />
           </button>
-        }
+        )}
         items={menuItems}
         title={t("moreActions")}
         position="right"

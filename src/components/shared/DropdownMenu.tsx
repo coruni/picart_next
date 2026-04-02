@@ -3,7 +3,7 @@
 import { useClickOutside } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
-import { ReactNode, useRef, useState } from "react";
+import { ReactNode, useMemo, useRef, useState } from "react";
 
 export type MenuItem = {
   label: string;
@@ -14,12 +14,13 @@ export type MenuItem = {
 };
 
 type DropdownMenuProps = {
-  trigger: ReactNode;
+  trigger: ReactNode | ((state: { isOpen: boolean }) => ReactNode);
   items: MenuItem[];
   title?: string;
   position?: "left" | "right";
   className?: string;
   menuClassName?: string;
+  onOpenChange?: (isOpen: boolean) => void;
 };
 
 export function DropdownMenu({
@@ -29,48 +30,81 @@ export function DropdownMenu({
   position = "right",
   className,
   menuClassName,
+  onOpenChange,
 }: DropdownMenuProps) {
   const t = useTranslations("dropdownMenu");
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  useClickOutside(menuRef, () => setIsOpen(false));
+  const setOpen = (nextOpen: boolean) => {
+    setIsOpen(nextOpen);
+    onOpenChange?.(nextOpen);
+  };
+
+  useClickOutside(menuRef, () => setOpen(false));
+
+  const resolvedTrigger = useMemo(() => {
+    if (typeof trigger === "function") {
+      return trigger({ isOpen });
+    }
+
+    return trigger;
+  }, [isOpen, trigger]);
 
   const handleItemClick = (item: MenuItem) => {
     if (item.disabled) return;
     item.onClick();
-    setIsOpen(false);
+    setOpen(false);
   };
 
   return (
     <div className={cn("relative", className)} ref={menuRef}>
       <div
+        role="button"
+        tabIndex={0}
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          setIsOpen(!isOpen);
+          setOpen(!isOpen);
+        }}
+        onKeyDown={(e) => {
+          if (e.key !== "Enter" && e.key !== " ") {
+            return;
+          }
+
+          e.preventDefault();
+          e.stopPropagation();
+          setOpen(!isOpen);
         }}
       >
-        {trigger}
+        {resolvedTrigger}
       </div>
 
       <div
         className={cn(
-          "absolute top-8 z-8 min-w-50 w-max origin-top rounded-xl bg-card border-border drop-shadow-2xl will-change-[opacity,transform] transform-gpu transition-[opacity,transform] duration-120 ease-out",
-          position === "right" ? "right-0" : "left-0",
+          // transition 属性固定在静态类里，不随 isOpen 变化
+          "absolute top-8 z-10 min-w-50 w-max rounded-xl border border-border/70 bg-card/96 shadow-[0_18px_48px_rgba(15,23,42,0.16)] backdrop-blur-sm will-change-[opacity,transform] transform-gpu transition-[opacity,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          position === "right"
+            ? "right-0 origin-top-right"
+            : "left-0 origin-top-left",
+          // 只切换视觉状态，不切换 transition 配置
           isOpen
-            ? "visible scale-100 opacity-100"
-            : "invisible pointer-events-none scale-70 opacity-0",
+            ? "translate-y-0 scale-100 opacity-100"
+            : "pointer-events-none -translate-y-1 scale-95 opacity-0",
           menuClassName,
         )}
+        role="menu"
+        aria-hidden={!isOpen}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
         }}
       >
-        <div className="p-2 text-sm ">
+        <div className="p-2 text-sm">
           {(title ?? t("more")) && (
-            <div className="mb-1 px-2 font-medium">
+            <div className="mb-1 px-2 font-medium text-foreground/80">
               <span>{title ?? t("more")}</span>
             </div>
           )}
@@ -78,11 +112,13 @@ export function DropdownMenu({
           {items.map((item, index) => (
             <div
               key={index}
+              role="menuitem"
+              aria-disabled={item.disabled}
               className={cn(
-                "flex items-center gap-2 rounded-xl p-2 text-sm whitespace-nowrap transition-colors",
+                "flex items-center gap-2 rounded-xl p-2 text-sm whitespace-nowrap transition-[background-color,color,transform,opacity] duration-150",
                 item.disabled
                   ? "cursor-not-allowed opacity-50"
-                  : "group cursor-pointer hover:bg-primary/15 hover:text-primary text-black/75 dark:text-white/75",
+                  : "group cursor-pointer text-black/75 hover:bg-primary/12 hover:text-primary dark:text-white/75",
                 item.className,
               )}
               onClick={() => handleItemClick(item)}

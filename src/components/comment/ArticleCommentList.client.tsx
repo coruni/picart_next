@@ -197,12 +197,16 @@ export function ArticleCommentList({
             className="w-fit"
             position="left"
             title=""
-            trigger={
+            trigger={({ isOpen }) => (
               <button className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-foreground transition hover:text-primary">
                 <span>{currentSortLabel}</span>
-                <ChevronDown className="size-4 text-[#aeb8c7]" />
+                <ChevronDown
+                  className={`size-4 text-[#aeb8c7] transition-transform duration-180 ease-out ${
+                    isOpen ? "rotate-180" : ""
+                  }`}
+                />
               </button>
-            }
+            )}
             items={sortItems}
             menuClassName="top-9 min-w-0 rounded-2xl border border-border bg-card drop-shadow-lg"
           />
@@ -221,12 +225,16 @@ export function ArticleCommentList({
           className="w-fit text-sm "
           position="left"
           title=""
-          trigger={
+          trigger={({ isOpen }) => (
             <button className="inline-flex shrink-0 w-fit items-center gap-1.5 text-sm  text-muted-foreground font-semibold transition hover:text-primary">
               <span className=" w-max">{currentSortLabel}</span>
-              <ChevronDown className="size-4" />
+              <ChevronDown
+                className={`size-4 transition-transform duration-180 ease-out ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+              />
             </button>
-          }
+          )}
           items={sortItems}
           menuClassName="top-9 min-w-0 max-w rounded-xl border border-border bg-card drop-shadow-lg"
         />

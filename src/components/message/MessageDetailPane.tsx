@@ -498,11 +498,14 @@ export function MessageDetailPane({
               <DropdownMenu
                 title={tMenu("moreActions")}
                 items={userMenuItems}
-                trigger={
+                trigger={({ isOpen }) => (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="rounded-full px-2.5"
+                    className={cn(
+                      "rounded-full px-2.5 transition-colors duration-180",
+                      isOpen && "bg-muted text-primary",
+                    )}
                     disabled={blockSubmitting || reportSubmitting}
                   >
                     <span className="sr-only">{tMenu("moreActions")}</span>
@@ -522,7 +525,7 @@ export function MessageDetailPane({
                       <circle cx="12" cy="19" r="1" />
                     </svg>
                   </Button>
-                }
+                )}
               />
             ) : null}
             <Button
