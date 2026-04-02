@@ -13975,8 +13975,38 @@ export type AchievementControllerFindAllResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: Array<{
+            id?: number;
+            code?: string;
+            name?: string;
+            description?: string;
+            icon?: string;
+            type?: string;
+            rarity?: string;
+            condition?: {
+                type: string;
+                event: string;
+                target: number;
+            };
+            rewardPoints?: number;
+            rewardExp?: number;
+            rewardDecorationId?: number;
+            hidden?: boolean;
+            sort?: number;
+            enabled?: boolean;
+            createdAt?: string;
+            updatedAt?: string;
+            progress?: number;
+            completed?: boolean;
+            claimed?: boolean;
+        }>;
+    };
 };
+
+export type AchievementControllerFindAllResponse = AchievementControllerFindAllResponses[keyof AchievementControllerFindAllResponses];
 
 export type AchievementControllerCreateData = {
     body: CreateAchievementDto;
@@ -13995,8 +14025,39 @@ export type AchievementControllerCreateResponses = {
     /**
      * 创建成功
      */
-    201: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+            data: {
+                id: number;
+                code: string;
+                name: string;
+                description: string;
+                icon: string;
+                type: string;
+                rarity: string;
+                condition: {
+                    type: string;
+                    target: number;
+                    event: string;
+                };
+                rewardPoints: number;
+                rewardExp: number;
+                rewardDecorationId: number;
+                hidden: boolean;
+                sort: number;
+                enabled: boolean;
+                createdAt: string;
+                updatedAt: string;
+            };
+        };
+    };
 };
+
+export type AchievementControllerCreateResponse = AchievementControllerCreateResponses[keyof AchievementControllerCreateResponses];
 
 export type AchievementControllerGetUserStatsData = {
     body?: never;
@@ -14015,8 +14076,19 @@ export type AchievementControllerGetUserStatsResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            total: number;
+            completed: number;
+            claimed: number;
+            completionRate: string;
+        };
+    };
 };
+
+export type AchievementControllerGetUserStatsResponse = AchievementControllerGetUserStatsResponses[keyof AchievementControllerGetUserStatsResponses];
 
 export type AchievementControllerRemoveData = {
     body?: never;
@@ -14123,8 +14195,21 @@ export type AchievementControllerClaimAllRewardsResponses = {
     /**
      * 领取成功
      */
-    200: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+            data: {
+                claimed: number;
+                total: number;
+            };
+        };
+    };
 };
+
+export type AchievementControllerClaimAllRewardsResponse = AchievementControllerClaimAllRewardsResponses[keyof AchievementControllerClaimAllRewardsResponses];
 
 export type CollectionControllerFindAllData = {
     body?: never;

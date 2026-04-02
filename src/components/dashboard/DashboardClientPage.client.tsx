@@ -3,8 +3,11 @@
 import {
   articleControllerFindAll,
   commentControllerFindAllComments,
+  configControllerGetAdvertisementConfig,
+  configControllerGetPublicConfigs,
   configControllerFindAll,
   orderControllerGetAllOrders,
+  orderControllerGetPendingOrders,
   statisticsControllerGetOverview,
   userControllerFindAll,
 } from "@/api";
@@ -12,11 +15,18 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Link } from "@/i18n/routing";
 import { prepareCommentHtmlForDisplay } from "@/lib";
 import {
+  BadgeCheck,
   FileCog,
   FileText,
+  Images,
+  KeyRound,
   MessageSquareText,
   ReceiptText,
   ShieldUser,
+  Sparkles,
+  Tags,
+  Trophy,
+  TriangleAlert,
   UserRoundCog,
 } from "lucide-react";
 import { useLocale } from "next-intl";
@@ -47,6 +57,39 @@ export function DashboardClientPage() {
   const [error, setError] = useState(false);
   const [permissionWarning, setPermissionWarning] = useState<string | null>(null);
   const [data, setData] = useState<DashboardOverviewData | null>(null);
+  const overviewText = useMemo(
+    () =>
+      locale === "en"
+        ? {
+            publicConfig: "Public Config",
+            advertisement: "Advertisement",
+            site: "Site",
+            maintenance: "Maintenance",
+            membership: "Membership",
+            contact: "Contact",
+            homepageAd: "Homepage Ad",
+            articleTopAd: "Article Top Ad",
+            articleBottomAd: "Article Bottom Ad",
+            globalAd: "Global Ad",
+            pendingQueue: "Pending Queue",
+            noPendingOrders: "No pending order numbers.",
+          }
+        : {
+            publicConfig: "公开配置",
+            advertisement: "广告配置",
+            site: "站点",
+            maintenance: "维护模式",
+            membership: "会员",
+            contact: "联系方式",
+            homepageAd: "首页广告",
+            articleTopAd: "文章顶部广告",
+            articleBottomAd: "文章底部广告",
+            globalAd: "全局广告",
+            pendingQueue: "待处理订单队列",
+            noPendingOrders: "暂无待处理订单号。",
+          },
+    [locale],
+  );
 
   useEffect(() => {
     if (!ready || !user) {
@@ -68,10 +111,10 @@ export function DashboardClientPage() {
         articleControllerFindAll({ query: { page: 1, limit: 5 } }),
         commentControllerFindAllComments({ query: { page: 1, limit: 5 } }),
         orderControllerGetAllOrders({ query: { page: 1, limit: 5 } }),
-        orderControllerGetAllOrders({
-          query: { page: 1, limit: 1, status: "PENDING" },
-        }),
+        orderControllerGetPendingOrders(),
         configControllerFindAll(),
+        configControllerGetPublicConfigs(),
+        configControllerGetAdvertisementConfig(),
       ]);
 
       if (!mounted) {
@@ -91,7 +134,17 @@ export function DashboardClientPage() {
         return;
       }
 
-      const [overviewResult, usersResult, articlesResult, commentsResult, ordersResult, pendingResult, configsResult] =
+      const [
+        overviewResult,
+        usersResult,
+        articlesResult,
+        commentsResult,
+        ordersResult,
+        pendingResult,
+        configsResult,
+        publicConfigResult,
+        advertisementConfigResult,
+      ] =
         results;
 
       const overviewResponse =
@@ -108,6 +161,12 @@ export function DashboardClientPage() {
         pendingResult.status === "fulfilled" ? pendingResult.value : null;
       const configsResponse =
         configsResult.status === "fulfilled" ? configsResult.value : null;
+      const publicConfigResponse =
+        publicConfigResult.status === "fulfilled" ? publicConfigResult.value : null;
+      const advertisementConfigResponse =
+        advertisementConfigResult.status === "fulfilled"
+          ? advertisementConfigResult.value
+          : null;
       const overviewData = overviewResponse?.data?.data;
 
       if (
@@ -126,7 +185,7 @@ export function DashboardClientPage() {
           articlesTotal: overviewData?.content?.articles || 0,
           commentsTotal: overviewData?.content?.comments || 0,
           ordersTotal: ordersResponse?.data?.data?.meta?.total || 0,
-          pendingOrdersTotal: pendingOrdersResponse?.data?.data?.meta?.total || 0,
+          pendingOrdersTotal: pendingOrdersResponse?.data?.data?.length || 0,
           configsTotal: configsResponse?.data?.data?.data?.length || 0,
         },
         users: usersResponse?.data?.data?.data || [],
@@ -134,6 +193,9 @@ export function DashboardClientPage() {
         comments: commentsResponse?.data?.data?.data || [],
         orders: ordersResponse?.data?.data?.data || [],
         configs: (configsResponse?.data?.data?.data || []).slice(0, 6),
+        publicConfig: publicConfigResponse?.data?.data || null,
+        advertisementConfig: advertisementConfigResponse?.data?.data || null,
+        pendingOrderNos: pendingOrdersResponse?.data?.data || [],
       });
 
       setLoading(false);
@@ -228,49 +290,109 @@ export function DashboardClientPage() {
             title={copy.sections.recentChanges}
             description={copy.shell.description}
           >
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {[
                 {
                   href: "/dashboard/users",
                   label: copy.nav.users,
                   text: copy.shortcuts.users,
                   value: data.summary.usersTotal,
+                  icon: ShieldUser,
                 },
                 {
                   href: "/dashboard/articles",
                   label: copy.nav.articles,
                   text: copy.shortcuts.articles,
                   value: data.summary.articlesTotal,
+                  icon: FileText,
                 },
                 {
                   href: "/dashboard/comments",
                   label: copy.nav.comments,
                   text: copy.shortcuts.comments,
                   value: data.summary.commentsTotal,
+                  icon: MessageSquareText,
                 },
                 {
                   href: "/dashboard/orders",
                   label: copy.nav.orders,
                   text: copy.shortcuts.orders,
                   value: data.summary.ordersTotal,
+                  icon: ReceiptText,
                 },
-              ].map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-xl border border-border bg-background px-4 py-4 transition-colors hover:border-primary/40 hover:bg-primary/5"
-                >
-                  <div className="text-sm font-semibold text-foreground">
-                    {item.label}
-                  </div>
+                {
+                  href: "/dashboard/tags",
+                  label: copy.nav.tags,
+                  text: copy.shortcuts.tags,
+                  icon: Tags,
+                },
+                {
+                  href: "/dashboard/roles",
+                  label: copy.nav.roles,
+                  text: copy.shortcuts.roles,
+                  icon: BadgeCheck,
+                },
+                {
+                  href: "/dashboard/permissions",
+                  label: copy.nav.permissions,
+                  text: copy.shortcuts.permissions,
+                  icon: KeyRound,
+                },
+                {
+                  href: "/dashboard/banners",
+                  label: copy.nav.banners,
+                  text: copy.shortcuts.banners,
+                  icon: Images,
+                },
+                {
+                  href: "/dashboard/reports",
+                  label: copy.nav.reports,
+                  text: copy.shortcuts.reports,
+                  icon: TriangleAlert,
+                },
+                {
+                  href: "/dashboard/decorations",
+                  label: copy.nav.decorations,
+                  text: copy.shortcuts.decorations,
+                  icon: Sparkles,
+                },
+                {
+                  href: "/dashboard/achievements",
+                  label: copy.nav.achievements,
+                  text: copy.shortcuts.achievements,
+                  icon: Trophy,
+                },
+                {
+                  href: "/dashboard/configs",
+                  label: copy.nav.configs,
+                  text: copy.shortcuts.configs,
+                  value: data.summary.configsTotal,
+                  icon: FileCog,
+                },
+              ].map((item) => {
+                const Icon = item.icon;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="rounded-xl border border-border bg-background px-4 py-4 transition-colors hover:border-primary/40 hover:bg-primary/5"
+                  >
+                    <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                      <Icon className="size-4 text-primary" />
+                      {item.label}
+                    </div>
                   <div className="mt-1 text-sm text-muted-foreground">
                     {item.text}
                   </div>
-                  <div className="mt-3 text-lg font-semibold text-primary">
-                    {formatDashboardCount(item.value, locale)}
-                  </div>
-                </Link>
-              ))}
+                    {typeof item.value === "number" ? (
+                      <div className="mt-3 text-lg font-semibold text-primary">
+                        {formatDashboardCount(item.value, locale)}
+                      </div>
+                    ) : null}
+                  </Link>
+                );
+              })}
             </div>
           </DashboardPanel>
 
@@ -488,6 +610,115 @@ export function DashboardClientPage() {
             }
           >
             <div className="space-y-3">
+              {data.publicConfig ? (
+                <article className="rounded-xl border border-border bg-background px-4 py-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium text-foreground">
+                        {overviewText.publicConfig}
+                      </div>
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        {overviewText.site}: {data.publicConfig.site_name || "-"}
+                      </div>
+                    </div>
+                    <DashboardStatusBadge
+                      value={
+                        data.publicConfig.maintenance_mode ? "inactive" : "active"
+                      }
+                    />
+                  </div>
+                  <div className="mt-3 grid gap-2 text-sm text-muted-foreground">
+                    <div>
+                      {overviewText.maintenance}:{" "}
+                      {data.publicConfig.maintenance_mode
+                        ? copy.status.active
+                        : copy.status.inactive}
+                    </div>
+                    <div>
+                      {overviewText.membership}:{" "}
+                      {data.publicConfig.membership_enabled
+                        ? copy.status.active
+                        : copy.status.inactive}
+                    </div>
+                    <div className="truncate">
+                      {overviewText.contact}: {data.publicConfig.site_contact || "-"}
+                    </div>
+                  </div>
+                </article>
+              ) : null}
+
+              {data.advertisementConfig ? (
+                <article className="rounded-xl border border-border bg-background px-4 py-3">
+                  <div className="text-sm font-medium text-foreground">
+                    {overviewText.advertisement}
+                  </div>
+                  <div className="mt-3 grid gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center justify-between gap-3">
+                      <span>{overviewText.homepageAd}</span>
+                      <DashboardStatusBadge
+                        value={
+                          data.advertisementConfig.homepage.enabled
+                            ? "active"
+                            : "inactive"
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <span>{overviewText.articleTopAd}</span>
+                      <DashboardStatusBadge
+                        value={
+                          data.advertisementConfig.articleTop.enabled
+                            ? "active"
+                            : "inactive"
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <span>{overviewText.articleBottomAd}</span>
+                      <DashboardStatusBadge
+                        value={
+                          data.advertisementConfig.articleBottom.enabled
+                            ? "active"
+                            : "inactive"
+                        }
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <span>{overviewText.globalAd}</span>
+                      <DashboardStatusBadge
+                        value={
+                          data.advertisementConfig.global.enabled
+                            ? "active"
+                            : "inactive"
+                        }
+                      />
+                    </div>
+                  </div>
+                </article>
+              ) : null}
+
+              <article className="rounded-xl border border-border bg-background px-4 py-3">
+                <div className="text-sm font-medium text-foreground">
+                  {overviewText.pendingQueue}
+                </div>
+                <div className="mt-3 space-y-2">
+                  {data.pendingOrderNos.length ? (
+                    data.pendingOrderNos.slice(0, 6).map((orderNo) => (
+                      <div
+                        key={orderNo}
+                        className="rounded-lg border border-border/70 px-3 py-2 text-sm text-muted-foreground"
+                      >
+                        {orderNo}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-sm text-muted-foreground">
+                      {overviewText.noPendingOrders}
+                    </div>
+                  )}
+                </div>
+              </article>
+
               {data.configs.length ? (
                 data.configs.map((item) => (
                   <article

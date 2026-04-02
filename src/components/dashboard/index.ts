@@ -1,8 +1,15 @@
 export { DashboardArticlesPage } from "./DashboardArticlesPage.client";
+export { DashboardAchievementsPage } from "./DashboardAchievementsPage.client";
+export { DashboardBannersPage } from "./DashboardBannersPage.client";
 export { DashboardClientPage } from "./DashboardClientPage.client";
 export { DashboardCommentsPage } from "./DashboardCommentsPage.client";
 export { DashboardConfigsPage } from "./DashboardConfigsPage.client";
 export { DashboardDataPanel } from "./DashboardDataPanel";
+export { DashboardDecorationsPage } from "./DashboardDecorationsPage.client";
 export { DashboardOrdersPage } from "./DashboardOrdersPage.client";
+export { DashboardPermissionsPage } from "./DashboardPermissionsPage.client";
+export { DashboardReportsPage } from "./DashboardReportsPage.client";
+export { DashboardRolesPage } from "./DashboardRolesPage.client";
 export { DashboardShell } from "./DashboardShell.client";
+export { DashboardTagsPage } from "./DashboardTagsPage.client";
 export { DashboardUsersPage } from "./DashboardUsersPage.client";

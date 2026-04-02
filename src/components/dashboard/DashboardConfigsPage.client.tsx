@@ -2,6 +2,7 @@
 
 import {
   configControllerFindAll,
+  configControllerFindByGroup,
   configControllerUpdate,
   uploadControllerUploadFile,
 } from "@/api";
@@ -344,6 +345,7 @@ export function DashboardConfigsPage() {
   const text = useMemo(() => getConfigPageText(locale), [locale]);
   const { ready } = useDashboardGuard();
   const [configs, setConfigs] = useState<DashboardConfigItem[]>([]);
+  const [allConfigs, setAllConfigs] = useState<DashboardConfigItem[]>([]);
   const [drafts, setDrafts] = useState<Record<number, string>>({});
   const [keyword, setKeyword] = useState("");
   const [activeGroup, setActiveGroup] = useState(ALL_GROUP_VALUE);
@@ -353,7 +355,7 @@ export function DashboardConfigsPage() {
   const [uploadingId, setUploadingId] = useState<number | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<number, string>>({});
 
-  const loadConfigs = useCallback(
+  const loadAllConfigs = useCallback(
     async (showLoading = true) => {
       if (showLoading) {
         setLoading(true);
@@ -365,7 +367,7 @@ export function DashboardConfigsPage() {
         const response = await configControllerFindAll();
         const nextConfigs = response?.data?.data?.data || [];
 
-        setConfigs(nextConfigs);
+        setAllConfigs(nextConfigs);
         setDrafts(createDraftMap(nextConfigs));
         setFieldErrors({});
       } catch {
@@ -384,19 +386,70 @@ export function DashboardConfigsPage() {
       return;
     }
 
-    void loadConfigs();
-  }, [loadConfigs, ready]);
+    void loadAllConfigs();
+  }, [loadAllConfigs, ready]);
 
   const groups = useMemo(() => {
     const values = Array.from(
-      new Set(configs.map((item) => item.group).filter(Boolean)),
+      new Set(allConfigs.map((item) => item.group).filter(Boolean)),
     );
 
     return [{ value: ALL_GROUP_VALUE, label: copy.common.all }, ...values.map((item) => ({
       value: item,
       label: item,
     }))];
-  }, [configs, copy.common.all]);
+  }, [allConfigs, copy.common.all]);
+
+  useEffect(() => {
+    if (!ready) {
+      return;
+    }
+
+    let mounted = true;
+
+    async function loadCurrentGroup() {
+      if (activeGroup === ALL_GROUP_VALUE) {
+        setConfigs(allConfigs);
+        return;
+      }
+
+      setLoading(true);
+      setError(false);
+
+      try {
+        const response = await configControllerFindByGroup({
+          path: {
+            group: activeGroup,
+          },
+        });
+
+        if (!mounted) {
+          return;
+        }
+
+        const nextConfigs = response?.data?.data?.data || [];
+        setConfigs(nextConfigs);
+        setDrafts((previous) => ({
+          ...createDraftMap(nextConfigs),
+          ...previous,
+        }));
+      } catch {
+        if (mounted) {
+          setError(true);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadCurrentGroup();
+
+    return () => {
+      mounted = false;
+    };
+  }, [activeGroup, allConfigs, ready]);
 
   useEffect(() => {
     if (!groups.some((item) => item.value === activeGroup)) {
@@ -408,16 +461,14 @@ export function DashboardConfigsPage() {
     const normalizedKeyword = keyword.trim().toLowerCase();
 
     return configs.filter((item) => {
-      const matchesGroup =
-        activeGroup === ALL_GROUP_VALUE || item.group === activeGroup;
       const matchesKeyword =
         !normalizedKeyword ||
         item.key.toLowerCase().includes(normalizedKeyword) ||
         item.description?.toLowerCase().includes(normalizedKeyword);
 
-      return matchesGroup && matchesKeyword;
+      return matchesKeyword;
     });
-  }, [activeGroup, configs, keyword]);
+  }, [configs, keyword]);
 
   const handleImageUpload = useCallback(
     async (id: number, file: File) => {
@@ -496,6 +547,17 @@ export function DashboardConfigsPage() {
               : current,
           ),
         );
+        setAllConfigs((previous) =>
+          previous.map((current) =>
+            current.id === item.id
+              ? {
+                  ...current,
+                  value: nextValue,
+                  updatedAt: new Date().toISOString(),
+                }
+              : current,
+          ),
+        );
       } catch {
         setFieldErrors((previous) => ({
           ...previous,
@@ -518,7 +580,7 @@ export function DashboardConfigsPage() {
         title={text.loadFailedTitle}
         description={text.loadFailedDescription}
         retryLabel={copy.common.retry}
-        onRetry={() => void loadConfigs()}
+        onRetry={() => void loadAllConfigs()}
       />
     );
   }
@@ -536,7 +598,7 @@ export function DashboardConfigsPage() {
             <div className="flex items-center justify-between gap-3 border-b border-border/70 px-3 py-3">
               <div>
                 <h2 className="text-sm font-semibold tracking-[0.01em] text-foreground md:text-base">
-                  {copy.pages.configs.title}
+                {copy.pages.configs.title}
                 </h2>
                 <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
                   {text.selectedGroupCount.replace(
@@ -548,7 +610,7 @@ export function DashboardConfigsPage() {
               <Button
                 variant="outline"
                 className="rounded-full px-4"
-                onClick={() => void loadConfigs(false)}
+                onClick={() => void loadAllConfigs(false)}
               >
                 {copy.common.refresh}
               </Button>

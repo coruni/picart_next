@@ -5,13 +5,20 @@ import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib";
 import { useUserStore } from "@/stores/useUserStore";
 import {
+  BadgeCheck,
   FileCog,
   FileText,
+  Images,
+  KeyRound,
   LayoutDashboard,
   Menu,
   MessageSquareText,
   ReceiptText,
   ShieldUser,
+  Sparkles,
+  Tags,
+  Trophy,
+  TriangleAlert,
   X,
 } from "lucide-react";
 import { useLocale } from "next-intl";
@@ -62,6 +69,48 @@ export function DashboardShell({ children }: DashboardShellProps) {
       icon: MessageSquareText,
     },
     {
+      href: "/dashboard/tags",
+      label: copy.nav.tags,
+      description: copy.pages.tags.description,
+      icon: Tags,
+    },
+    {
+      href: "/dashboard/roles",
+      label: copy.nav.roles,
+      description: copy.pages.roles.description,
+      icon: BadgeCheck,
+    },
+    {
+      href: "/dashboard/permissions",
+      label: copy.nav.permissions,
+      description: copy.pages.permissions.description,
+      icon: KeyRound,
+    },
+    {
+      href: "/dashboard/banners",
+      label: copy.nav.banners,
+      description: copy.pages.banners.description,
+      icon: Images,
+    },
+    {
+      href: "/dashboard/reports",
+      label: copy.nav.reports,
+      description: copy.pages.reports.description,
+      icon: TriangleAlert,
+    },
+    {
+      href: "/dashboard/decorations",
+      label: copy.nav.decorations,
+      description: copy.pages.decorations.description,
+      icon: Sparkles,
+    },
+    {
+      href: "/dashboard/achievements",
+      label: copy.nav.achievements,
+      description: copy.pages.achievements.description,
+      icon: Trophy,
+    },
+    {
       href: "/dashboard/orders",
       label: copy.nav.orders,
       description: copy.pages.orders.description,
@@ -88,7 +137,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   }, [pathname]);
 
   const navContent = (
-    <nav className="space-y-2">
+    <nav className="space-y-1">
       {navItems.map((item) => {
         const Icon = item.icon;
         const active = isActivePath(item.href);
@@ -128,7 +177,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
             </p> */}
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5">
+          <div className="min-h-0 flex-1 overflow-y-auto px-1 py-3">
             {navContent}
           </div>
         </aside>

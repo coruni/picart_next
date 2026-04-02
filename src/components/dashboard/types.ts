@@ -1,16 +1,44 @@
 import type {
+  AchievementControllerFindAllResponse,
   CommentControllerFindAllCommentsResponse,
+  ConfigControllerGetAdvertisementConfigResponse,
+  ConfigControllerGetPublicConfigsResponse,
   OrderControllerGetAllOrdersResponse,
+  PermissionControllerFindAllResponse,
 } from "@/api";
-import type { ArticleList, ConfigList, UserList, UserProfile } from "@/types";
+import type {
+  ArticleList,
+  BannerList,
+  ConfigList,
+  DecorationList,
+  RolePaginated,
+  TagList,
+  UserList,
+  UserProfile,
+} from "@/types";
 
 export type DashboardUserItem = UserList[number];
 export type DashboardArticleItem = ArticleList[number];
+export type DashboardTagItem = TagList[number];
+export type DashboardRoleItem = RolePaginated[number];
+export type DashboardPermissionItem =
+  NonNullable<PermissionControllerFindAllResponse["data"]["data"]>[number];
+export type DashboardBannerItem = BannerList[number];
 export type DashboardCommentItem =
   NonNullable<CommentControllerFindAllCommentsResponse["data"]>["data"][number];
 export type DashboardOrderItem =
   NonNullable<OrderControllerGetAllOrdersResponse["data"]>["data"][number];
 export type DashboardConfigItem = ConfigList[number];
+export type DashboardDecorationItem = DecorationList[number];
+export type DashboardReportItem = Record<string, unknown>;
+export type DashboardAchievementItem =
+  NonNullable<AchievementControllerFindAllResponse["data"]>[number];
+export type DashboardPublicConfig = NonNullable<
+  ConfigControllerGetPublicConfigsResponse["data"]
+>;
+export type DashboardAdvertisementConfig = NonNullable<
+  ConfigControllerGetAdvertisementConfigResponse["data"]
+>;
 
 export type DashboardSummary = {
   usersTotal: number;
@@ -29,4 +57,7 @@ export type DashboardOverviewData = {
   comments: DashboardCommentItem[];
   orders: DashboardOrderItem[];
   configs: DashboardConfigItem[];
+  publicConfig: DashboardPublicConfig | null;
+  advertisementConfig: DashboardAdvertisementConfig | null;
+  pendingOrderNos: string[];
 };

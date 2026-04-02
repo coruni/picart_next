@@ -3,13 +3,14 @@ export type DashboardLocale = "zh" | "en";
 const copy = {
   zh: {
     metaTitle: "管理后台",
-    metaDescription: "管理用户、文章、评论、订单与系统配置。",
+    metaDescription: "管理用户、文章、评论、订单、配置与其他运营模块。",
     shell: {
       eyebrow: "Admin",
       title: "管理后台",
       description: "使用现有 SDK 管理站点核心数据，前后台界面完全隔离。",
       accountEntry: "查看前台账号页",
-      noRoleHint: "未检测到管理员角色，若接口返回 403 请确认账号权限。",
+      noRoleHint:
+        "未检测到明确的管理员角色，如果接口返回 403，请先确认账号权限。",
     },
     common: {
       loading: "正在加载后台数据...",
@@ -17,6 +18,9 @@ const copy = {
       retry: "重试",
       reset: "重置",
       search: "搜索",
+      save: "保存",
+      cancel: "取消",
+      edit: "编辑",
       filters: "筛选条件",
       queryTable: "查询表格",
       expand: "展开",
@@ -44,11 +48,18 @@ const copy = {
       comments: "评论",
       orders: "订单",
       configs: "配置",
+      tags: "标签",
+      roles: "角色",
+      permissions: "权限",
+      banners: "轮播",
+      reports: "举报",
+      decorations: "装饰品",
+      achievements: "成就",
     },
     pages: {
       overview: {
         title: "站点概览",
-        description: "优先看核心总量，再看最近变更，保证后台首页先有管理价值。",
+        description: "优先看核心总量，再看最近变化，保证后台首页先有管理价值。",
       },
       users: {
         title: "用户管理",
@@ -70,6 +81,34 @@ const copy = {
         title: "配置管理",
         description: "查看配置分组、类型与公开状态，确认后台配置项完整性。",
       },
+      tags: {
+        title: "标签管理",
+        description: "查看标签基础信息、内容数量和关注热度。",
+      },
+      roles: {
+        title: "角色管理",
+        description: "查看角色状态、系统角色标记和权限数量。",
+      },
+      permissions: {
+        title: "权限管理",
+        description: "查看权限点名称和描述，核对后台权限边界。",
+      },
+      banners: {
+        title: "轮播管理",
+        description: "查看轮播图状态、跳转链接和排序信息。",
+      },
+      reports: {
+        title: "举报管理",
+        description: "查看举报记录和处理状态，追踪待处理问题。",
+      },
+      decorations: {
+        title: "装饰品管理",
+        description: "查看装饰品状态、类型、稀有度和价格信息。",
+      },
+      achievements: {
+        title: "成就管理",
+        description: "查看成就基础信息、类型、稀有度和启用状态。",
+      },
     },
     summary: {
       users: "用户总数",
@@ -85,16 +124,23 @@ const copy = {
       latestComments: "最新评论",
       latestOrders: "最近订单",
       latestConfigs: "配置预览",
-      recentChanges: "最近变更",
+      recentChanges: "最近变化",
       moduleShortcuts: "管理模块",
     },
     shortcuts: {
-      overview: "查看后台总览和关键计数",
-      users: "搜索用户账号与角色信息",
-      articles: "检查文章状态和内容归属",
-      comments: "巡检评论内容与文章上下文",
-      orders: "核对支付状态和订单流水",
-      configs: "查看系统配置和公开项",
+      overview: "查看后台总览和关键统计。",
+      users: "搜索用户账号与角色信息。",
+      articles: "检查文章状态和内容归属。",
+      comments: "巡检评论内容与文章上下文。",
+      orders: "核对支付状态和订单流水。",
+      configs: "查看系统配置和公开项。",
+      tags: "查看标签数量、排序和关注热度。",
+      roles: "核对角色状态、系统标记和权限规模。",
+      permissions: "检查权限点和描述是否完整。",
+      banners: "查看轮播状态、图片和链接配置。",
+      reports: "巡检举报记录和处理状态。",
+      decorations: "查看装饰品类型、价格和上架状态。",
+      achievements: "查看成就类型、稀有度和启用状态。",
     },
     filters: {
       keyword: "关键词",
@@ -103,6 +149,12 @@ const copy = {
       commentPlaceholder: "搜索评论内容",
       orderPlaceholder: "搜索订单号或标题",
       configPlaceholder: "搜索配置 key 或描述",
+      tagNamePlaceholder: "输入标签名称",
+      roleNamePlaceholder: "输入角色名称",
+      bannerTitlePlaceholder: "输入轮播标题",
+      reportPlaceholder: "搜索举报原因",
+      decorationPlaceholder: "搜索装饰品名称",
+      achievementPlaceholder: "搜索成就名称",
       status: "状态",
       group: "分组",
     },
@@ -131,6 +183,21 @@ const copy = {
       value: "值",
       public: "公开",
       group: "分组",
+      name: "名称",
+      description: "描述",
+      sort: "排序",
+      count: "数量",
+      system: "系统",
+      permissions: "权限数",
+      image: "图片",
+      link: "链接",
+      action: "操作",
+      reason: "原因",
+      categoryLabel: "分类",
+      rarity: "稀有度",
+      price: "价格",
+      enabled: "启用",
+      code: "代码",
     },
     empty: {
       users: "没有匹配的用户。",
@@ -138,6 +205,13 @@ const copy = {
       comments: "没有匹配的评论。",
       orders: "没有匹配的订单。",
       configs: "没有匹配的配置。",
+      tags: "没有匹配的标签。",
+      roles: "没有匹配的角色。",
+      permissions: "没有权限数据。",
+      banners: "没有匹配的轮播。",
+      reports: "没有匹配的举报。",
+      decorations: "没有匹配的装饰品。",
+      achievements: "没有匹配的成就。",
     },
     status: {
       DRAFT: "草稿",
@@ -158,13 +232,16 @@ const copy = {
   },
   en: {
     metaTitle: "Admin Dashboard",
-    metaDescription: "Manage users, articles, comments, orders, and system configs.",
+    metaDescription:
+      "Manage users, articles, comments, orders, configs, and operational modules.",
     shell: {
       eyebrow: "Admin",
       title: "Dashboard",
-      description: "Manage core site data through the existing SDK with a dedicated back-office shell.",
+      description:
+        "Manage core site data through the existing SDK with a dedicated back-office shell.",
       accountEntry: "Open front profile",
-      noRoleHint: "No explicit admin role was detected. If APIs return 403, verify account permissions.",
+      noRoleHint:
+        "No explicit admin role was detected. If APIs return 403, verify account permissions.",
     },
     common: {
       loading: "Loading dashboard data...",
@@ -172,6 +249,9 @@ const copy = {
       retry: "Retry",
       reset: "Reset",
       search: "Search",
+      save: "Save",
+      cancel: "Cancel",
+      edit: "Edit",
       filters: "Filters",
       queryTable: "Query Table",
       expand: "Expand",
@@ -188,7 +268,8 @@ const copy = {
       next: "Next",
       all: "All",
       noData: "No data",
-      noPermission: "This account may not have back-office permission. Check API authorization.",
+      noPermission:
+        "This account may not have back-office permission. Check API authorization.",
       page: "Page {page} / {totalPages}",
       currentPageCount: "{count} items on this page",
     },
@@ -199,31 +280,74 @@ const copy = {
       comments: "Comments",
       orders: "Orders",
       configs: "Configs",
+      tags: "Tags",
+      roles: "Roles",
+      permissions: "Permissions",
+      banners: "Banners",
+      reports: "Reports",
+      decorations: "Decorations",
+      achievements: "Achievements",
     },
     pages: {
       overview: {
         title: "Site Overview",
-        description: "Start with exact counts, then inspect the latest changes across the main management modules.",
+        description:
+          "Start with exact counts, then inspect the latest changes across the main management modules.",
       },
       users: {
         title: "User Management",
-        description: "Review account status, roles, content output, and recent activity.",
+        description:
+          "Review account status, roles, content output, and recent activity.",
       },
       articles: {
         title: "Article Management",
-        description: "Inspect article status, author ownership, traffic, and recent updates.",
+        description:
+          "Inspect article status, author ownership, traffic, and recent updates.",
       },
       comments: {
         title: "Comment Management",
-        description: "Search comment content and trace each record back to its article context.",
+        description:
+          "Search comment content and trace each record back to its article context.",
       },
       orders: {
         title: "Order Management",
-        description: "Track payment state, recent transactions, and operational order flow.",
+        description:
+          "Track payment state, recent transactions, and operational order flow.",
       },
       configs: {
         title: "Config Management",
-        description: "Review config groups, value types, and public exposure from one place.",
+        description:
+          "Review config groups, value types, and public exposure from one place.",
+      },
+      tags: {
+        title: "Tag Management",
+        description: "Review tag basics, content volume, and follow heat.",
+      },
+      roles: {
+        title: "Role Management",
+        description: "Review role status, system flags, and permission counts.",
+      },
+      permissions: {
+        title: "Permission Management",
+        description:
+          "Review permission keys and descriptions for the admin boundary.",
+      },
+      banners: {
+        title: "Banner Management",
+        description: "Review banner status, target links, and sort order.",
+      },
+      reports: {
+        title: "Report Management",
+        description: "Inspect report records and moderation status.",
+      },
+      decorations: {
+        title: "Decoration Management",
+        description: "Review decoration status, type, rarity, and pricing.",
+      },
+      achievements: {
+        title: "Achievement Management",
+        description:
+          "Review achievement basics, type, rarity, and enabled state.",
       },
     },
     summary: {
@@ -250,6 +374,13 @@ const copy = {
       comments: "Inspect comment content with article context.",
       orders: "Track payment status and order flow.",
       configs: "Review system configuration entries.",
+      tags: "Review tag counts, sorting, and follow heat.",
+      roles: "Check role status, system flags, and permission scale.",
+      permissions: "Inspect permission points and descriptions.",
+      banners: "Review banner status, image, and link settings.",
+      reports: "Inspect report records and moderation status.",
+      decorations: "Review decoration type, price, and availability.",
+      achievements: "Review achievement type, rarity, and enabled state.",
     },
     filters: {
       keyword: "Keyword",
@@ -258,6 +389,12 @@ const copy = {
       commentPlaceholder: "Search comment content",
       orderPlaceholder: "Search order no. or title",
       configPlaceholder: "Search config key or description",
+      tagNamePlaceholder: "Enter tag name",
+      roleNamePlaceholder: "Enter role name",
+      bannerTitlePlaceholder: "Enter banner title",
+      reportPlaceholder: "Search report reason",
+      decorationPlaceholder: "Search decoration name",
+      achievementPlaceholder: "Search achievement name",
       status: "Status",
       group: "Group",
     },
@@ -286,6 +423,21 @@ const copy = {
       value: "Value",
       public: "Public",
       group: "Group",
+      name: "Name",
+      description: "Description",
+      sort: "Sort",
+      count: "Count",
+      system: "System",
+      permissions: "Permissions",
+      image: "Image",
+      link: "Link",
+      action: "Action",
+      reason: "Reason",
+      categoryLabel: "Category",
+      rarity: "Rarity",
+      price: "Price",
+      enabled: "Enabled",
+      code: "Code",
     },
     empty: {
       users: "No matching users.",
@@ -293,6 +445,13 @@ const copy = {
       comments: "No matching comments.",
       orders: "No matching orders.",
       configs: "No matching configs.",
+      tags: "No matching tags.",
+      roles: "No matching roles.",
+      permissions: "No permissions found.",
+      banners: "No matching banners.",
+      reports: "No matching reports.",
+      decorations: "No matching decorations.",
+      achievements: "No matching achievements.",
     },
     status: {
       DRAFT: "Draft",

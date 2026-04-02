@@ -112,3 +112,51 @@ export function formatDashboardCount(value: number | null | undefined, locale?: 
     },
   });
 }
+
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+export function normalizeUnknownListResponse(value: unknown) {
+  if (!isRecord(value)) {
+    return { data: [] as Record<string, unknown>[], total: 0, totalPages: 1 };
+  }
+
+  const rootData = isRecord(value.data) ? value.data : null;
+  const nestedData = rootData && isRecord(rootData.data) ? rootData.data : null;
+  const rows = nestedData?.data;
+  const meta = nestedData && isRecord(nestedData.meta) ? nestedData.meta : null;
+
+  return {
+    data: Array.isArray(rows)
+      ? rows.filter(isRecord)
+      : rootData && Array.isArray(rootData.data)
+        ? rootData.data.filter(isRecord)
+        : [],
+    total:
+      typeof meta?.total === "number"
+        ? meta.total
+        : Array.isArray(rows)
+          ? rows.length
+          : 0,
+    totalPages:
+      typeof meta?.totalPages === "number"
+        ? meta.totalPages
+        : 1,
+  };
+}
+
+export function getStringField(record: Record<string, unknown>, key: string) {
+  const value = record[key];
+  return typeof value === "string" ? value : "";
+}
+
+export function getNumberField(record: Record<string, unknown>, key: string) {
+  const value = record[key];
+  return typeof value === "number" ? value : 0;
+}
+
+export function getBooleanField(record: Record<string, unknown>, key: string) {
+  const value = record[key];
+  return typeof value === "boolean" ? value : false;
+}

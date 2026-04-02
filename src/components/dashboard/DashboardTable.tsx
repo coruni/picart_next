@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/lib";
 import { Select } from "@/components/ui/Select";
+import { cn } from "@/lib";
 import { useEffect, useRef, useState } from "react";
 
 const DEFAULT_ELLIPSIS_WIDTH_CLASS = "w-[420px] max-w-[420px]";
@@ -184,23 +184,23 @@ export function DashboardTable<T>({
         <table className="min-w-full table-fixed border-separate border-spacing-0">
           <thead ref={theadRef}>
             <tr>
-              {columns.map((column) => (
+              {columns.map((column) =>
                 (() => {
                   return (
-                <th
-                  key={column.key}
-                  className={cn(
-                    "sticky top-0 z-10 border-b border-border bg-card text-left text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground",
-                    cellPadding,
-                    column.className,
-                    getEllipsisWidthClass(column),
-                  )}
-                >
-                  {column.header}
-                </th>
+                    <th
+                      key={column.key}
+                      className={cn(
+                        "sticky top-0 z-10 border-b border-border bg-card text-left text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground",
+                        cellPadding,
+                        column.className,
+                        getEllipsisWidthClass(column),
+                      )}
+                    >
+                      {column.header}
+                    </th>
                   );
-                })()
-              ))}
+                })(),
+              )}
             </tr>
           </thead>
           <tbody>
@@ -211,26 +211,26 @@ export function DashboardTable<T>({
               >
                 {columns.map((column) => {
                   return (
-                  <td
-                    key={column.key}
-                    className={cn(
-                      "border-b border-border/70 last:border-b-0",
-                      cellPadding,
-                      column.className,
-                      getEllipsisWidthClass(column),
-                    )}
-                  >
-                    {column.ellipsis ? (
-                      <div
-                        className="min-w-0 max-w-full overflow-hidden"
-                        title={column.getTooltip?.(row)}
-                      >
-                        {column.render(row)}
-                      </div>
-                    ) : (
-                      column.render(row)
-                    )}
-                  </td>
+                    <td
+                      key={column.key}
+                      className={cn(
+                        "border-b border-border/70 last:border-b-0",
+                        cellPadding,
+                        column.className,
+                        getEllipsisWidthClass(column),
+                      )}
+                    >
+                      {column.ellipsis ? (
+                        <div
+                          className="min-w-0 max-w-full overflow-hidden"
+                          title={column.getTooltip?.(row)}
+                        >
+                          {column.render(row)}
+                        </div>
+                      ) : (
+                        column.render(row)
+                      )}
+                    </td>
                   );
                 })}
               </tr>
@@ -240,7 +240,10 @@ export function DashboardTable<T>({
       </div>
 
       {pagination && paginationLabels ? (
-        <div ref={footerRef} className="shrink-0 border-t border-border px-3 py-2.5">
+        <div
+          ref={footerRef}
+          className="shrink-0 border-t border-border px-3 py-2.5"
+        >
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
@@ -248,34 +251,34 @@ export function DashboardTable<T>({
                 <div className="w-20 shrink-0">
                   <Select
                     value={String(pagination.pageSize)}
-                    onChange={(value) => pagination.onPageSizeChange(Number(value))}
+                    onChange={(value) =>
+                      pagination.onPageSizeChange(Number(value))
+                    }
                     options={pagination.pageSizeOptions}
                     className="h-8"
                     dropdownPlacement="top"
                   />
                 </div>
               </div>
-              <span>
-                {paginationLabels.page
-                  .replace("{page}", String(pagination.page))
-                  .replace("{totalPages}", String(pagination.totalPages))}
-              </span>
-              {typeof pagination.total === "number" ? (
-                <span>{pagination.total}</span>
-              ) : null}
             </div>
-            <div className="flex w-full items-center gap-3 sm:ml-auto sm:w-auto">
+            <div className="flex w-full items-center gap-3 flex-1 justify-end">
               <button
                 type="button"
-                className="inline-flex h-8 flex-1 items-center justify-center rounded-full border border-border/70 px-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
+                className="inline-flex truncate h-7 flex-1 items-center justify-center rounded-full border border-primary hover:bg-primary hover:text-white/90 px-4 text-sm font-medium  transition-colors text-primary disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
                 disabled={pagination.previousDisabled}
                 onClick={pagination.onPrevious}
               >
                 {paginationLabels.previous}
               </button>
+              <div className="text-secondary text-xs">
+                {paginationLabels.page
+                  .replace("{page}", String(pagination.page))
+                  .replace("{totalPages}", String(pagination.totalPages))}
+              </div>
+
               <button
                 type="button"
-                className="inline-flex h-8 flex-1 items-center justify-center rounded-full border border-border/70 px-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
+                className="inline-flex truncate h-7 flex-1 items-center justify-center rounded-full border border-primary hover:bg-primary hover:text-white/90 px-4 text-sm font-medium  transition-colors text-primary disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
                 disabled={pagination.nextDisabled}
                 onClick={pagination.onNext}
               >
