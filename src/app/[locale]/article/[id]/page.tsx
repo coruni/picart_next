@@ -19,6 +19,7 @@ import { Forward, Hash } from "lucide-react";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 
 function stripHtmlTags(value: string) {
   return value.replace(/<[^>]+>/g, " ");
@@ -117,28 +118,28 @@ type ArticleDetailPageProps = {
   }>;
 };
 
+const getArticleDetail = cache(async (id: string) => {
+  const { data } = await serverApi.articleControllerFindOne({
+    path: { id },
+  });
+
+  return data?.data ?? null;
+});
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ id: string; locale: string }>;
 }): Promise<Metadata> {
   const { id, locale } = await params;
-
-  const { data } = await serverApi.articleControllerFindOne({
-    path: { id },
-  });
-  const article = data?.data;
+  const article = await getArticleDetail(id);
   return generateArticleMetadata(article, locale);
 }
 
 export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
   const { id, locale } = await props.params;
   const t = await getTranslations("articleDetail");
-
-  const { data } = await serverApi.articleControllerFindOne({
-    path: { id },
-  });
-  const article = data?.data;
+  const article = await getArticleDetail(id);
   if (!article) {
     notFound();
   }

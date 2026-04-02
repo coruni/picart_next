@@ -6,10 +6,16 @@ import { serverApi } from "@/lib/server-api";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ReactNode } from "react";
+import { cache } from "react";
 interface TopicDetailLayoutProps {
     children: ReactNode;
     params: Promise<{ id: string; locale: string }>;
 }
+
+const getTopicTag = cache(async (id: string) => {
+    const { data } = await serverApi.tagControllerFindOne({ path: { id } });
+    return data?.data ?? null;
+});
 // 动态生成元数据
 export async function generateMetadata({
     params,
@@ -17,22 +23,20 @@ export async function generateMetadata({
     params: Promise<{ locale: string, id: string }>;
 }): Promise<Metadata> {
     const { id, locale } = await params;
-    const { data } = await serverApi.tagControllerFindOne({ path: { id } });
+    const tag = await getTopicTag(id);
 
-    if (!data?.data) {
+    if (!tag) {
         return {
             title: "Tag Not Found",
         };
     }
 
-    return generateTagMetadata(data.data, locale);
+    return generateTagMetadata(tag, locale);
 }
 
 export default async function TopicDetailLayout({ children, params }: TopicDetailLayoutProps) {
     const { id } = await params;
-    // 请求用户数据
-    const { data } = await serverApi.tagControllerFindOne({ path: { id } })
-    const tag = data?.data;
+    const tag = await getTopicTag(id);
     if (!tag) {
         notFound();
     }

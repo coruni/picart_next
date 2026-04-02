@@ -1,4 +1,5 @@
 import { cn } from "@/lib";
+import { getCurrentUser } from "@/lib/current-user";
 import { ArticleDetail } from "@/types";
 import { Banner } from "../ui/Banner";
 import { ArticleCreateWidget } from "./ArticleCreateWidget";
@@ -37,11 +38,14 @@ export async function Sidebar({
   author,
   showSiteContact = true,
 }: SidebarProps) {
+  const currentUser = await getCurrentUser();
   const shouldShowBanner =
     showBanner && (randomBanner ? Math.random() >= 0.5 : true);
 
   const sidebarItems = [
-    showArticleCreate ? <ArticleCreateWidget key="article-create" /> : null,
+    showArticleCreate && currentUser
+      ? <ArticleCreateWidget key="article-create" />
+      : null,
 
     showSearchHistory ? <SearchHistory key="search-history" /> : null,
     showHotSearch ? <HotSearch key="hot-search" /> : null,
