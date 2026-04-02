@@ -22,6 +22,7 @@ import type {
   CommentControllerFindAllResponse,
   CommentControllerFindOneResponse,
   CommentControllerGetUserCommentsResponse,
+  CollectionControllerFindOneResponse,
   ConfigControllerFindAllResponse,
   ConfigControllerFindByGroupResponse,
   ConfigControllerGetAdvertisementConfigResponse,
@@ -123,6 +124,7 @@ export type ReportStatistics = FirstResponse<ReportControllerGetStatisticsRespon
 export type AllComments = NonNullable<CommentControllerFindAllResponse["data"]["data"]>;
 export type CommentList = NonNullable<CommentControllerFindOneResponse["data"]["data"]>;
 export type UserCommentList = NonNullable<CommentControllerGetUserCommentsResponse["data"]["data"]>;
+export type CollectionDetail = NonNullable<CollectionControllerFindOneResponse["data"]>;
 
 // ==================== 通用结构类型 ====================
 

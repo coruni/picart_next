@@ -22,11 +22,12 @@ export function Header({ categories }: HeaderProps) {
   const siteConfig = useAppStore((state) => state.siteConfig);
   const pathname = usePathname();
   const isMobile = useIsMobile();
-  const allowedPages = ["/account/", "/topic/"];
-  const deniedPages = ["/edit", "/decoration", "/followers", "/followings"];
+  const isAccountTransparentPage = /^\/account\/[^/]+(?:\/(?:comment|favorite|topic|collection))?$/.test(
+    pathname,
+  );
+  const isTopicTransparentPage = /^\/topic\/[^/]+$/.test(pathname);
   const isTransparentBgPage =
-    allowedPages.some((path) => pathname.includes(path)) &&
-    !deniedPages.some((path) => pathname.includes(path));
+    isAccountTransparentPage || isTopicTransparentPage;
   const scrolled = useScrollThreshold(isMobile ? 168 : 220, {
     enabled: isTransparentBgPage,
     hysteresis: isMobile ? 16 : 24,

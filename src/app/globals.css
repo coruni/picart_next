@@ -21,6 +21,10 @@
   --font-geist-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
+*{
+  box-sizing: border-box;
+}
+
 ::-webkit-scrollbar {
   width: 14px;
 }

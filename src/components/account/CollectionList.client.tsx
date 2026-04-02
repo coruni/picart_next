@@ -4,6 +4,7 @@ import { collectionControllerFindAll, CollectionControllerFindAllResponse } from
 import { EmptyState, InfiniteScrollStatus } from "@/components/shared";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
+import { Link } from "@/i18n/routing";
 import { formatCompactNumber } from "@/lib";
 import { ChevronRight, FolderClosed } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -121,7 +122,13 @@ export function CollectionListClient({
           key={`${collection.id}-${index}`}
           className="border-b border-border last-of-type:border-b-0 cursor-pointer"
         >
-          <div className="group flex items-center space-x-4 rounded-xl p-4 hover:bg-primary/15">
+          <Link
+            href={
+              collection.href ||
+              `/account/${userId}/collection/${collection.id}`
+            }
+            className="group flex items-center space-x-4 rounded-xl p-4 hover:bg-primary/15"
+          >
             <div className="relative size-16.5 shrink-0 overflow-hidden rounded-lg">
               {collection.cover || collection.avatar ? (
                 <ImageWithFallback
@@ -165,7 +172,7 @@ export function CollectionListClient({
 
               <ChevronRight size={16} className="text-secondary" />
             </div>
-          </div>
+          </Link>
         </article>
       ))}
 

@@ -1,7 +1,7 @@
 import { configControllerGetPublicConfigs } from "@/api";
 import { categoryControllerFindAll } from "@/api";
 import { routing } from "@/i18n/routing";
-import { ArticleDetail, TagDetail, UserDetail } from "@/types";
+import { ArticleDetail, CollectionDetail, TagDetail, UserDetail } from "@/types";
 import { unstable_cache } from "next/cache";
 import type { Metadata } from "next";
 
@@ -418,6 +418,74 @@ export async function generateTagMetadata(
       title,
       description,
       images: tag.cover || tag.avatar ? [tag.cover || tag.avatar] : undefined,
+    },
+  };
+}
+
+/**
+ * Generate collection detail metadata.
+ */
+export async function generateCollectionMetadata(
+  collection: CollectionDetail | undefined | null,
+  locale: string = "zh",
+): Promise<Metadata> {
+  const config = await getPublicConfig();
+  const siteName = config?.site_name || "PicArt";
+
+  if (!collection) {
+    return generateSiteMetadata(locale);
+  }
+
+  const path = `/account/${collection.userId}/collection/${collection.id}`;
+  const title = collection.name;
+  const description =
+    collection.description ||
+    `${collection.itemCount || 0} ${
+      locale === "zh" ? "篇内容" : "items"
+    } · ${collection.user?.nickname || collection.user?.username || siteName}`;
+  const keywords = splitKeywords([
+    collection.name,
+    collection.user?.nickname,
+    collection.user?.username,
+    config?.seo_long_tail_keywords,
+  ]);
+  const previewImage =
+    (typeof collection.cover === "string" && collection.cover) ||
+    (typeof collection.avatar === "string" && collection.avatar) ||
+    collection.user?.background ||
+    collection.user?.avatar;
+
+  return {
+    title,
+    description,
+    keywords: keywords.length > 0 ? keywords : undefined,
+    authors: collection.user
+      ? [{ name: collection.user.nickname || collection.user.username }]
+      : undefined,
+    alternates: buildLocalizedAlternates(locale, path),
+    openGraph: {
+      type: "website",
+      locale,
+      siteName,
+      url: getLocalizedPath(locale, path),
+      title,
+      description,
+      images: previewImage
+        ? [
+            {
+              url: previewImage,
+              width: 1200,
+              height: 630,
+              alt: title,
+            },
+          ]
+        : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: previewImage ? [previewImage] : undefined,
     },
   };
 }

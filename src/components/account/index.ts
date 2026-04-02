@@ -1,4 +1,5 @@
 export { AccountInfo } from "./AccountInfo";
+export { CollectionArticleListClient } from "./CollectionArticleList.client";
 export { CollectionListClient } from "./CollectionList.client";
 export { AccountTopicListClient } from "./AccountTopicList.client";
 export { AccountTabs } from "./AccountTabs";
