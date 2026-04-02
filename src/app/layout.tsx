@@ -1,3 +1,4 @@
+import { AnalyticsScripts } from "@/components/providers/AnalyticsScripts";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -42,6 +43,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning className={miSans.className}>
       <body className="antialiased">
+        <AnalyticsScripts />
         {children}
       </body>
     </html>

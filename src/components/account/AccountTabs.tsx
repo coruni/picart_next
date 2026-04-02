@@ -44,6 +44,14 @@ export function AccountTabs({ user, viewerId }: AccountTabsProps) {
     });
   }
 
+  if (!isAccountSectionHidden(user, "collections", viewerId)) {
+    tabs.push({
+      label: t("collection"),
+      value: "collection",
+      href: `/account/${userId}/collection`,
+    });
+  }
+
   const isActive = (currentPath: string, tabHref: string) => {
     const normalizedPath = currentPath.replace(/^\/(zh|en)/, "");
     const normalizedHref = tabHref.replace(/^\/(zh|en)/, "");

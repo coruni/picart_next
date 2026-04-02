@@ -180,14 +180,6 @@ export type UpdateUserDto = {
      */
     password?: string;
     /**
-     * 邮箱
-     */
-    email?: string;
-    /**
-     * 手机号
-     */
-    phone?: string;
-    /**
      * 角色ID列表
      */
     roleIds?: Array<number>;
@@ -199,10 +191,6 @@ export type UpdateUserDto = {
      * 邀请码
      */
     inviteCode?: string;
-    /**
-     * 邮箱验证码
-     */
-    verificationCode?: string;
     /**
      * 头像
      */
@@ -386,6 +374,30 @@ export type UpdateUserConfigDto = {
      * 是否接收推送通知
      */
     enablePushNotification?: boolean;
+    /**
+     * 是否隐藏收藏夹
+     */
+    hideFavorites?: boolean;
+    /**
+     * 是否隐藏评论列表
+     */
+    hideComments?: boolean;
+    /**
+     * 是否隐藏收藏夹列表
+     */
+    hideCollections?: boolean;
+    /**
+     * 是否隐藏粉丝列表
+     */
+    hideFollowers?: boolean;
+    /**
+     * 是否隐藏关注列表
+     */
+    hideFollowings?: boolean;
+    /**
+     * 是否隐藏标签列表
+     */
+    hideTags?: boolean;
     /**
      * 备注
      */
@@ -1718,6 +1730,67 @@ export type RecallPrivateMessageDto = {
      * 撤回原因
      */
     reason?: string;
+};
+
+export type UpdateUserContactDto = {
+    /**
+     * 新邮箱
+     */
+    email?: string;
+    /**
+     * 新手机号
+     */
+    phone?: string;
+    /**
+     * 邮箱验证码，仅修改邮箱时需要
+     */
+    verificationCode?: string;
+};
+
+export type CreateCollectionDto = {
+    /**
+     * 收藏夹名称
+     */
+    name: string;
+    /**
+     * 收藏夹描述
+     */
+    description?: string;
+    /**
+     * 封面图片
+     */
+    cover?: string;
+    /**
+     * 是否公开
+     */
+    isPublic?: boolean;
+    /**
+     * 排序
+     */
+    sort?: number;
+};
+
+export type UpdateCollectionDto = {
+    /**
+     * 收藏夹名称
+     */
+    name?: string;
+    /**
+     * 收藏夹描述
+     */
+    description?: string;
+    /**
+     * 封面图片
+     */
+    cover?: string;
+    /**
+     * 是否公开
+     */
+    isPublic?: boolean;
+    /**
+     * 排序
+     */
+    sort?: number;
 };
 
 export type AppControllerGetHelloData = {
@@ -12892,249 +12965,6 @@ export type DecorationControllerGetMyAchievementBadgesResponses = {
 
 export type DecorationControllerGetMyAchievementBadgesResponse = DecorationControllerGetMyAchievementBadgesResponses[keyof DecorationControllerGetMyAchievementBadgesResponses];
 
-export type FavoriteControllerFindAllData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: {
-        /**
-         * 页码
-         */
-        page?: number;
-        /**
-         * 每页数量
-         */
-        limit?: number;
-        /**
-         * 用户ID
-         */
-        userId?: number;
-        /**
-         * 关键词搜索（收藏夹名称）
-         */
-        keyword?: string;
-        /**
-         * 排序字段
-         */
-        sortBy?: string;
-        /**
-         * 排序方向
-         */
-        sortOrder?: 'ASC' | 'DESC';
-    };
-    url: '/favorite';
-};
-
-export type FavoriteControllerFindAllResponses = {
-    200: unknown;
-};
-
-export type FavoriteControllerCreateData = {
-    body: CreateFavoriteDto;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/favorite';
-};
-
-export type FavoriteControllerCreateResponses = {
-    201: unknown;
-};
-
-export type FavoriteControllerRemoveData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        /**
-         * 收藏夹ID
-         */
-        id: number;
-    };
-    query?: never;
-    url: '/favorite/{id}';
-};
-
-export type FavoriteControllerRemoveResponses = {
-    200: unknown;
-};
-
-export type FavoriteControllerFindOneData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        /**
-         * 收藏夹ID
-         */
-        id: number;
-    };
-    query?: never;
-    url: '/favorite/{id}';
-};
-
-export type FavoriteControllerFindOneResponses = {
-    200: unknown;
-};
-
-export type FavoriteControllerUpdateData = {
-    body: UpdateFavoriteDto;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        /**
-         * 收藏夹ID
-         */
-        id: number;
-    };
-    query?: never;
-    url: '/favorite/{id}';
-};
-
-export type FavoriteControllerUpdateResponses = {
-    200: unknown;
-};
-
-export type FavoriteControllerGetFavoriteItemsData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        /**
-         * 收藏夹ID
-         */
-        id: number;
-    };
-    query?: {
-        /**
-         * 页码
-         */
-        page?: number;
-        /**
-         * 每页数量
-         */
-        limit?: number;
-    };
-    url: '/favorite/{id}/items';
-};
-
-export type FavoriteControllerGetFavoriteItemsResponses = {
-    200: unknown;
-};
-
-export type FavoriteControllerGetArticleFavoriteInfoData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        /**
-         * 文章ID
-         */
-        articleId: number;
-    };
-    query?: never;
-    url: '/favorite/article/{articleId}/info';
-};
-
-export type FavoriteControllerGetArticleFavoriteInfoResponses = {
-    200: unknown;
-};
-
-export type FavoriteControllerCheckArticleInFavoritesData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        /**
-         * 文章ID
-         */
-        articleId: number;
-    };
-    query?: never;
-    url: '/favorite/check/{articleId}';
-};
-
-export type FavoriteControllerCheckArticleInFavoritesResponses = {
-    200: unknown;
-};
-
-export type FavoriteControllerAddToFavoriteData = {
-    body: AddToFavoriteDto;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/favorite/add';
-};
-
-export type FavoriteControllerAddToFavoriteResponses = {
-    201: unknown;
-};
-
-export type FavoriteControllerRemoveFromFavoriteData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        /**
-         * 收藏夹ID
-         */
-        favoriteId: number;
-        /**
-         * 文章ID
-         */
-        articleId: number;
-    };
-    query?: never;
-    url: '/favorite/{favoriteId}/article/{articleId}';
-};
-
-export type FavoriteControllerRemoveFromFavoriteResponses = {
-    200: unknown;
-};
-
 export type PointsControllerAddPointsData = {
     body: AddPointsDto;
     headers?: {
@@ -14274,3 +14104,596 @@ export type AchievementControllerClaimAllRewardsResponses = {
      */
     200: unknown;
 };
+
+export type CollectionControllerFindAllData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: {
+        /**
+         * 页码
+         */
+        page?: number;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+        /**
+         * 用户ID
+         */
+        userId?: number;
+        /**
+         * 关键词搜索（收藏夹名称）
+         */
+        keyword?: string;
+        /**
+         * 排序字段
+         */
+        sortBy?: string;
+        /**
+         * 排序方向
+         */
+        sortOrder?: 'ASC' | 'DESC';
+    };
+    url: '/collection';
+};
+
+export type CollectionControllerFindAllResponses = {
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<{
+                id?: number;
+                name?: string;
+                description?: string;
+                avatar?: string;
+                cover?: string;
+                isPublic?: boolean;
+                sort?: number;
+                userId?: number;
+                user: {
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: string;
+                    banReason: string;
+                    avatar: string;
+                    description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: unknown;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    likes: number;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
+                    lastLoginAt: string;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    equippedDecorations: {
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                        COMMENT_BUBBLE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
+                };
+                itemCount?: number;
+                createdAt?: string;
+                updatedAt?: string;
+            }>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
+};
+
+export type CollectionControllerFindAllResponse = CollectionControllerFindAllResponses[keyof CollectionControllerFindAllResponses];
+
+export type CollectionControllerCreateData = {
+    body: CreateCollectionDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/collection';
+};
+
+export type CollectionControllerCreateResponses = {
+    201: unknown;
+};
+
+export type CollectionControllerRemoveData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 合集ID
+         */
+        id: number;
+    };
+    query?: never;
+    url: '/collection/{id}';
+};
+
+export type CollectionControllerRemoveResponses = {
+    200: unknown;
+};
+
+export type CollectionControllerFindOneData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 合集ID
+         */
+        id: number;
+    };
+    query?: never;
+    url: '/collection/{id}';
+};
+
+export type CollectionControllerFindOneResponses = {
+    200: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            name: string;
+            description: string;
+            avatar: unknown;
+            cover: string;
+            isPublic: boolean;
+            sort: number;
+            userId: number;
+            user: {
+                id: number;
+                username: string;
+                nickname: string;
+                status: string;
+                banned: string;
+                banReason: string;
+                avatar: string;
+                description: string;
+                background: string;
+                gender: string;
+                birthDate: unknown;
+                articleCount: number;
+                followerCount: number;
+                followingCount: number;
+                likes: number;
+                level: number;
+                experience: number;
+                wallet: number;
+                points: number;
+                membershipLevel: number;
+                membershipLevelName: string;
+                membershipStatus: string;
+                membershipStartDate: string;
+                membershipEndDate: string;
+                lastLoginAt: string;
+                lastActiveAt: string;
+                inviterId: string;
+                myInviteCode: string;
+                inviteCode: string;
+                inviteEarnings: string;
+                inviteCount: number;
+                createdAt: string;
+                updatedAt: string;
+                equippedDecorations: {
+                    AVATAR_FRAME: {
+                        id: number;
+                        name: string;
+                        type: string;
+                        imageUrl: string;
+                        rarity: string;
+                    };
+                    COMMENT_BUBBLE: {
+                        id: number;
+                        name: string;
+                        type: string;
+                        imageUrl: string;
+                        rarity: string;
+                    };
+                };
+            };
+            itemCount: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
+};
+
+export type CollectionControllerFindOneResponse = CollectionControllerFindOneResponses[keyof CollectionControllerFindOneResponses];
+
+export type CollectionControllerUpdateData = {
+    body: UpdateCollectionDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 合集ID
+         */
+        id: number;
+    };
+    query?: never;
+    url: '/collection/{id}';
+};
+
+export type CollectionControllerUpdateResponses = {
+    200: unknown;
+};
+
+export type CollectionControllerGetCollectionItemsData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 合集ID
+         */
+        id: number;
+    };
+    query?: {
+        /**
+         * 页码
+         */
+        page?: number;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+    };
+    url: '/collection/{id}/items';
+};
+
+export type CollectionControllerGetCollectionItemsResponses = {
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<{
+                id?: number;
+                collectionId?: number;
+                articleId?: number;
+                article?: {
+                    id: number;
+                    title: string;
+                    requireLogin: boolean;
+                    requireFollow: boolean;
+                    requirePayment: boolean;
+                    requireMembership: boolean;
+                    listRequireLogin: boolean;
+                    viewPrice: string;
+                    type: string;
+                    content: string;
+                    images: Array<string>;
+                    sort: number;
+                    summary: string;
+                    views: number;
+                    likes: number;
+                    favoriteCount: number;
+                    commentCount: number;
+                    status: string;
+                    cover: string;
+                    authorId: number;
+                    author: {
+                        id: number;
+                        username: string;
+                        nickname: string;
+                        status: string;
+                        banned: string;
+                        banReason: string;
+                        avatar: string;
+                        description: string;
+                        background: string;
+                        gender: string;
+                        birthDate: string;
+                        articleCount: number;
+                        followerCount: number;
+                        followingCount: number;
+                        level: number;
+                        experience: number;
+                        wallet: number;
+                        points: number;
+                        membershipLevel: number;
+                        membershipLevelName: string;
+                        membershipStatus: string;
+                        membershipStartDate: string;
+                        membershipEndDate: string;
+                        lastLoginAt: string;
+                        lastActiveAt: string;
+                        inviterId: string;
+                        myInviteCode: string;
+                        inviteCode: string;
+                        inviteEarnings: string;
+                        inviteCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                        isMember: boolean;
+                        isFollowed: boolean;
+                        equippedDecorations: Decoration;
+                    };
+                    category: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        parentId: number;
+                        parent: {
+                            id: number;
+                            name: string;
+                            description: string;
+                            link: string;
+                            avatar: string;
+                            background: string;
+                            cover: string;
+                            sort: number;
+                            status: string;
+                            articleCount: number;
+                            followCount: number;
+                            createdAt: string;
+                            updatedAt: string;
+                        };
+                        link: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                    tags: Array<{
+                        id: number;
+                        name: string;
+                        description: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    }>;
+                    downloads: Array<{
+                        id?: number;
+                        type?: string;
+                        url?: string;
+                        password?: string;
+                        extractionCode?: string;
+                        visibleWithoutPermission?: boolean;
+                        articleId?: number;
+                        createdAt?: string;
+                        updatedAt?: string;
+                    }>;
+                    downloadCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    isLiked: boolean;
+                    isPaid: boolean;
+                    imageCount: number;
+                    reactionStats: {
+                        like: number;
+                        love: number;
+                        haha: number;
+                        wow: number;
+                        sad: number;
+                        angry: number;
+                        dislike: number;
+                    };
+                    userReaction: string;
+                };
+                userId?: number;
+                sort?: number;
+                note?: string;
+                createdAt?: string;
+                prev?: string;
+                next?: string;
+            }>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
+};
+
+export type CollectionControllerGetCollectionItemsResponse = CollectionControllerGetCollectionItemsResponses[keyof CollectionControllerGetCollectionItemsResponses];
+
+export type CollectionControllerCheckArticleInCollectionsData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 文章ID
+         */
+        articleId: number;
+    };
+    query?: never;
+    url: '/collection/check/{articleId}';
+};
+
+export type CollectionControllerCheckArticleInCollectionsResponses = {
+    200: {
+        code: number;
+        message: string;
+        data: {
+            inCollections: boolean;
+            collections: Array<{
+                id?: number;
+                name?: string;
+            }>;
+        };
+    };
+};
+
+export type CollectionControllerCheckArticleInCollectionsResponse = CollectionControllerCheckArticleInCollectionsResponses[keyof CollectionControllerCheckArticleInCollectionsResponses];
+
+export type CollectionControllerGetArticleCollectionInfoData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 文章ID
+         */
+        articleId: number;
+    };
+    query?: never;
+    url: '/collection/article/{articleId}/info';
+};
+
+export type CollectionControllerGetArticleCollectionInfoResponses = {
+    200: {
+        code: number;
+        message: string;
+        data: Array<{
+            collectionId?: number;
+            collectionName?: string;
+            note?: unknown;
+            addedAt?: string;
+        }>;
+    };
+};
+
+export type CollectionControllerGetArticleCollectionInfoResponse = CollectionControllerGetArticleCollectionInfoResponses[keyof CollectionControllerGetArticleCollectionInfoResponses];
+
+export type CollectionControllerRemoveFromCollectionData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 合集ID
+         */
+        id: number;
+        /**
+         * 文章ID
+         */
+        articleId: number;
+    };
+    query?: never;
+    url: '/collection/{id}/article/{articleId}';
+};
+
+export type CollectionControllerRemoveFromCollectionResponses = {
+    200: unknown;
+};
+
+export type CollectionControllerAddToCollectionData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        /**
+         * 合集ID
+         */
+        id: number;
+        /**
+         * 文章ID
+         */
+        articleId: number;
+    };
+    query?: never;
+    url: '/collection/{id}/article/{articleId}';
+};
+
+export type CollectionControllerAddToCollectionResponses = {
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+            data: {
+                id: number;
+                collectionId: number;
+                articleId: number;
+                userId: number;
+                sort: number;
+                note: unknown;
+                createdAt: string;
+            };
+        };
+    };
+};
+
+export type CollectionControllerAddToCollectionResponse = CollectionControllerAddToCollectionResponses[keyof CollectionControllerAddToCollectionResponses];

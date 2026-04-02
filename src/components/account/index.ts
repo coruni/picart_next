@@ -1,4 +1,5 @@
 export { AccountInfo } from "./AccountInfo";
+export { CollectionListClient } from "./CollectionList.client";
 export { AccountTopicListClient } from "./AccountTopicList.client";
 export { AccountTabs } from "./AccountTabs";
 export { AccountUserCard } from "./AccountUserCard";
@@ -6,3 +7,4 @@ export { AccountUserProvider, useAccountUser } from "./AccountUserProvider";
 export { FollowersListClient } from "./FollowersList.client";
 export { FollowingsListClient } from "./FollowingsList.client";
 export { ProfileEditForm } from "./ProfileEditForm.client";
+export type { AccountCollectionItem } from "./CollectionList.client";

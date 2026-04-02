@@ -30,8 +30,6 @@ import type {
   DecorationControllerFindOneResponse,
   DecorationControllerGetCurrentDecorationsResponse,
   DecorationControllerGetMyDecorationsResponse,
-  FavoriteControllerFindAllResponses,
-  FavoriteControllerFindOneResponses,
   MessageControllerFindAllResponse,
   MessageControllerFindOneResponse,
   MessageControllerGetUnreadCountResponse,
@@ -89,10 +87,6 @@ export type CategoryList = NonNullable<CategoryControllerFindAllResponse["data"]
 export type CategoryDetail = NonNullable<CategoryControllerFindOneResponse["data"]>;
 export type TagList = NonNullable<TagControllerFindAllResponse["data"]["data"]>;
 export type TagDetail = NonNullable<TagControllerFindOneResponse["data"]>;
-
-// 收藏
-export type FavoriteList = FirstResponse<FavoriteControllerFindAllResponses>;
-export type FavoriteDetail = FirstResponse<FavoriteControllerFindOneResponses>;
 
 // 装饰
 export type DecorationList = NonNullable<DecorationControllerFindAllResponse["data"]["data"]>;

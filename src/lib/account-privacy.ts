@@ -2,6 +2,7 @@ import { UserDetail } from "@/types";
 
 export type AccountPrivacySection =
   | "comments"
+  | "collections"
   | "favorites"
   | "followers"
   | "followings"
@@ -12,6 +13,7 @@ const privacyFieldMap: Record<
   keyof NonNullable<UserDetail["config"]>
 > = {
   comments: "hideComments",
+  collections: "hideCollections",
   favorites: "hideFavorites",
   followers: "hideFollowers",
   followings: "hideFollowings",

@@ -565,7 +565,22 @@
     "article": "Posts",
     "comment": "Comments",
     "favorite": "Favorites",
+    "collection": "Collections",
     "tag": "Topics"
+  },
+  "accountCollectionPage": {
+    "message": "This user has no public collections yet"
+  },
+  "accountCollectionList": {
+    "posts": "Posts",
+    "followers": "Followers",
+    "empty": "No collections yet",
+    "untitled": "Untitled collection",
+    "loading": "Loading",
+    "loadMore": "Load more",
+    "retry": "Retry",
+    "allLoaded": "All loaded",
+    "loadFailed": "Failed to load collections, please try again"
   },
   "themeSwitcher": {
     "light": "Light",

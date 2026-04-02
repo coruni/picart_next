@@ -100,12 +100,6 @@ export type {
   AddToFavoriteDto,
 } from "@/api/types.gen";
 
-export type {
-  FavoriteControllerFindAllResponses,
-  FavoriteControllerFindOneResponses,
-  FavoriteControllerCreateResponses,
-} from "@/api/types.gen";
-
 // ==================== 订单与支付 ====================
 export type {
   CreateArticleOrderDto,

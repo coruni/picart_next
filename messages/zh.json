@@ -557,7 +557,22 @@
     "article": "帖子",
     "comment": "评论",
     "favorite": "收藏",
+    "collection": "合集",
     "tag": "话题"
+  },
+  "accountCollectionPage": {
+    "message": "该用户还没有公开合集"
+  },
+  "accountCollectionList": {
+    "posts": "帖子",
+    "followers": "粉丝",
+    "empty": "暂无合集",
+    "untitled": "未命名合集",
+    "loading": "加载中",
+    "loadMore": "加载更多",
+    "retry": "重试",
+    "allLoaded": "已经到底了",
+    "loadFailed": "合集加载失败，请稍后重试"
   },
   "themeSwitcher": {
     "light": "浅色",
