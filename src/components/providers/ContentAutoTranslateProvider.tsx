@@ -22,6 +22,24 @@ function getTranslateDocuments() {
   );
 }
 
+function getPendingTranslateDocuments() {
+  return getTranslateDocuments().filter(
+    (element) => element.dataset.translateBound !== "true",
+  );
+}
+
+function markTranslateDocuments(documents: HTMLElement[]) {
+  documents.forEach((element) => {
+    element.dataset.translateBound = "true";
+  });
+}
+
+function clearTranslateDocumentMarks() {
+  getTranslateDocuments().forEach((element) => {
+    delete element.dataset.translateBound;
+  });
+}
+
 function disableTranslateLanguageSelector() {
   const translate = window.translate;
 
@@ -60,6 +78,7 @@ export function ContentAutoTranslateProvider() {
   const pathname = usePathname();
   const [scriptReady, setScriptReady] = useState(false);
   const initializedRef = useRef(false);
+  const translatedScopeKeyRef = useRef<string | null>(null);
   const translateObserverRef = useRef<MutationObserver | null>(null);
   const translateTimerRef = useRef<number | null>(null);
   const autoTranslateContent = useTranslateStore(
@@ -130,21 +149,39 @@ export function ContentAutoTranslateProvider() {
 
     if (!autoTranslateContent) {
       translate.reset?.();
+      clearTranslateDocumentMarks();
+      translatedScopeKeyRef.current = null;
       return;
     }
 
     if (!targetLanguage) {
       translate.reset?.();
+      clearTranslateDocumentMarks();
+      translatedScopeKeyRef.current = null;
       return;
     }
 
+    const scopeKey = `${locale}:${pathname}`;
+    const shouldRefreshAll =
+      !initializedRef.current || translatedScopeKeyRef.current !== scopeKey;
+
     if (!initializedRef.current) {
       translate.listener?.start?.();
+      initializedRef.current = true;
+    }
+
+    if (shouldRefreshAll) {
       translate.setDocuments?.(documents);
       translate.execute(documents);
-      initializedRef.current = true;
+      markTranslateDocuments(documents);
+      translatedScopeKeyRef.current = scopeKey;
     } else {
       translate.setDocuments?.(documents);
+      const pendingDocuments = getPendingTranslateDocuments();
+      if (pendingDocuments.length > 0) {
+        translate.execute(pendingDocuments);
+        markTranslateDocuments(pendingDocuments);
+      }
     }
 
     window.requestAnimationFrame(() => {
@@ -159,28 +196,9 @@ export function ContentAutoTranslateProvider() {
 
     return () => {
       initializedRef.current = false;
+      translatedScopeKeyRef.current = null;
     };
   }, [scriptReady]);
-
-  useEffect(() => {
-    if (!scriptReady || !autoTranslateContent) {
-      return;
-    }
-
-    const translate = window.translate;
-    if (!translate) {
-      return;
-    }
-
-    const documents = getTranslateDocuments();
-    if (documents.length === 0) {
-      return;
-    }
-
-    disableTranslateLanguageSelector();
-    translate.setDocuments?.(documents);
-    translate.execute(documents);
-  }, [pathname, scriptReady, autoTranslateContent]);
 
   useEffect(() => {
     if (!scriptReady || !autoTranslateContent) {
@@ -219,14 +237,16 @@ export function ContentAutoTranslateProvider() {
       }
 
       translateTimerRef.current = window.setTimeout(() => {
-        const documents = getTranslateDocuments();
-        if (documents.length === 0) {
+        const allDocuments = getTranslateDocuments();
+        const pendingDocuments = getPendingTranslateDocuments();
+        if (allDocuments.length === 0 || pendingDocuments.length === 0) {
           return;
         }
 
         disableTranslateLanguageSelector();
-        translate.setDocuments?.(documents);
-        translate.execute(documents);
+        translate.setDocuments?.(allDocuments);
+        translate.execute(pendingDocuments);
+        markTranslateDocuments(pendingDocuments);
         translate.changeLanguage?.(targetLanguage);
       }, MUTATION_TRANSLATE_DEBOUNCE_MS);
     };
