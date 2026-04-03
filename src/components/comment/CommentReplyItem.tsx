@@ -9,6 +9,7 @@ import {
   prepareCommentHtmlForDisplay,
 } from "@/lib";
 import { CommentList } from "@/types";
+import { getImageUrls, type ImageInfo } from "@/types/image";
 import {
   Image as ImageIcon,
   Languages,
@@ -26,7 +27,7 @@ export type CommentReply = NonNullable<CommentList[number]["replies"]>[number];
 type CommentReplyItemProps = {
   articleId: string;
   rootCommentId: number;
-  reply: CommentReply;
+  reply: CommentReply & { images?: (string | ImageInfo)[] };
   isReplyEditorOpen: boolean;
   onToggleReplyEditor: (parentId: number | undefined) => void;
   onToggleLike: (commentId: number | undefined) => void | Promise<void>;
@@ -112,7 +113,8 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   const handleOpenImageViewer = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
-      onOpenImageViewer(reply.images || [], 0);
+      const imageUrls = getImageUrls(reply.images || [], "original");
+      onOpenImageViewer(imageUrls, 0);
     },
     [onOpenImageViewer, reply.images],
   );
@@ -190,10 +192,10 @@ export const CommentReplyItem = memo(function CommentReplyItem({
           )}
           {reply.images?.length && imageDisplayMode === "gallery" ? (
             <CommentImageGallery
-              images={reply.images || []}
+              images={reply.images}
               imageAltPrefix={`Comment reply image ${reply.id}`}
               className="mt-3"
-              onOpenImageViewer={onOpenImageViewer}
+              onOpenImageViewer={(images, index) => onOpenImageViewer(images, index)}
             />
           ) : null}
           {reply.images?.length && imageDisplayMode === "link" ? (

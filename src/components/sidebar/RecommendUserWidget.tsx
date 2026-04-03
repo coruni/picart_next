@@ -8,6 +8,7 @@ import Image from "next/image";
 import { GuardedLink } from "../shared";
 import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
+import { getImageUrl } from "@/types/image";
 
 export const RecommendUserWidget = async () => {
   const t = await getTranslations("sidebar");
@@ -64,7 +65,7 @@ export const RecommendUserWidget = async () => {
               key={article.id}
             >
               <Image
-                src={article.cover}
+                src={typeof article.cover === "string" ? article.cover : getImageUrl(article.cover, "small")}
                 fill
                 sizes="96px"
                 className="object-cover rounded-lg"

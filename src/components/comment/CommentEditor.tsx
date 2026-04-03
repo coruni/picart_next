@@ -444,15 +444,7 @@ export function CommentEditor({
 
       try {
         const response = await uploadControllerUploadFile({
-          bodySerializer: (body) => {
-            const formData = new FormData();
-            formData.append("files", body.file);
-            return formData;
-          },
           body: { file },
-          headers: {
-            "Content-Type": null,
-          },
         });
 
         if (removedAttachmentIdsRef.current.has(id)) {

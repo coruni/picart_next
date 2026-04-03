@@ -7,6 +7,7 @@ import { Eye } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 import { Avatar } from "../ui/Avatar";
+import { getImageUrl } from "@/types/image";
 
 type SearchArticleProps = {
   border?: boolean;
@@ -113,7 +114,7 @@ export function SearchArticle({
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover rounded-lg"
             fill
-            src={article.cover || article.images?.[0] || ""}
+            src={typeof article.cover === "string" ? article.cover : getImageUrl(article.cover, "small")}
             alt={article.title || "article cover"}
           />
         </div>

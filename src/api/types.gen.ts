@@ -4549,7 +4549,19 @@ export type ArticleControllerFindAllResponses = {
                 viewPrice: string;
                 type: string;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 sort: number;
                 summary: string;
                 views: number;
@@ -4768,7 +4780,19 @@ export type ArticleControllerFindOneResponses = {
             viewPrice: string;
             type: string;
             content: string;
-            images: Array<string>;
+            images: Array<string & {
+                url: string;
+                width: number;
+                height: number;
+                size: number;
+                original: string;
+                thumbnails: {
+                    thumb: string;
+                    small: string;
+                    medium: string;
+                    large: string;
+                };
+            }>;
             sort: number;
             summary: string;
             views: number;
@@ -7091,7 +7115,19 @@ export type CommentControllerFindOneResponses = {
             data: Array<{
                 id: number;
                 content: string;
-                images: Array<string>;
+                images: Array<{
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 likes: number;
                 replyCount: number;
                 status: string;
@@ -7637,7 +7673,19 @@ export type CommentControllerFindAllCommentsResponses = {
             data: Array<{
                 id: number;
                 content: string;
-                images: Array<string>;
+                images: Array<{
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 likes: number;
                 replyCount: number;
                 status: string;
@@ -10324,9 +10372,43 @@ export type UploadControllerFindAllResponses = {
 
 export type UploadControllerFindAllResponse = UploadControllerFindAllResponses[keyof UploadControllerFindAllResponses];
 
+export type UploadControllerGetUploadConfigData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/upload/config';
+};
+
+export type UploadControllerGetUploadConfigResponses = {
+    200: {
+        code: number;
+        message: string;
+        data: {
+            compression: {
+                maxWidth: number;
+                quality: number;
+                format: string;
+            };
+            limits: {
+                maxFileSize: number;
+                maxFileCount: number;
+            };
+            allowedMimeTypes: Array<string>;
+        };
+    };
+};
+
+export type UploadControllerGetUploadConfigResponse = UploadControllerGetUploadConfigResponses[keyof UploadControllerGetUploadConfigResponses];
+
 export type UploadControllerUploadFileData = {
     body: {
-        file: Blob | File;
+        file: string;
     };
     headers?: {
         Authorization?: string;

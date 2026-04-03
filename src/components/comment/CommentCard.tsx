@@ -10,6 +10,7 @@ import {
 } from "@/lib";
 import { formatRelativeTime } from "@/lib/utils";
 import { CommentList, UserCommentList } from "@/types";
+import { getImageUrl, type ImageInfo } from "@/types/image";
 import {
   Languages,
   LoaderCircle,
@@ -149,19 +150,32 @@ export function CommentCard({
           href={`/article/${comment?.article?.id}`}
           className="flex h-12.5 items-center overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-600"
         >
-          {(!!comment?.article?.cover || comment?.article?.images?.length > 0) && (
-            <div className="relative size-12.5 bg-gray-50">
-              <Image
-                alt={comment?.article?.title || ""}
-                src={
-                  comment?.article?.cover || comment?.article?.images?.[0] || ""
-                }
-                fill
-                quality={95}
-                className="object-cover"
-              />
-            </div>
-          )}
+          {(() => {
+            const rawImages = (comment?.article?.images || []) as (string | ImageInfo)[];
+            const cover = comment?.article?.cover;
+            let imageUrl: string | undefined;
+
+            if (cover) {
+              imageUrl = typeof cover === "string" ? cover : getImageUrl(cover, "small");
+            } else if (rawImages.length > 0) {
+              const firstImg = rawImages[0];
+              imageUrl = typeof firstImg === "string" ? firstImg : getImageUrl(firstImg, "small");
+            }
+
+            if (!imageUrl) return null;
+
+            return (
+              <div className="relative size-12.5 bg-gray-50">
+                <Image
+                  alt={comment?.article?.title || ""}
+                  src={imageUrl}
+                  fill
+                  quality={95}
+                  className="object-cover"
+                />
+              </div>
+            );
+          })()}
           <div className="ml-3">
             <span className="line-clamp-1 text-ellipsis text-secondary">
               {comment?.article?.title || ""}

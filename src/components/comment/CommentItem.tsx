@@ -13,6 +13,7 @@ import {
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
+import { type ImageInfo } from "@/types/image";
 import {
   EllipsisVertical,
   Languages,
@@ -29,7 +30,7 @@ import { CommentReplyList } from "./CommentReplyList";
 
 type CommentItemProps = {
   articleId: string;
-  data: CommentList[number];
+  data: CommentList[number] & { images?: (string | ImageInfo)[] };
   onSubmitted?: () => void | Promise<void>;
 };
 export const CommentItem = memo(function CommentItem({

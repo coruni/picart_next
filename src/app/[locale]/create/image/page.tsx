@@ -77,17 +77,7 @@ async function uploadImagesBatch(files: File[]): Promise<string[]> {
   if (files.length === 0) return [];
 
   const { data } = await uploadControllerUploadFile({
-    bodySerializer: () => {
-      const formData = new FormData();
-      files.forEach((file) => {
-        formData.append("file", file);
-      });
-      return formData;
-    },
-    headers: {
-      "Content-Type": null,
-    },
-    body: { file: files[0] },
+    body: { file: files },
   });
 
   return (data?.data || [])

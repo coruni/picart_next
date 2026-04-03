@@ -368,18 +368,8 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     ".progress-text",
                   ) as HTMLSpanElement;
                   try {
-                    const formData = new FormData();
-                    formData.append("file", file);
                     const response = await uploadControllerUploadFile({
-                      bodySerializer: (body) => {
-                        const formData = new FormData();
-                        formData.append("files", body.file);
-                        return formData;
-                      },
                       body: { file },
-                      headers: {
-                        "Content-Type": null,
-                      },
                     });
 
                     if (response.data?.data?.[0]?.url) {

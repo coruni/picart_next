@@ -559,14 +559,6 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         type: "image/png",
       });
       const { data } = await uploadControllerUploadFile({
-        bodySerializer: (body) => {
-          const formData = new FormData();
-          formData.append("file", body.file);
-          return formData;
-        },
-        headers: {
-          "Content-Type": null,
-        },
         body: { file: croppedFile },
       });
       if (data?.data?.[0]) {

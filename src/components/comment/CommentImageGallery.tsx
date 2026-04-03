@@ -8,11 +8,12 @@ import { useRef, useState } from "react";
 import type { Swiper as SwiperType } from "swiper";
 import { FreeMode } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { getImageUrl, type ImageInfo } from "@/types/image";
 
 import "swiper/css";
 
 type CommentImageGalleryProps = {
-  images: string[];
+  images: (string | ImageInfo)[];
   imageAltPrefix: string;
   className?: string;
   singleImageClassName?: string;
@@ -44,20 +45,28 @@ export function CommentImageGallery({
     setCanScrollNext(hasOverflow && !swiper.isEnd);
   };
 
-  if (!images.length) {
+  // Convert images to URLs (use small size for comments)
+  const imageUrls = images.map((img) =>
+    typeof img === "string" ? img : getImageUrl(img, "small"),
+  );
+  const originalUrls = images.map((img) =>
+    typeof img === "string" ? img : getImageUrl(img, "original"),
+  );
+
+  if (!imageUrls.length) {
     return null;
   }
 
-  if (images.length === 1) {
+  if (imageUrls.length === 1) {
     return (
       <div className={className}>
         <button
           type="button"
           className="inline-block max-w-full cursor-pointer overflow-hidden rounded-xl bg-muted"
-          onClick={() => onOpenImageViewer(images, 0)}
+          onClick={() => onOpenImageViewer(originalUrls, 0)}
         >
           <ImageWithFallback
-            src={images[0]}
+            src={imageUrls[0]}
             width={320}
             height={180}
             alt={`${imageAltPrefix} 1`}
@@ -101,16 +110,16 @@ export function CommentImageGallery({
           syncSwiperNavState(swiper);
         }}
       >
-        {images.map((image, index) => (
+        {imageUrls.map((imageUrl, index) => (
           <SwiperSlide key={`${imageAltPrefix}-${index}`} className="w-auto!">
             <div className="overflow-hidden rounded-xl bg-muted">
               <button
                 type="button"
                 className="block cursor-pointer"
-                onClick={() => onOpenImageViewer(images, index)}
+                onClick={() => onOpenImageViewer(originalUrls, index)}
               >
                 <ImageWithFallback
-                  src={image}
+                  src={imageUrl}
                   alt={`${imageAltPrefix} ${index + 1}`}
                   width={320}
                   height={180}

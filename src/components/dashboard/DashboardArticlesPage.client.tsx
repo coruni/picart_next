@@ -1,9 +1,18 @@
 "use client";
 
-import { articleControllerFindAll, articleControllerRemove } from "@/api";
+import { articleControllerFindAll, articleControllerRemove, articleControllerUpdate } from "@/api";
 import { DropdownMenu, type MenuItem } from "@/components/shared";
+import { Button } from "@/components/ui/Button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/Dialog";
+import { Textarea } from "@/components/ui/Textarea";
 import { Link, useRouter } from "@/i18n/routing";
-import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
+import { CheckCircle, FileCheck, MoreHorizontal, PencilLine, Trash2, XCircle } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
@@ -22,14 +31,40 @@ export function DashboardArticlesPage() {
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
   const [refreshKey, setRefreshKey] = useState(0);
+  const [auditingItem, setAuditingItem] = useState<DashboardArticleItem | null>(null);
+  const [auditReason, setAuditReason] = useState("");
+  const [auditSubmitting, setAuditSubmitting] = useState(false);
+
   const statusValueEnum = useMemo(
     () => ({
       DRAFT: { text: copy.status.DRAFT },
       PUBLISHED: { text: copy.status.PUBLISHED },
       PENDING: { text: copy.status.PENDING },
+      UNDER_REVIEW: { text: copy.status.UNDER_REVIEW },
+      APPROVED: { text: copy.status.APPROVED },
+      REJECTED: { text: copy.status.REJECTED },
     }),
     [copy],
   );
+
+  const handleAudit = async (status: "APPROVED" | "REJECTED") => {
+    if (!auditingItem?.id) return;
+
+    setAuditSubmitting(true);
+    try {
+      await articleControllerUpdate({
+        path: { id: String(auditingItem.id) },
+        body: {
+          status: status === "APPROVED" ? "PUBLISHED" : "DRAFT",
+        },
+      });
+      setAuditingItem(null);
+      setAuditReason("");
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setAuditSubmitting(false);
+    }
+  };
 
   const columns = useMemo<DashboardTableColumn<DashboardArticleItem>[]>(
     () => [
@@ -117,6 +152,14 @@ export function DashboardArticlesPage() {
               },
             },
             {
+              label: copy.common.audit,
+              icon: <FileCheck size={16} />,
+              onClick: () => {
+                setAuditingItem(item);
+                setAuditReason("");
+              },
+            },
+            {
               label: copy.common.delete,
               icon: <Trash2 size={16} />,
               className: "text-red-500",
@@ -184,6 +227,59 @@ export function DashboardArticlesPage() {
         emptyText={copy.empty.articles}
         className="h-full"
       />
+
+      {/* Audit Dialog */}
+      <Dialog open={Boolean(auditingItem)} onOpenChange={(open) => !auditSubmitting && !open && setAuditingItem(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileCheck className="size-5 text-primary" />
+              {copy.common.audit}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            {auditingItem && (
+              <div className="mb-4 rounded-lg border border-border/70 bg-muted/30 px-4 py-3">
+                <div className="text-sm font-medium text-foreground">{auditingItem.title}</div>
+                <div className="mt-1 text-xs text-muted-foreground">
+                  {copy.columns.author}: {auditingItem.author?.nickname || auditingItem.author?.username || "-"}
+                </div>
+              </div>
+            )}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground">
+                {copy.common.auditReason}
+              </label>
+              <Textarea
+                value={auditReason}
+                onChange={(e) => setAuditReason(e.target.value)}
+                placeholder="输入审核原因（可选）"
+                className="min-h-[100px]"
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-3">
+            <Button
+              variant="outline"
+              className="h-9 rounded-full px-4"
+              onClick={() => setAuditingItem(null)}
+              disabled={auditSubmitting}
+            >
+              <XCircle className="mr-2 size-4" />
+              {copy.common.reject}
+            </Button>
+            <Button
+              variant="primary"
+              className="h-9 rounded-full px-4"
+              loading={auditSubmitting}
+              onClick={() => handleAudit("APPROVED")}
+            >
+              <CheckCircle className="mr-2 size-4" />
+              {copy.common.approve}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardPageFrame>
   );
 }

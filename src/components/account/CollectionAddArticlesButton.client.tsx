@@ -22,6 +22,7 @@ import type { ArticleUserList } from "@/types";
 import { Check, Plus } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { getImageUrl } from "@/types/image";
 
 type CollectionAddArticlesButtonProps = {
   collectionId: number;
@@ -270,7 +271,7 @@ export function CollectionAddArticlesButton({
                       <div className="relative mt-0.5 size-18 shrink-0 overflow-hidden rounded-lg bg-muted">
                         {article.cover ? (
                           <ImageWithFallback
-                            src={article.cover}
+                            src={typeof article.cover === "string" ? article.cover : getImageUrl(article.cover, "small")}
                             alt={article.title}
                             fill
                             className="object-cover"

@@ -886,14 +886,6 @@ export function MessageCenterClient() {
         for (const draft of drafts) {
           try {
             const response = await uploadControllerUploadFile({
-              headers: {
-                "Content-Type": null,
-              },
-              bodySerializer: (body) => {
-                const formData = new FormData();
-                formData.append("file", body.file);
-                return formData
-              },
               body: { file: draft.file },
             });
             const uploadedUrl = response?.data?.data?.[0]?.url;

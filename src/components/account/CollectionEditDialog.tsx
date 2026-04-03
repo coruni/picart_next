@@ -146,14 +146,6 @@ export function CollectionEditDialog({
       });
 
       const { data } = await uploadControllerUploadFile({
-        bodySerializer: (body) => {
-          const formData = new FormData();
-          formData.append("file", body.file);
-          return formData;
-        },
-        headers: {
-          "Content-Type": null,
-        },
         body: {
           file: croppedFile,
         },

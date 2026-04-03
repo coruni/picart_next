@@ -14,6 +14,8 @@ import { Form, FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Switch } from "@/components/ui/Switch";
+import { TimePicker } from "@/components/ui/TimePicker";
+import { DatePicker } from "@/components/ui/DatePicker";
 import { useClickOutside } from "@/hooks";
 import { cn } from "@/lib";
 import { ChevronDown, ImagePlus, Loader2, Search, X } from "lucide-react";
@@ -28,7 +30,9 @@ type DashboardEditFieldType =
   | "number"
   | "switch"
   | "select"
-  | "image";
+  | "image"
+  | "date"
+  | "time";
 
 export type DashboardEditField = {
   name: string;
@@ -308,14 +312,6 @@ export function DashboardEditDialog({
 
         try {
           const { data } = await uploadControllerUploadFile({
-            bodySerializer: (body) => {
-              const formData = new FormData();
-              formData.append("file", body.file);
-              return formData;
-            },
-            headers: {
-              "Content-Type": null,
-            },
             body: {
               file,
             },
@@ -364,14 +360,6 @@ export function DashboardEditDialog({
       });
 
       const { data } = await uploadControllerUploadFile({
-        bodySerializer: (body) => {
-          const formData = new FormData();
-          formData.append("file", body.file);
-          return formData;
-        },
-        headers: {
-          "Content-Type": null,
-        },
         body: {
           file: croppedFile,
         },
@@ -578,6 +566,32 @@ export function DashboardEditDialog({
                           [field.name]: event.target.value,
                         }))
                       }
+                    />
+                  ) : null}
+                  {type === "date" ? (
+                    <DatePicker
+                      value={
+                        typeof value === "string" ? value : value == null ? "" : String(value)
+                      }
+                      placeholder={field.placeholder}
+                      onChange={(newValue) =>
+                        setValues((previous) => ({
+                          ...previous,
+                          [field.name]: newValue,
+                        }))
+                      }
+                    />
+                  ) : null}
+                  {type === "time" ? (
+                    <TimePicker
+                      value={typeof value === "string" ? value : ""}
+                      onChange={(nextValue) =>
+                        setValues((previous) => ({
+                          ...previous,
+                          [field.name]: nextValue,
+                        }))
+                      }
+                      placeholder={field.placeholder}
                     />
                   ) : null}
                 </FormField>

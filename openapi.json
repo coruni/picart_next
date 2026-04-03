@@ -9237,7 +9237,60 @@
                               "images": {
                                 "type": "array",
                                 "items": {
-                                  "type": "string"
+                                  "type": "object",
+                                  "properties": {
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "width": {
+                                      "type": "integer"
+                                    },
+                                    "height": {
+                                      "type": "integer"
+                                    },
+                                    "size": {
+                                      "type": "integer"
+                                    },
+                                    "original": {
+                                      "type": "string"
+                                    },
+                                    "thumbnails": {
+                                      "type": "object",
+                                      "properties": {
+                                        "thumb": {
+                                          "type": "string"
+                                        },
+                                        "small": {
+                                          "type": "string"
+                                        },
+                                        "medium": {
+                                          "type": "string"
+                                        },
+                                        "large": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "thumb",
+                                        "small",
+                                        "medium",
+                                        "large"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "url",
+                                    "size",
+                                    "width",
+                                    "height",
+                                    "original",
+                                    "thumbnails"
+                                  ],
+                                  "oneOf": [
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
                                 }
                               },
                               "sort": {
@@ -9929,7 +9982,60 @@
                         "images": {
                           "type": "array",
                           "items": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": "string"
+                              },
+                              "width": {
+                                "type": "integer"
+                              },
+                              "height": {
+                                "type": "integer"
+                              },
+                              "size": {
+                                "type": "integer"
+                              },
+                              "original": {
+                                "type": "string"
+                              },
+                              "thumbnails": {
+                                "type": "object",
+                                "properties": {
+                                  "thumb": {
+                                    "type": "string"
+                                  },
+                                  "small": {
+                                    "type": "string"
+                                  },
+                                  "medium": {
+                                    "type": "string"
+                                  },
+                                  "large": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "thumb",
+                                  "small",
+                                  "medium",
+                                  "large"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "url",
+                              "size",
+                              "width",
+                              "height",
+                              "original",
+                              "thumbnails"
+                            ],
+                            "oneOf": [
+                              {
+                                "type": "string"
+                              }
+                            ]
                           }
                         },
                         "sort": {
@@ -18602,7 +18708,55 @@
                               "images": {
                                 "type": "array",
                                 "items": {
-                                  "type": "string"
+                                  "type": "object",
+                                  "properties": {
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "width": {
+                                      "type": "integer"
+                                    },
+                                    "height": {
+                                      "type": "integer"
+                                    },
+                                    "size": {
+                                      "type": "integer"
+                                    },
+                                    "original": {
+                                      "type": "string"
+                                    },
+                                    "thumbnails": {
+                                      "type": "object",
+                                      "properties": {
+                                        "thumb": {
+                                          "type": "string"
+                                        },
+                                        "small": {
+                                          "type": "string"
+                                        },
+                                        "medium": {
+                                          "type": "string"
+                                        },
+                                        "large": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "thumb",
+                                        "small",
+                                        "medium",
+                                        "large"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "url",
+                                    "size",
+                                    "width",
+                                    "height",
+                                    "original",
+                                    "thumbnails"
+                                  ]
                                 }
                               },
                               "likes": {
@@ -20809,7 +20963,55 @@
                               "images": {
                                 "type": "array",
                                 "items": {
-                                  "type": "string"
+                                  "type": "object",
+                                  "properties": {
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "width": {
+                                      "type": "integer"
+                                    },
+                                    "height": {
+                                      "type": "integer"
+                                    },
+                                    "size": {
+                                      "type": "integer"
+                                    },
+                                    "original": {
+                                      "type": "string"
+                                    },
+                                    "thumbnails": {
+                                      "type": "object",
+                                      "properties": {
+                                        "thumb": {
+                                          "type": "string"
+                                        },
+                                        "small": {
+                                          "type": "string"
+                                        },
+                                        "medium": {
+                                          "type": "string"
+                                        },
+                                        "large": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "thumb",
+                                        "small",
+                                        "medium",
+                                        "large"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "url",
+                                    "size",
+                                    "width",
+                                    "height",
+                                    "original",
+                                    "thumbnails"
+                                  ]
                                 }
                               },
                               "likes": {
@@ -29799,6 +30001,138 @@
         ]
       }
     },
+    "/upload/config": {
+      "get": {
+        "summary": "上传配置",
+        "deprecated": false,
+        "description": "",
+        "operationId": "uploadController_getUploadConfig",
+        "tags": [
+          "上传管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "compression": {
+                          "type": "object",
+                          "properties": {
+                            "maxWidth": {
+                              "type": "integer"
+                            },
+                            "quality": {
+                              "type": "integer"
+                            },
+                            "format": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "maxWidth",
+                            "quality",
+                            "format"
+                          ]
+                        },
+                        "limits": {
+                          "type": "object",
+                          "properties": {
+                            "maxFileSize": {
+                              "type": "integer"
+                            },
+                            "maxFileCount": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "maxFileSize",
+                            "maxFileCount"
+                          ]
+                        },
+                        "allowedMimeTypes": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "compression",
+                        "limits",
+                        "allowedMimeTypes"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
     "/upload/file": {
       "post": {
         "summary": "上传文件",
@@ -29854,14 +30188,18 @@
         ],
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
+              "encoding": {
+                "file": {
+                  "contentType": "multipart/form-data"
+                }
+              },
               "schema": {
                 "type": "object",
                 "properties": {
                   "file": {
-                    "example": "file://C:\\Users\\Amiya\\Downloads\\logo.png",
-                    "type": "string",
-                    "format": "binary"
+                    "example": "",
+                    "type": "string"
                   }
                 },
                 "required": [

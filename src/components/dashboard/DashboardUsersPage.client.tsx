@@ -34,6 +34,7 @@ export function DashboardUsersPage() {
     () => [
       { name: "username", label: "Username" },
       { name: "nickname", label: copy.columns.name },
+      { name: "password", label: "Password", type: "text", placeholder: "输入新密码" },
       { name: "avatar", label: "Avatar", type: "image" },
       { name: "background", label: "Background", type: "image" },
       { name: "description", label: copy.columns.description, type: "textarea" },
@@ -47,6 +48,34 @@ export function DashboardUsersPage() {
           { value: "BANNED", label: "BANNED" },
         ],
       },
+      { name: "banReason", label: "封禁原因", type: "textarea" },
+      { name: "address", label: "地址", type: "text" },
+      {
+        name: "gender",
+        label: "性别",
+        type: "select",
+        options: [
+          { value: "male", label: "男" },
+          { value: "female", label: "女" },
+          { value: "other", label: "其他" },
+        ],
+      },
+      { name: "birthDate", label: "生日", type: "date" },
+      { name: "wallet", label: "钱包余额", type: "number", min: 0 },
+      { name: "inviteCode", label: "邀请码", type: "text" },
+      { name: "membershipLevel", label: "会员等级", type: "number", min: 0 },
+      { name: "membershipLevelName", label: "会员等级名称", type: "text" },
+      {
+        name: "membershipStatus",
+        label: "会员状态",
+        type: "select",
+        options: [
+          { value: "ACTIVE", label: "ACTIVE" },
+          { value: "INACTIVE", label: "INACTIVE" },
+        ],
+      },
+      { name: "membershipStartDate", label: "会员开始日期", type: "date" },
+      { name: "membershipEndDate", label: "会员结束日期", type: "date" },
     ],
     [copy],
   );
@@ -226,6 +255,17 @@ export function DashboardUsersPage() {
           background: editingItem?.background,
           description: editingItem?.description,
           status: editingItem?.status,
+          banReason: editingItem?.banReason,
+          address: editingItem?.address,
+          gender: editingItem?.gender,
+          birthDate: editingItem?.birthDate,
+          wallet: editingItem?.wallet,
+          inviteCode: editingItem?.inviteCode,
+          membershipLevel: editingItem?.membershipLevel,
+          membershipLevelName: editingItem?.membershipLevelName,
+          membershipStatus: editingItem?.membershipStatus,
+          membershipStartDate: editingItem?.membershipStartDate,
+          membershipEndDate: editingItem?.membershipEndDate,
         }}
         loading={submitting}
         onOpenChange={(open) => {
@@ -246,10 +286,22 @@ export function DashboardUsersPage() {
               body: {
                 username: values.username as string | undefined,
                 nickname: values.nickname as string | undefined,
+                password: values.password as string | undefined,
                 avatar: values.avatar as string | undefined,
                 background: values.background as string | undefined,
                 description: values.description as string | undefined,
                 status: values.status as "ACTIVE" | "INACTIVE" | "BANNED" | undefined,
+                banReason: values.banReason as string | undefined,
+                address: values.address as string | undefined,
+                gender: values.gender as "male" | "female" | "other" | undefined,
+                birthDate: values.birthDate as string | undefined,
+                wallet: values.wallet as number | undefined,
+                inviteCode: values.inviteCode as string | undefined,
+                membershipLevel: values.membershipLevel as number | undefined,
+                membershipLevelName: values.membershipLevelName as string | undefined,
+                membershipStatus: values.membershipStatus as "ACTIVE" | "INACTIVE" | undefined,
+                membershipStartDate: values.membershipStartDate as string | undefined,
+                membershipEndDate: values.membershipEndDate as string | undefined,
               },
             });
             setEditingItem(null);

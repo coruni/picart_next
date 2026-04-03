@@ -195,7 +195,9 @@ export function DashboardClientPage() {
         configs: (configsResponse?.data?.data?.data || []).slice(0, 6),
         publicConfig: publicConfigResponse?.data?.data || null,
         advertisementConfig: advertisementConfigResponse?.data?.data || null,
-        pendingOrderNos: pendingOrdersResponse?.data?.data || [],
+        pendingOrderNos: (pendingOrdersResponse?.data?.data || []).map((item: unknown) =>
+          typeof item === "string" ? item : (item as { orderNo?: string }).orderNo || ""
+        ).filter(Boolean),
       });
 
       setLoading(false);

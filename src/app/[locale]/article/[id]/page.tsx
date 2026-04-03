@@ -20,6 +20,7 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { getImageUrl } from "@/types/image";
 
 function stripHtmlTags(value: string) {
   return value.replace(/<[^>]+>/g, " ");
@@ -197,7 +198,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           {article?.cover && (
             <div className="relative w-full h-80 md:h-120">
               <ImageWithFallback
-                src={article?.cover}
+                src={typeof article.cover === 'string' ? article.cover : getImageUrl(article.cover, 'large')}
                 fill
                 loading="eager"
                 fetchPriority="high"
