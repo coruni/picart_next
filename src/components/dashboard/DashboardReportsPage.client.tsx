@@ -199,11 +199,14 @@ export function DashboardReportsPage() {
                   label: copy.common.delete,
                   icon: <Trash2 size={16} />,
                   className: "text-red-500",
+                  confirmDialog: {
+                    enabled: true,
+                    title: copy.common.delete,
+                    description: copy.common.deleteConfirm,
+                    confirmText: copy.common.delete,
+                    cancelText: copy.common.cancel,
+                  },
                   onClick: async () => {
-                    if (!window.confirm(copy.common.deleteConfirm)) {
-                      return;
-                    }
-
                     await reportControllerRemove({
                       path: { id: String(reportId) },
                     });

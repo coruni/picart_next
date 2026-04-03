@@ -292,6 +292,30 @@ export function DashboardEditDialog({
     return "raw";
   };
 
+  const getImagePreviewClassName = (field: DashboardEditField) => {
+    if (field.imagePreviewClassName) {
+      return field.imagePreviewClassName;
+    }
+
+    return getImageEditorMode(field) === "avatar"
+      ? "aspect-square h-auto w-full max-w-52"
+      : "h-36";
+  };
+
+  const getImagePreviewObjectClassName = (field: DashboardEditField) => {
+    if (field.imageObjectFit === "contain") {
+      return "object-contain";
+    }
+
+    if (field.imageObjectFit === "cover") {
+      return "object-cover";
+    }
+
+    return getImageEditorMode(field) === "avatar"
+      ? "object-contain"
+      : "object-cover";
+  };
+
   const handleImageSelect =
     (field: DashboardEditField) => async (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
@@ -524,21 +548,15 @@ export function DashboardEditDialog({
                       {typeof value === "string" && value ? (
                         <div
                           className={cn(
-                            "relative h-36 overflow-hidden rounded-xl border border-border/70 bg-card",
-                            field.imagePreviewClassName,
+                            "relative h-36 overflow-hidden rounded-xl border border-border bg-card",
+                            getImagePreviewClassName(field),
                           )}
                         >
                           <ImageWithFallback
                             src={value}
                             alt={field.label}
                             fill
-                            className={cn(
-                              field.imageObjectFit === "contain"
-                                ? "object-contain"
-                                : "object-cover",
-                              getImageEditorMode(field) === "avatar" &&
-                                "object-contain p-4",
-                            )}
+                            className={getImagePreviewObjectClassName(field)}
                           />
                         </div>
                       ) : null}

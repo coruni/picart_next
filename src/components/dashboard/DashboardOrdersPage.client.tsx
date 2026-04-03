@@ -108,11 +108,14 @@ export function DashboardOrdersPage() {
             menuItems.push({
               label: "Cancel order",
               icon: <XCircle size={16} />,
+              confirmDialog: {
+                enabled: true,
+                title: "Cancel order",
+                description: "Cancel this order?",
+                confirmText: "Cancel order",
+                cancelText: copy.common.cancel,
+              },
               onClick: async () => {
-                if (!window.confirm("Cancel this order?")) {
-                  return;
-                }
-
                 await orderControllerCancelOrder({
                   path: { id: String(item.id) },
                 });
@@ -125,11 +128,14 @@ export function DashboardOrdersPage() {
             menuItems.push({
               label: "Refund",
               icon: <RotateCcw size={16} />,
+              confirmDialog: {
+                enabled: true,
+                title: "Refund",
+                description: "Request refund?",
+                confirmText: "Refund",
+                cancelText: copy.common.cancel,
+              },
               onClick: async () => {
-                if (!window.confirm("Request refund?")) {
-                  return;
-                }
-
                 await orderControllerRequestRefund({
                   path: { id: String(item.id) },
                 });

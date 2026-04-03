@@ -45,6 +45,7 @@ import {
   formatDashboardDate,
   getApiErrorStatus,
   getRoleLabels,
+  normalizePendingOrderNos,
   looksLikeAdminRole,
 } from "./utils";
 import { useDashboardGuard } from "./useDashboardGuard";
@@ -195,7 +196,9 @@ export function DashboardClientPage() {
         configs: (configsResponse?.data?.data?.data || []).slice(0, 6),
         publicConfig: publicConfigResponse?.data?.data || null,
         advertisementConfig: advertisementConfigResponse?.data?.data || null,
-        pendingOrderNos: pendingOrdersResponse?.data?.data || [],
+        pendingOrderNos: normalizePendingOrderNos(
+          pendingOrdersResponse?.data?.data,
+        ),
       });
 
       setLoading(false);

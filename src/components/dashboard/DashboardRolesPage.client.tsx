@@ -124,8 +124,15 @@ export function DashboardRolesPage() {
               icon: <Trash2 size={16} />,
               className: "text-red-500",
               disabled: item.isSystem,
+              confirmDialog: {
+                enabled: !item.isSystem,
+                title: copy.common.delete,
+                description: copy.common.deleteConfirm,
+                confirmText: copy.common.delete,
+                cancelText: copy.common.cancel,
+              },
               onClick: async () => {
-                if (item.isSystem || !window.confirm(copy.common.deleteConfirm)) {
+                if (item.isSystem) {
                   return;
                 }
 
