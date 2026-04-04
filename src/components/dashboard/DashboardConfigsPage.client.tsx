@@ -15,6 +15,7 @@ import { cn } from "@/lib";
 import { ImagePlus, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useImageCompression } from "@/hooks/useImageCompression";
 import { getDashboardCopy } from "./copy";
 import {
   DashboardErrorView,
@@ -312,6 +313,7 @@ export function DashboardConfigsPage() {
   const copy = getDashboardCopy(locale);
   const text = copy.pages.configs;
   const { ready } = useDashboardGuard();
+  const { compressImage } = useImageCompression();
   const [configs, setConfigs] = useState<DashboardConfigItem[]>([]);
   const [allConfigs, setAllConfigs] = useState<DashboardConfigItem[]>([]);
   const [drafts, setDrafts] = useState<Record<number, string>>({});
@@ -448,9 +450,13 @@ export function DashboardConfigsPage() {
       });
 
       try {
+        // 压缩图片
+        const compressedResult = await compressImage(file);
+        const compressedFile = compressedResult.file;
+
         const { data } = await uploadControllerUploadFile({
           body: {
-            file,
+            file: compressedFile,
           },
         });
 
@@ -473,7 +479,7 @@ export function DashboardConfigsPage() {
         setUploadingId(null);
       }
     },
-    [text.uploadFailed],
+    [text.uploadFailed, compressImage],
   );
 
   const handleSave = useCallback(

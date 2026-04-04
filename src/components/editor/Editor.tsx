@@ -14,6 +14,7 @@ import "./inline-article.css";
 import { articleControllerFindByAuthor, articleControllerFindOne } from "@/api";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { prepareRichTextHtmlForEditor, sanitizeRichTextHtml } from "@/lib";
+import { useImageCompression } from "@/hooks/useImageCompression";
 import { useUserStore } from "@/stores";
 import { ArticleList } from "@/types";
 import { getImageUrl, ImageInfo } from "@/types/image";
@@ -155,6 +156,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
     const [articleLoading, setArticleLoading] = useState(false);
     const { user, token } = useUserStore();
+    const { compressImages, validateFiles } = useImageCompression();
     const savedSelection = useRef<{ index: number; length: number } | null>(
       null,
     );
@@ -327,7 +329,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             setShowArticleModal(true);
           },
           onImageUpload: async () => {
-            // 图片上传处理
+            // 图片上传处理（带预压缩）
             const input = document.createElement("input");
             input.type = "file";
             input.accept = "image/*";
@@ -336,6 +338,14 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             input.onchange = async () => {
               const files = input.files;
               if (!files || files.length === 0) return;
+
+              // 验证文件
+              const validation = validateFiles(Array.from(files));
+              if (!validation.valid) {
+                // 可以在这里显示错误提示
+                console.error(validation.error);
+                return;
+              }
 
               const selection = quill.getSelection();
               const startIndex = selection?.index || 0;
@@ -351,9 +361,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 progressText: HTMLSpanElement | null;
               }[] = [];
 
+              // 压缩图片
+              const compressionResults = await compressImages(Array.from(files));
+
               // Create all placeholders first
-              for (let i = 0; i < files.length; i++) {
-                const file = files[i];
+              for (let i = 0; i < compressionResults.length; i++) {
+                const result = compressionResults[i];
+                const file = result.file;
                 const currentIndex = startIndex + i;
 
                 // 转换为 base64 占位
@@ -445,13 +459,14 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 }
               }
 
-              // Batch upload all files
+              // Batch upload all compressed files
               const abortController = new AbortController();
               uploadAbortControllerRef.current = abortController;
 
               try {
+                const compressedFiles = compressionResults.map(r => r.file);
                 const response = await uploadControllerUploadFile({
-                  body: { file: Array.from(files) as any },
+                  body: { file: compressedFiles as any },
                 });
 
                 const uploadedUrls = response.data?.data || [];

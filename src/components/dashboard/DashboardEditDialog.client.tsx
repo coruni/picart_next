@@ -17,6 +17,7 @@ import { Select } from "@/components/ui/Select";
 import { Switch } from "@/components/ui/Switch";
 import { TimePicker } from "@/components/ui/TimePicker";
 import { useClickOutside } from "@/hooks";
+import { useImageCompression } from "@/hooks/useImageCompression";
 import { cn } from "@/lib";
 import { ChevronDown, ImagePlus, Loader2, Search, X } from "lucide-react";
 import { useLocale } from "next-intl";
@@ -255,6 +256,7 @@ export function DashboardEditDialog({
 }: DashboardEditDialogProps) {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
+  const { compressImage } = useImageCompression();
   const editorRef = useRef<AvatarEditor>(null);
   const [values, setValues] = useState<Record<
     string,
@@ -313,9 +315,13 @@ export function DashboardEditDialog({
         setUploadingImage(true);
 
         try {
+          // 压缩图片
+          const compressedResult = await compressImage(file);
+          const compressedFile = compressedResult.file;
+
           const { data } = await uploadControllerUploadFile({
             body: {
-              file,
+              file: compressedFile,
             },
           });
 
@@ -361,9 +367,13 @@ export function DashboardEditDialog({
         type: "image/jpeg",
       });
 
+      // 压缩裁剪后的图片
+      const compressedResult = await compressImage(croppedFile);
+      const compressedFile = compressedResult.file;
+
       const { data } = await uploadControllerUploadFile({
         body: {
-          file: croppedFile,
+          file: compressedFile,
         },
       });
 
