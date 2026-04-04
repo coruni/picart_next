@@ -436,6 +436,16 @@
       "uploadFailed": "Upload failed",
       "percent": "{percent}%"
     },
+    "articleSelector": {
+      "articles": "Posts ({count})",
+      "selected": "Selected ({count})",
+      "searchPlaceholder": "Search posts or enter link",
+      "loading": "Loading...",
+      "noArticles": "No articles",
+      "noSelectedArticles": "No articles selected",
+      "cancel": "Cancel",
+      "insert": "Insert ({count})"
+    },
     "placeholder": "Enter content here",
     "imageCaptionPlaceholder": "Add image caption..."
   },

@@ -1232,9 +1232,9 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               <div className="flex-1 min-h-0 flex flex-col">
                 {/* 表头 */}
                 <div className="flex items-center px-6 py-2 bg-muted/60 text-sm border-b border-border shrink-0">
-                  <div className="flex-1 min-w-0">帖子({articleTotal})</div>
+                  <div className="flex-1 min-w-0">{t("articleSelector.articles", { count: articleTotal })}</div>
                   <div className="flex-1 min-w-0">
-                    已选({selectedArticles.length})
+                    {t("articleSelector.selected", { count: selectedArticles.length })}
                   </div>
                 </div>
 
@@ -1247,7 +1247,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                       <Input
                         value={articleSearchQuery}
                         onChange={(e) => handleArticleSearch(e.target.value)}
-                        placeholder="搜索帖子或输入链接"
+                        placeholder={t("articleSelector.searchPlaceholder")}
                         fullWidth
                         className="h-8"
                       />
@@ -1257,11 +1257,11 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-2">
                       {articleLoading && articles.length === 0 ? (
                         <div className="flex items-center justify-center h-20 text-sm text-muted-foreground">
-                          加载中...
+                          {t("articleSelector.loading")}
                         </div>
                       ) : articles.length === 0 ? (
                         <div className="flex items-center justify-center h-20 text-sm text-muted-foreground">
-                          暂无文章
+                          {t("articleSelector.noArticles")}
                         </div>
                       ) : (
                         <div className="space-y-1">
@@ -1334,7 +1334,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-2">
                       {selectedArticles.length === 0 ? (
                         <div className="flex items-center justify-center h-20 text-sm text-muted-foreground">
-                          未选择文章
+                          {t("articleSelector.noSelectedArticles")}
                         </div>
                       ) : (
                         <div className="space-y-1">
@@ -1410,14 +1410,14 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     setSelectedArticles([]);
                   }}
                 >
-                  取消
+                  {t("articleSelector.cancel")}
                 </Button>
                 <Button
                   className="rounded-full h-10 w-full"
                   disabled={selectedArticles.length === 0}
                   onClick={handleInsertSelectedArticles}
                 >
-                  插入 ({selectedArticles.length})
+                  {t("articleSelector.insert", { count: selectedArticles.length })}
                 </Button>
               </DialogFooter>
             </DialogContent>

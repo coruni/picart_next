@@ -428,6 +428,16 @@
       "uploadFailed": "上传失败",
       "percent": "{percent}%"
     },
+    "articleSelector": {
+      "articles": "帖子({count})",
+      "selected": "已选({count})",
+      "searchPlaceholder": "搜索帖子或输入链接",
+      "loading": "加载中...",
+      "noArticles": "暂无文章",
+      "noSelectedArticles": "未选择文章",
+      "cancel": "取消",
+      "insert": "插入 ({count})"
+    },
     "placeholder": "请输入内容",
     "imageCaptionPlaceholder": "添加图片说明..."
   },
