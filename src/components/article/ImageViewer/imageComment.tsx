@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
 } from "@/components/ui/Dialog";
 import { ArticleDetail, ArticleList } from "@/types";
@@ -34,13 +35,13 @@ export const ImageComment = memo(function ImageComment({
       avatar: article.author.avatar,
       frameUrl: article.author.equippedDecorations.AVATAR_FRAME.imageUrl,
     }),
-    [article.author]
+    [article.author],
   );
 
   const [refreshKey, setRefreshKey] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [replyParentId, setReplyParentId] = useState<number | undefined>(
-    undefined
+    undefined,
   );
 
   // 使用 useCallback 缓存回调函数
@@ -82,7 +83,9 @@ export const ImageComment = memo(function ImageComment({
               className="size-10"
             />
             <div className="flex grow">
-              <span className="font-semibold text-sm">{authorInfo.nickname}</span>
+              <span className="font-semibold text-sm">
+                {authorInfo.nickname}
+              </span>
             </div>
           </div>
           <div className="flex items-center justify-center">
@@ -127,6 +130,8 @@ export const ImageComment = memo(function ImageComment({
 
       {/* 评论弹窗 */}
       <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+        <DialogOverlay className="z-101!" />
+
         <DialogContent className="max-w-lg w-[calc(100vw-2rem)] p-0  overflow-visible">
           <DialogHeader className="">
             <DialogTitle className=" font-semibold">{t("send")}</DialogTitle>
