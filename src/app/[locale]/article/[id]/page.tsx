@@ -1,3 +1,4 @@
+import "@/components/editor/inline-article.css";
 import {
   ArticleActions,
   ArticleAuthor,

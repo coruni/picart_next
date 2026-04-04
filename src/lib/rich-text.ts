@@ -116,6 +116,20 @@ function sanitizeNodeTree(node: Node): void {
       const element = child as HTMLElement;
       const tagName = element.tagName.toLowerCase();
 
+      // 保留 ql-divider 和 ql-inline-article-list 内部结构
+      if (element.classList.contains("ql-divider") || element.classList.contains("ql-inline-article-list")) {
+        // 只清理危险属性，保留所有子节点
+        const attributes = Array.from(element.attributes);
+        for (const attr of attributes) {
+          const name = attr.name.toLowerCase();
+          if (name.startsWith("on") || name === "style" || name === "srcdoc") {
+            element.removeAttribute(attr.name);
+          }
+        }
+        // 跳过子节点处理，保留内部结构
+        continue;
+      }
+
       if (!ALLOWED_TAGS.has(tagName)) {
         element.replaceWith(...Array.from(element.childNodes));
         continue;
@@ -180,6 +194,9 @@ function sanitizeNodeTree(node: Node): void {
           name === "type" ||
           name === "colspan" ||
           name === "rowspan" ||
+          (tagName === "hr" && name === "data-style") ||
+          (tagName === "div" && name === "data-style") ||
+          (tagName === "div" && name === "data-articles") ||
           ((tagName === "h1" ||
             tagName === "h2" ||
             tagName === "h3" ||

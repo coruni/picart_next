@@ -7,12 +7,24 @@ import "@enzedonline/quill-blot-formatter2/dist/css/quill-blot-formatter2.css";
 import { useTranslations } from "next-intl";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
+import "./inline-article.css";
 import { SizeClass, SizeStyle } from "quill/formats/size";
-import { forwardRef, useEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 
+import { articleControllerFindByAuthor, articleControllerFindOne } from "@/api";
+import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { prepareRichTextHtmlForEditor, sanitizeRichTextHtml } from "@/lib";
+import { useUserStore } from "@/stores";
+import { ArticleList } from "@/types";
+import { getImageUrl, ImageInfo } from "@/types/image";
+import { GripVertical, X } from "lucide-react";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
+import { InfiniteScrollStatus } from "../shared/InfiniteScrollStatus";
+import { DialogFooter } from "../ui/Dialog";
 import { CustomEmojiBlot } from "./blots/CustomEmojiBlot";
 import { CustomImageBlot } from "./blots/CustomImageBlot";
+import { DividerBlot } from "./blots/DividerBlot";
+import { InlineArticleListBlot } from "./blots/InlineArticleListBlot";
 import type { EditorProps } from "./index";
 import {
   customIcons,
@@ -20,7 +32,7 @@ import {
   quillOverrideStyles,
   renderToolbar,
 } from "./index";
-import { CustomImageSpec, CustomLinkSpec } from "./specs";
+import { CustomImageSpec, CustomLinkSpec, InlineArticleSpec } from "./specs";
 import {
   Button,
   cn,
@@ -93,6 +105,8 @@ const registerQuillModules = () => {
   Quill.register("modules/blotFormatter2", QuillBlotFormatter2);
   Quill.register({ "formats/image": CustomImageBlot }, true);
   Quill.register({ "formats/emoji": CustomEmojiBlot }, true);
+  Quill.register({ "formats/divider": DividerBlot }, true);
+  Quill.register({ "formats/inlineArticleList": InlineArticleListBlot }, true);
 
   if (typeof window !== "undefined") {
     window.__PICART_QUILL_REGISTERED__ = true;
@@ -124,17 +138,49 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     const [showLinkModal, setShowLinkModal] = useState(false);
     const [linkUrl, setLinkUrl] = useState("");
     const [linkText, setLinkText] = useState("");
+    const [showArticleModal, setShowArticleModal] = useState(false);
+    const [articleSearchQuery, setArticleSearchQuery] = useState("");
+
+    interface ArticleItem {
+      id: number;
+      title: string;
+      cover?: string;
+      images?: string | ImageInfo[];
+      author: ArticleList[number]["author"];
+      views: number;
+    }
+    const [articles, setArticles] = useState<ArticleItem[]>([]);
+    const [selectedArticles, setSelectedArticles] = useState<ArticleItem[]>([]);
+    const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+    const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+    const [articleLoading, setArticleLoading] = useState(false);
+    const { user, token } = useUserStore();
     const savedSelection = useRef<{ index: number; length: number } | null>(
       null,
     );
     const quillRef = useRef<Quill | null>(null);
     const uploadAbortControllerRef = useRef<AbortController | null>(null);
     const lastSyncedValueRef = useRef("");
+    const onChangeRef = useRef(onChange);
+    const isApplyingExternalValueRef = useRef(false);
+    // 跟踪初始值，用于区分初始加载和后续更新
+    const initialValueRef = useRef(value);
+
+    // 记录文章总数
+    const [articleTotal, setArticleTotal] = useState<number>(0);
+    const [articlePage, setArticlePage] = useState(1);
+    const [articleHasMore, setArticleHasMore] = useState(true);
+    const loadMoreRef = useRef<HTMLDivElement>(null);
+
+    // 保持 onChange 引用最新
+    useEffect(() => {
+      onChangeRef.current = onChange;
+    }, [onChange]);
 
     const emitSanitizedContent = (root: HTMLElement) => {
       const html = sanitizeRichTextHtml(root.innerHTML || "");
       lastSyncedValueRef.current = html;
-      onChange?.(html);
+      onChangeRef.current?.(html);
     };
 
     const ensureImageCaptions = (root: HTMLElement) => {
@@ -192,6 +238,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               specs: [
                 CustomImageSpec as unknown as typeof BlotSpec,
                 CustomLinkSpec as unknown as typeof BlotSpec,
+                InlineArticleSpec as unknown as typeof BlotSpec,
               ],
               toolbar: {
                 icons: customIcons,
@@ -276,7 +323,10 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             }
             setShowLinkModal(true);
           },
-          onImageUpload: () => {
+          onArticleClick: () => {
+            setShowArticleModal(true);
+          },
+          onImageUpload: async () => {
             // 图片上传处理
             const input = document.createElement("input");
             input.type = "file";
@@ -290,7 +340,18 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               const selection = quill.getSelection();
               const startIndex = selection?.index || 0;
 
-              // 为每个文件创建上传占位符并上传
+              // Store upload info for each file
+              const uploadItems: {
+                file: File;
+                index: number;
+                base64: string;
+                wrapper: HTMLDivElement | null;
+                img: HTMLImageElement | null;
+                overlay: HTMLDivElement | null;
+                progressText: HTMLSpanElement | null;
+              }[] = [];
+
+              // Create all placeholders first
               for (let i = 0; i < files.length; i++) {
                 const file = files[i];
                 const currentIndex = startIndex + i;
@@ -350,48 +411,79 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                   // 将遮罩添加到 wrapper 中
                   targetWrapper.appendChild(overlay);
 
+                  const progressText = overlay.querySelector(
+                    ".progress-text",
+                  ) as HTMLSpanElement;
+
+                  // Store references
+                  uploadItems.push({
+                    file,
+                    index: currentIndex,
+                    base64,
+                    wrapper: targetWrapper,
+                    img: targetImg,
+                    overlay,
+                    progressText,
+                  });
+
                   // 取消按钮
                   const cancelBtn = overlay.querySelector(
                     ".cancel-btn",
                   ) as HTMLButtonElement;
-                  const abortController = new AbortController();
-                  uploadAbortControllerRef.current = abortController;
-
                   cancelBtn.onclick = () => {
-                    abortController.abort();
+                    // Mark this item as cancelled
+                    const item = uploadItems.find(
+                      (u) => u.index === currentIndex,
+                    );
+                    if (item) {
+                      item.wrapper = null;
+                      item.img = null;
+                    }
                     overlay.remove();
                     quill.deleteText(currentIndex, 1);
                   };
-
-                  // 上传图片
-                  const progressText = overlay.querySelector(
-                    ".progress-text",
-                  ) as HTMLSpanElement;
-                  try {
-                    const response = await uploadControllerUploadFile({
-                      body: { file },
-                    });
-
-                    if (response.data?.data?.[0]?.url) {
-                      targetImg.src = response.data.data[0].url;
-                      targetImg.dataset.uploaded = "true";
-                    }
-
-                    // 更新进度
-                    progressText.textContent = "100%";
-                  } catch (error) {
-                    if ((error as Error).name === "AbortError") {
-                      continue;
-                    }
-                    console.error("Upload failed:", error);
-                    overlay.remove();
-                    quill.deleteText(currentIndex, 1);
-                    continue;
-                  } finally {
-                    // 移除遮罩
-                    overlay.remove();
-                  }
                 }
+              }
+
+              // Batch upload all files
+              const abortController = new AbortController();
+              uploadAbortControllerRef.current = abortController;
+
+              try {
+                const response = await uploadControllerUploadFile({
+                  body: { file: Array.from(files) as any },
+                });
+
+                const uploadedUrls = response.data?.data || [];
+
+                // Update each uploaded image
+                uploadItems.forEach((item, idx) => {
+                  // Skip if cancelled (wrapper is null)
+                  if (!item.wrapper || !item.img) return;
+
+                  const uploadedUrl = uploadedUrls[idx]?.url;
+                  if (uploadedUrl) {
+                    item.img.src = uploadedUrl;
+                    item.img.dataset.uploaded = "true";
+                    if (item.progressText) {
+                      item.progressText.textContent = "100%";
+                    }
+                  }
+                  // Remove overlay
+                  item.overlay?.remove();
+                });
+              } catch (error) {
+                if ((error as Error).name === "AbortError") {
+                  return;
+                }
+                console.error("Upload failed:", error);
+                // Remove all overlays and delete placeholders on error
+                uploadItems.forEach((item) => {
+                  item.overlay?.remove();
+                  if (item.wrapper) {
+                    quill.deleteText(item.index, 1);
+                  }
+                });
               }
             };
           },
@@ -406,20 +498,14 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           }
         }
 
-        // 设置初始值
-        if (value) {
-          const preparedValue = prepareRichTextHtmlForEditor(value);
-          quill.root.innerHTML = preparedValue;
-          ensureImageCaptions(quill.root);
-          lastSyncedValueRef.current = sanitizeRichTextHtml(preparedValue);
-        }
+        // 设置初始值由第二个 effect 处理
 
         // 监听内容变化
         const handleTextChange = () => {
+          if (isApplyingExternalValueRef.current) return;
           ensureImageCaptions(quill.root);
           emitSanitizedContent(quill.root);
         };
-
         quill.on("text-change", handleTextChange);
 
         // 键盘快捷键：Ctrl+C 复制图片
@@ -548,7 +634,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           quill.root.removeEventListener("keydown", handleCaptionKeyDown, true);
         };
       }
-    }, [ref, placeholder, readOnly, onChange, value]);
+    }, [ref, placeholder, readOnly]);
 
     // 独立的 link-edit 事件监听器
     useEffect(() => {
@@ -565,17 +651,83 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       };
     }, []);
 
+    // 内联文章编辑事件监听器
+    useEffect(() => {
+      const handleInlineArticleEdit = () => {
+        // 打开文章选择对话框进行替换
+        setShowArticleModal(true);
+      };
+      document.addEventListener("inline-article-edit", handleInlineArticleEdit);
+      return () => {
+        document.removeEventListener(
+          "inline-article-edit",
+          handleInlineArticleEdit,
+        );
+      };
+    }, []);
+
+    // 标记是否已完成初始值设置
+    const hasInitializedRef = useRef(false);
+
     useEffect(() => {
       const quill = quillRef.current;
       if (!quill) return;
 
       const nextValue = value || "";
-      if (nextValue === lastSyncedValueRef.current) return;
+      const sanitizedNext = sanitizeRichTextHtml(nextValue);
+      const currentValue = sanitizeRichTextHtml(quill.root.innerHTML || "");
 
-      const preparedValue = prepareRichTextHtmlForEditor(nextValue);
-      quill.root.innerHTML = preparedValue;
-      ensureImageCaptions(quill.root);
-      lastSyncedValueRef.current = sanitizeRichTextHtml(preparedValue);
+      // 检测是否是初始加载（value 从 undefined/空 变成有值）
+      const isInitialLoad =
+        !hasInitializedRef.current &&
+        (sanitizedNext || initialValueRef.current);
+
+      // 只在初始化时应用外部值，避免编辑时覆盖用户输入
+      if (isInitialLoad) {
+        if (sanitizedNext !== currentValue) {
+          isApplyingExternalValueRef.current = true;
+          try {
+            const preparedValue = prepareRichTextHtmlForEditor(nextValue);
+            quill.setContents([], "silent");
+            quill.clipboard.dangerouslyPasteHTML(0, preparedValue, "silent");
+            ensureImageCaptions(quill.root);
+            lastSyncedValueRef.current = sanitizeRichTextHtml(
+              quill.root.innerHTML || "",
+            );
+          } finally {
+            isApplyingExternalValueRef.current = false;
+          }
+        }
+        hasInitializedRef.current = true;
+        return;
+      }
+
+      // 初始化完成后，只在值真正变化且不是用户正在编辑时同步
+      if (sanitizedNext === currentValue) {
+        lastSyncedValueRef.current = currentValue;
+        return;
+      }
+
+      // 如果编辑器有焦点，说明用户正在编辑，不覆盖
+      if (quill.hasFocus()) {
+        return;
+      }
+
+      // 只在确认是外部更新（不是来自 onChange）时才应用
+      if (sanitizedNext !== lastSyncedValueRef.current) {
+        isApplyingExternalValueRef.current = true;
+        try {
+          const preparedValue = prepareRichTextHtmlForEditor(nextValue);
+          quill.setContents([], "silent");
+          quill.clipboard.dangerouslyPasteHTML(0, preparedValue, "silent");
+          ensureImageCaptions(quill.root);
+          lastSyncedValueRef.current = sanitizeRichTextHtml(
+            quill.root.innerHTML || "",
+          );
+        } finally {
+          isApplyingExternalValueRef.current = false;
+        }
+      }
     }, [value]);
 
     // 点击外部关闭下拉菜单
@@ -612,6 +764,234 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       setShowVideoModal(false);
       setVideoUrl("");
     };
+
+    // 加载用户的文章列表
+    const loadUserArticles = useCallback(
+      async (keyword?: string, page: number = 1) => {
+        if (!user?.id || !token) return;
+        setArticleLoading(true);
+        try {
+          const response = await articleControllerFindByAuthor({
+            path: { id: String(user.id) },
+            query: {
+              page,
+              limit: 20,
+              keyword: keyword || undefined,
+            },
+          });
+          const data = response.data?.data?.data || [];
+          const total = response.data?.data?.meta?.total || 0;
+
+          const newArticles = data.map((article) => ({
+            id: article.id,
+            title: article.title,
+            cover: article.cover,
+            images: article.images,
+            author: article.author,
+            views: article.views,
+          }));
+
+          if (page === 1) {
+            setArticles(newArticles);
+            setArticleHasMore(newArticles.length < total);
+          } else {
+            setArticles((prev) => {
+              // 去重：只添加不存在的新文章
+              const existingIds = new Set(prev.map((a) => a.id));
+              const uniqueNewArticles = newArticles.filter(
+                (a) => !existingIds.has(a.id),
+              );
+              const updatedArticles = [...prev, ...uniqueNewArticles];
+              setArticleHasMore(updatedArticles.length < total);
+              return updatedArticles;
+            });
+          }
+
+          setArticleTotal(total);
+          setArticlePage(page);
+        } catch (error) {
+          console.error("Failed to load articles:", error);
+          if (page === 1) {
+            setArticles([]);
+          }
+        } finally {
+          setArticleLoading(false);
+        }
+      },
+      [user?.id, token],
+    );
+
+    // 加载更多文章
+    const loadMoreArticles = useCallback(() => {
+      if (articleLoading || !articleHasMore) return;
+      const nextPage = articlePage + 1;
+      loadUserArticles(articleSearchQuery, nextPage);
+    }, [
+      articleLoading,
+      articleHasMore,
+      articlePage,
+      articleSearchQuery,
+      loadUserArticles,
+    ]);
+
+    // 无限滚动监听
+    useInfiniteScrollObserver({
+      targetRef: loadMoreRef,
+      onIntersect: loadMoreArticles,
+      enabled: !articleLoading && articleHasMore && articles.length > 0,
+      rootMargin: "50px",
+    });
+
+    // 通过ID搜索文章
+    const searchArticleById = useCallback(
+      async (id: number) => {
+        if (!token) return;
+        setArticleLoading(true);
+        try {
+          const response = await articleControllerFindOne({
+            path: { id: String(id) },
+          });
+          const article = response.data?.data;
+          if (article && article.authorId === user?.id) {
+            setArticles([
+              {
+                id: article.id,
+                title: article.title,
+                images: article.images,
+                author: article.author,
+                views: article.views,
+              },
+            ]);
+          } else {
+            setArticles([]);
+          }
+        } catch (error) {
+          console.error("Failed to search article:", error);
+          setArticles([]);
+        } finally {
+          setArticleLoading(false);
+        }
+      },
+      [token, user?.id],
+    );
+
+    // 处理搜索输入
+    const handleArticleSearch = useCallback(
+      (query: string) => {
+        setArticleSearchQuery(query);
+        setArticlePage(1);
+        setArticleHasMore(true);
+        // 检查是否是URL格式
+        const urlRegex = /\/article\/(\d+)/;
+        const match = query.match(urlRegex);
+        if (match) {
+          // 是URL，提取ID搜索
+          const articleId = parseInt(match[1], 10);
+          searchArticleById(articleId);
+        } else {
+          // 普通关键词搜索
+          loadUserArticles(query, 1);
+        }
+      },
+      [loadUserArticles, searchArticleById],
+    );
+
+    // 切换文章选中状态
+    const toggleArticleSelection = (article: ArticleItem) => {
+      setSelectedArticles((prev) => {
+        const exists = prev.find((a) => a.id === article.id);
+        if (exists) {
+          return prev.filter((a) => a.id !== article.id);
+        }
+        return [...prev, article];
+      });
+    };
+
+    // 拖拽排序处理
+    const handleDragStart = (index: number) => {
+      setDraggingIndex(index);
+    };
+
+    const handleDragOver = (
+      e: React.DragEvent<HTMLDivElement>,
+      index: number,
+    ) => {
+      e.preventDefault();
+      if (draggingIndex === null || draggingIndex === index) return;
+      setDragOverIndex(index);
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+      e.preventDefault();
+      if (draggingIndex === null || draggingIndex === index) {
+        setDraggingIndex(null);
+        setDragOverIndex(null);
+        return;
+      }
+
+      setSelectedArticles((prev) => {
+        const newList = [...prev];
+        const [draggedItem] = newList.splice(draggingIndex, 1);
+        newList.splice(index, 0, draggedItem);
+        return newList;
+      });
+
+      setDraggingIndex(null);
+      setDragOverIndex(null);
+    };
+
+    const handleDragEnd = () => {
+      setDraggingIndex(null);
+      setDragOverIndex(null);
+    };
+
+    // 插入已选文章
+    const handleInsertSelectedArticles = () => {
+      const quill = quillRef.current;
+      if (!quill || selectedArticles.length === 0) return;
+
+      const range = quill.getSelection();
+      const index = range?.index ?? quill.getLength();
+
+      // 所有文章都使用 inlineArticleList 包裹（包括单篇）
+      const articles = selectedArticles.map((article) => {
+        const coverUrl =
+          article.cover ||
+          (article.images?.length
+            ? getImageUrl(article.images?.[0], "small")
+            : undefined);
+
+        return {
+          id: String(article.id),
+          title: article.title,
+          authorName: article.author?.nickname || article.author?.username || "",
+          views: article.views || 0,
+          cover: coverUrl,
+          authorAvatar: article.author?.avatar || "",
+        };
+      });
+
+      quill.insertEmbed(
+        index,
+        "inlineArticleList",
+        { articles },
+        "user",
+      );
+
+      quill.setSelection(index + 1, 0, "silent");
+      setShowArticleModal(false);
+      setArticleSearchQuery("");
+      setSelectedArticles([]);
+    };
+
+    // Dialog 打开时加载文章
+    useEffect(() => {
+      if (showArticleModal && user?.id) {
+        setArticlePage(1);
+        setArticleHasMore(true);
+        loadUserArticles(undefined, 1);
+      }
+    }, [showArticleModal, user?.id, loadUserArticles]);
 
     // 插入链接的处理函数
     const handleInsertLink = () => {
@@ -659,7 +1039,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             "bg-card border border-border rounded-lg",
             "[&_.ql-toolbar]:border-b [&_.ql-toolbar]:bg-muted/50 [&_.ql-toolbar]:rounded-t-lg",
             "[&_.ql-toolbar_.ql-formats]:flex [&_.ql-toolbar_.ql-formats]:gap-1 [&_.ql-toolbar]:flex-wrap [&_.ql-toolbar]:p-2",
-            "[&_.ql-toolbar button]:w-8 [&_.ql-toolbar button]:h-8 [&_.ql-toolbar button]:p-1 [&_.ql-toolbar button]:rounded [&_.ql-toolbar button]:flex [&_.ql-toolbar button]:items-center [&_.ql-toolbar button]:justify-center [&_.ql-toolbar button]:border-0 [&_.ql-toolbar button]:bg-transparent [&_.ql-toolbar button svg]:h-[auto]! [&_.ql-toolbar button svg]:!h-auto",
+            "[&_.ql-toolbar button]:w-8 [&_.ql-toolbar button]:h-8 [&_.ql-toolbar button]:p-1 [&_.ql-toolbar button]:rounded [&_.ql-toolbar button]:flex [&_.ql-toolbar button]:items-center [&_.ql-toolbar button]:justify-center [&_.ql-toolbar button]:border-0 [&_.ql-toolbar button]:bg-transparent [&_.ql-toolbar button svg]:h-auto!",
             "[&_.ql-toolbar button:hover]:bg-accent [&_.ql-toolbar button:hover]:text-accent-foreground",
             "[&_.ql-toolbar button.ql-active]:bg-primary [&_.ql-toolbar button.ql-active]:text-primary-foreground",
             "[&_.ql-container]:border-0 [&_.ql-container]:rounded-b-lg [&_.ql-container]:min-h-100 [&_.ql-container]:overflow-visible",
@@ -776,6 +1156,225 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                   </Button>
                 </div>
               </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Inline Article Modal */}
+          <Dialog
+            open={showArticleModal}
+            onOpenChange={(open) => {
+              setShowArticleModal(open);
+              if (!open) {
+                setArticleSearchQuery("");
+                setArticles([]);
+                setSelectedArticles([]);
+              }
+            }}
+          >
+            <DialogContent
+              className={cn(
+                modalContentClassName,
+                "p-0! rounded-xl! overflow-hidden! w-[min(960px,calc(100vw-2rem))]! max-w-2xl! h-[80vh]! flex flex-col",
+              )}
+            >
+              <DialogHeader className="px-6 py-4 mb-0! border-b border-border shrink-0">
+                <DialogTitle className="text-sm font-semibold">
+                  {t("modal.insertArticle")}
+                </DialogTitle>
+              </DialogHeader>
+
+              {/* 主体区域：必须 min-h-0，不然内部滚动会失效 */}
+              <div className="flex-1 min-h-0 flex flex-col">
+                {/* 表头 */}
+                <div className="flex items-center px-6 py-2 bg-muted/60 text-sm border-b border-border shrink-0">
+                  <div className="flex-1 min-w-0">帖子({articleTotal})</div>
+                  <div className="flex-1 min-w-0">
+                    已选({selectedArticles.length})
+                  </div>
+                </div>
+
+                {/* 左右两栏容器：必须 flex-1 + min-h-0 */}
+                <div className="flex-1 min-h-0 flex">
+                  {/* 左边 */}
+                  <div className="flex-1 min-w-0 min-h-0 flex flex-col border-r border-border">
+                    {/* 搜索栏固定，不参与滚动 */}
+                    <div className="px-3 py-2 shrink-0">
+                      <Input
+                        value={articleSearchQuery}
+                        onChange={(e) => handleArticleSearch(e.target.value)}
+                        placeholder="搜索帖子或输入链接"
+                        fullWidth
+                        className="h-8"
+                      />
+                    </div>
+
+                    {/* 列表滚动区 */}
+                    <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-2">
+                      {articleLoading && articles.length === 0 ? (
+                        <div className="flex items-center justify-center h-20 text-sm text-muted-foreground">
+                          加载中...
+                        </div>
+                      ) : articles.length === 0 ? (
+                        <div className="flex items-center justify-center h-20 text-sm text-muted-foreground">
+                          暂无文章
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          {articles.map((article) => {
+                            const coverUrl =
+                              article.cover ||
+                              (article.images?.length &&
+                                getImageUrl(article.images?.[0], "small"));
+                            const isSelected = selectedArticles.some(
+                              (a) => a.id === article.id,
+                            );
+
+                            return (
+                              <button
+                                key={article.id}
+                                type="button"
+                                onClick={() => toggleArticleSelection(article)}
+                                className="w-full flex items-center gap-3 p-2 rounded-md hover:bg-muted/60 transition-colors text-left "
+                              >
+                                <div className="flex items-center flex-1 gap-3">
+                                  <div className="relative  aspect-4/3 h-14">
+                                    <ImageWithFallback
+                                      fill
+                                      src={coverUrl || ""}
+                                      alt={article.title}
+                                      className=" object-cover rounded-md shrink-0"
+                                    />
+                                  </div>
+
+                                  <span className="text-xs line-clamp-2 flex-1 min-w-0">
+                                    {article.title}
+                                  </span>
+                                </div>
+                                <div className="flex items-center justify-center">
+                                  <span
+                                    className={cn(
+                                      "size-4 border border-primary rounded-full relative",
+                                    )}
+                                  >
+                                    <span
+                                      className={cn(
+                                        "absolute top-1/2 left-1/2 size-2 rounded-full bg-primary -translate-x-1/2 -translate-y-1/2",
+                                        "transition-all",
+                                        isSelected
+                                          ? "opacity-100"
+                                          : "opacity-0",
+                                      )}
+                                    />
+                                  </span>
+                                </div>
+                              </button>
+                            );
+                          })}
+                          {/* 无限滚动状态组件 */}
+                          <InfiniteScrollStatus
+                            observerRef={loadMoreRef}
+                            hasMore={articleHasMore}
+                            loading={articleLoading}
+                            isEmpty={articles.length === 0}
+                            loadingText="加载中..."
+                            allLoadedText="没有更多文章了"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* 右边 */}
+                  <div className="flex-1 min-w-0 min-h-0 flex flex-col">
+                    <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-2">
+                      {selectedArticles.length === 0 ? (
+                        <div className="flex items-center justify-center h-20 text-sm text-muted-foreground">
+                          未选择文章
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          {selectedArticles.map((article, index) => {
+                            const coverUrl =
+                              article.cover ||
+                              (article.images?.length &&
+                                getImageUrl(article.images?.[0], "small"));
+                            const isDragging = draggingIndex === index;
+                            const isDragOver = dragOverIndex === index;
+
+                            return (
+                              <div
+                                key={article.id}
+                                draggable
+                                onDragStart={() => handleDragStart(index)}
+                                onDragOver={(e) => handleDragOver(e, index)}
+                                onDrop={(e) => handleDrop(e, index)}
+                                onDragEnd={handleDragEnd}
+                                className={cn(
+                                  "w-full flex items-center gap-3 p-2 rounded-md transition-colors",
+                                  isDragging && "opacity-50",
+                                  isDragOver && "bg-primary/10",
+                                  !isDragging &&
+                                    !isDragOver &&
+                                    "hover:bg-muted/60",
+                                )}
+                              >
+                                <GripVertical
+                                  size={16}
+                                  className="cursor-grab text-muted-foreground"
+                                />
+
+                                <div className="flex flex-1 items-center gap-3">
+                                  <div className="relative aspect-4/3 h-14">
+                                    <ImageWithFallback
+                                      fill
+                                      src={coverUrl || ""}
+                                      alt={article.title}
+                                      className="object-cover rounded-md shrink-0"
+                                    />
+                                  </div>
+                                  <span className="text-xs line-clamp-2 flex-1 min-w-0">
+                                    {article.title}
+                                  </span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    toggleArticleSelection(article)
+                                  }
+                                  className="p-1 hover:bg-muted rounded"
+                                >
+                                  <X size={16} className="text-secondary" />
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <DialogFooter className="gap-4! px-6 pb-5 pt-4 border-t border-border shrink-0 mt-0!">
+                <Button
+                  variant="outline"
+                  className="rounded-full h-10 w-full"
+                  onClick={() => {
+                    setShowArticleModal(false);
+                    setArticleSearchQuery("");
+                    setSelectedArticles([]);
+                  }}
+                >
+                  取消
+                </Button>
+                <Button
+                  className="rounded-full h-10 w-full"
+                  disabled={selectedArticles.length === 0}
+                  onClick={handleInsertSelectedArticles}
+                >
+                  插入 ({selectedArticles.length})
+                </Button>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>

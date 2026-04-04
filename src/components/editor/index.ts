@@ -1,6 +1,8 @@
 export { CustomImageBlot } from "./blots/CustomImageBlot";
 export { CustomEmojiBlot } from "./blots/CustomEmojiBlot";
-export { CustomImageSpec, CustomLinkSpec } from "./specs";
+export { DividerBlot } from "./blots/DividerBlot";
+export { InlineArticleListBlot } from "./blots/InlineArticleListBlot";
+export { CustomImageSpec, CustomLinkSpec, InlineArticleSpec } from "./specs";
 export {
   ReplaceAction,
   ViewAction,
@@ -8,6 +10,8 @@ export {
   DeleteAction,
   EditLinkAction,
   RemoveLinkAction,
+  EditInlineArticleAction,
+  DeleteInlineArticleAction,
 } from "./actions";
 export {
   renderIcon,
