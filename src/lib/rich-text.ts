@@ -1,3 +1,4 @@
+import { parse } from "node-html-parser";
 
 const IMAGE_CAPTION_TAG =
   '<p class="ql-image-caption" contenteditable="true" data-placeholder="添加图片说明...">';
@@ -501,12 +502,30 @@ export function prepareRichTextHtmlForEditor(html: string): string {
   );
 }
 
-function convertInlineArticleCardsToAnchor(html: string, locale: string): string {
-  // 使用正则替换 div 为 a 标签
-  return html.replace(
-    /<div([^>]*\sclass="inline-article-card"[^>]*)data-article-id="([^"]+)"([^>]*)>([\s\S]*?)<\/div>/gi,
-    `<a$1href="/${locale}/article/$2"$3 style="text-decoration:none;color:inherit;display:block;">$4</a>`
-  );
+function convertInlineArticleCardsToAnchor(
+  html: string,
+  locale: string,
+): string {
+  const root = parse(html);
+  const cards = root.querySelectorAll(".inline-article-card");
+
+  for (const card of cards) {
+    const articleId = card.getAttribute("data-article-id");
+    if (!articleId) continue;
+
+    card.tagName = "a";
+    card.setAttribute("href", `/${locale}/article/${articleId}`);
+    card.setAttribute("style", "text-decoration:none;color:inherit;");
+
+    const className = card.getAttribute("class") || "";
+    if (!/\bblock\b/.test(className)) {
+      card.setAttribute("class", `${className} block`.trim());
+    }
+
+    card.removeAttribute("data-article-id");
+  }
+
+  return root.toString();
 }
 
 function extractClass(attrString: string): string {
