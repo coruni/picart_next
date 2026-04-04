@@ -30,7 +30,7 @@ export const BackgroundEditor = ({
   const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(
     null,
   );
-  const [backgroundUrl, setBackgroundUrl] = useState(user.background || "");
+  const [_backgroundUrl, _setBackgroundUrl] = useState(user.background || "");
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

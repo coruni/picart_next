@@ -731,7 +731,7 @@ button {
   animation-delay: 0.2s;
 }
 
-.ql-divider .div-travel-dot {
+.ql-divider:hover .div-travel-dot {
   animation: travel 1.6s linear infinite;
 }
 

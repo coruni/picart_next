@@ -33,7 +33,6 @@ const {
   Link,
   RemoveFormatting,
   Minus,
-  GripHorizontal,
   FileText,
 } = icons;
 

@@ -5110,7 +5110,19 @@ export type ArticleControllerSearchResponses = {
                 viewPrice: string;
                 type: string;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 sort: number;
                 summary: string;
                 views: number;
@@ -6654,7 +6666,19 @@ export type CommentControllerFindAllResponses = {
             data: Array<{
                 id: number;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 likes: number;
                 replyCount: number;
                 status: string;
@@ -7127,7 +7151,7 @@ export type CommentControllerFindOneResponses = {
             data: Array<{
                 id: number;
                 content: string;
-                images: Array<{
+                images: Array<string & {
                     url: string;
                     width: number;
                     height: number;
@@ -7685,7 +7709,7 @@ export type CommentControllerFindAllCommentsResponses = {
             data: Array<{
                 id: number;
                 content: string;
-                images: Array<{
+                images: Array<string & {
                     url: string;
                     width: number;
                     height: number;
@@ -8194,7 +8218,19 @@ export type CommentControllerGetUserCommentsResponses = {
             data: Array<{
                 id: number;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 likes: number;
                 replyCount: number;
                 status: string;
@@ -8397,24 +8433,24 @@ export type CommentControllerGetUserCommentsResponses = {
                 };
                 rootId: number;
                 replies: Array<{
-                    id?: number;
-                    content?: string;
-                    images?: Array<string>;
-                    likes?: number;
-                    replyCount?: number;
-                    status?: string;
-                    author?: {
+                    id: number;
+                    content: string;
+                    images: Array<string>;
+                    likes: number;
+                    replyCount: number;
+                    status: string;
+                    author: {
                         id: number;
                         username: string;
                         nickname: string;
                         status: string;
-                        banned: unknown;
-                        banReason: unknown;
+                        banned: string;
+                        banReason: string;
                         avatar: string;
                         description: string;
                         background: string;
                         gender: string;
-                        birthDate: unknown;
+                        birthDate: string;
                         articleCount: number;
                         followerCount: number;
                         followingCount: number;
@@ -8425,13 +8461,13 @@ export type CommentControllerGetUserCommentsResponses = {
                         membershipLevel: number;
                         membershipLevelName: string;
                         membershipStatus: string;
-                        membershipStartDate: unknown;
-                        membershipEndDate: unknown;
+                        membershipStartDate: string;
+                        membershipEndDate: string;
                         lastLoginAt: string;
-                        lastActiveAt: unknown;
-                        inviterId: unknown;
+                        lastActiveAt: string;
+                        inviterId: string;
                         myInviteCode: string;
-                        inviteCode: unknown;
+                        inviteCode: string;
                         inviteEarnings: string;
                         inviteCount: number;
                         createdAt: string;
@@ -8454,7 +8490,7 @@ export type CommentControllerGetUserCommentsResponses = {
                         };
                         isMember: boolean;
                     };
-                    article?: {
+                    article: {
                         id: number;
                         title: string;
                         requireLogin: boolean;
@@ -8495,7 +8531,7 @@ export type CommentControllerGetUserCommentsResponses = {
                         createdAt: string;
                         updatedAt: string;
                     };
-                    parent?: {
+                    parent: {
                         id: number;
                         content: string;
                         images: string;
@@ -8553,15 +8589,15 @@ export type CommentControllerGetUserCommentsResponses = {
                             };
                             isMember: boolean;
                         };
-                        rootId: unknown;
+                        rootId: number;
                         createdAt: string;
                         updatedAt: string;
                     };
-                    rootId?: number;
-                    createdAt?: string;
-                    updatedAt?: string;
-                    parentId?: number;
-                    isLiked?: boolean;
+                    rootId: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    parentId: number;
+                    isLiked: boolean;
                 }>;
                 createdAt: string;
                 updatedAt: string;

@@ -123,46 +123,12 @@ function createDraftMap(items: DashboardConfigItem[]) {
   }, {});
 }
 
-function getConfigPageText(locale: string) {
-  if (locale === "en") {
-    return {
-      loadFailedTitle: "Failed to load configs",
-      loadFailedDescription:
-        "The config list could not be fetched from the management API.",
-      searchPlaceholder: "Search key or description",
-      uploadImage: "Upload image",
-      replaceImage: "Replace image",
-      removeImage: "Remove image",
-      save: "Save",
-      saving: "Saving",
-      uploadFailed: "Image upload failed",
-      saveFailed: "Config update failed",
-      emptyGroup: "No configs in this group.",
-      selectedGroupCount: "{count} configs",
-      typeLabel: "Type",
-      updatedLabel: "Updated",
-      imagePreviewAlt: "Config image",
-    };
-  }
-
-  return {
-    loadFailedTitle: "配置加载失败",
-    loadFailedDescription: "当前配置列表无法从管理接口获取。",
-    searchPlaceholder: "搜索配置 key 或描述",
-    uploadImage: "上传图片",
-    replaceImage: "替换图片",
-    removeImage: "移除图片",
-    save: "保存",
-    saving: "保存中",
-    uploadFailed: "图片上传失败",
-    saveFailed: "配置更新失败",
-    emptyGroup: "当前分组下暂无配置项。",
-    selectedGroupCount: "{count} 项配置",
-    typeLabel: "类型",
-    updatedLabel: "更新时间",
-    imagePreviewAlt: "配置图片",
-  };
+function getConfigPageText(_locale: string): Record<string, never> {
+  // 已废弃，使用 copy.pages.configs 替代
+  return {};
 }
+
+type DashboardCopy = ReturnType<typeof getDashboardCopy>;
 
 type ConfigCardProps = {
   item: DashboardConfigItem;
@@ -170,7 +136,8 @@ type ConfigCardProps = {
   saving: boolean;
   uploading: boolean;
   error?: string;
-  text: ReturnType<typeof getConfigPageText>;
+  text: DashboardCopy["pages"]["configs"];
+  saveText: string;
   onValueChange: (value: string) => void;
   onImageSelect: (file: File) => void;
   onSave: () => void;
@@ -183,6 +150,7 @@ function ConfigCard({
   uploading,
   error,
   text,
+  saveText,
   onValueChange,
   onImageSelect,
   onSave,
@@ -218,7 +186,7 @@ function ConfigCard({
           loading={saving}
           disabled={!dirty || uploading}
         >
-          {saving ? text.saving : text.save}
+          {saving ? text.saving : saveText}
         </Button>
       </div>
 
@@ -342,7 +310,7 @@ function ConfigCard({
 export function DashboardConfigsPage() {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
-  const text = useMemo(() => getConfigPageText(locale), [locale]);
+  const text = copy.pages.configs;
   const { ready } = useDashboardGuard();
   const [configs, setConfigs] = useState<DashboardConfigItem[]>([]);
   const [allConfigs, setAllConfigs] = useState<DashboardConfigItem[]>([]);
@@ -562,6 +530,9 @@ export function DashboardConfigsPage() {
     [drafts, text.saveFailed],
   );
 
+  // 清理未使用的函数
+  void getConfigPageText;
+
   if (!ready || loading) {
     return <DashboardLoadingView text={copy.common.loading} />;
   }
@@ -644,6 +615,7 @@ export function DashboardConfigsPage() {
                   uploading={uploadingId === item.id}
                   error={fieldErrors[item.id]}
                   text={text}
+                  saveText={copy.common.save}
                   onValueChange={(value) =>
                     setDrafts((previous) => ({
                       ...previous,

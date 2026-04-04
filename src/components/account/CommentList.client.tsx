@@ -11,7 +11,7 @@ import { useCallback, useRef, useState } from "react";
 type CommentListClientProps = {
   initPage: number;
   initTotal: number;
-  initComments: UserCommentList|CommentList;
+  initComments: UserCommentList | CommentList;
   id: string;
 
   /**
@@ -35,11 +35,13 @@ export const CommentListClient = ({
   id,
   pageSize = 10,
   onLikeComment,
-  onReplyComment
+  onReplyComment,
 }: CommentListClientProps) => {
   const t = useTranslations("commentList");
   const [page, setPage] = useState(initPage);
-  const [comments, setComments] = useState<UserCommentList>(initComments);
+  const [comments, setComments] = useState<UserCommentList>(
+    initComments as UserCommentList,
+  );
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initComments.length < initTotal);
   const [error, setError] = useState<string | null>(null);
@@ -57,12 +59,12 @@ export const CommentListClient = ({
     try {
       const response = await commentControllerGetUserComments({
         path: {
-          userId: id
+          userId: id,
         },
         query: {
           limit: pageSize,
           page: page,
-        }
+        },
       });
 
       if (response.data?.data?.data) {
@@ -72,7 +74,7 @@ export const CommentListClient = ({
           setHasMore(false);
         } else {
           setComments((prev) => [...prev, ...newComments]);
-          setPage(page+1);
+          setPage(page + 1);
 
           // Check if we've loaded all comments based on total from response
           const responseTotal = response.data.data.meta?.total || initTotal;

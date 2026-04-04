@@ -528,7 +528,7 @@ function convertInlineArticleCardsToAnchor(
   return root.toString();
 }
 
-function extractClass(attrString: string): string {
+function _extractClass(attrString: string): string {
   const match = attrString.match(/class=["']([^"']+)["']/i);
   return match ? match[1] : "";
 }

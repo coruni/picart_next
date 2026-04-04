@@ -1,5 +1,6 @@
 import { AnalyticsScripts } from "@/components/providers/AnalyticsScripts";
 import localFont from "next/font/local";
+import { Suspense } from "react";
 import "./globals.css";
 
 const miSans = localFont({
@@ -43,7 +44,9 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning className={miSans.className}>
       <body className="antialiased">
-        <AnalyticsScripts />
+        <Suspense>
+          <AnalyticsScripts />
+        </Suspense>
         {children}
       </body>
     </html>

@@ -57,39 +57,7 @@ export function DashboardClientPage() {
   const [error, setError] = useState(false);
   const [permissionWarning, setPermissionWarning] = useState<string | null>(null);
   const [data, setData] = useState<DashboardOverviewData | null>(null);
-  const overviewText = useMemo(
-    () =>
-      locale === "en"
-        ? {
-            publicConfig: "Public Config",
-            advertisement: "Advertisement",
-            site: "Site",
-            maintenance: "Maintenance",
-            membership: "Membership",
-            contact: "Contact",
-            homepageAd: "Homepage Ad",
-            articleTopAd: "Article Top Ad",
-            articleBottomAd: "Article Bottom Ad",
-            globalAd: "Global Ad",
-            pendingQueue: "Pending Queue",
-            noPendingOrders: "No pending order numbers.",
-          }
-        : {
-            publicConfig: "公开配置",
-            advertisement: "广告配置",
-            site: "站点",
-            maintenance: "维护模式",
-            membership: "会员",
-            contact: "联系方式",
-            homepageAd: "首页广告",
-            articleTopAd: "文章顶部广告",
-            articleBottomAd: "文章底部广告",
-            globalAd: "全局广告",
-            pendingQueue: "待处理订单队列",
-            noPendingOrders: "暂无待处理订单号。",
-          },
-    [locale],
-  );
+  const overviewText = copy.pages.overview;
 
   useEffect(() => {
     if (!ready || !user) {

@@ -77,7 +77,7 @@ async function uploadImagesBatch(files: File[]): Promise<string[]> {
   if (files.length === 0) return [];
 
   const { data } = await uploadControllerUploadFile({
-    body: { file: files },
+    body: { file: (files as any) },
   });
 
   return (data?.data || [])

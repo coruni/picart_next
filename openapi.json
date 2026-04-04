@@ -11179,7 +11179,60 @@
                               "images": {
                                 "type": "array",
                                 "items": {
-                                  "type": "string"
+                                  "type": "object",
+                                  "properties": {
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "width": {
+                                      "type": "integer"
+                                    },
+                                    "height": {
+                                      "type": "integer"
+                                    },
+                                    "size": {
+                                      "type": "integer"
+                                    },
+                                    "original": {
+                                      "type": "string"
+                                    },
+                                    "thumbnails": {
+                                      "type": "object",
+                                      "properties": {
+                                        "thumb": {
+                                          "type": "string"
+                                        },
+                                        "small": {
+                                          "type": "string"
+                                        },
+                                        "medium": {
+                                          "type": "string"
+                                        },
+                                        "large": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "thumb",
+                                        "small",
+                                        "medium",
+                                        "large"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "url",
+                                    "size",
+                                    "width",
+                                    "height",
+                                    "original",
+                                    "thumbnails"
+                                  ],
+                                  "oneOf": [
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
                                 }
                               },
                               "sort": {
@@ -17072,7 +17125,60 @@
                               "images": {
                                 "type": "array",
                                 "items": {
-                                  "type": "string"
+                                  "type": "object",
+                                  "properties": {
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "width": {
+                                      "type": "integer"
+                                    },
+                                    "height": {
+                                      "type": "integer"
+                                    },
+                                    "size": {
+                                      "type": "integer"
+                                    },
+                                    "original": {
+                                      "type": "string"
+                                    },
+                                    "thumbnails": {
+                                      "type": "object",
+                                      "properties": {
+                                        "thumb": {
+                                          "type": "string"
+                                        },
+                                        "small": {
+                                          "type": "string"
+                                        },
+                                        "medium": {
+                                          "type": "string"
+                                        },
+                                        "large": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "thumb",
+                                        "small",
+                                        "medium",
+                                        "large"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "url",
+                                    "size",
+                                    "width",
+                                    "height",
+                                    "original",
+                                    "thumbnails"
+                                  ],
+                                  "oneOf": [
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
                                 }
                               },
                               "likes": {
@@ -18809,6 +18915,11 @@
                                     "height",
                                     "original",
                                     "thumbnails"
+                                  ],
+                                  "oneOf": [
+                                    {
+                                      "type": "string"
+                                    }
                                   ]
                                 }
                               },
@@ -21064,6 +21175,11 @@
                                     "height",
                                     "original",
                                     "thumbnails"
+                                  ],
+                                  "oneOf": [
+                                    {
+                                      "type": "string"
+                                    }
                                   ]
                                 }
                               },
@@ -22920,7 +23036,60 @@
                               "images": {
                                 "type": "array",
                                 "items": {
-                                  "type": "string"
+                                  "type": "object",
+                                  "properties": {
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "width": {
+                                      "type": "integer"
+                                    },
+                                    "height": {
+                                      "type": "integer"
+                                    },
+                                    "size": {
+                                      "type": "integer"
+                                    },
+                                    "original": {
+                                      "type": "string"
+                                    },
+                                    "thumbnails": {
+                                      "type": "object",
+                                      "properties": {
+                                        "thumb": {
+                                          "type": "string"
+                                        },
+                                        "small": {
+                                          "type": "string"
+                                        },
+                                        "medium": {
+                                          "type": "string"
+                                        },
+                                        "large": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "thumb",
+                                        "small",
+                                        "medium",
+                                        "large"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "url",
+                                    "size",
+                                    "width",
+                                    "height",
+                                    "original",
+                                    "thumbnails"
+                                  ],
+                                  "oneOf": [
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
                                 }
                               },
                               "likes": {
@@ -23756,10 +23925,10 @@
                                           "type": "string"
                                         },
                                         "banned": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "banReason": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "avatar": {
                                           "type": "string"
@@ -23774,7 +23943,7 @@
                                           "type": "string"
                                         },
                                         "birthDate": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "articleCount": {
                                           "type": "integer"
@@ -23807,25 +23976,25 @@
                                           "type": "string"
                                         },
                                         "membershipStartDate": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "membershipEndDate": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "lastLoginAt": {
                                           "type": "string"
                                         },
                                         "lastActiveAt": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "inviterId": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "myInviteCode": {
                                           "type": "string"
                                         },
                                         "inviteCode": {
-                                          "type": "null"
+                                          "type": "string"
                                         },
                                         "inviteEarnings": {
                                           "type": "string"
@@ -24334,7 +24503,7 @@
                                           ]
                                         },
                                         "rootId": {
-                                          "type": "null"
+                                          "type": "integer"
                                         },
                                         "createdAt": {
                                           "type": "string"
@@ -24371,7 +24540,23 @@
                                     "isLiked": {
                                       "type": "boolean"
                                     }
-                                  }
+                                  },
+                                  "required": [
+                                    "author",
+                                    "article",
+                                    "parent",
+                                    "createdAt",
+                                    "updatedAt",
+                                    "parentId",
+                                    "isLiked",
+                                    "id",
+                                    "content",
+                                    "images",
+                                    "likes",
+                                    "replyCount",
+                                    "status",
+                                    "rootId"
+                                  ]
                                 }
                               },
                               "createdAt": {

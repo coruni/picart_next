@@ -277,7 +277,7 @@ export function DashboardArticlesPage() {
                 fullWidth
                 value={auditReason}
                 onChange={(e) => setAuditReason(e.target.value)}
-                placeholder="输入审核原因（可选）"
+                placeholder={copy.common.auditReasonPlaceholder}
                 className="min-h-25"
               />
             </div>
