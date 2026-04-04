@@ -1,6 +1,10 @@
 "use client";
 
-import { articleControllerFindAll, articleControllerRemove, articleControllerUpdate } from "@/api";
+import {
+  articleControllerFindAll,
+  articleControllerRemove,
+  articleControllerUpdate,
+} from "@/api";
 import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { Button } from "@/components/ui/Button";
 import {
@@ -12,7 +16,14 @@ import {
 } from "@/components/ui/Dialog";
 import { Textarea } from "@/components/ui/Textarea";
 import { Link, useRouter } from "@/i18n/routing";
-import { CheckCircle, FileCheck, MoreHorizontal, PencilLine, Trash2, XCircle } from "lucide-react";
+import {
+  CheckCircle,
+  FileCheck,
+  MoreHorizontal,
+  PencilLine,
+  Trash2,
+  XCircle,
+} from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
@@ -31,7 +42,9 @@ export function DashboardArticlesPage() {
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
   const [refreshKey, setRefreshKey] = useState(0);
-  const [auditingItem, setAuditingItem] = useState<DashboardArticleItem | null>(null);
+  const [auditingItem, setAuditingItem] = useState<DashboardArticleItem | null>(
+    null,
+  );
   const [auditReason, setAuditReason] = useState("");
   const [auditSubmitting, setAuditSubmitting] = useState(false);
 
@@ -229,36 +242,47 @@ export function DashboardArticlesPage() {
       />
 
       {/* Audit Dialog */}
-      <Dialog open={Boolean(auditingItem)} onOpenChange={(open) => !auditSubmitting && !open && setAuditingItem(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <FileCheck className="size-5 text-primary" />
+      <Dialog
+        open={Boolean(auditingItem)}
+        onOpenChange={(open) =>
+          !auditSubmitting && !open && setAuditingItem(null)
+        }
+      >
+        <DialogContent className="max-w-lg p-0!">
+          <DialogHeader className="px-6 py-4 mb-0! border-b border-border">
+            <DialogTitle className="flex items-center gap-2 text-sm">
+              <FileCheck className="size-4 text-primary" />
               {copy.common.audit}
             </DialogTitle>
           </DialogHeader>
-          <div className="py-4">
+          <div className="py-2 px-4">
             {auditingItem && (
               <div className="mb-4 rounded-lg border border-border/70 bg-muted/30 px-4 py-3">
-                <div className="text-sm font-medium text-foreground">{auditingItem.title}</div>
+                <div className="text-sm font-medium text-foreground">
+                  {auditingItem.title}
+                </div>
                 <div className="mt-1 text-xs text-muted-foreground">
-                  {copy.columns.author}: {auditingItem.author?.nickname || auditingItem.author?.username || "-"}
+                  {copy.columns.author}:{" "}
+                  {auditingItem.author?.nickname ||
+                    auditingItem.author?.username ||
+                    "-"}
                 </div>
               </div>
             )}
-            <div className="space-y-2">
+            <div className="space-y-2 ">
               <label className="text-sm font-medium text-foreground">
                 {copy.common.auditReason}
               </label>
               <Textarea
+                fullWidth
                 value={auditReason}
                 onChange={(e) => setAuditReason(e.target.value)}
                 placeholder="输入审核原因（可选）"
-                className="min-h-[100px]"
+                className="min-h-25"
               />
             </div>
           </div>
-          <DialogFooter className="gap-3">
+          <DialogFooter className="gap-3 pb-4 px-6">
             <Button
               variant="outline"
               className="h-9 rounded-full px-4"

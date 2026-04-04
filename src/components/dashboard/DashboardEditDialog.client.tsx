@@ -3,6 +3,7 @@
 import { uploadControllerUploadFile } from "@/api";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
+import { DatePicker } from "@/components/ui/DatePicker";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +16,6 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Switch } from "@/components/ui/Switch";
 import { TimePicker } from "@/components/ui/TimePicker";
-import { DatePicker } from "@/components/ui/DatePicker";
 import { useClickOutside } from "@/hooks";
 import { cn } from "@/lib";
 import { ChevronDown, ImagePlus, Loader2, Search, X } from "lucide-react";
@@ -70,6 +70,8 @@ function DashboardSearchSelectField({
   value: string;
   onChange: (value: string) => void;
 }) {
+  const locale = useLocale();
+  const copy = getDashboardCopy(locale);
   const [isOpen, setIsOpen] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -135,7 +137,7 @@ function DashboardSearchSelectField({
             !selectedOption && "text-gray-400",
           )}
         >
-          {selectedOption?.label || field.placeholder || "Select..."}
+          {selectedOption?.label || field.placeholder || copy.common.selectPlaceholder}
         </span>
         {value ? (
           <button
@@ -213,7 +215,7 @@ function DashboardSearchSelectField({
           {loading ? (
             <div className="flex items-center justify-center gap-2 px-3 py-6 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" />
-              <span>Loading...</span>
+              <span>{copy.common.loading}</span>
             </div>
           ) : resolvedOptions.length ? (
             resolvedOptions.map((option) => (
@@ -407,7 +409,7 @@ export function DashboardEditDialog({
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => !loading && onOpenChange(nextOpen)}>
       <DialogContent className="flex max-h-[88vh] max-w-2xl flex-col overflow-hidden p-0">
-        <DialogHeader className="shrink-0 border-b border-border px-5 py-4 mb-2!">
+        <DialogHeader className="shrink-0 border-b border-border px-5 py-4 mb-0!">
           <DialogTitle className="text-sm font-semibold ">{title}</DialogTitle>
         </DialogHeader>
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
@@ -546,7 +548,7 @@ export function DashboardEditDialog({
                           )}
                         >
                           <ImagePlus className="size-4" />
-                          {typeof value === "string" && value ? "Replace" : "Upload"}
+                          {typeof value === "string" && value ? copy.common.replace : copy.common.upload}
                         </label>
                       </div>
                     </div>

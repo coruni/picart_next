@@ -47,6 +47,9 @@ const copy = {
       noPermission: "当前账号可能没有后台权限，请确认接口鉴权。",
       page: "第 {page} / {totalPages} 页",
       currentPageCount: "当前页 {count} 条",
+      selectPlaceholder: "请选择...",
+      upload: "上传",
+      replace: "替换",
     },
     nav: {
       overview: "概览",
@@ -288,6 +291,9 @@ const copy = {
         "This account may not have back-office permission. Check API authorization.",
       page: "Page {page} / {totalPages}",
       currentPageCount: "{count} items on this page",
+      selectPlaceholder: "Select...",
+      upload: "Upload",
+      replace: "Replace",
     },
     nav: {
       overview: "Overview",

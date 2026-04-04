@@ -17,8 +17,8 @@ import {
   ShieldUser,
   Sparkles,
   Tags,
-  Trophy,
   TriangleAlert,
+  Trophy,
   X,
 } from "lucide-react";
 import { useLocale } from "next-intl";
@@ -164,7 +164,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
   return (
     <div className="h-screen overflow-hidden">
       <div className="flex h-full">
-        <aside className="hidden h-screen w-76 shrink-0 overflow-y-auto border-r border-border/80 bg-card/90 backdrop-blur xl:flex xl:flex-col">
+        <aside className="hidden h-screen w-56 shrink-0 overflow-y-auto border-r border-border/80 bg-card/90 backdrop-blur xl:flex xl:flex-col">
           <div className="border-b border-border p-3">
             <p className="text-xs font-medium uppercase tracking-[0.24em] text-primary/70">
               {copy.shell.eyebrow}
