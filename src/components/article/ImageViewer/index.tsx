@@ -57,6 +57,11 @@ export function ImageViewer({
   const onChangeRef = useRef(onChange);
   const resizeFrameRef = useRef<number | null>(null);
 
+  // Sync pendingIndexRef with initialIndex prop changes
+  useEffect(() => {
+    pendingIndexRef.current = initialIndex;
+  }, [initialIndex]);
+
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [viewerMounted, setViewerMounted] = useState(visible);
   const [panelContentVisible, setPanelContentVisible] = useState(false);
@@ -111,8 +116,20 @@ export function ImageViewer({
           if (!viewerRef.current) return;
 
           if (!isShownRef.current) {
+            // First time showing - show() will trigger shown() callback
+            // which sets up UI. We need to wait for it to complete before
+            // calling view() to switch to the correct image.
             viewerRef.current.show();
+
+            // Defer view() to next-next frame to ensure shown() has completed
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                if (!viewerRef.current) return;
+                viewerRef.current.view(safeIndex);
+              });
+            });
           } else {
+            // Already shown - just switch to the image
             viewerRef.current.view(safeIndex);
           }
         });
@@ -383,13 +400,8 @@ export function ImageViewer({
         requestAnimationFrame(() => {
           setupCustomUI();
           applyCanvasLayout();
-
-          const safeIndex = getSafeIndex(pendingIndexRef.current);
-          requestAnimationFrame(() => {
-            if (!viewerRef.current) return;
-            viewerRef.current.view(safeIndex);
-            updateIndexDisplay(safeIndex);
-          });
+          // Note: viewer.view() is called by openViewerInstance, not here
+          // to avoid duplicate calls and race conditions
         });
       },
 
