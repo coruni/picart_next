@@ -463,15 +463,16 @@ export function CommentEditor({
       return;
     }
 
-    // 验证文件
-    const validation = validateFiles(files);
+    // 压缩图片
+    const compressionResults = await compressImages(files);
+
+    // 验证压缩后的文件大小
+    const compressedFiles = compressionResults.map((r) => r.file);
+    const validation = validateFiles(compressedFiles, true);
     if (!validation.valid) {
       console.error(validation.error);
       return;
     }
-
-    // 压缩图片
-    const compressionResults = await compressImages(files);
 
     // Create attachment entries for all files first
     const fileIds: string[] = [];
@@ -500,7 +501,6 @@ export function CommentEditor({
 
     // Upload all compressed files in one request
     try {
-      const compressedFiles = compressionResults.map((r) => r.file);
       const response = await uploadControllerUploadFile({
         body: { file: compressedFiles as any },
       });
