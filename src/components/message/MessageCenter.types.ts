@@ -92,6 +92,7 @@ export type MessageConversationListProps = {
   copy: MessageCenterCopy;
   filteredMessages: MessageDropdownItem[];
   isLoading: boolean;
+  isSwitchingTab: boolean; // 新增：tab 切换中
   isMobileDetailOpen: boolean;
   locale: string;
   search: string;

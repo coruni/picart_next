@@ -188,6 +188,7 @@ export function MessageCenterClient() {
     (state) => state.socketConnected,
   );
   const isLoading = useMessageNotificationStore((state) => state.isLoading);
+  const isSwitchingTab = useMessageNotificationStore((state) => state.isSwitchingTab);
   const fetchMessages = useMessageNotificationStore(
     (state) => state.fetchMessages,
   );
@@ -1018,6 +1019,7 @@ export function MessageCenterClient() {
             copy={copy}
             filteredMessages={filteredMessages}
             isLoading={isLoading}
+            isSwitchingTab={isSwitchingTab}
             isMobileDetailOpen={isMobileDetailOpen}
             locale={locale}
             onTabChange={handleTabChange}
