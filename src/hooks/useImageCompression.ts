@@ -28,15 +28,138 @@ export interface CompressedImageResult {
   compressionRatio: number;
 }
 
+interface WorkerMessage {
+  type: "compressed" | "ready";
+  id?: string;
+  success?: boolean;
+  result?: CompressedImageResult;
+  error?: string;
+  ready?: boolean;
+}
+
+type CompressionTask = {
+  id: string;
+  file: File;
+  resolve: (result: CompressedImageResult) => void;
+  reject: (error: Error) => void;
+};
+
 /**
  * 图片压缩 Hook
- * 获取上传配置并压缩图片
+ * 获取上传配置并使用 Web Worker 异步压缩图片
  */
 export function useImageCompression() {
   const { token } = useUserStore();
   const [config, setConfig] = useState<UploadConfig | null>(null);
   const [loading, setLoading] = useState(false);
   const configRef = useRef<UploadConfig | null>(null);
+  const workerRef = useRef<Worker | null>(null);
+  const tasksRef = useRef<Map<string, CompressionTask>>(new Map());
+  const taskIdCounter = useRef(0);
+
+  // 初始化 Web Worker
+  useEffect(() => {
+    // 创建 Web Worker
+    const workerCode = `
+      self.onmessage = async (event) => {
+        const { type, file, config, id } = event.data;
+
+        if (type === "compress") {
+          try {
+            const result = await compressImage(file, config);
+            self.postMessage(
+              { type: "compressed", id, success: true, result },
+              [result.file]
+            );
+          } catch (error) {
+            self.postMessage({
+              type: "compressed",
+              id,
+              success: false,
+              error: error.message || "Unknown error",
+            });
+          }
+        }
+      };
+
+      async function compressImage(file, config) {
+        const { maxWidth, quality, format } = config;
+
+        const arrayBuffer = await file.arrayBuffer();
+        const blob = new Blob([arrayBuffer], { type: file.type });
+        const bitmap = await createImageBitmap(blob);
+
+        let { width, height } = bitmap;
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+
+        const canvas = new OffscreenCanvas(width, height);
+        const ctx = canvas.getContext("2d");
+
+        if (!ctx) {
+          throw new Error("Failed to get canvas context");
+        }
+
+        ctx.drawImage(bitmap, 0, 0, width, height);
+        bitmap.close();
+
+        const mimeType = format === "jpeg" ? "image/jpeg" : \`image/\${format}\`;
+        const compressedBlob = await canvas.convertToBlob({
+          type: mimeType,
+          quality: quality / 100,
+        });
+
+        const compressedFile = new File([compressedBlob], file.name, {
+          type: mimeType,
+          lastModified: file.lastModified,
+        });
+
+        return {
+          file: compressedFile,
+          originalSize: file.size,
+          compressedSize: compressedBlob.size,
+          compressionRatio: compressedBlob.size / file.size,
+        };
+      }
+    `;
+
+    const blob = new Blob([workerCode], { type: "application/javascript" });
+    const worker = new Worker(URL.createObjectURL(blob));
+
+    worker.onmessage = (event: MessageEvent<WorkerMessage>) => {
+      const { type, id, success, result, error } = event.data;
+
+      if (type === "compressed" && id) {
+        const task = tasksRef.current.get(id);
+        if (task) {
+          if (success && result) {
+            task.resolve(result);
+          } else {
+            task.reject(new Error(error || "Compression failed"));
+          }
+          tasksRef.current.delete(id);
+        }
+      }
+    };
+
+    worker.onerror = (error) => {
+      console.error("Web Worker error:", error);
+      // 清理所有待处理任务
+      tasksRef.current.forEach((task) => {
+        task.reject(new Error("Worker error"));
+      });
+      tasksRef.current.clear();
+    };
+
+    workerRef.current = worker;
+
+    return () => {
+      worker.terminate();
+      tasksRef.current.clear();
+    };
+  }, []);
 
   // 获取上传配置
   const fetchConfig = useCallback(async () => {
@@ -64,7 +187,7 @@ export function useImageCompression() {
   }, [fetchConfig]);
 
   /**
-   * 压缩单个图片
+   * 压缩单个图片（使用 Web Worker）
    */
   const compressImage = useCallback(
     async (
@@ -83,97 +206,80 @@ export function useImageCompression() {
         };
       }
 
-      const { maxWidth, quality, format } = compressionConfig;
-
-      // 读取图片
-      const image = await createImageBitmap(file);
-
-      // 计算新的尺寸
-      let { width, height } = image;
-      if (width > maxWidth) {
-        height = (height * maxWidth) / width;
-        width = maxWidth;
+      // 如果不是图片，直接返回
+      if (!file.type.startsWith("image/")) {
+        return {
+          file,
+          originalSize: file.size,
+          compressedSize: file.size,
+          compressionRatio: 1,
+        };
       }
 
-      // 创建 canvas
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext("2d");
-
-      if (!ctx) {
-        throw new Error("Failed to get canvas context");
+      const worker = workerRef.current;
+      if (!worker) {
+        // Worker 未初始化，返回原文件
+        return {
+          file,
+          originalSize: file.size,
+          compressedSize: file.size,
+          compressionRatio: 1,
+        };
       }
 
-      // 绘制图片
-      ctx.drawImage(image, 0, 0, width, height);
+      const taskId = `task-${++taskIdCounter.current}`;
 
-      // 转换为 blob
-      const mimeType = format === "jpeg" ? "image/jpeg" : `image/${format}`;
-      const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((b) => resolve(b || new Blob()), mimeType, quality / 100);
+      return new Promise<CompressedImageResult>((resolve, reject) => {
+        tasksRef.current.set(taskId, {
+          id: taskId,
+          file,
+          resolve,
+          reject,
+        });
+
+        // 发送压缩任务到 Worker
+        worker.postMessage(
+          {
+            type: "compress",
+            file,
+            config: compressionConfig,
+            id: taskId,
+          },
+          [file], // Transfer ownership
+        );
       });
-
-      // 创建新文件
-      const compressedFile = new File([blob], file.name, {
-        type: mimeType,
-        lastModified: file.lastModified,
-      });
-
-      // 关闭 image bitmap
-      image.close();
-
-      return {
-        file: compressedFile,
-        originalSize: file.size,
-        compressedSize: blob.size,
-        compressionRatio: blob.size / file.size,
-      };
     },
     [],
   );
 
   /**
-   * 压缩多个图片
+   * 批量压缩图片（使用 Promise.all 并行处理）
    */
   const compressImages = useCallback(
     async (files: File[]): Promise<CompressedImageResult[]> => {
-      const results: CompressedImageResult[] = [];
-
-      for (const file of files) {
-        // 只压缩图片文件
-        if (!file.type.startsWith("image/")) {
-          results.push({
-            file,
-            originalSize: file.size,
-            compressedSize: file.size,
-            compressionRatio: 1,
-          });
-          continue;
-        }
-
+      // 使用 Promise.all 并行压缩所有图片
+      const promises = files.map(async (file) => {
         try {
-          const result = await compressImage(file);
-          results.push(result);
+          return await compressImage(file);
         } catch (error) {
           console.error("Failed to compress image:", error);
           // 压缩失败返回原文件
-          results.push({
+          return {
             file,
             originalSize: file.size,
             compressedSize: file.size,
             compressionRatio: 1,
-          });
+          };
         }
-      }
+      });
 
-      return results;
+      return Promise.all(promises);
     },
     [compressImage],
   );
 
   /**
-   * 检查文件是否符合限制（验证压缩后的文件大小）
+   * 检查文件是否符合限制
    */
   const validateFiles = useCallback(
     (files: File[], isCompressed: boolean = false): { valid: boolean; error?: string } => {
@@ -191,7 +297,7 @@ export function useImageCompression() {
         };
       }
 
-      // 检查每个文件大小（验证压缩后的大小）
+      // 检查每个文件大小
       for (const file of files) {
         if (file.size > limits.maxFileSize) {
           const sizeType = isCompressed ? "压缩后" : "";

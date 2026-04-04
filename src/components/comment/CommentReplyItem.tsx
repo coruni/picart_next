@@ -18,7 +18,7 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { memo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
 import { CommentImageGallery } from "./CommentImageGallery";
@@ -57,21 +57,34 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   const tAccountInfo = useTranslations("accountInfo");
   const tTime = useTranslations("time");
   const locale = useLocale();
-  const compactNumberLabels = {
-    thousand: tAccountInfo("numberUnits.thousand"),
-    tenThousand: tAccountInfo("numberUnits.tenThousand"),
-    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
-    million: tAccountInfo("numberUnits.million"),
-    billion: tAccountInfo("numberUnits.billion"),
-  };
-  const replyTarget =
-    reply.parent && reply.parent.id !== rootCommentId
-      ? {
-          id: reply.parent.author?.id,
-          name: reply.parent.author?.nickname || reply.parent.author?.username,
-        }
-      : null;
-  const replyContentHtml = prepareCommentHtmlForDisplay(reply.content || "");
+
+  // 使用 useMemo 缓存翻译和计算结果
+  const compactNumberLabels = useMemo(
+    () => ({
+      thousand: tAccountInfo("numberUnits.thousand"),
+      tenThousand: tAccountInfo("numberUnits.tenThousand"),
+      hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+      million: tAccountInfo("numberUnits.million"),
+      billion: tAccountInfo("numberUnits.billion"),
+    }),
+    [tAccountInfo]
+  );
+
+  const replyTarget = useMemo(() => {
+    if (reply.parent && reply.parent.id !== rootCommentId) {
+      return {
+        id: reply.parent.author?.id,
+        name: reply.parent.author?.nickname || reply.parent.author?.username,
+      };
+    }
+    return null;
+  }, [reply.parent, rootCommentId]);
+
+  // 缓存内容处理结果
+  const replyContentHtml = useMemo(
+    () => prepareCommentHtmlForDisplay(reply.content || ""),
+    [reply.content]
+  );
   const {
     displayHtml,
     isTranslated,

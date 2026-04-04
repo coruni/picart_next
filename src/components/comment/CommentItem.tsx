@@ -22,7 +22,7 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
 import { CommentImageGallery } from "./CommentImageGallery";
@@ -34,6 +34,8 @@ type CommentItemProps = {
   onSubmitted?: () => void | Promise<void>;
   onReplyClick?: (commentId: number) => void;
 };
+
+// 使用 memo 优化性能
 export const CommentItem = memo(function CommentItem({
   articleId,
   data,
@@ -44,13 +46,16 @@ export const CommentItem = memo(function CommentItem({
   const tAccountInfo = useTranslations("accountInfo");
   const tTime = useTranslations("time");
   const locale = useLocale();
-  const compactNumberLabels = {
-    thousand: tAccountInfo("numberUnits.thousand"),
-    tenThousand: tAccountInfo("numberUnits.tenThousand"),
-    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
-    million: tAccountInfo("numberUnits.million"),
-    billion: tAccountInfo("numberUnits.billion"),
-  };
+  const compactNumberLabels = useMemo(
+    () => ({
+      thousand: tAccountInfo("numberUnits.thousand"),
+      tenThousand: tAccountInfo("numberUnits.tenThousand"),
+      hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+      million: tAccountInfo("numberUnits.million"),
+      billion: tAccountInfo("numberUnits.billion"),
+    }),
+    [tAccountInfo]
+  );
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const [commentState, setCommentState] = useState(data);
   const [viewerVisible, setViewerVisible] = useState(false);
@@ -59,7 +64,12 @@ export const CommentItem = memo(function CommentItem({
   const [activeReplyParentId, setActiveReplyParentId] = useState<number | null>(
     null,
   );
-  const contentHtml = prepareCommentHtmlForDisplay(commentState.content || "");
+
+  // 使用 useMemo 缓存内容处理结果
+  const contentHtml = useMemo(
+    () => prepareCommentHtmlForDisplay(commentState.content || ""),
+    [commentState.content]
+  );
   const {
     displayHtml,
     isTranslated,

@@ -11,10 +11,28 @@ import { cn } from "@/lib";
 import { CommentList } from "@/types";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { CommentEditor } from "./CommentEditor";
+import dynamic from "next/dynamic";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { CommentItem } from "./CommentItem";
 import { CommentListSkeleton } from "./CommentSkeleton";
+
+// 延迟加载 CommentEditor，减少初始包大小
+const CommentEditor = dynamic(
+  () => import("./CommentEditor").then((mod) => mod.CommentEditor),
+  {
+    ssr: false,
+    loading: () => <div className="h-32 animate-pulse bg-muted rounded-lg" />,
+  }
+);
+
+// 使用 memo 优化 CommentItem 重渲染
+const MemoizedCommentItem = memo(CommentItem);
 
 type ArticleCommentListProps = {
   articleId: string;
@@ -79,43 +97,54 @@ export function ArticleCommentList({
     [articleId, pageSize, sortKey],
   );
 
-  // 初始化加载 - 使用 ref 避免重复请求
-  const isLoadingRef = useRef(false);
-  const hasLoadedRef = useRef(false);
-  const refreshRef = useRef<(() => void) | null>(null);
-
+  // 防抖的刷新函数
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const refreshComments = useCallback(async () => {
-    if (isLoadingRef.current) return;
-    isLoadingRef.current = true;
-
-    setLoading(true);
-    setError(null);
-
-    try {
-      const result = await fetchComments(1);
-      setComments(result.comments);
-      setTotal(result.total);
-      setPage(2);
-      setHasMore(result.comments.length < result.total);
-    } catch (loadError) {
-      console.error("Failed to load comments:", loadError);
-      setError(t("loadFailed"));
-    } finally {
-      setLoading(false);
-      setIsSortChanging(false);
-      isLoadingRef.current = false;
-      onSubmitted?.();
+    // 清除之前的防抖计时器
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current);
     }
+
+    // 设置新的防抖计时器
+    refreshTimeoutRef.current = setTimeout(async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const result = await fetchComments(1);
+        setComments(result.comments);
+        setTotal(result.total);
+        setPage(2);
+        setHasMore(result.comments.length < result.total);
+      } catch (loadError) {
+        console.error("Failed to load comments:", loadError);
+        setError(t("loadFailed"));
+      } finally {
+        setLoading(false);
+        setIsSortChanging(false);
+        onSubmitted?.();
+      }
+    }, 100);
   }, [fetchComments, onSubmitted, t]);
 
-  // 将 refreshComments 暴露给父组件
-  refreshRef.current = refreshComments;
-
+  // 清理防抖计时器
   useEffect(() => {
-    if (hasLoadedRef.current) return;
-    hasLoadedRef.current = true;
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // 初始化加载
+  useEffect(() => {
     void refreshComments();
   }, []);
+
+  // 排序变化时重新加载
+  useEffect(() => {
+    void refreshComments();
+  }, [sortKey]);
 
   const handleSortChange = (nextSortKey: CommentSortKey) => {
     if (nextSortKey === sortKey) {
@@ -285,7 +314,7 @@ export function ArticleCommentList({
       ) : (
         <>
           {comments.map((comment) => (
-            <CommentItem
+            <MemoizedCommentItem
               articleId={articleId}
               data={comment}
               key={comment.id}

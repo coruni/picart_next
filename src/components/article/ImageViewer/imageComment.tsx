@@ -10,7 +10,7 @@ import {
 import { ArticleDetail, ArticleList } from "@/types";
 import { ChevronRight, FileText, MessageCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 
 type Article = ArticleList[number] | ArticleDetail;
 type ImageCommentProps = {
@@ -18,38 +18,58 @@ type ImageCommentProps = {
   minHeight?: string;
   isExpanded?: boolean;
 };
-export function ImageComment({
+
+// 使用 memo 优化组件重渲染
+export const ImageComment = memo(function ImageComment({
   article,
   minHeight = "auto",
-  isExpanded,
 }: ImageCommentProps) {
   const t = useTranslations("commentEditor");
   const articleId = String(article.id);
+
+  // 使用 useMemo 缓存作者信息
+  const authorInfo = useMemo(
+    () => ({
+      nickname: article.author.nickname || article.author.username,
+      avatar: article.author.avatar,
+      frameUrl: article.author.equippedDecorations.AVATAR_FRAME.imageUrl,
+    }),
+    [article.author]
+  );
+
   const [refreshKey, setRefreshKey] = useState(0);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [replyParentId, setReplyParentId] = useState<number | undefined>(undefined);
+  const [replyParentId, setReplyParentId] = useState<number | undefined>(
+    undefined
+  );
 
-  const handleRefresh = () => {
+  // 使用 useCallback 缓存回调函数
+  const handleRefresh = useCallback(() => {
     setRefreshKey((prev) => prev + 1);
-  };
+  }, []);
 
-  const handleSubmitted = async () => {
+  const handleSubmitted = useCallback(async () => {
     await handleRefresh();
     setDialogOpen(false);
     setReplyParentId(undefined);
-  };
+  }, [handleRefresh]);
 
-  const handleReplyClick = (commentId: number) => {
+  const handleReplyClick = useCallback((commentId: number) => {
     setReplyParentId(commentId);
     setDialogOpen(true);
-  };
+  }, []);
 
-  const handleDialogOpenChange = (open: boolean) => {
+  const handleDialogOpenChange = useCallback((open: boolean) => {
     setDialogOpen(open);
     if (!open) {
       setReplyParentId(undefined);
     }
-  };
+  }, []);
+
+  const handleBottomButtonClick = useCallback(() => {
+    setReplyParentId(undefined);
+    setDialogOpen(true);
+  }, []);
 
   return (
     <>
@@ -57,16 +77,12 @@ export function ImageComment({
         <div className=" px-4 py-3 flex items-center space-x-3">
           <div className="flex space-x-3 flex-1">
             <Avatar
-              url={article.author.avatar}
-              frameUrl={
-                article.author.equippedDecorations.AVATAR_FRAME.imageUrl
-              }
+              url={authorInfo.avatar}
+              frameUrl={authorInfo.frameUrl}
               className="size-10"
             />
             <div className="flex grow">
-              <span className="font-semibold text-sm">
-                {article.author.nickname || article.author.username}
-              </span>
+              <span className="font-semibold text-sm">{authorInfo.nickname}</span>
             </div>
           </div>
           <div className="flex items-center justify-center">
@@ -101,7 +117,7 @@ export function ImageComment({
       <div className="border-t border-border bg-card px-4 py-3 shrink-0">
         <button
           type="button"
-          onClick={() => setDialogOpen(true)}
+          onClick={handleBottomButtonClick}
           className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full bg-muted text-left text-muted-foreground hover:bg-muted/80 transition-colors"
         >
           <MessageCircle className="size-5" />
@@ -128,4 +144,4 @@ export function ImageComment({
       </Dialog>
     </>
   );
-}
+});

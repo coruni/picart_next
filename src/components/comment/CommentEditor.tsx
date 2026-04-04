@@ -6,7 +6,6 @@ import {
   emojiControllerIncrementUseCount,
   uploadControllerUploadFile,
 } from "@/api";
-import { CustomEmojiBlot } from "@/components/editor";
 import { useImageCompression } from "@/hooks/useImageCompression";
 import { cn, sanitizeRichTextHtml } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
@@ -21,8 +20,6 @@ import {
   X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Quill from "quill";
-import "quill/dist/quill.snow.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FreeMode } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -30,8 +27,24 @@ import { Button } from "../ui/Button";
 
 import "swiper/css";
 
+// 动态导入 Quill 以减少初始包大小
+let QuillModule: typeof import("quill")["default"] | null = null;
+let CustomEmojiBlot: unknown = null;
+
+async function loadQuill() {
+  if (!QuillModule) {
+    const [{ default: Quill }, { CustomEmojiBlot: emojiBlot }] = await Promise.all([
+      import("quill"),
+      import("@/components/editor"),
+    ]);
+    QuillModule = Quill;
+    CustomEmojiBlot = emojiBlot;
+  }
+  return { Quill: QuillModule, CustomEmojiBlot };
+}
+
 type CommentEditorProps = {
-  articleId: string;
+  articleId: string | number;
   parentId?: number | string;
   className?: string;
   onSubmitted?: () => void | Promise<void>;
@@ -63,7 +76,7 @@ declare global {
   }
 }
 
-function registerCommentQuillModules() {
+async function registerCommentQuillModules() {
   if (
     typeof window !== "undefined" &&
     window.__PICART_COMMENT_QUILL_REGISTERED__
@@ -71,7 +84,11 @@ function registerCommentQuillModules() {
     return;
   }
 
-  Quill.register({ "formats/emoji": CustomEmojiBlot }, true);
+  const { Quill, CustomEmojiBlot } = await loadQuill();
+
+  if (Quill && CustomEmojiBlot) {
+    (Quill as unknown as { register: (path: string, target: unknown, overwrite?: boolean) => void }).register("formats/emoji", CustomEmojiBlot, true);
+  }
 
   if (typeof window !== "undefined") {
     window.__PICART_COMMENT_QUILL_REGISTERED__ = true;
@@ -128,7 +145,7 @@ function normalizeEmojiGroups(response: unknown): EmojiGroup[] {
   }, []);
 }
 
-function hasQuillContent(quill: Quill | null) {
+function hasQuillContent(quill: { getText: () => string; root: Element } | null) {
   if (!quill) {
     return false;
   }
@@ -205,7 +222,7 @@ export function CommentEditor({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const emojiPanelRef = useRef<HTMLDivElement>(null);
   const emojiTabsViewportRef = useRef<HTMLDivElement>(null);
-  const quillRef = useRef<Quill | null>(null);
+  const quillRef = useRef<unknown>(null);
   const uploadTimersRef = useRef<Record<string, number>>({});
   const attachmentsRef = useRef<UploadedAttachment[]>([]);
   const removedAttachmentIdsRef = useRef(new Set<string>());
@@ -245,36 +262,46 @@ export function CommentEditor({
     (editorHasContent || attachments.some((attachment) => attachment.url));
 
   useEffect(() => {
-    registerCommentQuillModules();
+    const initQuill = async () => {
+      await registerCommentQuillModules();
 
-    if (!containerRef.current || quillRef.current) {
-      return;
-    }
+      if (!containerRef.current || quillRef.current) {
+        return;
+      }
 
-    const quill = new Quill(containerRef.current, {
-      theme: "snow",
-      modules: {
-        toolbar: false,
-        history: {
-          delay: 800,
-          maxStack: 50,
-          userOnly: true,
+      const { Quill } = await loadQuill();
+      if (!Quill) return;
+
+      const quill = new Quill(containerRef.current, {
+        theme: "snow",
+        modules: {
+          toolbar: false,
+          history: {
+            delay: 800,
+            maxStack: 50,
+            userOnly: true,
+          },
         },
-      },
-      formats: ["emoji"],
-      placeholder: t("placeholder"),
-    });
+        formats: ["emoji"],
+        placeholder: t("placeholder"),
+      });
 
-    quillRef.current = quill;
-    const syncEditorState = () => {
-      setEditorHasContent(hasQuillContent(quill));
+      quillRef.current = quill;
+      const syncEditorState = () => {
+        setEditorHasContent(hasQuillContent(quill));
+      };
+      quill.on("text-change", syncEditorState);
+      syncEditorState();
     };
-    quill.on("text-change", syncEditorState);
-    syncEditorState();
+
+    void initQuill();
 
     return () => {
-      quill.off("text-change", syncEditorState);
-      quillRef.current = null;
+      const quill = quillRef.current as { off: (event: string, handler: () => void) => void } | null;
+      if (quill) {
+        quill.off("text-change", () => {});
+        quillRef.current = null;
+      }
     };
   }, [t]);
 
@@ -368,7 +395,13 @@ export function CommentEditor({
   };
 
   const handleEmojiSelect = async (emoji: EmojiRecord) => {
-    const quill = quillRef.current;
+    const quill = quillRef.current as {
+      getSelection: (focus: boolean) => { index: number } | null;
+      getLength: () => number;
+      insertEmbed: (index: number, type: string, value: unknown, source: string) => void;
+      insertText: (index: number, text: string, source: string) => void;
+      setSelection: (index: number, length: number, source: string) => void;
+    } | null;
     if (!quill) {
       return;
     }
@@ -509,7 +542,10 @@ export function CommentEditor({
   };
 
   const handleSubmit = async () => {
-    const quill = quillRef.current;
+    const quill = quillRef.current as {
+      root: { innerHTML: string };
+      setContents: (content: unknown[], source: string) => void;
+    } | null;
     if (!quill) {
       return;
     }
@@ -528,7 +564,7 @@ export function CommentEditor({
       (attachment) => attachment.status === "uploaded" && attachment.url,
     );
 
-    if (!hasQuillContent(quill) && uploadedAttachments.length === 0) {
+    if (!hasQuillContent(quill as unknown as { getText: () => string; root: Element }) && uploadedAttachments.length === 0) {
       return;
     }
 
