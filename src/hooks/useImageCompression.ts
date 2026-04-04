@@ -44,11 +44,7 @@ export function useImageCompression() {
 
     try {
       setLoading(true);
-      const response = await uploadControllerGetUploadConfig({
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await uploadControllerGetUploadConfig({});
 
       if (response.data?.data) {
         const uploadConfig = response.data.data;
@@ -71,7 +67,10 @@ export function useImageCompression() {
    * 压缩单个图片
    */
   const compressImage = useCallback(
-    async (file: File, customConfig?: CompressionConfig): Promise<CompressedImageResult> => {
+    async (
+      file: File,
+      customConfig?: CompressionConfig,
+    ): Promise<CompressedImageResult> => {
       const compressionConfig = customConfig || configRef.current?.compression;
 
       if (!compressionConfig) {
@@ -112,11 +111,7 @@ export function useImageCompression() {
       // 转换为 blob
       const mimeType = format === "jpeg" ? "image/jpeg" : `image/${format}`;
       const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob(
-          (b) => resolve(b || new Blob()),
-          mimeType,
-          quality / 100
-        );
+        canvas.toBlob((b) => resolve(b || new Blob()), mimeType, quality / 100);
       });
 
       // 创建新文件
@@ -135,7 +130,7 @@ export function useImageCompression() {
         compressionRatio: blob.size / file.size,
       };
     },
-    []
+    [],
   );
 
   /**
@@ -174,7 +169,7 @@ export function useImageCompression() {
 
       return results;
     },
-    [compressImage]
+    [compressImage],
   );
 
   /**
@@ -208,7 +203,7 @@ export function useImageCompression() {
 
       return { valid: true };
     },
-    []
+    [],
   );
 
   return {

@@ -25,6 +25,7 @@ import "quill/dist/quill.snow.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FreeMode } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useImageCompression } from "@/hooks/useImageCompression";
 import { Button } from "../ui/Button";
 
 import "swiper/css";
@@ -206,6 +207,7 @@ export function CommentEditor({
   const uploadTimersRef = useRef<Record<string, number>>({});
   const attachmentsRef = useRef<UploadedAttachment[]>([]);
   const removedAttachmentIdsRef = useRef(new Set<string>());
+  const { compressImages, validateFiles } = useImageCompression();
   const [emojiGroups, setEmojiGroups] = useState<EmojiGroup[]>([]);
   const [activeEmojiGroup, setActiveEmojiGroup] = useState<string>("all");
   const [emojiOpen, setEmojiOpen] = useState(false);
@@ -426,11 +428,22 @@ export function CommentEditor({
       return;
     }
 
+    // 验证文件
+    const validation = validateFiles(files);
+    if (!validation.valid) {
+      console.error(validation.error);
+      return;
+    }
+
+    // 压缩图片
+    const compressionResults = await compressImages(files);
+
     // Create attachment entries for all files first
     const fileIds: string[] = [];
     const fileMap = new Map<string, File>();
 
-    for (const file of files) {
+    for (const result of compressionResults) {
+      const file = result.file;
       const id = `${file.name}-${file.size}-${Date.now()}-${Math.random()}`;
       const previewUrl = URL.createObjectURL(file);
 
@@ -450,10 +463,11 @@ export function CommentEditor({
       startUploadProgress(id);
     }
 
-    // Upload all files in one request
+    // Upload all compressed files in one request
     try {
+      const compressedFiles = compressionResults.map((r) => r.file);
       const response = await uploadControllerUploadFile({
-        body: { file: files as any },
+        body: { file: compressedFiles as any },
       });
 
       const uploadedUrls = response.data?.data || [];
