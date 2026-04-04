@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
+import { ArticleDetail } from "@/types";
 import { ChevronLeft, ChevronRight, Fullscreen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -16,11 +17,13 @@ import "swiper/css/thumbs";
 type ImageGalleryProps = {
   images: (string | ImageInfo)[];
   alt?: string;
+  article?: ArticleDetail;
 };
 
 export function ImageGallery({
   images,
   alt = "Gallery image",
+  article,
 }: ImageGalleryProps) {
   const t = useTranslations("imageGallery");
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
@@ -102,6 +105,7 @@ export function ImageGallery({
         </div>
         {viewerVisible && (
           <ImageViewer
+            article={article}
             images={imageUrls}
             initialIndex={activeIndex}
             visible={viewerVisible}
@@ -236,6 +240,7 @@ export function ImageGallery({
       </div>
       {viewerVisible && (
         <ImageViewer
+          article={article}
           images={imageUrls}
           initialIndex={activeIndex}
           visible={viewerVisible}

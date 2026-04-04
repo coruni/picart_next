@@ -173,10 +173,10 @@ export function useImageCompression() {
   );
 
   /**
-   * 检查文件是否符合限制
+   * 检查文件是否符合限制（验证压缩后的文件大小）
    */
   const validateFiles = useCallback(
-    (files: File[]): { valid: boolean; error?: string } => {
+    (files: File[], isCompressed: boolean = false): { valid: boolean; error?: string } => {
       const limits = configRef.current?.limits;
 
       if (!limits) {
@@ -191,12 +191,13 @@ export function useImageCompression() {
         };
       }
 
-      // 检查每个文件大小
+      // 检查每个文件大小（验证压缩后的大小）
       for (const file of files) {
         if (file.size > limits.maxFileSize) {
+          const sizeType = isCompressed ? "压缩后" : "";
           return {
             valid: false,
-            error: `文件大小不能超过 ${formatFileSize(limits.maxFileSize)}`,
+            error: `${sizeType}文件大小不能超过 ${formatFileSize(limits.maxFileSize)}`,
           };
         }
       }

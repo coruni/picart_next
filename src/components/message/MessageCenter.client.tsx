@@ -20,6 +20,7 @@ import type {
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { useIsMobile } from "@/hooks";
+import { useImageCompression } from "@/hooks/useImageCompression";
 import {
   getMessageDayKey,
   getMessageDayLabel,
@@ -235,6 +236,7 @@ export function MessageCenterClient() {
     counterpartId: number;
   } | null>(null);
   const composerImagesRef = useRef<ComposerImageItem[]>([]);
+  const { compressImages, validateFiles } = useImageCompression();
 
   const tabs: MessageCenterTabItem[] = [
     { value: "all", label: tMsg("tabs.all") },
@@ -864,13 +866,27 @@ export function MessageCenterClient() {
     setIsUploadingImages(true);
 
     void (async () => {
-      const drafts = nextFiles.map((file) => ({
+      // 压缩图片
+      const compressionResults = await compressImages(nextFiles);
+
+      // 验证压缩后的文件大小
+      const validation = validateFiles(
+        compressionResults.map((r) => r.file),
+        true,
+      );
+      if (!validation.valid) {
+        console.error(validation.error);
+        setIsUploadingImages(false);
+        return;
+      }
+
+      const drafts = compressionResults.map((result) => ({
         id:
           typeof crypto !== "undefined" && "randomUUID" in crypto
             ? crypto.randomUUID()
             : `${Date.now()}-${Math.random()}`,
-        file,
-        previewUrl: URL.createObjectURL(file),
+        file: result.file,
+        previewUrl: URL.createObjectURL(result.file),
       }));
 
       setComposerImages((current) => [

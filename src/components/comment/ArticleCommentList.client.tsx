@@ -7,6 +7,7 @@ import {
   type MenuItem,
 } from "@/components/shared";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
+import { cn } from "@/lib";
 import { CommentList } from "@/types";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -18,6 +19,10 @@ import { CommentListSkeleton } from "./CommentSkeleton";
 type ArticleCommentListProps = {
   articleId: string;
   pageSize?: number;
+  showTopCommentEditor?: boolean;
+  stickySort?: boolean;
+  sortClassName?: string;
+  onSubmitted?: () => void;
 };
 
 type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
@@ -25,6 +30,10 @@ type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
 export function ArticleCommentList({
   articleId,
   pageSize = 10,
+  showTopCommentEditor = true,
+  stickySort = false,
+  sortClassName,
+  onSubmitted,
 }: ArticleCommentListProps) {
   const t = useTranslations("commentList");
   const observerRef = useRef<HTMLDivElement>(null);
@@ -68,8 +77,15 @@ export function ArticleCommentList({
     [articleId, pageSize, sortKey],
   );
 
-  // 初始化加载
+  // 初始化加载 - 使用 ref 避免重复请求
+  const isLoadingRef = useRef(false);
+  const hasLoadedRef = useRef(false);
+  const refreshRef = useRef<(() => void) | null>(null);
+
   const refreshComments = useCallback(async () => {
+    if (isLoadingRef.current) return;
+    isLoadingRef.current = true;
+
     setLoading(true);
     setError(null);
 
@@ -85,12 +101,19 @@ export function ArticleCommentList({
     } finally {
       setLoading(false);
       setIsSortChanging(false);
+      isLoadingRef.current = false;
+      onSubmitted?.();
     }
-  }, [fetchComments, t]);
+  }, [fetchComments, onSubmitted, t]);
+
+  // 将 refreshComments 暴露给父组件
+  refreshRef.current = refreshComments;
 
   useEffect(() => {
+    if (hasLoadedRef.current) return;
+    hasLoadedRef.current = true;
     void refreshComments();
-  }, [refreshComments]);
+  }, []);
 
   const handleSortChange = (nextSortKey: CommentSortKey) => {
     if (nextSortKey === sortKey) {
@@ -191,8 +214,15 @@ export function ArticleCommentList({
   if (loading && comments.length === 0) {
     return (
       <div className="space-y-4">
-        <CommentEditor articleId={articleId} onSubmitted={refreshComments} />
-        <div className="border-b border-border px-6 pb-4">
+        {showTopCommentEditor && (
+          <CommentEditor articleId={articleId} onSubmitted={refreshComments} />
+        )}
+        <div
+          className={cn(
+            "border-b border-border px-6 pb-4",
+            stickySort && "sticky top-0 z-10 bg-card",
+          )}
+        >
           <DropdownMenu
             className="w-fit"
             position="left"
@@ -218,9 +248,17 @@ export function ArticleCommentList({
 
   return (
     <div className="space-y-4">
-      <CommentEditor articleId={articleId} onSubmitted={refreshComments} />
+      {showTopCommentEditor && (
+        <CommentEditor articleId={articleId} onSubmitted={refreshComments} />
+      )}
 
-      <div className="border-b border-border px-6 pb-4 min-w-min">
+      <div
+        className={cn(
+          "border-b border-border px-6 pb-4 min-w-min",
+          stickySort && "sticky top-0 z-10 bg-card",
+          sortClassName,
+        )}
+      >
         <DropdownMenu
           className="w-fit text-sm "
           position="left"

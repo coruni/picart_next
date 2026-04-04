@@ -13,6 +13,7 @@ import {
 } from "@/lib";
 import { useUserStore } from "@/stores";
 import type { ArticleDetail, ArticleList } from "@/types";
+import { getImageUrl, getImageUrls, type ImageInfo } from "@/types/image";
 import {
   Eye,
   FileImage,
@@ -25,7 +26,6 @@ import { useState } from "react";
 import { ArticleMenu } from "./ArticleMenu";
 import { ImageViewer } from "./ImageViewer";
 import { ReactionPanel } from "./ReactionPanel.client";
-import { getImageUrl, getImageUrls, type ImageInfo } from "@/types/image";
 
 type Article = ArticleList[number] | ArticleDetail;
 type ArticleCardProps = {
@@ -55,13 +55,11 @@ export const ArticleCard = ({
 
   // Handle new image format (ImageInfo[])
   const rawImages = (article.images || []) as (string | ImageInfo)[];
-  const previewImages = rawImages.filter(
-    (img) => {
-      const url = typeof img === "string" ? img : img.url;
-      const coverUrl = article.cover;
-      return url && url !== coverUrl;
-    },
-  );
+  const previewImages = rawImages.filter((img) => {
+    const url = typeof img === "string" ? img : img.url;
+    const coverUrl = article.cover;
+    return url && url !== coverUrl;
+  });
 
   const compactNumberLabels = {
     thousand: tAccountInfo("numberUnits.thousand"),
@@ -88,9 +86,10 @@ export const ArticleCard = ({
 
   const renderMediaElement = () => {
     if (article.cover) {
-      const coverUrl = typeof article.cover === "string"
-        ? article.cover
-        : getImageUrl(article.cover, "medium");
+      const coverUrl =
+        typeof article.cover === "string"
+          ? article.cover
+          : getImageUrl(article.cover, "medium");
 
       return (
         <div
@@ -162,7 +161,8 @@ export const ArticleCard = ({
       return (
         <div className="mt-3 flex gap-2">
           {previewImages.slice(0, 2).map((img, idx) => {
-            const imgUrl = typeof img === "string" ? img : getImageUrl(img, "small");
+            const imgUrl =
+              typeof img === "string" ? img : getImageUrl(img, "small");
             return (
               <div
                 key={`${imgUrl}-${idx}`}
@@ -204,7 +204,8 @@ export const ArticleCard = ({
     return (
       <div className="mt-3 flex gap-2">
         {displayImages.map((img, idx) => {
-          const imgUrl = typeof img === "string" ? img : getImageUrl(img, "small");
+          const imgUrl =
+            typeof img === "string" ? img : getImageUrl(img, "small");
           return (
             <div
               key={`${imgUrl}-${idx}`}
@@ -373,6 +374,7 @@ export const ArticleCard = ({
 
       {viewerVisible && viewerUrls.length > 0 && (
         <ImageViewer
+          article={article}
           images={viewerUrls}
           initialIndex={viewerIndex}
           visible={viewerVisible}

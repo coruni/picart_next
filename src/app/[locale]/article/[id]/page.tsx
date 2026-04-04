@@ -231,6 +231,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             {article?.type === "image" && (
               <div className="relative w-full min-w-0 overflow-hidden">
                 <ImageGallery
+                  article={article}
                   images={article?.images || []}
                   alt={article?.title || ""}
                 />

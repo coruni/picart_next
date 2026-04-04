@@ -3,15 +3,18 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { cn } from "@/lib";
+import { ArticleDetail, ArticleList } from "@/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ComponentType, useCallback, useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
+import { ImageComment } from "./imageComment";
 import { cleanupViewerCustomUI, setupViewerCustomUI } from "./imageViewerUI";
-
+type Article = ArticleList[number] | ArticleDetail;
 type ImageViewerProps = {
+  article?: Article;
   images: string[];
   initialIndex?: number;
   visible: boolean;
@@ -32,6 +35,7 @@ const renderIcon = (
 };
 
 export function ImageViewer({
+  article,
   images,
   initialIndex = 0,
   visible,
@@ -495,33 +499,28 @@ export function ImageViewer({
         className={cn(
           "custom-viewer-wrapper fixed inset-0 z-998 flex h-full w-full transition-opacity",
           viewerMounted
-            ? "visible pointer-events-auto opacity-100"
-            : "invisible pointer-events-none opacity-0",
+            ? "visible opacity-100"
+            : "invisible opacity-0",
         )}
       >
         <div
           ref={viewerContainerRef}
-          className="relative flex-1"
+          className="relative flex-1 pointer-events-auto z-1"
           id="left-panel"
         />
 
-        {enableSidePanel ? (
+        {enableSidePanel && article && (
           <div
             ref={panelRef}
             className={cn(
-              "custom-panel relative flex h-full shrink-0 flex-col overflow-hidden bg-card transition-[width] duration-300",
+              "custom-panel relative flex h-screen shrink-0 flex-col overflow-hidden bg-card transition-[width] duration-300 pointer-events-auto z-999",
               panelExpanded ? "w-97.5" : "w-0",
             )}
             id="right-panel"
           >
-            <div className="border-b border-white/10 p-4">
-              <h3 className="text-lg font-medium text-white">{t("panelTitle")}</h3>
-            </div>
-            <div className="flex-1 overflow-auto p-4 text-white">
-              {/* panel content */}
-            </div>
+            <ImageComment article={article} isExpanded={panelExpanded} />
           </div>
-        ) : null}
+        )}
       </div>
     </>
   );

@@ -339,16 +339,21 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               const files = input.files;
               if (!files || files.length === 0) return;
 
-              // 验证文件
-              const validation = validateFiles(Array.from(files));
+              const selection = quill.getSelection();
+              const startIndex = selection?.index || 0;
+
+              // 压缩图片
+              const compressionResults = await compressImages(Array.from(files));
+
+              // 验证压缩后的文件大小
+              const validation = validateFiles(
+                compressionResults.map((r) => r.file),
+                true,
+              );
               if (!validation.valid) {
-                // 可以在这里显示错误提示
                 console.error(validation.error);
                 return;
               }
-
-              const selection = quill.getSelection();
-              const startIndex = selection?.index || 0;
 
               // Store upload info for each file
               const uploadItems: {
@@ -360,9 +365,6 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 overlay: HTMLDivElement | null;
                 progressText: HTMLSpanElement | null;
               }[] = [];
-
-              // 压缩图片
-              const compressionResults = await compressImages(Array.from(files));
 
               // Create all placeholders first
               for (let i = 0; i < compressionResults.length; i++) {
@@ -790,9 +792,14 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         // 检查点击是否在 toolbar 内
         const isInsideToolbar = toolbar.contains(target);
 
-        // 如果点击在 toolbar 外部，关闭所有下拉菜单
-        if (!isInsideToolbar) {
-          const dropdowns = toolbar.querySelectorAll('[id^="dropdown-"]');
+        // 检查点击是否在任何 dropdown 内（包括 emoji 面板等）
+        const dropdowns = document.querySelectorAll('[id^="dropdown-"]');
+        const isInsideDropdown = Array.from(dropdowns).some((dropdown) =>
+          dropdown.contains(target),
+        );
+
+        // 如果点击在 toolbar 外部且不在任何 dropdown 内，关闭所有下拉菜单
+        if (!isInsideToolbar && !isInsideDropdown) {
           dropdowns.forEach((dropdown) => {
             dropdown.classList.add("hidden");
           });

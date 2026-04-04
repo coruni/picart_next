@@ -174,7 +174,17 @@ button {
 }
 
 .viewer-container{
-  @apply absolute! left-0! bottom-0!
+  @apply absolute! left-0! top-0! w-full! h-full!
+}
+
+/* 确保右侧面板在 viewer 之上 */
+#right-panel {
+  z-index: 999 !important;
+}
+
+/* 确保右侧面板内的元素可以正常交互 */
+#right-panel * {
+  pointer-events: auto !important;
 }
 
 /* 隐藏 viewerjs 默认 toolbar，只显示自定义 toolbar */
