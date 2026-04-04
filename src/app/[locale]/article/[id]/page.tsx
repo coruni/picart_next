@@ -152,7 +152,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
       "",
     ) || "";
   const { html: contentWithTocMarkup, items: tocItems } = buildArticleToc(rawContent);
-  const content = prepareRichTextHtmlForDisplay(contentWithTocMarkup);
+  const content = prepareRichTextHtmlForDisplay(contentWithTocMarkup, locale);
   const shouldTranslateArticleDetail = !(
     locale === "zh" &&
     isLikelyChineseContent(

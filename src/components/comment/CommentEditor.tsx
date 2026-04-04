@@ -426,11 +426,18 @@ export function CommentEditor({
       return;
     }
 
+    // Create attachment entries for all files first
+    const fileIds: string[] = [];
+    const fileMap = new Map<string, File>();
+
     for (const file of files) {
       const id = `${file.name}-${file.size}-${Date.now()}-${Math.random()}`;
       const previewUrl = URL.createObjectURL(file);
 
+      fileIds.push(id);
+      fileMap.set(id, file);
       removedAttachmentIdsRef.current.delete(id);
+
       setAttachments((current) => [
         ...current,
         {
@@ -441,34 +448,47 @@ export function CommentEditor({
         },
       ]);
       startUploadProgress(id);
+    }
 
-      try {
-        const response = await uploadControllerUploadFile({
-          body: { file },
-        });
+    // Upload all files in one request
+    try {
+      const response = await uploadControllerUploadFile({
+        body: { file: files as any },
+      });
 
+      const uploadedUrls = response.data?.data || [];
+
+      // Update each attachment with its uploaded URL
+      fileIds.forEach((id, index) => {
         if (removedAttachmentIdsRef.current.has(id)) {
-          URL.revokeObjectURL(previewUrl);
-          continue;
+          const file = fileMap.get(id);
+          if (file) {
+            URL.revokeObjectURL(URL.createObjectURL(file));
+          }
+          return;
         }
 
-        const uploadedUrl = response.data?.data?.[0]?.url;
-        if (!uploadedUrl) {
-          throw new Error("Missing uploaded file url");
+        const uploadedUrl = uploadedUrls[index]?.url;
+        if (uploadedUrl) {
+          clearUploadTimer(id);
+          updateAttachment(id, (attachment) => ({
+            ...attachment,
+            status: "uploaded",
+            progress: 100,
+            url: uploadedUrl,
+          }));
+        } else {
+          clearUploadTimer(id);
+          removeAttachment(id);
         }
-
-        clearUploadTimer(id);
-        updateAttachment(id, (attachment) => ({
-          ...attachment,
-          status: "uploaded",
-          progress: 100,
-          url: uploadedUrl,
-        }));
-      } catch (error) {
+      });
+    } catch (error) {
+      // Clear all upload timers and remove attachments on error
+      fileIds.forEach((id) => {
         clearUploadTimer(id);
         removeAttachment(id);
-        console.error("Failed to upload comment image:", error);
-      }
+      });
+      console.error("Failed to upload comment images:", error);
     }
   };
 

@@ -395,14 +395,33 @@
       "clean": "清除格式",
       "confirm": "确定",
       "cancel": "取消",
-      "insert": "插入"
+      "insert": "插入",
+      "divider": "分割线",
+      "dividerTitle": "选择分割线样式",
+      "dividerGradient": "渐变",
+      "dividerPulse": "脉冲",
+      "dividerDashed": "虚线",
+      "dividerWave": "波浪",
+      "dividerRing": "双环",
+      "dividerZigzag": "锯齿",
+      "dividerStars": "星链",
+      "dividerThick": "粗细",
+      "inlineArticle": "内联文章",
+      "insertArticle": "插入内联文章",
+      "articleUrlPlaceholder": "请输入文章链接",
+      "inlineArticleError": "只能插入同域名文章链接",
+      "inlineArticleInvalid": "无效的文章链接"
     },
     "modal": {
       "insertVideo": "插入视频",
       "videoUrlPlaceholder": "请输入视频链接",
       "insertLink": "插入链接",
       "linkTextPlaceholder": "链接文字（可选，选中文字时自动填充）",
-      "linkUrlPlaceholder": "请输入链接地址"
+      "linkUrlPlaceholder": "请输入链接地址",
+      "insertArticle": "插入内联文章",
+      "articleUrlPlaceholder": "请输入文章链接",
+      "inlineArticleError": "只能插入同域名文章链接",
+      "inlineArticleInvalid": "无效的文章链接"
     },
     "upload": {
       "uploading": "上传中...",

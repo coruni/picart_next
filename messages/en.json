@@ -403,14 +403,33 @@
       "clean": "Clear Formatting",
       "confirm": "Confirm",
       "cancel": "Cancel",
-      "insert": "Insert"
+      "insert": "Insert",
+      "divider": "Divider",
+      "dividerTitle": "Choose Divider Style",
+      "dividerGradient": "Gradient",
+      "dividerPulse": "Pulse",
+      "dividerDashed": "Dashed",
+      "dividerWave": "Wave",
+      "dividerRing": "Ring",
+      "dividerZigzag": "Zigzag",
+      "dividerStars": "Stars",
+      "dividerThick": "Thick",
+      "inlineArticle": "Inline Article",
+      "insertArticle": "Insert Inline Article",
+      "articleUrlPlaceholder": "Enter article URL",
+      "inlineArticleError": "Only same-origin article links are allowed",
+      "inlineArticleInvalid": "Invalid article URL"
     },
     "modal": {
       "insertVideo": "Insert Video",
       "videoUrlPlaceholder": "Enter video URL",
       "insertLink": "Insert Link",
       "linkTextPlaceholder": "Link text (optional, auto-filled when text is selected)",
-      "linkUrlPlaceholder": "Enter link URL"
+      "linkUrlPlaceholder": "Enter link URL",
+      "insertArticle": "Insert Inline Article",
+      "articleUrlPlaceholder": "Enter article URL",
+      "inlineArticleError": "Only same-origin article links are allowed",
+      "inlineArticleInvalid": "Invalid article URL"
     },
     "upload": {
       "uploading": "Uploading...",

@@ -12487,7 +12487,60 @@
                               "images": {
                                 "type": "array",
                                 "items": {
-                                  "type": "string"
+                                  "type": "object",
+                                  "properties": {
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "width": {
+                                      "type": "integer"
+                                    },
+                                    "height": {
+                                      "type": "integer"
+                                    },
+                                    "size": {
+                                      "type": "integer"
+                                    },
+                                    "original": {
+                                      "type": "string"
+                                    },
+                                    "thumbnails": {
+                                      "type": "object",
+                                      "properties": {
+                                        "thumb": {
+                                          "type": "string"
+                                        },
+                                        "small": {
+                                          "type": "string"
+                                        },
+                                        "medium": {
+                                          "type": "string"
+                                        },
+                                        "large": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "thumb",
+                                        "small",
+                                        "medium",
+                                        "large"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "url",
+                                    "size",
+                                    "width",
+                                    "height",
+                                    "original",
+                                    "thumbnails"
+                                  ],
+                                  "oneOf": [
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
                                 }
                               },
                               "sort": {
@@ -30198,8 +30251,9 @@
                 "type": "object",
                 "properties": {
                   "file": {
-                    "example": "",
-                    "type": "string"
+                    "format": "binary",
+                    "type": "string",
+                    "example": ""
                   }
                 },
                 "required": [
@@ -30260,27 +30314,77 @@
                           "referenceCount": {
                             "type": "integer"
                           },
+                          "original": {
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": "string"
+                              },
+                              "path": {
+                                "type": "string"
+                              },
+                              "size": {
+                                "type": "integer"
+                              },
+                              "width": {
+                                "type": "integer"
+                              },
+                              "height": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "url",
+                              "path",
+                              "size",
+                              "width",
+                              "height"
+                            ]
+                          },
+                          "thumbnails": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "url": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "path": {
+                                  "type": "string"
+                                },
+                                "size": {
+                                  "type": "integer"
+                                },
+                                "width": {
+                                  "type": "integer"
+                                },
+                                "height": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "url",
+                                "name",
+                                "path",
+                                "size",
+                                "width",
+                                "height"
+                              ]
+                            }
+                          },
+                          "processed": {
+                            "type": "boolean"
+                          },
                           "createdAt": {
                             "type": "string"
                           },
                           "updatedAt": {
                             "type": "string"
                           }
-                        },
-                        "required": [
-                          "id",
-                          "hash",
-                          "originalName",
-                          "storage",
-                          "filename",
-                          "path",
-                          "url",
-                          "size",
-                          "mimeType",
-                          "referenceCount",
-                          "createdAt",
-                          "updatedAt"
-                        ]
+                        }
                       }
                     }
                   },

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-   "analyze": "set ANALYZE=true && next build --webpack",
+    "analyze": "set ANALYZE=true && next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
@@ -28,6 +28,7 @@
     "next": "16.2.1",
     "next-intl": "^4.7.0",
     "nextjs-toploader": "^3.9.17",
+    "node-html-parser": "^7.1.0",
     "quill": "2.0.3",
     "react": "19.2.4",
     "react-avatar-editor": "^14.0.0",

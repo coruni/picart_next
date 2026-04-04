@@ -16,7 +16,7 @@
 }
 
 .inline-article-card+.inline-article-card .inline-article-wrapper {
-  border-top: 1px solid #ececec;
+  border-top: 1px solid var(--color-border);
 }
 
 .ql-inline-article-list>.inline-article-card:not(:first-child):not(:last-child) {
@@ -35,7 +35,9 @@
   outline-offset: 2px;
 }
 
+a.inline-article-card,
 .inline-article-card {
+  text-decoration: none;
   min-width: 320px;
   width: 100%;
   max-width: 450px;
@@ -154,7 +156,7 @@
   align-items: center;
   gap: 4px;
   font-size: 12px;
-   color: var(--color-secondary);
+  color: var(--color-secondary);
   flex-shrink: 0;
 }
 

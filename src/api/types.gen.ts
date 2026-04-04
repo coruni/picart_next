@@ -5434,7 +5434,19 @@ export type ArticleControllerFindByAuthorResponses = {
                 viewPrice: string;
                 type: string;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 sort: number;
                 summary: string;
                 views: number;
@@ -10408,7 +10420,7 @@ export type UploadControllerGetUploadConfigResponse = UploadControllerGetUploadC
 
 export type UploadControllerUploadFileData = {
     body: {
-        file: string;
+        file: Blob | File;
     };
     headers?: {
         Authorization?: string;
@@ -10444,18 +10456,34 @@ export type UploadControllerUploadFileResponses = {
         code: number;
         message: string;
         data: Array<{
-            id: number;
-            hash: string;
-            originalName: string;
-            storage: string;
-            filename: string;
-            path: string;
-            url: string;
-            size: number;
-            mimeType: string;
-            referenceCount: number;
-            createdAt: string;
-            updatedAt: string;
+            id?: number;
+            hash?: string;
+            originalName?: string;
+            storage?: string;
+            filename?: string;
+            path?: string;
+            url?: string;
+            size?: number;
+            mimeType?: string;
+            referenceCount?: number;
+            original?: {
+                url: string;
+                path: string;
+                size: number;
+                width: number;
+                height: number;
+            };
+            thumbnails?: Array<{
+                url: string;
+                name: string;
+                path: string;
+                size: number;
+                width: number;
+                height: number;
+            }>;
+            processed?: boolean;
+            createdAt?: string;
+            updatedAt?: string;
         }>;
     };
 };
