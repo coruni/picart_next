@@ -1,5 +1,14 @@
-import { Action, ImageSpec, AlignAction } from "@enzedonline/quill-blot-formatter2";
-import { ReplaceAction, ViewAction, CopyAction, DeleteAction } from "../actions";
+import {
+  Action,
+  AlignAction,
+  ImageSpec,
+} from "@enzedonline/quill-blot-formatter2";
+import {
+  CopyAction,
+  DeleteAction,
+  ReplaceAction,
+  ViewAction,
+} from "../actions";
 
 export class CustomImageSpec extends ImageSpec {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -11,7 +20,7 @@ export class CustomImageSpec extends ImageSpec {
     this.formatter.quill.root.addEventListener("click", this.onClick);
   };
 
-  getTargetElement = () => this.img;
+  getTargetElement = () => this.wrapper;
 
   onHide = () => {
     // 移除选中状态 class

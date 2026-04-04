@@ -33,6 +33,15 @@ export class InlineArticleSpec extends BlotSpec {
       this.list = list;
       // 添加选中状态 class 到 list
       list.classList.add("ql-inline-article-selected");
+
+      // 设置 Quill 选区到该 blot 位置，使键盘删除可以正常工作
+      const blot = this.formatter.quill.scroll.find(list);
+      if (blot) {
+        const index = this.formatter.quill.getIndex(blot);
+        this.formatter.quill.setSelection(index, 1, "silent");
+        this.formatter.quill.focus();
+      }
+
       this.formatter.show(this);
     }
   };

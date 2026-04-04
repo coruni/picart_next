@@ -7,9 +7,9 @@ import "@enzedonline/quill-blot-formatter2/dist/css/quill-blot-formatter2.css";
 import { useTranslations } from "next-intl";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
-import "./inline-article.css";
 import { SizeClass, SizeStyle } from "quill/formats/size";
 import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import "./inline-article.css";
 
 import { articleControllerFindByAuthor, articleControllerFindOne } from "@/api";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
@@ -652,9 +652,43 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     }, []);
 
     // 内联文章编辑事件监听器
+    const inlineArticleEditIndexRef = useRef<number | null>(null);
+
     useEffect(() => {
-      const handleInlineArticleEdit = () => {
-        // 打开文章选择对话框进行替换
+      const handleInlineArticleEdit = (e: Event) => {
+        const customEvent = e as CustomEvent<{ index: number; articles: Array<{ id: string; title?: string; authorName?: string; views?: number; cover?: string; authorAvatar?: string }> }>;
+        const { index, articles } = customEvent.detail;
+
+        // 预填充选中文章（转换为 ArticleItem 格式）
+        if (articles && articles.length > 0) {
+          const preSelectedArticles = articles.map((article) => ({
+            id: parseInt(article.id, 10),
+            title: article.title || `文章 #${article.id}`,
+            cover: article.cover,
+            images: article.cover ? ([article.cover] as unknown as ImageInfo[]) : undefined,
+            author: user || {
+              id: 0,
+              username: article.authorName || "",
+              nickname: article.authorName || "",
+              status: "active",
+              banned: "false",
+              banReason: "",
+              avatar: article.authorAvatar || "",
+              description: "",
+              background: "",
+              gender: "unknown",
+              birthDate: "",
+              articleCount: 0,
+            },
+            views: article.views || 0,
+          }));
+          setSelectedArticles(preSelectedArticles as ArticleItem[]);
+        }
+
+        // 保存当前编辑的 blot 索引，用于替换
+        inlineArticleEditIndexRef.current = index;
+
+        // 打开文章选择对话框
         setShowArticleModal(true);
       };
       document.addEventListener("inline-article-edit", handleInlineArticleEdit);
@@ -664,7 +698,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           handleInlineArticleEdit,
         );
       };
-    }, []);
+    }, [user]);
 
     // 标记是否已完成初始值设置
     const hasInitializedRef = useRef(false);
@@ -950,8 +984,19 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       const quill = quillRef.current;
       if (!quill || selectedArticles.length === 0) return;
 
-      const range = quill.getSelection();
-      const index = range?.index ?? quill.getLength();
+      // 检查是否是编辑模式（有保存的索引）
+      const editIndex = inlineArticleEditIndexRef.current;
+      let index: number;
+
+      if (editIndex !== null) {
+        // 编辑模式：删除原有 blot 并在原位置插入
+        index = editIndex;
+        quill.deleteText(index, 1, "user");
+      } else {
+        // 插入模式：在光标位置插入
+        const range = quill.getSelection();
+        index = range?.index ?? quill.getLength();
+      }
 
       // 所有文章都使用 inlineArticleList 包裹（包括单篇）
       const articles = selectedArticles.map((article) => {
@@ -964,24 +1009,22 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         return {
           id: String(article.id),
           title: article.title,
-          authorName: article.author?.nickname || article.author?.username || "",
+          authorName:
+            article.author?.nickname || article.author?.username || "",
           views: article.views || 0,
           cover: coverUrl,
           authorAvatar: article.author?.avatar || "",
         };
       });
 
-      quill.insertEmbed(
-        index,
-        "inlineArticleList",
-        { articles },
-        "user",
-      );
+      quill.insertEmbed(index, "inlineArticleList", { articles }, "user");
 
       quill.setSelection(index + 1, 0, "silent");
       setShowArticleModal(false);
       setArticleSearchQuery("");
       setSelectedArticles([]);
+      // 重置编辑索引
+      inlineArticleEditIndexRef.current = null;
     };
 
     // Dialog 打开时加载文章
@@ -1168,6 +1211,8 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 setArticleSearchQuery("");
                 setArticles([]);
                 setSelectedArticles([]);
+                // 重置编辑索引
+                inlineArticleEditIndexRef.current = null;
               }
             }}
           >
