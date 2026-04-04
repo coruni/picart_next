@@ -174,16 +174,26 @@ button {
 }
 
 .viewer-container{
-  @apply absolute! left-0! top-0! w-full! h-full!
+  @apply absolute! left-0! top-0! w-full! h-full! z-101!
 }
 
-/* 确保右侧面板在 viewer 之上 */
+/* 确保右侧面板在 viewer 之上 - viewerjs backdrop z-index 是 2015 */
 #right-panel {
-  z-index: 999 !important;
+  z-index: 3000 !important;
 }
 
 /* 确保右侧面板内的元素可以正常交互 */
 #right-panel * {
+  pointer-events: auto !important;
+}
+
+/* 当右侧面板存在时，确保左侧 viewer 画布不会拦截事件 */
+.custom-viewer-wrapper:has(#right-panel) .viewer-canvas {
+  pointer-events: none !important;
+}
+
+/* 但 viewer-canvas 内的图片需要能接收拖拽事件 */
+.custom-viewer-wrapper:has(#right-panel) .viewer-canvas > img {
   pointer-events: auto !important;
 }
 

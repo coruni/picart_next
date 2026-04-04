@@ -7,6 +7,7 @@ import {
   uploadControllerUploadFile,
 } from "@/api";
 import { CustomEmojiBlot } from "@/components/editor";
+import { useImageCompression } from "@/hooks/useImageCompression";
 import { cn, sanitizeRichTextHtml } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
@@ -25,7 +26,6 @@ import "quill/dist/quill.snow.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FreeMode } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { useImageCompression } from "@/hooks/useImageCompression";
 import { Button } from "../ui/Button";
 
 import "swiper/css";
@@ -35,6 +35,7 @@ type CommentEditorProps = {
   parentId?: number | string;
   className?: string;
   onSubmitted?: () => void | Promise<void>;
+  minHeight?: string | number;
 };
 
 type EmojiRecord = {
@@ -132,9 +133,7 @@ function hasQuillContent(quill: Quill | null) {
     return false;
   }
 
-  const text = quill
-    .getText()
-    .replace(/[\s\u00A0\u200B-\u200D\uFEFF]/g, "");
+  const text = quill.getText().replace(/[\s\u00A0\u200B-\u200D\uFEFF]/g, "");
   if (text.length > 0) {
     return true;
   }
@@ -173,7 +172,9 @@ function AttachmentPreviewCard({
         <div
           className={cn(
             "flex items-center overflow-hidden whitespace-nowrap transition-[max-width,opacity,margin] duration-300",
-            isUploading ? "mr-1 max-w-20 opacity-100" : "mr-0 max-w-0 opacity-0",
+            isUploading
+              ? "mr-1 max-w-20 opacity-100"
+              : "mr-0 max-w-0 opacity-0",
           )}
         >
           <LoaderCircle className="mr-2 size-3.5 shrink-0 animate-spin" />
@@ -197,6 +198,7 @@ export function CommentEditor({
   parentId,
   className,
   onSubmitted,
+  minHeight,
 }: CommentEditorProps) {
   const t = useTranslations("commentEditor");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -570,9 +572,21 @@ export function CommentEditor({
             "comment-editor-shell rounded-xl border border-primary/90 bg-card transition-shadow focus-within:shadow-[0_0_0_3px_rgba(102,128,255,0.08)]",
             "[&_.ql-container]:border-0 [&_.ql-container]:rounded-2xl",
             "[&_.ql-container.ql-snow]:border-none!",
-            "[&_.ql-editor]:min-h-24 [&_.ql-editor]:px-5 [&_.ql-editor]:py-4 [&_.ql-editor]:text-sm [&_.ql-editor]:leading-6",
+            "[&_.ql-editor]:px-5 [&_.ql-editor]:py-4 [&_.ql-editor]:text-sm [&_.ql-editor]:leading-6",
             "[&_.ql-editor.ql-blank::before]:left-5 [&_.ql-editor.ql-blank::before]:right-5 [&_.ql-editor.ql-blank::before]:font-sans [&_.ql-editor.ql-blank::before]:text-sm [&_.ql-editor.ql-blank::before]:font-normal [&_.ql-editor.ql-blank::before]:leading-6 [&_.ql-editor.ql-blank::before]:text-muted-foreground [&_.ql-editor.ql-blank::before]:not-italic! dark:[&_.ql-editor.ql-blank::before]:text-white/45!",
+            !minHeight && "[&_.ql-editor]:min-h-24",
+            minHeight && "[&_.ql-editor]:min-h-(--editor-min-height)",
           )}
+          style={
+            minHeight
+              ? ({
+                  "--editor-min-height":
+                    typeof minHeight === "number"
+                      ? `${minHeight}px`
+                      : minHeight,
+                } as React.CSSProperties)
+              : undefined
+          }
         >
           <div ref={containerRef} />
         </div>
@@ -616,7 +630,13 @@ export function CommentEditor({
               </button>
 
               {emojiOpen && (
-                <div className="absolute bottom-full left-0 z-30 mb-3 w-[min(31rem,calc(100vw-3rem))] min-w-[18rem] overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
+                <div
+                  className="absolute top-full  z-30 mb-3 overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
+                  style={{
+                    width: "min(20rem, calc(100vw - 20rem))",
+                    minWidth: "16rem",
+                  }}
+                >
                   <div className="flex h-10 items-center gap-2 rounded-t-xl border-b border-border bg-border px-2.5">
                     <button
                       type="button"
@@ -677,13 +697,13 @@ export function CommentEditor({
                       <ChevronRight className="size-4" />
                     </button>
                   </div>
-                  <div className="grid h-52 grid-cols-7 content-start gap-1.5 overflow-y-auto px-2.5 py-2.5">
+                  <div className="grid h-52 grid-cols-7 content-start gap-1 overflow-y-auto px-2 py-2">
                     {emojiList.length > 0 ? (
                       emojiList.map((emoji) => (
                         <button
                           key={emoji.id}
                           type="button"
-                          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent p-1 transition-all hover:border-border hover:bg-accent"
+                          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent p-1 transition-all hover:border-border hover:bg-accent"
                           onClick={() => void handleEmojiSelect(emoji)}
                           title={emoji.name}
                         >
@@ -691,12 +711,12 @@ export function CommentEditor({
                           <img
                             src={emoji.url}
                             alt={emoji.name}
-                            className="max-h-8 max-w-8 object-contain"
+                            className="max-h-7 max-w-7 object-contain"
                           />
                         </button>
                       ))
                     ) : (
-                      <div className="col-span-6 py-8 text-center text-sm text-muted-foreground">
+                      <div className="col-span-7 py-8 text-center text-sm text-muted-foreground">
                         {t("emptyEmoji")}
                       </div>
                     )}

@@ -34,6 +34,7 @@ type CommentReplyItemProps = {
   onReplySubmitted: () => void | Promise<void>;
   onOpenImageViewer: (images: string[], index?: number) => void;
   onOpenModal?: (reply: CommentReply) => void;
+  onReplyClick?: (commentId: number) => void;
   imageDisplayMode?: "link" | "gallery";
   showTranslateButton?: boolean;
 };
@@ -48,6 +49,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   onReplySubmitted,
   onOpenImageViewer,
   onOpenModal,
+  onReplyClick,
   imageDisplayMode = "link",
   showTranslateButton = false,
 }: CommentReplyItemProps) {
@@ -97,9 +99,14 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   const handleOpenReplyEditor = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
+      // 如果提供了外部 onReplyClick，优先使用它（用于在 Dialog 中打开回复）
+      if (onReplyClick) {
+        onReplyClick(reply.id);
+        return;
+      }
       onToggleReplyEditor(reply.id);
     },
-    [onToggleReplyEditor, reply.id],
+    [onReplyClick, onToggleReplyEditor, reply.id],
   );
 
   const handleToggleLike = useCallback(

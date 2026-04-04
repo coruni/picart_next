@@ -25,7 +25,9 @@ export function DeviceFingerprintProvider() {
       .catch((error) => {
         console.error("Failed to initialize device fingerprint:", error);
       });
-  }, [setDeviceId]);
+    // setDeviceId 是稳定的，不加入依赖数组避免重复执行
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return null;
 }

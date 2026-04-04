@@ -23,6 +23,7 @@ type ArticleCommentListProps = {
   stickySort?: boolean;
   sortClassName?: string;
   onSubmitted?: () => void;
+  onReplyClick?: (commentId: number) => void;
 };
 
 type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
@@ -34,6 +35,7 @@ export function ArticleCommentList({
   stickySort = false,
   sortClassName,
   onSubmitted,
+  onReplyClick,
 }: ArticleCommentListProps) {
   const t = useTranslations("commentList");
   const observerRef = useRef<HTMLDivElement>(null);
@@ -288,6 +290,7 @@ export function ArticleCommentList({
               data={comment}
               key={comment.id}
               onSubmitted={refreshComments}
+              onReplyClick={onReplyClick}
             />
           ))}
 

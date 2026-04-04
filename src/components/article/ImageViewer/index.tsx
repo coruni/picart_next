@@ -497,7 +497,7 @@ export function ImageViewer({
 
       <div
         className={cn(
-          "custom-viewer-wrapper fixed inset-0 z-998 flex h-full w-full transition-opacity",
+          "custom-viewer-wrapper fixed inset-0 z-100 flex h-full w-full transition-opacity",
           viewerMounted
             ? "visible opacity-100"
             : "invisible opacity-0",
@@ -505,7 +505,7 @@ export function ImageViewer({
       >
         <div
           ref={viewerContainerRef}
-          className="relative flex-1 pointer-events-auto z-1"
+          className="relative flex-1 z-1"
           id="left-panel"
         />
 
@@ -513,12 +513,14 @@ export function ImageViewer({
           <div
             ref={panelRef}
             className={cn(
-              "custom-panel relative flex h-screen shrink-0 flex-col overflow-hidden bg-card transition-[width] duration-300 pointer-events-auto z-999",
+              "custom-panel relative flex h-screen shrink-0 flex-col overflow-hidden bg-card transition-[width] duration-300 pointer-events-auto z-200",
               panelExpanded ? "w-97.5" : "w-0",
             )}
             id="right-panel"
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
           >
-            <ImageComment article={article} isExpanded={panelExpanded} />
+            <ImageComment article={article}  />
           </div>
         )}
       </div>

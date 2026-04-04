@@ -32,11 +32,13 @@ type CommentItemProps = {
   articleId: string;
   data: CommentList[number] & { images?: (string | ImageInfo)[] };
   onSubmitted?: () => void | Promise<void>;
+  onReplyClick?: (commentId: number) => void;
 };
 export const CommentItem = memo(function CommentItem({
   articleId,
   data,
   onSubmitted,
+  onReplyClick,
 }: CommentItemProps) {
   const tComment = useTranslations("commentList");
   const tAccountInfo = useTranslations("accountInfo");
@@ -89,10 +91,16 @@ export const CommentItem = memo(function CommentItem({
       return;
     }
 
+    // 如果提供了外部 onReplyClick，优先使用它（用于在 Dialog 中打开回复）
+    if (onReplyClick) {
+      onReplyClick(parentId);
+      return;
+    }
+
     setActiveReplyParentId((current) =>
       current === parentId ? null : parentId,
     );
-  }, []);
+  }, [onReplyClick]);
 
   const handleReplySubmitted = useCallback(async () => {
     setActiveReplyParentId(null);
@@ -292,6 +300,7 @@ export const CommentItem = memo(function CommentItem({
         onToggleLike={handleToggleLike}
         onReplySubmitted={handleReplySubmitted}
         onOpenImageViewer={openImageViewer}
+        onReplyClick={onReplyClick}
       />
       {viewerVisible && viewerImages.length > 0 && (
         <ImageViewer

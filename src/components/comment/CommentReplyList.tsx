@@ -60,6 +60,7 @@ type CommentReplyListProps = {
   onToggleLike: (commentId: number | undefined) => void | Promise<void>;
   onReplySubmitted: () => void | Promise<void>;
   onOpenImageViewer: (images: string[], index?: number) => void;
+  onReplyClick?: (commentId: number) => void;
 };
 
 type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
@@ -72,6 +73,7 @@ export function CommentReplyList({
   onToggleLike,
   onReplySubmitted,
   onOpenImageViewer,
+  onReplyClick,
 }: CommentReplyListProps) {
   const tComment = useTranslations("commentList");
   const tAccountInfo = useTranslations("accountInfo");
@@ -366,6 +368,7 @@ export function CommentReplyList({
               onReplySubmitted={onReplySubmitted}
               onOpenImageViewer={onOpenImageViewer}
               onOpenModal={openReplyModal}
+              onReplyClick={onReplyClick}
             />
           ))}
         </div>
@@ -533,6 +536,7 @@ export function CommentReplyList({
                       onOpenImageViewer={onOpenImageViewer}
                       imageDisplayMode="gallery"
                       showTranslateButton
+                      onReplyClick={onReplyClick}
                     />
                   ))}
                 </div>

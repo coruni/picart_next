@@ -1,24 +1,54 @@
 import { ArticleCommentList } from "@/components/comment/ArticleCommentList.client";
 import { CommentEditor } from "@/components/comment/CommentEditor";
 import { Avatar } from "@/components/ui/Avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/Dialog";
 import { ArticleDetail, ArticleList } from "@/types";
-import { ChevronRight, FileText } from "lucide-react";
+import { ChevronRight, FileText, MessageCircle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 type Article = ArticleList[number] | ArticleDetail;
 type ImageCommentProps = {
   article: Article;
   minHeight?: string;
+  isExpanded?: boolean;
 };
 export function ImageComment({
   article,
   minHeight = "auto",
+  isExpanded,
 }: ImageCommentProps) {
+  const t = useTranslations("commentEditor");
   const articleId = String(article.id);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [replyParentId, setReplyParentId] = useState<number | undefined>(undefined);
 
   const handleRefresh = () => {
     setRefreshKey((prev) => prev + 1);
+  };
+
+  const handleSubmitted = async () => {
+    await handleRefresh();
+    setDialogOpen(false);
+    setReplyParentId(undefined);
+  };
+
+  const handleReplyClick = (commentId: number) => {
+    setReplyParentId(commentId);
+    setDialogOpen(true);
+  };
+
+  const handleDialogOpenChange = (open: boolean) => {
+    setDialogOpen(open);
+    if (!open) {
+      setReplyParentId(undefined);
+    }
   };
 
   return (
@@ -62,18 +92,40 @@ export function ImageComment({
             sortClassName="pb-2!"
             showTopCommentEditor={false}
             stickySort={true}
+            onReplyClick={handleReplyClick}
           />
         </div>
       </div>
 
-      {/* 底部评论编辑器 */}
+      {/* 底部伪输入框 */}
       <div className="border-t border-border bg-card px-4 py-3 shrink-0">
-        <CommentEditor
-          className="px-0! py-0!"
-          articleId={articleId}
-          onSubmitted={handleRefresh}
-        />
+        <button
+          type="button"
+          onClick={() => setDialogOpen(true)}
+          className="w-full flex items-center gap-3 px-4 py-2.5 rounded-full bg-muted text-left text-muted-foreground hover:bg-muted/80 transition-colors"
+        >
+          <MessageCircle className="size-5" />
+          <span className="text-sm">{t("placeholder")}</span>
+        </button>
       </div>
+
+      {/* 评论弹窗 */}
+      <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+        <DialogContent className="max-w-lg w-[calc(100vw-2rem)] p-0  overflow-visible">
+          <DialogHeader className="">
+            <DialogTitle className=" font-semibold">{t("send")}</DialogTitle>
+          </DialogHeader>
+          <div className="px-4 pb-4">
+            <CommentEditor
+              className="px-0! py-0!"
+              articleId={articleId}
+              parentId={replyParentId}
+              onSubmitted={handleSubmitted}
+              minHeight={240}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
