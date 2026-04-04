@@ -59,6 +59,7 @@ export function ImageViewer({
 
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [viewerMounted, setViewerMounted] = useState(visible);
+  const [panelContentVisible, setPanelContentVisible] = useState(false);
   const totalImages = images.length;
 
   const isMobileViewport = () => window.innerWidth < 768;
@@ -73,6 +74,13 @@ export function ImageViewer({
 
   useEffect(() => {
     panelExpandedRef.current = panelExpanded;
+  }, [panelExpanded]);
+
+  // Defer panel content rendering until panel is expanded
+  useEffect(() => {
+    if (panelExpanded) {
+      setPanelContentVisible(true);
+    }
   }, [panelExpanded]);
 
   useEffect(() => {
@@ -93,7 +101,8 @@ export function ImageViewer({
       const safeIndex = getSafeIndex(index);
       pendingIndexRef.current = safeIndex;
 
-      requestAnimationFrame(() => {
+      // Defer state update to avoid blocking
+      setTimeout(() => {
         setViewerMounted(true);
 
         if (!viewerRef.current) return;
@@ -107,7 +116,7 @@ export function ImageViewer({
             viewerRef.current.view(safeIndex);
           }
         });
-      });
+      }, 0);
     },
     [getSafeIndex],
   );
@@ -152,6 +161,9 @@ export function ImageViewer({
     if (nextButton) nextButton.style.right = offset;
   }, []);
 
+  // Track last active index to avoid updating all thumbnails
+  const lastActiveIndexRef = useRef<number>(-1);
+
   const updateIndexDisplay = useCallback(
     (index: number) => {
       const viewerContainer = viewerContainerRef.current;
@@ -165,28 +177,36 @@ export function ImageViewer({
         indexDisplay.textContent = `${index + 1}/${totalImages}`;
       }
 
-      const thumbnails = viewerContainer.querySelectorAll(
-        ".custom-thumbnail-item",
-      );
-      thumbnails.forEach((thumb, i) => {
-        const el = thumb as HTMLElement;
-        if (i === index) {
-          el.style.borderColor = "var(--color-primary)";
-          el.style.opacity = "1";
-        } else {
-          el.style.borderColor = "rgba(255, 255, 255, 0.3)";
-          el.style.opacity = "0.6";
+      // Only update previous and current active thumbnails instead of all
+      const lastIndex = lastActiveIndexRef.current;
+      if (lastIndex !== -1 && lastIndex !== index) {
+        const prevThumbnail = viewerContainer.querySelector(
+          `.custom-thumbnail-item[data-index="${lastIndex}"]`,
+        ) as HTMLElement | null;
+        if (prevThumbnail) {
+          prevThumbnail.style.borderColor = "rgba(255, 255, 255, 0.3)";
+          prevThumbnail.style.opacity = "0.6";
         }
-      });
+      }
 
       const activeThumbnail = viewerContainer.querySelector(
         `.custom-thumbnail-item[data-index="${index}"]`,
       ) as HTMLElement | null;
 
-      activeThumbnail?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-      });
+      if (activeThumbnail) {
+        activeThumbnail.style.borderColor = "var(--color-primary)";
+        activeThumbnail.style.opacity = "1";
+
+        // Defer scrollIntoView to avoid forced reflow
+        requestAnimationFrame(() => {
+          activeThumbnail.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+        });
+      }
+
+      lastActiveIndexRef.current = index;
     },
     [totalImages],
   );
@@ -203,13 +223,16 @@ export function ImageViewer({
     const container = viewerContainerRef.current;
     if (!container) return;
 
-    const zoomDisplay = container.querySelector(
-      ".custom-zoom-display span",
-    ) as HTMLSpanElement | null;
+    // Defer DOM update to avoid forced reflow
+    requestAnimationFrame(() => {
+      const zoomDisplay = container.querySelector(
+        ".custom-zoom-display span",
+      ) as HTMLSpanElement | null;
 
-    if (zoomDisplay) {
-      zoomDisplay.textContent = getZoomPercentage();
-    }
+      if (zoomDisplay) {
+        zoomDisplay.textContent = getZoomPercentage();
+      }
+    });
   }, [getZoomPercentage]);
 
   const syncPanelToggleButton = useCallback(() => {
@@ -225,7 +248,7 @@ export function ImageViewer({
     if (!panelToggleBtn) return;
 
     panelToggleBtn.innerHTML = renderIcon(
-      panelExpandedRef.current ? ChevronRight : ChevronLeft,
+      panelExpandedRef.current ? ChevronLeft : ChevronRight,
       "",
       18,
     );
@@ -355,14 +378,18 @@ export function ImageViewer({
       shown() {
         isShownRef.current = true;
         setViewerMounted(true);
-        setupCustomUI();
-        applyCanvasLayout();
 
-        const safeIndex = getSafeIndex(pendingIndexRef.current);
+        // Defer non-critical UI setup to next frame
         requestAnimationFrame(() => {
-          if (!viewerRef.current) return;
-          viewerRef.current.view(safeIndex);
-          updateIndexDisplay(safeIndex);
+          setupCustomUI();
+          applyCanvasLayout();
+
+          const safeIndex = getSafeIndex(pendingIndexRef.current);
+          requestAnimationFrame(() => {
+            if (!viewerRef.current) return;
+            viewerRef.current.view(safeIndex);
+            updateIndexDisplay(safeIndex);
+          });
         });
       },
 
@@ -520,7 +547,7 @@ export function ImageViewer({
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <ImageComment article={article}  />
+            {panelContentVisible && <ImageComment article={article} />}
           </div>
         )}
       </div>
