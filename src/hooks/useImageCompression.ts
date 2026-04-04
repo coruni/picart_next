@@ -32,7 +32,15 @@ interface WorkerMessage {
   type: "compressed" | "ready";
   id?: string;
   success?: boolean;
-  result?: CompressedImageResult;
+  result?: {
+    file: ArrayBuffer;
+    fileName: string;
+    fileType: string;
+    lastModified: number;
+    originalSize: number;
+    compressedSize: number;
+    compressionRatio: number;
+  };
   error?: string;
   ready?: boolean;
 }
@@ -62,15 +70,25 @@ export function useImageCompression() {
     // 创建 Web Worker
     const workerCode = `
       self.onmessage = async (event) => {
-        const { type, file, config, id } = event.data;
+        const { type, file, fileName, fileType, fileLastModified, config, id } = event.data;
 
         if (type === "compress") {
           try {
-            const result = await compressImage(file, config);
-            self.postMessage(
-              { type: "compressed", id, success: true, result },
-              [result.file]
-            );
+            const result = await compressImage(file, fileName, fileType, fileLastModified, config);
+            self.postMessage({
+              type: "compressed",
+              id,
+              success: true,
+              result: {
+                file: result.file,
+                fileName: result.fileName,
+                fileType: result.fileType,
+                lastModified: result.lastModified,
+                originalSize: result.originalSize,
+                compressedSize: result.compressedSize,
+                compressionRatio: result.compressionRatio,
+              },
+            });
           } catch (error) {
             self.postMessage({
               type: "compressed",
@@ -82,11 +100,10 @@ export function useImageCompression() {
         }
       };
 
-      async function compressImage(file, config) {
+      async function compressImage(arrayBuffer, fileName, fileType, fileLastModified, config) {
         const { maxWidth, quality, format } = config;
 
-        const arrayBuffer = await file.arrayBuffer();
-        const blob = new Blob([arrayBuffer], { type: file.type });
+        const blob = new Blob([arrayBuffer], { type: fileType });
         const bitmap = await createImageBitmap(blob);
 
         let { width, height } = bitmap;
@@ -111,16 +128,16 @@ export function useImageCompression() {
           quality: quality / 100,
         });
 
-        const compressedFile = new File([compressedBlob], file.name, {
-          type: mimeType,
-          lastModified: file.lastModified,
-        });
+        const compressedArrayBuffer = await compressedBlob.arrayBuffer();
 
         return {
-          file: compressedFile,
-          originalSize: file.size,
+          file: compressedArrayBuffer,
+          fileName: fileName,
+          fileType: mimeType,
+          lastModified: fileLastModified,
+          originalSize: arrayBuffer.byteLength,
           compressedSize: compressedBlob.size,
-          compressionRatio: compressedBlob.size / file.size,
+          compressionRatio: compressedBlob.size / arrayBuffer.byteLength,
         };
       }
     `;
@@ -135,7 +152,17 @@ export function useImageCompression() {
         const task = tasksRef.current.get(id);
         if (task) {
           if (success && result) {
-            task.resolve(result);
+            // Reconstruct File from ArrayBuffer
+            const file = new File([result.file], result.fileName, {
+              type: result.fileType,
+              lastModified: result.lastModified,
+            });
+            task.resolve({
+              file,
+              originalSize: result.originalSize,
+              compressedSize: result.compressedSize,
+              compressionRatio: result.compressionRatio,
+            });
           } else {
             task.reject(new Error(error || "Compression failed"));
           }
@@ -229,6 +256,9 @@ export function useImageCompression() {
 
       const taskId = `task-${++taskIdCounter.current}`;
 
+      // Convert File to ArrayBuffer for transfer
+      const fileArrayBuffer = await file.arrayBuffer();
+
       return new Promise<CompressedImageResult>((resolve, reject) => {
         tasksRef.current.set(taskId, {
           id: taskId,
@@ -237,15 +267,18 @@ export function useImageCompression() {
           reject,
         });
 
-        // 发送压缩任务到 Worker
+        // Send compression task to Worker with transferable ArrayBuffer
         worker.postMessage(
           {
             type: "compress",
-            file,
+            file: fileArrayBuffer,
+            fileName: file.name,
+            fileType: file.type,
+            fileLastModified: file.lastModified,
             config: compressionConfig,
             id: taskId,
           },
-          [file], // Transfer ownership
+          [fileArrayBuffer], // Transfer ownership
         );
       });
     },

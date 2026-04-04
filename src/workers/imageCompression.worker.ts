@@ -34,26 +34,24 @@ self.onmessage = async (event: MessageEvent<CompressMessage | ReadyMessage>) => 
 
     try {
       const result = await compressImageInWorker(file, config);
-      // Transfer the ArrayBuffer instead of File to satisfy TypeScript
+      // Convert File to Uint8Array for serialization
       const arrayBuffer = await result.file.arrayBuffer();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (self as any).postMessage(
-        {
-          type: "compressed",
-          id,
-          success: true,
-          result: {
-            file: arrayBuffer,
-            fileName: result.file.name,
-            fileType: result.file.type,
-            lastModified: result.file.lastModified,
-            originalSize: result.originalSize,
-            compressedSize: result.compressedSize,
-            compressionRatio: result.compressionRatio,
-          },
+      const uint8Array = new Uint8Array(arrayBuffer);
+
+      self.postMessage({
+        type: "compressed",
+        id,
+        success: true,
+        result: {
+          file: uint8Array,
+          fileName: result.file.name,
+          fileType: result.file.type,
+          lastModified: result.file.lastModified,
+          originalSize: result.originalSize,
+          compressedSize: result.compressedSize,
+          compressionRatio: result.compressionRatio,
         },
-        [arrayBuffer] // Transfer ownership of the ArrayBuffer
-      );
+      });
     } catch (error) {
       self.postMessage({
         type: "compressed",
