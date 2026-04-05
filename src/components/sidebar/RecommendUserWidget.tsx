@@ -9,6 +9,7 @@ import { GuardedLink } from "../shared";
 import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
 import { getImageUrl } from "@/types/image";
+import { Link } from "@/i18n/routing";
 
 export const RecommendUserWidget = async () => {
   const t = await getTranslations("sidebar");
@@ -97,9 +98,12 @@ export const RecommendUserWidget = async () => {
       </div>
       {users.map((user) => userCard(user))}
       <div className="px-2 mt-2">
-        <span className="text-sm text-primary hover:text-primary/80 cursor-pointer">
+        <Link
+          href="/recommend/user"
+          className="text-sm text-primary hover:text-primary/80 cursor-pointer"
+        >
           {t("viewMore")}
-        </span>
+        </Link>
       </div>
     </section>
   );

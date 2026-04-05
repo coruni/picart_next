@@ -535,6 +535,9 @@
     "relatedTopics": "Related Topics",
     "relatedUsers": "Related Users"
   },
+  "recommendPage": {
+    "title": "Recommended Users"
+  },
   "searchPanel": {
     "moreSort": "More Sort",
     "title": "Sort",
