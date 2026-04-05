@@ -44,6 +44,7 @@ interface RenderToolbarOptions {
   onLinkClick: () => void;
   onImageUpload: () => void;
   onArticleClick: () => void;
+  onSaveSelection?: () => void; // 保存选区的回调
 }
 
 type EmojiRecord = {
@@ -74,6 +75,7 @@ export const renderToolbar = ({
   onLinkClick,
   onImageUpload,
   onArticleClick,
+  onSaveSelection,
 }: RenderToolbarOptions) => {
   const toolbar = document.createElement("div");
   toolbar.className =
@@ -529,7 +531,15 @@ export const renderToolbar = ({
   videoBtn.className = "ql-video";
   videoBtn.type = "button";
   videoBtn.innerHTML = renderIcon(Video);
-  videoBtn.onclick = onVideoClick;
+  videoBtn.onmousedown = (e) => {
+    // 防止按钮导致失焦
+    e.preventDefault();
+  };
+  videoBtn.onclick = () => {
+    // 保存选区并打开对话框
+    onSaveSelection?.();
+    onVideoClick();
+  };
   row1.appendChild(createTooltipButton(videoBtn, t("video")));
 
   // 更多下拉菜单 - 点击显示
@@ -569,7 +579,13 @@ export const renderToolbar = ({
     "w-full! hover:bg-primary/15! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors text-nowrap";
   videoItem.type = "button";
   videoItem.innerHTML = `${renderIcon(Video, "w-4 h-4!")}<span>${t("video")}</span>`;
+  videoItem.onmousedown = (e) => {
+    // 防止按钮导致失焦
+    e.preventDefault();
+  };
   videoItem.onclick = () => {
+    // 保存选区并打开对话框
+    onSaveSelection?.();
     onVideoClick();
     moreDropdown.classList.add("hidden");
   };

@@ -18,6 +18,7 @@ const ALLOWED_TAGS = new Set([
   "h3",
   "h4",
   "hr",
+  "iframe",
   "img",
   "li",
   "line",
@@ -78,6 +79,9 @@ const SVG_TAGS = new Set(["svg", "path", "circle", "rect", "polyline", "line"]);
 const SAFE_CONTAINER_CLASSES = [
   "ql-divider",
   "ql-inline-article-list",
+  "ql-video-wrapper",
+  "ql-video-container",
+  "ql-video-overlay",
 ] as const;
 
 // =========================
@@ -110,7 +114,7 @@ const RE_CONTENTEDITABLE = /\scontenteditable="(?:true|false)"/g;
 
 const RE_COMMENTS = /<!--[\s\S]*?-->/g;
 const RE_DANGEROUS_TAGS =
-  /<\/?(script|style|iframe|object|embed|form|input|button|textarea|select|option|meta|link|base|math)[^>]*>/gi;
+  /<\/?(script|style|object|embed|form|input|button|textarea|select|option|meta|link|base|math)[^>]*>/gi;
 const RE_INLINE_EVENT = /\son[a-z-]+\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi;
 const RE_STYLE_ATTR = /\sstyle\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi;
 const RE_SRCDOC_ATTR = /\ssrcdoc\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi;
@@ -162,6 +166,39 @@ function stripRichTextEditorArtifacts(html: string): string {
 function isSafeUrl(value: string): boolean {
   const normalized = value.trim();
   return !!normalized && URL_PROTOCOL_PATTERN.test(normalized);
+}
+
+// 允许的视频域名白名单
+const ALLOWED_VIDEO_DOMAINS = [
+  "youtube.com",
+  "www.youtube.com",
+  "youtu.be",
+  "bilibili.com",
+  "www.bilibili.com",
+  "player.bilibili.com",
+  "b23.tv",
+  "tiktok.com",
+  "www.tiktok.com",
+  "vm.tiktok.com",
+];
+
+function isSafeVideoUrl(value: string): boolean {
+  const normalized = value.trim();
+  if (!normalized) return false;
+
+  // 检查是否是 http/https 协议
+  if (!URL_PROTOCOL_PATTERN.test(normalized)) {
+    return false;
+  }
+
+  try {
+    const url = new URL(normalized);
+    return ALLOWED_VIDEO_DOMAINS.some((domain) =>
+      url.hostname === domain || url.hostname.endsWith(`.${domain}`),
+    );
+  } catch {
+    return false;
+  }
 }
 
 function sanitizeClassName(value: string): string {
@@ -251,11 +288,22 @@ function sanitizeSvgElement(element: HTMLElement): void {
 
 function sanitizeSafeContainerElement(element: HTMLElement): void {
   const attributes = Array.from(element.attributes);
+  const className = element.getAttribute("class") || "";
+
+  // 对于视频容器，保留特定的数据属性
+  const isVideoWrapper = className.includes("ql-video-wrapper");
 
   for (const attr of attributes) {
     const name = attr.name.toLowerCase();
-    if (name.startsWith("on") || name === "style" || name === "srcdoc") {
+    if (name.startsWith("on") || name === "style") {
       element.removeAttribute(attr.name);
+    }
+
+    // 视频容器保留数据属性
+    if (isVideoWrapper) {
+      if (name === "data-src" || name === "data-platform" || name === "data-video-id") {
+        continue;
+      }
     }
   }
 }
@@ -271,10 +319,17 @@ function isAllowedAttribute(tagName: string, name: string): boolean {
     name === "type" ||
     name === "colspan" ||
     name === "rowspan" ||
+    name === "frameborder" ||
+    name === "allowfullscreen" ||
+    name === "allow" ||
     (tagName === "hr" && name === "data-style") ||
     (tagName === "div" && name === "data-style") ||
     (tagName === "div" && name === "data-articles") ||
     (tagName === "div" && name === "data-article-id") ||
+    (tagName === "div" && name === "data-src") ||
+    (tagName === "div" && name === "data-platform") ||
+    (tagName === "div" && name === "data-video-id") ||
+    (tagName === "iframe" && name === "src") ||
     ((tagName === "h1" ||
       tagName === "h2" ||
       tagName === "h3" ||
@@ -323,6 +378,13 @@ function sanitizeRegularElementAttributes(
       name === "src"
     ) {
       if (!isSafeUrl(value)) {
+        element.removeAttribute("src");
+      }
+      continue;
+    }
+
+    if (tagName === "iframe" && name === "src") {
+      if (!isSafeVideoUrl(value)) {
         element.removeAttribute("src");
       }
       continue;
@@ -440,8 +502,13 @@ export function sanitizeRichTextHtml(html: string): string {
     /<p class="ql-image-caption"[^>]*>[\s\S]*?<\/p>/g,
     "",
   );
+  // 移除视频编辑遮罩层（仅用于编辑器中捕获点击事件）
+  const withoutVideoOverlay = withoutCaption.replace(
+    /<div class="ql-video-overlay"[^>]*><\/div>/g,
+    "",
+  );
 
-  return sanitizeHtmlForRender(withoutCaption);
+  return sanitizeHtmlForRender(withoutVideoOverlay);
 }
 
 // =========================

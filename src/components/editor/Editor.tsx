@@ -12,9 +12,10 @@ import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import "./inline-article.css";
 
 import { articleControllerFindByAuthor, articleControllerFindOne } from "@/api";
+import { useImageCompression } from "@/hooks/useImageCompression";
+import { useEditorFocus } from "@/hooks/useEditorFocus";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { prepareRichTextHtmlForEditor, sanitizeRichTextHtml } from "@/lib";
-import { useImageCompression } from "@/hooks/useImageCompression";
 import { useUserStore } from "@/stores";
 import { ArticleList } from "@/types";
 import { getImageUrl, ImageInfo } from "@/types/image";
@@ -24,6 +25,7 @@ import { InfiniteScrollStatus } from "../shared/InfiniteScrollStatus";
 import { DialogFooter } from "../ui/Dialog";
 import { CustomEmojiBlot } from "./blots/CustomEmojiBlot";
 import { CustomImageBlot } from "./blots/CustomImageBlot";
+import { CustomVideoBlot, parseVideoUrl } from "./blots/CustomVideoBlot";
 import { DividerBlot } from "./blots/DividerBlot";
 import { InlineArticleListBlot } from "./blots/InlineArticleListBlot";
 import type { EditorProps } from "./index";
@@ -33,7 +35,12 @@ import {
   quillOverrideStyles,
   renderToolbar,
 } from "./index";
-import { CustomImageSpec, CustomLinkSpec, InlineArticleSpec } from "./specs";
+import {
+  CustomImageSpec,
+  CustomLinkSpec,
+  InlineArticleSpec,
+  VideoSpec,
+} from "./specs";
 import {
   Button,
   cn,
@@ -105,6 +112,7 @@ const registerQuillModules = () => {
   Quill.register(SizeClass, true);
   Quill.register("modules/blotFormatter2", QuillBlotFormatter2);
   Quill.register({ "formats/image": CustomImageBlot }, true);
+  Quill.register({ "formats/video": CustomVideoBlot }, true);
   Quill.register({ "formats/emoji": CustomEmojiBlot }, true);
   Quill.register({ "formats/divider": DividerBlot }, true);
   Quill.register({ "formats/inlineArticleList": InlineArticleListBlot }, true);
@@ -157,9 +165,6 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     const [articleLoading, setArticleLoading] = useState(false);
     const { user, token } = useUserStore();
     const { compressImages, validateFiles } = useImageCompression();
-    const savedSelection = useRef<{ index: number; length: number } | null>(
-      null,
-    );
     const quillRef = useRef<Quill | null>(null);
     const uploadAbortControllerRef = useRef<AbortController | null>(null);
     const lastSyncedValueRef = useRef("");
@@ -167,6 +172,12 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     const isApplyingExternalValueRef = useRef(false);
     // 跟踪初始值，用于区分初始加载和后续更新
     const initialValueRef = useRef(value);
+
+    // 使用焦点管理 hook
+    const {
+      savedSelection,
+      restoreFocus,
+    } = useEditorFocus(quillRef);
 
     // 记录文章总数
     const [articleTotal, setArticleTotal] = useState<number>(0);
@@ -241,6 +252,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 CustomImageSpec as unknown as typeof BlotSpec,
                 CustomLinkSpec as unknown as typeof BlotSpec,
                 InlineArticleSpec as unknown as typeof BlotSpec,
+                VideoSpec as unknown as typeof BlotSpec,
               ],
               toolbar: {
                 icons: customIcons,
@@ -307,6 +319,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           container,
           t: (key: string) => t(`toolbar.${key}`),
           onVideoClick: () => setShowVideoModal(true),
+          onSaveSelection: () => {
+            // 保存当前光标位置
+            const range = quill.getSelection(true);
+            if (range) {
+              savedSelection.current = { index: range.index, length: range.length };
+            }
+          },
           onLinkClick: () => {
             const selection = quill.getSelection();
             savedSelection.current = selection;
@@ -343,7 +362,9 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               const startIndex = selection?.index || 0;
 
               // 压缩图片
-              const compressionResults = await compressImages(Array.from(files));
+              const compressionResults = await compressImages(
+                Array.from(files),
+              );
 
               // 验证压缩后的文件大小
               const validation = validateFiles(
@@ -466,7 +487,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               uploadAbortControllerRef.current = abortController;
 
               try {
-                const compressedFiles = compressionResults.map(r => r.file);
+                const compressedFiles = compressionResults.map((r) => r.file);
                 const response = await uploadControllerUploadFile({
                   body: { file: compressedFiles as any },
                 });
@@ -673,7 +694,17 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
     useEffect(() => {
       const handleInlineArticleEdit = (e: Event) => {
-        const customEvent = e as CustomEvent<{ index: number; articles: Array<{ id: string; title?: string; authorName?: string; views?: number; cover?: string; authorAvatar?: string }> }>;
+        const customEvent = e as CustomEvent<{
+          index: number;
+          articles: Array<{
+            id: string;
+            title?: string;
+            authorName?: string;
+            views?: number;
+            cover?: string;
+            authorAvatar?: string;
+          }>;
+        }>;
         const { index, articles } = customEvent.detail;
 
         // 预填充选中文章（转换为 ArticleItem 格式）
@@ -682,7 +713,9 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             id: parseInt(article.id, 10),
             title: article.title || `文章 #${article.id}`,
             cover: article.cover,
-            images: article.cover ? ([article.cover] as unknown as ImageInfo[]) : undefined,
+            images: article.cover
+              ? ([article.cover] as unknown as ImageInfo[])
+              : undefined,
             author: user || {
               id: 0,
               username: article.authorName || "",
@@ -814,11 +847,21 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     const handleInsertVideo = () => {
       const quill = quillRef.current;
       if (quill && videoUrl) {
-        const range = quill.getSelection();
-        quill.insertEmbed(range?.index || 0, "video", videoUrl);
+        const parsed = parseVideoUrl(videoUrl);
+        if (parsed) {
+          // 使用保存的光标位置
+          const index = savedSelection.current?.index ?? quill.getSelection(true)?.index ?? 0;
+          quill.insertEmbed(index, "video", {
+            src: videoUrl,
+            platform: parsed.platform,
+            videoId: parsed.videoId,
+          });
+        }
       }
       setShowVideoModal(false);
       setVideoUrl("");
+      // 恢复焦点
+      setTimeout(() => restoreFocus(), 0);
     };
 
     // 加载用户的文章列表
@@ -1090,7 +1133,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     };
 
     const modalContentClassName = "max-w-2xl pt-4!";
-    const modalBodyClassName = "space-y-4 py-4";
+    const modalBodyClassName = "space-y-4 px-4 pb-4";
     const modalActionsClassName = "flex justify-center gap-8";
     const modalCancelButtonClassName =
       "rounded-full bg-[#EDF1F7] hover:bg-[#8592A3] text-secondary";
@@ -1123,10 +1166,12 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               setShowVideoModal(open);
               if (!open) {
                 setVideoUrl("");
+                // 取消时恢复焦点
+                setTimeout(() => restoreFocus(), 0);
               }
             }}
           >
-            <DialogContent className={modalContentClassName}>
+            <DialogContent className={cn(modalContentClassName, "p-0!")}>
               <DialogHeader>
                 <DialogTitle className="text-sm">
                   {t("modal.insertVideo")}
@@ -1177,7 +1222,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               }
             }}
           >
-            <DialogContent className={modalContentClassName}>
+            <DialogContent className={cn(modalContentClassName, "p-0!")}>
               <DialogHeader>
                 <DialogTitle className="text-sm">
                   {t("modal.insertLink")}
@@ -1254,9 +1299,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               <div className="flex-1 min-h-0 flex flex-col">
                 {/* 表头 */}
                 <div className="flex items-center px-6 py-2 bg-muted/60 text-sm border-b border-border shrink-0">
-                  <div className="flex-1 min-w-0">{t("articleSelector.articles", { count: articleTotal })}</div>
                   <div className="flex-1 min-w-0">
-                    {t("articleSelector.selected", { count: selectedArticles.length })}
+                    {t("articleSelector.articles", { count: articleTotal })}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    {t("articleSelector.selected", {
+                      count: selectedArticles.length,
+                    })}
                   </div>
                 </div>
 
@@ -1439,7 +1488,9 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                   disabled={selectedArticles.length === 0}
                   onClick={handleInsertSelectedArticles}
                 >
-                  {t("articleSelector.insert", { count: selectedArticles.length })}
+                  {t("articleSelector.insert", {
+                    count: selectedArticles.length,
+                  })}
                 </Button>
               </DialogFooter>
             </DialogContent>

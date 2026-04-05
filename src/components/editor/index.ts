@@ -1,4 +1,5 @@
 export { CustomImageBlot } from "./blots/CustomImageBlot";
+export { CustomVideoBlot } from "./blots/CustomVideoBlot";
 export { CustomEmojiBlot } from "./blots/CustomEmojiBlot";
 export { DividerBlot } from "./blots/DividerBlot";
 export { InlineArticleListBlot } from "./blots/InlineArticleListBlot";
