@@ -604,12 +604,32 @@ export function prepareRichTextHtmlForDisplay(
   locale?: string,
 ): string {
   const sanitized = sanitizeRichTextHtml(html);
+  const root = parse(sanitized);
 
-  if (!locale) {
-    return sanitized;
+  // 包裹未被 ql-image-wrapper 包裹的 ql-image 图片
+  const images = root.querySelectorAll('img.ql-image');
+  for (const img of images) {
+    // 跳过 emoji 图片
+    if (img.classList.contains('ql-emoji-embed__img')) {
+      continue;
+    }
+    // 跳过已在 ql-image-wrapper 中的图片
+    const parent = img.parentNode;
+    if (parent && parent.tagName === 'div' && parent.classList.contains('ql-image-wrapper')) {
+      continue;
+    }
+    // 包裹图片
+    const wrapper = parse(buildImageWrapper(img.toString(), img.getAttribute('alt') || ''));
+    img.replaceWith(wrapper);
   }
 
-  return convertInlineArticleCardsToAnchor(sanitized, locale);
+  const result = root.toString();
+
+  if (!locale) {
+    return result;
+  }
+
+  return convertInlineArticleCardsToAnchor(result, locale);
 }
 
 function removeImagesForPlainDisplay(html: string): string {

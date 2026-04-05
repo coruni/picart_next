@@ -9,7 +9,7 @@ type ArticleRichContentProps = {
   html: string;
 };
 
-export function ArticleRichContent({ html }: ArticleRichContentProps) {
+export function   ArticleRichContent({ html }: ArticleRichContentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [viewerVisible, setViewerVisible] = useState(false);
   const [images, setImages] = useState<string[]>([]);
@@ -62,7 +62,13 @@ export function ArticleRichContent({ html }: ArticleRichContentProps) {
       if (!image) return;
       if (image.classList.contains("ql-emoji-embed__img")) return;
 
-      setActiveIndex(Number(image.dataset.viewerIndex || 0));
+      // 实时计算索引，不依赖 dataset（避免 React 重渲染导致 dataset 丢失）
+      const allImages = container.querySelectorAll<HTMLImageElement>(
+        ".ql-image-wrapper > img.ql-image:not(.ql-emoji-embed__img)",
+      );
+      const index = Array.from(allImages).indexOf(image);
+
+      setActiveIndex(index >= 0 ? index : 0);
       setViewerVisible(true);
     };
 

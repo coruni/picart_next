@@ -1,4 +1,3 @@
-import "@/components/editor/inline-article.css";
 import {
   ArticleActions,
   ArticleAuthor,
@@ -11,17 +10,18 @@ import {
   ReactionStats,
 } from "@/components/article";
 import { ArticleCommentList } from "@/components/comment/ArticleCommentList.client";
+import "@/components/editor/inline-article.css";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Link } from "@/i18n/routing";
 import { generateArticleMetadata, prepareRichTextHtmlForDisplay } from "@/lib";
 import { serverApi } from "@/lib/server-api";
+import { getImageUrl } from "@/types/image";
 import { Forward, Hash } from "lucide-react";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { getImageUrl } from "@/types/image";
 
 function stripHtmlTags(value: string) {
   return value.replace(/<[^>]+>/g, " ");
