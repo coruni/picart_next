@@ -21,6 +21,7 @@ import {
 } from "@/lib";
 import { serverApi } from "@/lib/server-api";
 import { getImageUrl } from "@/types/image";
+import { franc } from "franc-min";
 import {
   ChevronLeft,
   ChevronRight,
@@ -35,6 +36,45 @@ import { cache } from "react";
 
 function stripHtmlTags(value: string) {
   return value.replace(/<[^>]+>/g, " ");
+}
+
+// franc language code mapping to our locale
+const FRANC_TO_LOCALE: Record<string, string> = {
+  cmn: "zh", // Chinese (Mandarin)
+  eng: "en", // English
+  jpn: "ja", // Japanese
+  kor: "ko", // Korean
+  fra: "fr", // French
+  spa: "es", // Spanish
+  deu: "de", // German
+  rus: "ru", // Russian
+  ita: "it", // Italian
+  por: "pt", // Portuguese
+};
+
+function detectContentLanguage(text: string): string | null {
+  // Remove HTML tags and normalize whitespace
+  const cleanText = stripHtmlTags(text).trim();
+  if (!cleanText || cleanText.length < 10) {
+    return null;
+  }
+
+  // Use franc to detect language
+  const langCode = franc(cleanText.slice(0, 1000)); // Limit text length for performance
+  if (langCode === "und") {
+    return null;
+  }
+
+  return FRANC_TO_LOCALE[langCode] || langCode;
+}
+
+function isContentMatchingLocale(text: string, locale: string): boolean {
+  const detectedLang = detectContentLanguage(text);
+  if (!detectedLang) {
+    // Fallback to simple Chinese detection
+    return isLikelyChineseContent(text) === (locale === "zh");
+  }
+  return detectedLang === locale;
 }
 
 function isLikelyChineseContent(value: string) {
@@ -167,13 +207,11 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
   const { html: contentWithTocMarkup, items: tocItems } =
     buildArticleToc(rawContent);
   const content = prepareRichTextHtmlForDisplay(contentWithTocMarkup, locale);
-  const shouldTranslateArticleDetail = !(
-    locale === "zh" &&
-    isLikelyChineseContent(
-      [article?.title, stripHtmlTags(article?.content || "")]
-        .filter(Boolean)
-        .join(" "),
-    )
+  const shouldTranslateArticleDetail = !isContentMatchingLocale(
+    [article?.title, stripHtmlTags(article?.content || "")]
+      .filter(Boolean)
+      .join(" "),
+    locale,
   );
 
   return (

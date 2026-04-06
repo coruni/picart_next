@@ -222,7 +222,11 @@ function extractImageAlt(imgTag: string): string {
 }
 
 function buildImageWrapper(imgTag: string, alt: string): string {
-  return `<div class="ql-image-wrapper">${imgTag}${IMAGE_CAPTION_TAG}${alt}</p></div>`;
+  // 只在有 alt 文本时才添加 caption
+  if (alt.trim()) {
+    return `<div class="ql-image-wrapper">${imgTag}<p class="ql-image-caption text-xs text-secondary text-center">${alt}</p></div>`;
+  }
+  return `<div class="ql-image-wrapper">${imgTag}</div>`;
 }
 
 // =========================
@@ -498,10 +502,21 @@ export function sanitizeHtmlForRender(html: string): string {
 export function sanitizeRichTextHtml(html: string): string {
   const normalized = stripRichTextEditorArtifacts(html);
   const synced = syncImageAltFromCaption(normalized);
-  const withoutCaption = synced.replace(
-    /<p class="ql-image-caption"[^>]*>[\s\S]*?<\/p>/g,
-    "",
-  );
+  // 使用 DOM API 更可靠地移除 ql-image-caption 元素
+  let withoutCaption = synced;
+  if (typeof window !== "undefined" && typeof DOMParser !== "undefined") {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(synced, "text/html");
+    const captions = doc.querySelectorAll(".ql-image-caption");
+    captions.forEach((caption) => caption.remove());
+    withoutCaption = doc.body.innerHTML;
+  } else {
+    // 服务端回退：使用更健壮的正则，处理可能的嵌套标签
+    withoutCaption = synced.replace(
+      /<p\s+class="ql-image-caption"[^>]*>(?:[\s\S]*?)<\/p>/gi,
+      "",
+    );
+  }
   // 移除视频编辑遮罩层（仅用于编辑器中捕获点击事件）
   const withoutVideoOverlay = withoutCaption.replace(
     /<div class="ql-video-overlay"[^>]*><\/div>/g,

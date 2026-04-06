@@ -25,8 +25,8 @@ import {
   ChevronDown,
   ChevronRight,
   Globe,
-  LayoutDashboard,
   Languages,
+  LayoutDashboard,
   Lock,
   LogIn,
   MessageCircle,
@@ -660,14 +660,14 @@ export function UserDropdown() {
           <DialogFooter className="mt-6 flex-row justify-center gap-6! sm:justify-center">
             <Button
               variant="outline"
-              className="h-8 rounded-full px-6"
+              className="h-8 rounded-full px-6 min-w-20"
               onClick={() => setLogoutDialogOpen(false)}
               disabled={isLoggingOut}
             >
               {t("cancel")}
             </Button>
             <Button
-              className="h-8 rounded-full px-6"
+              className="h-8 rounded-full px-6 min-w-20"
               onClick={handleLogout}
               loading={isLoggingOut}
               disabled={isLoggingOut}

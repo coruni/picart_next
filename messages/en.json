@@ -643,7 +643,10 @@
     "editPost": "Edit Post",
     "reportPost": "Report Post",
     "reportUser": "Report User",
-    "blockUser": "Block User",
+    "blockUser": "Block",
+    "blockConfirmTitle": "Confirm Block",
+    "blockConfirmDescription": "After blocking, this user will no longer be able to send you private messages. Are you sure you want to block this user?",
+    "cancel": "Cancel",
     "dislikeType": "I dislike this type of content",
     "moreActions": "More Actions",
     "reportDialog": {
@@ -948,4 +951,17 @@
         "updateError": "Failed to update address, please try again later"
       }
     }
-  }}
+      },
+      "blockedUsers": {
+        "title": "Blocked Users",
+        "description": "You have blocked the following users. They cannot send you private messages.",
+        "emptyDescription": "You haven't blocked any users yet",
+        "blockedAt": "Blocked on",
+        "viewProfile": "View Profile",
+        "unblock": "Unblock",
+        "unblockConfirmTitle": "Confirm Unblock",
+        "unblockConfirmDescription": "Are you sure you want to unblock {username}? After unblocking, they will be able to send you private messages again."
+      }
+    }
+  }
+}

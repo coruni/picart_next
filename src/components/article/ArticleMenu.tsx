@@ -1,12 +1,21 @@
 "use client";
 
-import { reportControllerCreate } from "@/api";
+import { messageControllerBlockPrivateUser, reportControllerCreate } from "@/api";
 import {
   createDefaultReportReasons,
   DropdownMenu,
   MenuItem,
   ReportDialog,
 } from "@/components/shared";
+import { Button } from "@/components/ui/Button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/Dialog";
 import { useRouter } from "@/i18n/routing";
 import { cn } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
@@ -41,6 +50,8 @@ export function ArticleMenu({
 
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [blockDialogOpen, setBlockDialogOpen] = useState(false);
+  const [blockSubmitting, setBlockSubmitting] = useState(false);
   const reportReasons = createDefaultReportReasons(t);
 
   const isOwner =
@@ -80,8 +91,25 @@ export function ArticleMenu({
     }
   };
 
-  const handleBlockUser = () => {
+  const handleOpenBlockDialog = () => {
     if (!requireAuth()) return;
+    setBlockDialogOpen(true);
+  };
+
+  const handleBlockUser = async () => {
+    if (!requireAuth() || blockSubmitting) return;
+
+    setBlockSubmitting(true);
+    try {
+      await messageControllerBlockPrivateUser({
+        path: { userId: String(authorId) },
+      });
+      setBlockDialogOpen(false);
+    } catch (error) {
+      console.error("Failed to block user:", error);
+    } finally {
+      setBlockSubmitting(false);
+    }
   };
 
   const handleDislikeContent = () => {
@@ -115,7 +143,7 @@ export function ArticleMenu({
         {
           label: t("blockUser"),
           icon: <Ban size={18} />,
-          onClick: handleBlockUser,
+          onClick: handleOpenBlockDialog,
         },
         {
           label: t("dislikeType"),
@@ -156,6 +184,36 @@ export function ArticleMenu({
         loading={reportSubmitting}
         onSubmit={handleReportArticle}
       />
+
+      {/* 拉黑确认 Dialog */}
+      <Dialog open={blockDialogOpen} onOpenChange={setBlockDialogOpen}>
+        <DialogContent className="max-w-sm rounded-2xl p-6" showClose={false}>
+          <DialogHeader className="mb-0 space-y-2 text-center sm:text-center">
+            <DialogTitle>{t("blockConfirmTitle")}</DialogTitle>
+            <DialogDescription>
+              {t("blockConfirmDescription")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-6 flex-row justify-center gap-6! sm:justify-center">
+            <Button
+              variant="outline"
+              className="h-8 rounded-full px-6 min-w-20"
+              onClick={() => setBlockDialogOpen(false)}
+              disabled={blockSubmitting}
+            >
+              {t("cancel")}
+            </Button>
+            <Button
+              className="h-8 rounded-full px-6 min-w-20"
+              onClick={handleBlockUser}
+              loading={blockSubmitting}
+              disabled={blockSubmitting}
+            >
+              {t("blockUser")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

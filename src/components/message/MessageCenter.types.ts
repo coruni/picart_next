@@ -127,7 +127,7 @@ export type MessageDetailPaneProps = {
   isUploadingImages: boolean;
   locale: string;
   markAllAsRead: (tab?: MessageTab) => Promise<void>;
-  onBlockSelectedUser: () => Promise<void>;
+  onBlockSelectedUser: () => void | Promise<void>;
   onPickComposerImages: (files: FileList | null) => void;
   onLoadOlderHistory: () => Promise<void>;
   onRemoveComposerImage: (id: string) => void;
