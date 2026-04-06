@@ -1,13 +1,16 @@
 ﻿"use client";
 
-import Image from "next/image";
-import { Link } from "@/i18n/routing";
+import emptyPng from "@/assets/images/placeholder/empty.png";
 import { Button } from "@/components/ui/Button";
-import { ReactNode } from "react";
+import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import type { StaticImageData } from "next/image";
+import Image from "next/image";
+import { ReactNode } from "react";
+
 
 type EmptyStateProps = {
-  imageSrc?: string;
+  imageSrc?: string | StaticImageData;
   imageWidth?: number;
   imageHeight?: number;
   message?: string;
@@ -20,7 +23,7 @@ type EmptyStateProps = {
 };
 
 export function EmptyState({
-  imageSrc = "/placeholder/empty.png",
+  imageSrc = emptyPng,
   imageWidth = 200,
   imageHeight = 150,
   message,

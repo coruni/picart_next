@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="g_rainbow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22C55E"/>
+      <stop offset="0.25" stop-color="#06B6D4"/>
+      <stop offset="0.5" stop-color="#3B82F6"/>
+      <stop offset="0.75" stop-color="#A855F7"/>
+      <stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+
+    <radialGradient id="g_glow" cx="50%" cy="45%" r="60%">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.9"/>
+      <stop offset="60%" stop-color="#FFFFFF" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18"
+        flood-color="#000" flood-opacity="0.18"/>
+    </filter>
+
+    <clipPath id="clipSticker540">
+      <rect x="242" y="242" width="540" height="540" rx="120"/>
+    </clipPath>
+  </defs>
+
+  <!-- 贴纸本体 -->
+  <g filter="url(#softShadow)">
+    <rect x="242" y="242" width="540" height="540" rx="120"
+          fill="#0B1220" opacity="0.08"/>
+    <rect x="242" y="242" width="540" height="540" rx="120"
+          fill="none" stroke="url(#g_rainbow)" stroke-width="24"/>
+  </g>
+
+  <!-- Glow（裁剪在贴纸内部） -->
+  <g clip-path="url(#clipSticker540)">
+    <rect x="242" y="242" width="540" height="540" rx="120"
+          fill="url(#g_glow)"/>
+  </g>
+
+  <!-- 五官（真正居中） -->
+  <circle cx="452" cy="475" r="20" fill="#FFFFFF" opacity="0.9"/>
+  <circle cx="572" cy="475" r="20" fill="#FFFFFF" opacity="0.9"/>
+  <path d="M452 655 Q512 705 572 655"
+        fill="none" stroke="#FFFFFF" stroke-width="24"
+        stroke-linecap="round" opacity="0.9"/>
+</svg>

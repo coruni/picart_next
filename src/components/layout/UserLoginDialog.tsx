@@ -10,6 +10,7 @@ import { Button } from "../ui/Button";
 import { Dialog, DialogContent } from "../ui/Dialog";
 import { FloatingInput } from "../ui/FloatingInput";
 import { Form, FormField } from "../ui/Form";
+import loginLogoPng from "@/assets/images/placeholder/loginLogo.png";
 
 type LoginFormData = {
     account: string;
@@ -65,7 +66,7 @@ export function UserLoginDialog() {
     const loginDialogOpen = useModalStore((state) => state.isOpen(MODAL_IDS.LOGIN));
     const closeModal = useModalStore((state) => state.closeModal);
     const siteConfig = useAppStore((state) => state.siteConfig);
-    const loginLogo = siteConfig?.site_logo || "/placeholder/loginLogo.png";
+    const loginLogo = siteConfig?.site_logo || loginLogoPng;
 
     // 使用 selector 获取所需状态方法
     const setToken = useUserStore((state) => state.setToken);

@@ -10,6 +10,8 @@ import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
 import { getImageUrl } from "@/types/image";
 import { Link } from "@/i18n/routing";
+import recommendUserLeft from "@/assets/images/sidebar/recommend/recommend_user_left.png";
+import recommendUserRight from "@/assets/images/sidebar/recommend/recommend_user_right.png";
 
 export const RecommendUserWidget = async () => {
   const t = await getTranslations("sidebar");
@@ -78,7 +80,7 @@ export const RecommendUserWidget = async () => {
         <div
           className="px-4 flex items-center justify-center h-12 w-full bg-no-repeat"
           style={{
-            backgroundImage: `url(/sidebar/recommend/recommend_user_left.png),url(/sidebar/recommend/recommend_user_right.png)`,
+            backgroundImage: `url(${recommendUserLeft.src}),url(${recommendUserRight.src})`,
             backgroundSize: "24px 20px, 24px 20px",
             backgroundPosition: "left top, right bottom",
           }}

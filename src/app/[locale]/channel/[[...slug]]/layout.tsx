@@ -11,6 +11,7 @@ import {
   getPublicConfig,
 } from "@/lib/seo";
 import { ReactNode } from "react";
+import emptyPng from "@/assets/images/placeholder/empty.png";
 
 interface ChannelLayoutProps {
   children: ReactNode;
@@ -108,7 +109,7 @@ export default async function ChannelLayout({
           src={
             currentChannel?.background ||
             currentChannel?.avatar ||
-            "/placeholder/empty.png"
+            emptyPng
           }
           fill
           alt={`${currentChannel?.name} background image`}

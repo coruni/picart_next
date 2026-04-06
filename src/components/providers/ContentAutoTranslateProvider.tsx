@@ -5,12 +5,11 @@ import { detectContentLanguage, TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
 import { useTranslateStore } from "@/stores";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import "@/assets/js/translate/translate.js";
 
 const AUTO_TRANSLATE_SELECTOR =
   "[data-auto-translate-content], [data-auto-translate-comment]";
 const TRANSLATE_LOCAL_LANGUAGE = "chinese_simplified";
-const LOCAL_TRANSLATE_SCRIPT_PATH = "/vendor/translate.js/3.18.66/translate.js";
-const TRANSLATE_SCRIPT_ID = "local-translate-js";
 const MUTATION_TRANSLATE_DEBOUNCE_MS = 180;
 const MIN_TEXT_LENGTH_FOR_DETECTION = 1;
 
@@ -116,6 +115,32 @@ export function ContentAutoTranslateProvider() {
 
   const skippedElementsRef = useRef<Set<HTMLElement>>(new Set());
 
+  // Check if translate.js is loaded
+  useEffect(() => {
+    const checkTranslateLoaded = () => {
+      if (window.translate) {
+        disableTranslateLanguageSelector();
+        configureSessionStorage();
+        setScriptReady(true);
+        return true;
+      }
+      return false;
+    };
+
+    // Check immediately
+    if (checkTranslateLoaded()) {
+      return;
+    }
+
+    // Poll for translate.js to be loaded (it might load async)
+    const interval = setInterval(() => {
+      if (checkTranslateLoaded()) {
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Filter documents that need translation (exclude those matching current locale)
   const filterDocumentsByLanguage = useCallback(
@@ -136,49 +161,7 @@ export function ContentAutoTranslateProvider() {
     [locale],
   );
 
-  useEffect(() => {
-    if (window.translate) {
-      disableTranslateLanguageSelector();
-      configureSessionStorage();
-      setScriptReady(true);
-      return;
-    }
-
-    const existingScript = document.getElementById(
-      TRANSLATE_SCRIPT_ID,
-    ) as HTMLScriptElement | null;
-
-    if (existingScript) {
-      const handleLoad = () => {
-        disableTranslateLanguageSelector();
-        configureSessionStorage();
-        setScriptReady(true);
-      };
-      existingScript.addEventListener("load", handleLoad);
-
-      return () => {
-        existingScript.removeEventListener("load", handleLoad);
-      };
-    }
-
-    const script = document.createElement("script");
-    script.id = TRANSLATE_SCRIPT_ID;
-    script.src = new URL(LOCAL_TRANSLATE_SCRIPT_PATH, window.location.origin).toString();
-    script.async = true;
-    script.onload = () => {
-      disableTranslateLanguageSelector();
-      configureSessionStorage();
-      setScriptReady(true);
-    };
-    document.body.appendChild(script);
-
-
-    return () => {
-      script.onload = null;
-    };
-  }, []);
-
-
+  // Translation effect
   useEffect(() => {
     if (!scriptReady) {
       return;
@@ -271,10 +254,11 @@ export function ContentAutoTranslateProvider() {
       return;
     }
 
+    const skippedElements = skippedElementsRef.current;
     return () => {
       initializedRef.current = false;
       translatedScopeKeyRef.current = null;
-      skippedElementsRef.current.clear();
+      skippedElements.clear();
     };
   }, [scriptReady]);
 

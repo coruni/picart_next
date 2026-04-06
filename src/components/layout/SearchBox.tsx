@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { articleControllerFindHotSearch } from "@/api";
+import menuPng from "@/assets/images/placeholder/menu.png";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import { usePathname, useRouter } from "@/i18n/routing";
@@ -118,11 +119,11 @@ export function SearchBox({
     setSelectedCategory(matchedCategory);
   }, [defaultCategoryId, menuItems]);
 
-  // 默认选中第一个分类或“全部”
+  // 默认选中第一个分类或”全部”
   const currentCategory = selectedCategory || {
     id: 0,
     name: t("all"),
-    avatar: "/placeholder/menu.png",
+    avatar: menuPng,
     description: t("searchAll"),
   };
   const currentHotSearchKeyword = hotSearches[currentHotSearchIndex] || "";
@@ -378,12 +379,24 @@ export function SearchBox({
             <div
               className="size-7 rounded-full bg-cover bg-center flex items-center justify-center text-lg"
               style={{
-                backgroundImage: currentCategory.avatar?.startsWith("http")
-                  ? `url(${currentCategory.avatar})`
-                  : undefined,
+                backgroundImage:
+                  typeof currentCategory.avatar === "string" &&
+                  currentCategory.avatar.startsWith("http")
+                    ? `url(${currentCategory.avatar})`
+                    : undefined,
               }}
             >
-              {currentCategory.avatar?.startsWith("/") && (
+              {typeof currentCategory.avatar === "string" &&
+                currentCategory.avatar.startsWith("/") && (
+                  <Image
+                    src={currentCategory.avatar}
+                    width={28}
+                    height={28}
+                    alt={currentCategory.name}
+                    className="rounded-full"
+                  />
+                )}
+              {typeof currentCategory.avatar === "object" && (
                 <Image
                   src={currentCategory.avatar}
                   width={28}
@@ -392,8 +405,9 @@ export function SearchBox({
                   className="rounded-full"
                 />
               )}
-              {!currentCategory.avatar?.startsWith("http") &&
-                !currentCategory.avatar?.startsWith("/") &&
+              {typeof currentCategory.avatar === "string" &&
+                !currentCategory.avatar.startsWith("http") &&
+                !currentCategory.avatar.startsWith("/") &&
                 currentCategory.avatar}
             </div>
             <div className="flex items-center justify-center size-5 ml-1">
@@ -618,7 +632,7 @@ export function SearchBox({
               >
                 <div className="size-8 rounded-full bg-primary/15 flex items-center justify-center">
                   <Image
-                    src="/placeholder/menu.png"
+                    src={menuPng}
                     width={32}
                     height={32}
                     alt="all menu"

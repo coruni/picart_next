@@ -39,6 +39,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     "src/api/**/*.gen.ts",
     "public/vendor/**",
+    // Third-party translation library
+    "src/assets/js/translate/translate.js",
   ]),
 ]);
 

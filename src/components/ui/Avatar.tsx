@@ -1,5 +1,8 @@
+"use client";
+
+import avatarPlaceholder from "@/assets/images/placeholder/avatar_placeholder.webp";
 import { cn } from "@/lib";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 
 /**
  * 头像组件属性接口
@@ -13,7 +16,7 @@ import Image from "next/image";
  * @property {boolean} [bordered] - 是否显示边框
  */
 type AvatarProps = {
-  url?: string;
+  url?: string | StaticImageData;
   frameUrl?: string;
 
   /** 外层：决定头像本体大小 */
@@ -96,7 +99,7 @@ export function Avatar({
       {/* Avatar image - REAL content */}
       <div className="relative z-2 h-full w-full">
         <Image
-          src={url || "/placeholder/avatar_placeholder.webp"}
+          src={url || avatarPlaceholder}
           alt={alt}
           fill
           className={cn(

@@ -1,17 +1,19 @@
 "use client";
 
+import imageError from "@/assets/images/placeholder/image_error.webp";
+import imagePlaceholder from "@/assets/images/placeholder/image_placeholder.webp";
 import { cn } from "@/lib";
+import type { StaticImageData } from "next/image";
 import Image, { type ImageProps } from "next/image";
 import { useEffect, useRef, useState } from "react";
-
-const DEFAULT_PLACEHOLDER = "/placeholder/image_placeholder.webp";
-const DEFAULT_ERROR = "/placeholder/image_error.webp";
+const DEFAULT_PLACEHOLDER = imagePlaceholder;
+const DEFAULT_ERROR = imageError;
 const UNOPTIMIZED_HOSTS = new Set(["cf-s3.coslark.org"]);
 
 type ImageWithFallbackProps = Omit<ImageProps, "onError"> & {
   wrapperClassName?: string;
-  placeholderSrc?: string;
-  errorSrc?: string;
+  placeholderSrc?: string | StaticImageData;
+  errorSrc?: string | StaticImageData;
   onError?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
 };
 
@@ -66,10 +68,7 @@ export function ImageWithFallback({
   };
 
   const fallbackSrc = status === "error" ? errorSrc : placeholderSrc;
-  const imageClassName = cn(
-    className,
-    status === "loaded" ? "" : "opacity-0",
-  );
+  const imageClassName = cn(className, status === "loaded" ? "" : "opacity-0");
   const shouldDisableOptimization =
     typeof src === "string" &&
     (() => {
