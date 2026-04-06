@@ -15052,7 +15052,7 @@ export type CollectionControllerGetCollectionItemsResponses = {
                 id?: number;
                 collectionId?: number;
                 articleId?: number;
-                article?: {
+                article: {
                     id: number;
                     title: string;
                     requireLogin: boolean;
@@ -15063,7 +15063,19 @@ export type CollectionControllerGetCollectionItemsResponses = {
                     viewPrice: string;
                     type: string;
                     content: string;
-                    images: Array<string>;
+                    images: Array<string & {
+                        url: string;
+                        width: number;
+                        height: number;
+                        size: number;
+                        original: string;
+                        thumbnails: {
+                            thumb: string;
+                            small: string;
+                            medium: string;
+                            large: string;
+                        };
+                    }>;
                     sort: number;
                     summary: string;
                     views: number;
@@ -15181,6 +15193,42 @@ export type CollectionControllerGetCollectionItemsResponses = {
                         dislike: number;
                     };
                     userReaction: string;
+                    collection: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        avatar: string;
+                        cover: string;
+                        isPublic: boolean;
+                        sort: number;
+                        itemCount: number;
+                        views: number;
+                        createdAt: string;
+                        updatedAt: string;
+                        current: {
+                            itemId: number;
+                            articleId: number;
+                            index: number;
+                            sort: number;
+                        };
+                        navigation: {
+                            prev: {
+                                itemId: number;
+                                articleId: number;
+                                title: string;
+                                cover: string;
+                                index: number;
+                            };
+                            next: {
+                                itemId: number;
+                                articleId: number;
+                                title: string;
+                                cover: string;
+                                index: number;
+                            };
+                        };
+                    };
+                    isFavorited: boolean;
                 };
                 userId?: number;
                 sort?: number;

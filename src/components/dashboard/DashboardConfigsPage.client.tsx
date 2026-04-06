@@ -1,8 +1,10 @@
 "use client";
 
 import {
+  configControllerCreate,
   configControllerFindAll,
   configControllerFindByGroup,
+  configControllerRemove,
   configControllerUpdate,
   uploadControllerUploadFile,
 } from "@/api";
@@ -12,7 +14,25 @@ import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { cn } from "@/lib";
-import { ImagePlus, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/Dialog";
+import {
+  DropdownMenu,
+  type MenuItem,
+} from "@/components/shared";
+import {
+  ImagePlus,
+  X,
+  Plus,
+  MoreHorizontal,
+  Trash2,
+  PencilLine,
+} from "lucide-react";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useImageCompression } from "@/hooks/useImageCompression";
@@ -71,6 +91,14 @@ const NUMBER_KEYWORDS = [
   "_hours",
 ];
 
+const CONFIG_TYPES = [
+  { value: "string", label: "字符串 (string)" },
+  { value: "number", label: "数字 (number)" },
+  { value: "boolean", label: "布尔值 (boolean)" },
+  { value: "json", label: "JSON" },
+  { value: "text", label: "长文本 (text)" },
+];
+
 function looksLikeNumberValue(value: string) {
   return /^-?\d+(\.\d+)?$/.test(value.trim());
 }
@@ -124,11 +152,6 @@ function createDraftMap(items: DashboardConfigItem[]) {
   }, {});
 }
 
-function getConfigPageText(_locale: string): Record<string, never> {
-  // 已废弃，使用 copy.pages.configs 替代
-  return {};
-}
-
 type DashboardCopy = ReturnType<typeof getDashboardCopy>;
 
 type ConfigCardProps = {
@@ -142,6 +165,8 @@ type ConfigCardProps = {
   onValueChange: (value: string) => void;
   onImageSelect: (file: File) => void;
   onSave: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
 };
 
 function ConfigCard({
@@ -155,10 +180,26 @@ function ConfigCard({
   onValueChange,
   onImageSelect,
   onSave,
+  onEdit,
+  onDelete,
 }: ConfigCardProps) {
   const editorKind = getConfigEditorKind(item);
   const dirty = draftValue !== (item.value ?? "");
   const inputId = `dashboard-config-upload-${item.id}`;
+
+  const menuItems: MenuItem[] = [
+    {
+      label: saveText,
+      icon: <PencilLine size={16} />,
+      onClick: onEdit,
+    },
+    {
+      label: text.removeImage,
+      icon: <Trash2 size={16} />,
+      className: "text-red-500",
+      onClick: onDelete,
+    },
+  ];
 
   return (
     <article className="rounded-xl border border-border/70 bg-card p-4">
@@ -180,15 +221,31 @@ function ConfigCard({
           </div>
         </div>
 
-        <Button
-          variant="primary"
-          className="h-7 rounded-full px-4"
-          onClick={onSave}
-          loading={saving}
-          disabled={!dirty || uploading}
-        >
-          {saving ? text.saving : saveText}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="primary"
+            className="h-7 rounded-full px-4"
+            onClick={onSave}
+            loading={saving}
+            disabled={!dirty || uploading}
+          >
+            {saving ? text.saving : saveText}
+          </Button>
+          <DropdownMenu
+            title={text.typeLabel}
+            items={menuItems}
+            trigger={
+              <button
+                type="button"
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <MoreHorizontal size={16} />
+              </button>
+            }
+            className="inline-flex"
+            menuClassName="top-8"
+          />
+        </div>
       </div>
 
       <p className="mt-3 text-sm leading-6 text-muted-foreground">
@@ -308,6 +365,221 @@ function ConfigCard({
   );
 }
 
+// Create/Edit Config Dialog
+type ConfigDialogProps = {
+  open: boolean;
+  editingItem: DashboardConfigItem | null;
+  text: DashboardCopy["pages"]["configs"];
+  commonText: DashboardCopy["common"];
+  groups: string[];
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (values: {
+    key: string;
+    value: string;
+    type: string;
+    group: string;
+    description: string;
+    public: boolean;
+  }) => void;
+  loading: boolean;
+};
+
+function ConfigDialog({
+  open,
+  editingItem,
+  text,
+  commonText,
+  groups,
+  onOpenChange,
+  onSubmit,
+  loading,
+}: ConfigDialogProps) {
+  const [key, setKey] = useState("");
+  const [value, setValue] = useState("");
+  const [type, setType] = useState("string");
+  const [group, setGroup] = useState("");
+  const [description, setDescription] = useState("");
+  const [isPublic, setIsPublic] = useState(false);
+  const [keyError, setKeyError] = useState("");
+
+  const isEditing = Boolean(editingItem);
+  const title = isEditing ? text.editTitle : text.createTitle;
+
+  useEffect(() => {
+    if (editingItem) {
+      setKey(editingItem.key);
+      setValue(editingItem.value ?? "");
+      setType(editingItem.type || "string");
+      setGroup(editingItem.group || "");
+      setDescription(editingItem.description || "");
+      setIsPublic(editingItem.public);
+    } else {
+      setKey("");
+      setValue("");
+      setType("string");
+      setGroup("");
+      setDescription("");
+      setIsPublic(false);
+    }
+    setKeyError("");
+  }, [editingItem, open]);
+
+  const handleSubmit = () => {
+    if (!key.trim()) {
+      setKeyError(text.keyRequired);
+      return;
+    }
+    onSubmit({
+      key: key.trim(),
+      value: value.trim(),
+      type,
+      group: group.trim(),
+      description: description.trim(),
+      public: isPublic,
+    });
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Plus className="size-5" />
+            {title}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">{text.keyLabel}</label>
+            <Input
+              fullWidth
+              value={key}
+              onChange={(e) => {
+                setKey(e.target.value);
+                setKeyError("");
+              }}
+              placeholder={text.keyPlaceholder}
+              disabled={isEditing}
+              className={cn(keyError && "border-red-500")}
+            />
+            {keyError && <p className="text-xs text-red-500">{keyError}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">{text.typeSelectLabel}</label>
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              className="w-full h-10 rounded-xl border border-border bg-card px-3 text-sm outline-none focus:border-primary"
+            >
+              {CONFIG_TYPES.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">{text.groupLabel}</label>
+            <div className="flex gap-2">
+              <Input
+                fullWidth
+                value={group}
+                onChange={(e) => setGroup(e.target.value)}
+                placeholder={text.groupPlaceholder}
+              />
+              {groups.length > 0 && (
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      setGroup(e.target.value);
+                    }
+                  }}
+                  className="h-10 rounded-xl border border-border bg-card px-3 text-sm outline-none focus:border-primary"
+                >
+                  <option value="">选择现有分组</option>
+                  {groups.map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">{text.valueLabel}</label>
+            {type === "boolean" ? (
+              <div className="flex items-center gap-2">
+                <Switch
+                  checked={value === "true"}
+                  onCheckedChange={(checked) => setValue(checked ? "true" : "false")}
+                />
+                <span className="text-sm text-muted-foreground">{value || "false"}</span>
+              </div>
+            ) : type === "text" || type === "json" ? (
+              <textarea
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                className={cn(
+                  "min-h-24 w-full rounded-xl border border-border bg-card px-3 py-2 text-sm text-foreground outline-none transition-colors",
+                  "focus:border-primary hover:border-primary",
+                )}
+              />
+            ) : (
+              <Input
+                fullWidth
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                placeholder="输入默认值"
+              />
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">{text.descriptionLabel}</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={text.descriptionPlaceholder}
+              className={cn(
+                "min-h-20 w-full rounded-xl border border-border bg-card px-3 py-2 text-sm text-foreground outline-none transition-colors",
+                "focus:border-primary hover:border-primary",
+              )}
+            />
+          </div>
+
+          <div className="flex items-center justify-between rounded-xl border border-border/70 bg-card px-3 py-3">
+            <div className="text-sm font-medium">{text.publicLabel}</div>
+            <Switch checked={isPublic} onCheckedChange={setIsPublic} />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={loading}
+            className="rounded-full"
+          >
+            {commonText.cancel}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            loading={loading}
+            className="rounded-full"
+          >
+            {commonText.save}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function DashboardConfigsPage() {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
@@ -324,6 +596,11 @@ export function DashboardConfigsPage() {
   const [savingId, setSavingId] = useState<number | null>(null);
   const [uploadingId, setUploadingId] = useState<number | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<number, string>>({});
+
+  // Dialog states
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<DashboardConfigItem | null>(null);
+  const [dialogLoading, setDialogLoading] = useState(false);
 
   const loadAllConfigs = useCallback(
     async (showLoading = true) => {
@@ -369,6 +646,10 @@ export function DashboardConfigsPage() {
       label: item,
     }))];
   }, [allConfigs, copy.common.all]);
+
+  const existingGroups = useMemo(() => {
+    return Array.from(new Set(allConfigs.map((item) => item.group).filter(Boolean)));
+  }, [allConfigs]);
 
   useEffect(() => {
     if (!ready) {
@@ -536,8 +817,59 @@ export function DashboardConfigsPage() {
     [drafts, text.saveFailed],
   );
 
-  // 清理未使用的函数
-  void getConfigPageText;
+  const handleCreate = async (values: {
+    key: string;
+    value: string;
+    type: string;
+    group: string;
+    description: string;
+    public: boolean;
+  }) => {
+    setDialogLoading(true);
+    try {
+      await configControllerCreate({
+        body: {
+          key: values.key,
+          value: values.value,
+          type: values.type,
+          group: values.group,
+          description: values.description,
+          public: values.public,
+        },
+      });
+      setDialogOpen(false);
+      setEditingItem(null);
+      await loadAllConfigs();
+    } catch {
+      alert(text.createFailed);
+    } finally {
+      setDialogLoading(false);
+    }
+  };
+
+  const handleDelete = async (item: DashboardConfigItem) => {
+    if (!window.confirm(text.deleteConfirm)) {
+      return;
+    }
+    try {
+      await configControllerRemove({
+        path: { id: item.id },
+      });
+      await loadAllConfigs();
+    } catch {
+      alert(text.deleteFailed);
+    }
+  };
+
+  const handleOpenCreate = () => {
+    setEditingItem(null);
+    setDialogOpen(true);
+  };
+
+  const handleOpenEdit = (item: DashboardConfigItem) => {
+    setEditingItem(item);
+    setDialogOpen(true);
+  };
 
   if (!ready || loading) {
     return <DashboardLoadingView text={copy.common.loading} />;
@@ -576,13 +908,23 @@ export function DashboardConfigsPage() {
                   )}
                 </p>
               </div>
-              <Button
-                variant="outline"
-                className="h-7 rounded-full px-4"
-                onClick={() => void loadAllConfigs(false)}
-              >
-                {copy.common.refresh}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  className="h-7 rounded-full px-4"
+                  onClick={() => void loadAllConfigs(false)}
+                >
+                  {copy.common.refresh}
+                </Button>
+                <Button
+                  variant="primary"
+                  className="h-7 rounded-full px-4"
+                  onClick={handleOpenCreate}
+                >
+                  <Plus className="mr-1 size-4" />
+                  {text.create}
+                </Button>
+              </div>
             </div>
 
             <div className="border-b border-border/70 px-3 py-3">
@@ -630,6 +972,8 @@ export function DashboardConfigsPage() {
                   }
                   onImageSelect={(file) => void handleImageUpload(item.id, file)}
                   onSave={() => void handleSave(item)}
+                  onEdit={() => handleOpenEdit(item)}
+                  onDelete={() => void handleDelete(item)}
                 />
               ))}
             </div>
@@ -640,6 +984,17 @@ export function DashboardConfigsPage() {
           )}
         </div>
       </DashboardPanel>
+
+      <ConfigDialog
+        open={dialogOpen}
+        editingItem={editingItem}
+        text={text}
+        commonText={copy.common}
+        groups={existingGroups}
+        onOpenChange={setDialogOpen}
+        onSubmit={handleCreate}
+        loading={dialogLoading}
+      />
     </DashboardPageFrame>
   );
 }

@@ -61,3 +61,11 @@ export type DashboardOverviewData = {
   advertisementConfig: DashboardAdvertisementConfig | null;
   pendingOrderNos: string[];
 };
+
+export type DashboardHotSearchItem = {
+  id?: number;
+  keyword: string;
+  count: number;
+  createdAt?: string;
+  updatedAt?: string;
+};

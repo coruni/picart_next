@@ -9,7 +9,6 @@ import {
 } from "@/api";
 import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { Button } from "@/components/ui/Button";
-import { Checkbox } from "@/components/ui/Checkbox";
 import {
   Dialog,
   DialogContent,
@@ -336,10 +335,11 @@ export function DashboardRolesPage() {
                     className="flex items-start gap-3 p-3 rounded-lg border border-border/70 hover:border-primary/30 hover:bg-primary/5 transition-colors cursor-pointer"
                     onClick={() => handleTogglePermission(permission.id)}
                   >
-                    <Checkbox
+                    <input
+                      type="checkbox"
                       checked={selectedPermissions.includes(permission.id)}
                       onChange={() => {}}
-                      className="mt-0.5"
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
                     />
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium text-foreground truncate">

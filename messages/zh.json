@@ -250,7 +250,11 @@
     "recommendUsers": "推荐用户",
     "viewMore": "查看更多",
     "loadError": "加载失败",
-    "authorInfo": "作者信息"
+    "authorInfo": "作者信息",
+    "collectionArticles": "合集文章",
+    "viewMoreArticles": "查看更多",
+    "collapse": "收起",
+    "expand": "展开"
   },
   "dashboard": {
     "metaTitle": "工作台",
@@ -694,6 +698,7 @@
     "editButton": "编辑合集",
     "posts": "帖子",
     "followers": "粉丝",
+    "views": "浏览",
     "empty": "暂无合集",
     "untitled": "未命名合集",
     "loading": "加载中",

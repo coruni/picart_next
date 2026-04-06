@@ -45765,7 +45765,60 @@
                                   "images": {
                                     "type": "array",
                                     "items": {
-                                      "type": "string"
+                                      "type": "object",
+                                      "properties": {
+                                        "url": {
+                                          "type": "string"
+                                        },
+                                        "width": {
+                                          "type": "integer"
+                                        },
+                                        "height": {
+                                          "type": "integer"
+                                        },
+                                        "size": {
+                                          "type": "integer"
+                                        },
+                                        "original": {
+                                          "type": "string"
+                                        },
+                                        "thumbnails": {
+                                          "type": "object",
+                                          "properties": {
+                                            "thumb": {
+                                              "type": "string"
+                                            },
+                                            "small": {
+                                              "type": "string"
+                                            },
+                                            "medium": {
+                                              "type": "string"
+                                            },
+                                            "large": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "required": [
+                                            "thumb",
+                                            "small",
+                                            "medium",
+                                            "large"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "url",
+                                        "size",
+                                        "width",
+                                        "height",
+                                        "original",
+                                        "thumbnails"
+                                      ],
+                                      "oneOf": [
+                                        {
+                                          "type": "string"
+                                        }
+                                      ]
                                     }
                                   },
                                   "sort": {
@@ -46209,6 +46262,148 @@
                                   },
                                   "userReaction": {
                                     "type": "string"
+                                  },
+                                  "collection": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "isPublic": {
+                                        "type": "boolean"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "itemCount": {
+                                        "type": "integer"
+                                      },
+                                      "views": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      },
+                                      "current": {
+                                        "type": "object",
+                                        "properties": {
+                                          "itemId": {
+                                            "type": "integer"
+                                          },
+                                          "articleId": {
+                                            "type": "integer"
+                                          },
+                                          "index": {
+                                            "type": "integer"
+                                          },
+                                          "sort": {
+                                            "type": "integer"
+                                          }
+                                        },
+                                        "required": [
+                                          "itemId",
+                                          "articleId",
+                                          "index",
+                                          "sort"
+                                        ]
+                                      },
+                                      "navigation": {
+                                        "type": "object",
+                                        "properties": {
+                                          "prev": {
+                                            "type": "object",
+                                            "properties": {
+                                              "itemId": {
+                                                "type": "integer"
+                                              },
+                                              "articleId": {
+                                                "type": "integer"
+                                              },
+                                              "title": {
+                                                "type": "string"
+                                              },
+                                              "cover": {
+                                                "type": "string"
+                                              },
+                                              "index": {
+                                                "type": "integer"
+                                              }
+                                            },
+                                            "required": [
+                                              "itemId",
+                                              "articleId",
+                                              "title",
+                                              "cover",
+                                              "index"
+                                            ]
+                                          },
+                                          "next": {
+                                            "type": "object",
+                                            "properties": {
+                                              "itemId": {
+                                                "type": "integer"
+                                              },
+                                              "articleId": {
+                                                "type": "integer"
+                                              },
+                                              "title": {
+                                                "type": "string"
+                                              },
+                                              "cover": {
+                                                "type": "string"
+                                              },
+                                              "index": {
+                                                "type": "integer"
+                                              }
+                                            },
+                                            "required": [
+                                              "itemId",
+                                              "articleId",
+                                              "title",
+                                              "cover",
+                                              "index"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "prev",
+                                          "next"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "avatar",
+                                      "cover",
+                                      "isPublic",
+                                      "sort",
+                                      "itemCount",
+                                      "views",
+                                      "createdAt",
+                                      "updatedAt",
+                                      "current",
+                                      "navigation"
+                                    ]
+                                  },
+                                  "isFavorited": {
+                                    "type": "boolean"
                                   }
                                 },
                                 "required": [
@@ -46243,7 +46438,9 @@
                                   "isPaid",
                                   "imageCount",
                                   "reactionStats",
-                                  "userReaction"
+                                  "userReaction",
+                                  "collection",
+                                  "isFavorited"
                                 ]
                               },
                               "userId": {
@@ -46264,7 +46461,10 @@
                               "next": {
                                 "type": "string"
                               }
-                            }
+                            },
+                            "required": [
+                              "article"
+                            ]
                           }
                         },
                         "meta": {

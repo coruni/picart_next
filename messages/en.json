@@ -258,7 +258,11 @@
     "recommendUsers": "Recommended Users",
     "viewMore": "View More",
     "loadError": "Failed to load",
-    "authorInfo": "Author Info"
+    "authorInfo": "Author Info",
+    "collectionArticles": "Collection Articles",
+    "viewMoreArticles": "View More",
+    "collapse": "Collapse",
+    "expand": "Expand"
   },
   "dashboard": {
     "metaTitle": "Dashboard",
@@ -702,6 +706,7 @@
     "editButton": "Edit collection",
     "posts": "Posts",
     "followers": "Followers",
+    "views": "views",
     "empty": "No collections yet",
     "untitled": "Untitled collection",
     "loading": "Loading",

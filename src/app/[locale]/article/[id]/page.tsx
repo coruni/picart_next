@@ -371,6 +371,10 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           showRecommendTag={false}
           showArticleCreate={false}
           author={article?.author}
+          showCollectionList={Boolean(article.collection)}
+          collectionId={article.collection?.id}
+          collectionName={article.collection?.name}
+          currentArticleId={article.id}
         />
       </div>
     </div>
