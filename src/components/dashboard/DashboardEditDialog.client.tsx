@@ -2,6 +2,7 @@
 
 import { uploadControllerUploadFile } from "@/api";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
+import { CategorySelect } from "@/components/ui/CategorySelect";
 import { Button } from "@/components/ui/Button";
 import { DatePicker } from "@/components/ui/DatePicker";
 import {
@@ -9,6 +10,7 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
 } from "@/components/ui/Dialog";
 import { Form, FormField } from "@/components/ui/Form";
@@ -31,6 +33,7 @@ type DashboardEditFieldType =
   | "number"
   | "switch"
   | "select"
+  | "categorySelect"
   | "image"
   | "date"
   | "time";
@@ -43,7 +46,9 @@ export type DashboardEditField = {
   options?: Array<{ value: string; label: string }>;
   searchable?: boolean;
   searchPlaceholder?: string;
-  loadOptions?: (keyword: string) => Promise<Array<{ value: string; label: string }>>;
+  loadOptions?: (
+    keyword: string,
+  ) => Promise<Array<{ value: string; label: string }>>;
   min?: number;
   step?: number;
   imagePreviewClassName?: string;
@@ -59,7 +64,9 @@ type DashboardEditDialogProps = {
   initialValues: Record<string, string | number | boolean | null | undefined>;
   loading?: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: Record<string, string | number | boolean | undefined>) => Promise<void> | void;
+  onSubmit: (
+    values: Record<string, string | number | boolean | undefined>,
+  ) => Promise<void> | void;
 };
 
 function DashboardSearchSelectField({
@@ -76,9 +83,9 @@ function DashboardSearchSelectField({
   const [isOpen, setIsOpen] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [asyncOptions, setAsyncOptions] = useState<Array<{ value: string; label: string }>>(
-    field.options || [],
-  );
+  const [asyncOptions, setAsyncOptions] = useState<
+    Array<{ value: string; label: string }>
+  >(field.options || []);
   const containerRef = useRef<HTMLDivElement>(null);
   const requestIdRef = useRef(0);
 
@@ -119,7 +126,9 @@ function DashboardSearchSelectField({
   }, [field, isOpen, keyword]);
 
   const resolvedOptions = asyncOptions;
-  const selectedOption = resolvedOptions.find((option) => option.value === value);
+  const selectedOption = resolvedOptions.find(
+    (option) => option.value === value,
+  );
 
   return (
     <div ref={containerRef} className="relative">
@@ -138,7 +147,9 @@ function DashboardSearchSelectField({
             !selectedOption && "text-gray-400",
           )}
         >
-          {selectedOption?.label || field.placeholder || copy.common.selectPlaceholder}
+          {selectedOption?.label ||
+            field.placeholder ||
+            copy.common.selectPlaceholder}
         </span>
         {value ? (
           <button
@@ -175,7 +186,9 @@ function DashboardSearchSelectField({
       <div
         className={cn(
           "absolute z-30 mt-1 left-0 right-0 min-w-0 origin-top overflow-hidden rounded-lg border border-border bg-card shadow-lg transition-[opacity,transform] duration-160 ease-out",
-          isOpen ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0",
+          isOpen
+            ? "translate-y-0 opacity-100"
+            : "pointer-events-none -translate-y-1 opacity-0",
         )}
       >
         <div className="border-b border-border/70 px-2 py-2">
@@ -237,7 +250,9 @@ function DashboardSearchSelectField({
               </button>
             ))
           ) : (
-            <div className="px-3 py-6 text-center text-sm text-muted-foreground">-</div>
+            <div className="px-3 py-6 text-center text-sm text-muted-foreground">
+              -
+            </div>
           )}
         </div>
       </div>
@@ -258,23 +273,23 @@ export function DashboardEditDialog({
   const copy = getDashboardCopy(locale);
   const { compressImage } = useImageCompression();
   const editorRef = useRef<AvatarEditor>(null);
-  const [values, setValues] = useState<Record<
-    string,
-    string | number | boolean | null | undefined
-  >>({});
-  const [editingImageField, setEditingImageField] = useState<DashboardEditField | null>(null);
+  const [values, setValues] = useState<
+    Record<string, string | number | boolean | null | undefined>
+  >({});
+  const [editingImageField, setEditingImageField] =
+    useState<DashboardEditField | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imageScale, setImageScale] = useState(1);
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const normalizedInitialValues = useMemo(() => {
-    return fields.reduce<Record<string, string | number | boolean | null | undefined>>(
-      (result, field) => {
-        result[field.name] = initialValues[field.name] ?? (field.type === "switch" ? false : "");
-        return result;
-      },
-      {},
-    );
+    return fields.reduce<
+      Record<string, string | number | boolean | null | undefined>
+    >((result, field) => {
+      result[field.name] =
+        initialValues[field.name] ?? (field.type === "switch" ? false : "");
+      return result;
+    }, {});
   }, [fields, initialValues]);
 
   useEffect(() => {
@@ -301,7 +316,8 @@ export function DashboardEditDialog({
   };
 
   const handleImageSelect =
-    (field: DashboardEditField) => async (event: React.ChangeEvent<HTMLInputElement>) => {
+    (field: DashboardEditField) =>
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
       const file = event.target.files?.[0];
       event.target.value = "";
 
@@ -417,7 +433,10 @@ export function DashboardEditDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(nextOpen) => !loading && onOpenChange(nextOpen)}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) => !loading && onOpenChange(nextOpen)}
+    >
       <DialogContent className="flex max-h-[88vh] max-w-2xl flex-col overflow-hidden p-0">
         <DialogHeader className="shrink-0 border-b border-border px-5 py-4 mb-0!">
           <DialogTitle className="text-sm font-semibold ">{title}</DialogTitle>
@@ -428,13 +447,12 @@ export function DashboardEditDialog({
             onSubmit={(event) => {
               event.preventDefault();
               void onSubmit(
-                fields.reduce<Record<string, string | number | boolean | undefined>>(
-                  (result, field) => {
-                    result[field.name] = normalizeSubmitValue(field);
-                    return result;
-                  },
-                  {},
-                ),
+                fields.reduce<
+                  Record<string, string | number | boolean | undefined>
+                >((result, field) => {
+                  result[field.name] = normalizeSubmitValue(field);
+                  return result;
+                }, {}),
               );
             }}
           >
@@ -443,10 +461,20 @@ export function DashboardEditDialog({
               const value = values[field.name];
 
               return (
-                <FormField key={field.name} name={field.name} label={field.label}>
+                <FormField
+                  key={field.name}
+                  name={field.name}
+                  label={field.label}
+                >
                   {type === "textarea" ? (
                     <textarea
-                      value={typeof value === "string" ? value : value == null ? "" : String(value)}
+                      value={
+                        typeof value === "string"
+                          ? value
+                          : value == null
+                            ? ""
+                            : String(value)
+                      }
                       onChange={(event) =>
                         setValues((previous) => ({
                           ...previous,
@@ -519,6 +547,18 @@ export function DashboardEditDialog({
                       />
                     )
                   ) : null}
+                  {type === "categorySelect" ? (
+                    <CategorySelect
+                      value={typeof value === "string" ? value : ""}
+                      onChange={(nextValue) =>
+                        setValues((previous) => ({
+                          ...previous,
+                          [field.name]: nextValue,
+                        }))
+                      }
+                      placeholder={field.placeholder}
+                    />
+                  ) : null}
                   {type === "image" ? (
                     <div className="space-y-3">
                       {typeof value === "string" && value ? (
@@ -537,7 +577,7 @@ export function DashboardEditDialog({
                                 ? "object-contain"
                                 : "object-cover",
                               getImageEditorMode(field) === "avatar" &&
-                                "object-contain p-4",
+                                "object-cover rounded-full p-4",
                             )}
                           />
                         </div>
@@ -558,7 +598,9 @@ export function DashboardEditDialog({
                           )}
                         >
                           <ImagePlus className="size-4" />
-                          {typeof value === "string" && value ? copy.common.replace : copy.common.upload}
+                          {typeof value === "string" && value
+                            ? copy.common.replace
+                            : copy.common.upload}
                         </label>
                       </div>
                     </div>
@@ -583,7 +625,11 @@ export function DashboardEditDialog({
                   {type === "date" ? (
                     <DatePicker
                       value={
-                        typeof value === "string" ? value : value == null ? "" : String(value)
+                        typeof value === "string"
+                          ? value
+                          : value == null
+                            ? ""
+                            : String(value)
                       }
                       placeholder={field.placeholder}
                       onChange={(newValue) =>
@@ -611,7 +657,7 @@ export function DashboardEditDialog({
             })}
           </Form>
         </div>
-        <DialogFooter className="shrink-0 mt-2! border-t border-border px-5 py-4 gap-4!">
+        <DialogFooter className="shrink-0 mt-0! border-t border-border px-6 py-4 gap-4!">
           <Button
             variant="outline"
             className="h-7 rounded-full px-4"
@@ -626,13 +672,12 @@ export function DashboardEditDialog({
             loading={loading}
             onClick={() => {
               void onSubmit(
-                fields.reduce<Record<string, string | number | boolean | undefined>>(
-                  (result, field) => {
-                    result[field.name] = normalizeSubmitValue(field);
-                    return result;
-                  },
-                  {},
-                ),
+                fields.reduce<
+                  Record<string, string | number | boolean | undefined>
+                >((result, field) => {
+                  result[field.name] = normalizeSubmitValue(field);
+                  return result;
+                }, {}),
               );
             }}
           >
@@ -641,8 +686,12 @@ export function DashboardEditDialog({
         </DialogFooter>
       </DialogContent>
       {editingImageField && selectedImage ? (
-        <Dialog open onOpenChange={(nextOpen) => !nextOpen && setEditingImageField(null)}>
-          <DialogContent className="max-w-2xl">
+        <Dialog
+          open
+          onOpenChange={(nextOpen) => !nextOpen && setEditingImageField(null)}
+        >
+          <DialogOverlay className="z-101" />
+          <DialogContent className="max-w-md p-0!">
             <DialogHeader>
               <DialogTitle>{editingImageField.label}</DialogTitle>
             </DialogHeader>
@@ -665,39 +714,49 @@ export function DashboardEditDialog({
                 <AvatarEditor
                   ref={editorRef}
                   image={selectedImage}
-                  width={getImageEditorMode(editingImageField) === "avatar" ? 400 : 1050}
-                  height={getImageEditorMode(editingImageField) === "avatar" ? 400 : 450}
+                  width={
+                    getImageEditorMode(editingImageField) === "avatar"
+                      ? 400
+                      : 1050
+                  }
+                  height={
+                    getImageEditorMode(editingImageField) === "avatar"
+                      ? 400
+                      : 450
+                  }
                   border={0}
-                  borderRadius={getImageEditorMode(editingImageField) === "avatar" ? 200 : 0}
+                  borderRadius={
+                    getImageEditorMode(editingImageField) === "avatar" ? 200 : 0
+                  }
                   color={[0, 0, 0, 0.6]}
                   scale={imageScale}
                   rotate={0}
                   style={{ width: "100%", height: "100%" }}
                 />
               </div>
-              <div className="flex justify-end gap-3">
-                <Button
-                  variant="ghost"
-                  className="h-7 rounded-full px-4"
-                  onClick={() => {
-                    setEditingImageField(null);
-                    setSelectedImage(null);
-                    setImageScale(1);
-                  }}
-                  disabled={uploadingImage}
-                >
-                  {copy.common.cancel}
-                </Button>
-                <Button
-                  variant="primary"
-                  className="h-7 rounded-full px-4"
-                  loading={uploadingImage}
-                  onClick={() => void handleSaveEditedImage()}
-                >
-                  {copy.common.save}
-                </Button>
-              </div>
             </div>
+            <DialogFooter className="gap-4! pb-4! px-6">
+              <Button
+                variant="ghost"
+                className="h-7 rounded-full px-4"
+                onClick={() => {
+                  setEditingImageField(null);
+                  setSelectedImage(null);
+                  setImageScale(1);
+                }}
+                disabled={uploadingImage}
+              >
+                {copy.common.cancel}
+              </Button>
+              <Button
+                variant="primary"
+                className="h-7 rounded-full px-4"
+                loading={uploadingImage}
+                onClick={() => void handleSaveEditedImage()}
+              >
+                {copy.common.save}
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       ) : null}

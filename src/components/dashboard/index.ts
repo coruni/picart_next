@@ -1,4 +1,5 @@
 export { DashboardArticlesPage } from "./DashboardArticlesPage.client";
+export { DashboardCategoriesPage } from "./DashboardCategoriesPage.client";
 export { DashboardAchievementsPage } from "./DashboardAchievementsPage.client";
 export { DashboardBannersPage } from "./DashboardBannersPage.client";
 export { DashboardClientPage } from "./DashboardClientPage.client";

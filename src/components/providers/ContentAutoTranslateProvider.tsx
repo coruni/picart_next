@@ -5,7 +5,6 @@ import { detectContentLanguage, TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
 import { useTranslateStore } from "@/stores";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
-import "@/assets/js/translate/translate.js";
 
 const AUTO_TRANSLATE_SELECTOR =
   "[data-auto-translate-content], [data-auto-translate-comment]";
@@ -117,6 +116,14 @@ export function ContentAutoTranslateProvider() {
 
   // Check if translate.js is loaded
   useEffect(() => {
+    // Dynamically import translate.js only on client side
+    const loadTranslateScript = async () => {
+      if (typeof window === "undefined") return;
+      await import("@/assets/js/translate/translate.js");
+    };
+
+    loadTranslateScript();
+
     const checkTranslateLoaded = () => {
       if (window.translate) {
         disableTranslateLanguageSelector();

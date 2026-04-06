@@ -38,8 +38,20 @@ export function DashboardUsersPage() {
       { name: "username", label: "Username" },
       { name: "nickname", label: copy.columns.name },
       { name: "password", label: "Password", type: "text", placeholder: copy.common.passwordPlaceholder },
-      { name: "avatar", label: "Avatar", type: "image" },
-      { name: "background", label: "Background", type: "image" },
+      {
+        name: "avatar",
+        label: "Avatar",
+        type: "image",
+        imagePreviewClassName: "aspect-square h-auto w-full max-w-52",
+        imageObjectFit: "contain",
+      },
+      {
+        name: "background",
+        label: "Background",
+        type: "image",
+        imagePreviewClassName: "aspect-video h-auto w-full max-w-52",
+        imageObjectFit: "cover",
+      },
       { name: "description", label: copy.columns.description, type: "textarea" },
       {
         name: "status",

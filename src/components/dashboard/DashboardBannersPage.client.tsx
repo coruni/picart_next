@@ -54,7 +54,13 @@ export function DashboardBannersPage() {
         label: copy.columns.description,
         type: "textarea",
       },
-      { name: "imageUrl", label: "Image", type: "image" },
+      {
+        name: "imageUrl",
+        label: "Image",
+        type: "image",
+        imagePreviewClassName: "aspect-video h-auto w-full max-w-52",
+        imageObjectFit: "cover",
+      },
       { name: "linkUrl", label: copy.columns.link },
       {
         name: "sortOrder",

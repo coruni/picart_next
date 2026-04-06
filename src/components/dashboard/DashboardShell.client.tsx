@@ -8,6 +8,7 @@ import {
   BadgeCheck,
   FileCog,
   FileText,
+  FolderTree,
   Images,
   KeyRound,
   LayoutDashboard,
@@ -75,6 +76,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
       label: copy.nav.tags,
       description: copy.pages.tags.description,
       icon: Tags,
+    },
+    {
+      href: "/dashboard/categories",
+      label: copy.nav.categories,
+      description: copy.pages.categories.description,
+      icon: FolderTree,
     },
     {
       href: "/dashboard/roles",

@@ -21,6 +21,7 @@ export const LoginWidget = () => {
         alt="login widget left decoration"
         width={84}
         height={84}
+        loading="eager"
         className="object-cover left-0 top-0 absolute"
       />
       <Image
@@ -28,6 +29,7 @@ export const LoginWidget = () => {
         alt="login widget right decoration"
         width={84}
         height={84}
+        loading="eager"
         className="object-cover right-0 top-0 absolute"
       />
       <span className=" line-clamp-3 text-ellipsis leading-5 wrap-break-word text-center overflow-hidden text-sm my-8">

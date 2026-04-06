@@ -2,7 +2,8 @@
 
 import { Select } from "@/components/ui/Select";
 import { cn } from "@/lib";
-import { useEffect, useRef, useState } from "react";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/Button";
 
 const DEFAULT_ELLIPSIS_WIDTH_CLASS = "w-[420px] max-w-[420px]";
@@ -25,6 +26,19 @@ export type DashboardTableColumn<T> = {
   getTooltip?: (row: T) => string | undefined;
 };
 
+export type ExpandableConfig<T> = {
+  expandedRowRender?: (row: T) => React.ReactNode;
+  rowExpandable?: (row: T) => boolean;
+  expandedRowKeys?: (string | number)[];
+  onExpand?: (expanded: boolean, row: T) => void;
+  expandIcon?: (props: {
+    expanded: boolean;
+    onExpand: () => void;
+    record: T;
+    expandable: boolean;
+  }) => React.ReactNode;
+};
+
 type DashboardTableProps<T> = {
   rows: T[];
   columns: DashboardTableColumn<T>[];
@@ -34,6 +48,7 @@ type DashboardTableProps<T> = {
   loading?: boolean;
   loadingText?: string;
   density?: "default" | "middle" | "small";
+  expandable?: ExpandableConfig<T>;
   pagination?: {
     page: number;
     totalPages: number;
@@ -63,6 +78,7 @@ export function DashboardTable<T>({
   loading = false,
   loadingText,
   density = "default",
+  expandable,
   pagination,
   paginationLabels,
 }: DashboardTableProps<T>) {
@@ -70,10 +86,42 @@ export function DashboardTable<T>({
   const footerRef = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);
+
+  // 内部管理展开状态（当外部没有提供时）
+  const [internalExpandedKeys, setInternalExpandedKeys] = useState<
+    Set<string | number>
+  >(new Set());
+
+  const expandedKeys = expandable?.expandedRowKeys
+    ? new Set(expandable.expandedRowKeys)
+    : internalExpandedKeys;
+
+  const setExpandedKeys = (keys: Set<string | number>) => {
+    if (!expandable?.expandedRowKeys) {
+      setInternalExpandedKeys(keys);
+    }
+  };
+
+  const toggleExpand = (row: T) => {
+    const key = getRowKey(row);
+    const isExpanded = expandedKeys.has(key);
+    const newKeys = new Set(expandedKeys);
+
+    if (isExpanded) {
+      newKeys.delete(key);
+    } else {
+      newKeys.add(key);
+    }
+
+    setExpandedKeys(newKeys);
+    expandable?.onExpand?.(!isExpanded, row);
+  };
+
   const getEllipsisWidthClass = (column: DashboardTableColumn<T>) =>
     column.ellipsis
       ? column.ellipsisClassName || DEFAULT_ELLIPSIS_WIDTH_CLASS
       : undefined;
+
   const getColumnWidth = (column: DashboardTableColumn<T>) => {
     if (column.width !== undefined) {
       return typeof column.width === "number"
@@ -95,6 +143,7 @@ export function DashboardTable<T>({
 
     return undefined;
   };
+
   const isActionColumn = (column: DashboardTableColumn<T>) =>
     column.key === "action";
 
@@ -138,6 +187,29 @@ export function DashboardTable<T>({
       </div>
     );
   }
+
+  // 默认展开图标
+  const DefaultExpandIcon = ({
+    expanded,
+    onExpand,
+    expandable,
+  }: {
+    expanded: boolean;
+    onExpand: () => void;
+    expandable: boolean;
+  }) => {
+    if (!expandable) {
+      return <span className="inline-block w-6" />;
+    }
+    return (
+      <button
+        onClick={onExpand}
+        className="inline-flex h-6 w-6 items-center justify-center rounded border border-border/70 text-muted-foreground hover:bg-muted"
+      >
+        {expanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+      </button>
+    );
+  };
 
   return (
     <div
@@ -209,6 +281,11 @@ export function DashboardTable<T>({
         <table className="min-w-full table-fixed border-separate border-spacing-0">
           <thead ref={theadRef}>
             <tr>
+              {expandable && (
+                <th className="sticky top-0 z-10 w-12 border-b border-border bg-card px-3 py-3 text-left text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  {/* 展开列 */}
+                </th>
+              )}
               {columns.map((column) =>
                 (() => {
                   return (
@@ -231,39 +308,73 @@ export function DashboardTable<T>({
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
-              <tr
-                key={getRowKey(row)}
-                className="align-top transition-colors hover:bg-foreground/[0.02]"
-              >
-                {columns.map((column) => {
-                  return (
-                    <td
-                      key={column.key}
-                      style={getColumnWidth(column)}
-                      className={cn(
-                        "border-b border-border/70 last:border-b-0",
-                        cellPadding,
-                        isActionColumn(column) && "[&>*]:ml-auto [&>*]:w-fit",
-                        column.className,
-                        getEllipsisWidthClass(column),
-                      )}
-                    >
-                      {column.ellipsis ? (
-                        <div
-                          className="min-w-0 max-w-full overflow-hidden"
-                          title={column.getTooltip?.(row)}
+            {rows.map((row) => {
+              const rowKey = getRowKey(row);
+              const isExpanded = expandedKeys.has(rowKey);
+              const isExpandable = expandable?.rowExpandable?.(row) ?? true;
+
+              return (
+                <React.Fragment key={rowKey}>
+                  <tr className="align-top transition-colors hover:bg-foreground/[0.02]">
+                    {expandable && (
+                      <td className="border-b border-border/70 px-3 py-3">
+                        {expandable.expandIcon ? (
+                          expandable.expandIcon({
+                            expanded: isExpanded,
+                            onExpand: () => toggleExpand(row),
+                            record: row,
+                            expandable: isExpandable,
+                          })
+                        ) : (
+                          <DefaultExpandIcon
+                            expanded={isExpanded}
+                            onExpand={() => toggleExpand(row)}
+                            expandable={isExpandable}
+                          />
+                        )}
+                      </td>
+                    )}
+                    {columns.map((column) => {
+                      return (
+                        <td
+                          key={column.key}
+                          style={getColumnWidth(column)}
+                          className={cn(
+                            "border-b border-border/70 last:border-b-0",
+                            cellPadding,
+                            isActionColumn(column) &&
+                              "[&>*]:ml-auto [&>*]:w-fit",
+                            column.className,
+                            getEllipsisWidthClass(column),
+                          )}
                         >
-                          {column.render(row)}
-                        </div>
-                      ) : (
-                        column.render(row)
-                      )}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
+                          {column.ellipsis ? (
+                            <div
+                              className="min-w-0 max-w-full overflow-hidden"
+                              title={column.getTooltip?.(row)}
+                            >
+                              {column.render(row)}
+                            </div>
+                          ) : (
+                            column.render(row)
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                  {expandable?.expandedRowRender && isExpanded && (
+                    <tr className="bg-muted/30">
+                      <td
+                        colSpan={columns.length + 1}
+                        className="border-b border-border/70 px-3 py-3"
+                      >
+                        {expandable.expandedRowRender(row)}
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -290,11 +401,11 @@ export function DashboardTable<T>({
                 </div>
               </div>
             </div>
-            <div className="flex w-full items-center gap-3 flex-1 justify-end">
+            <div className="flex w-full flex-1 items-center justify-end gap-3">
               <Button
                 type="button"
                 variant="outline"
-                className="h-7 rounded-full truncate"
+                className="h-7 truncate rounded-full"
                 disabled={pagination.previousDisabled}
                 onClick={pagination.onPrevious}
               >
@@ -309,7 +420,7 @@ export function DashboardTable<T>({
               <Button
                 type="button"
                 variant="outline"
-                className="h-7 rounded-full truncate"
+                className="h-7 truncate rounded-full"
                 onClick={pagination.onNext}
               >
                 {paginationLabels.next}
