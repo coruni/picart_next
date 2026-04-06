@@ -52,9 +52,9 @@ export async function Sidebar({
     showBanner && (randomBanner ? Math.random() >= 0.5 : true);
 
   const sidebarItems = [
-    showArticleCreate && currentUser
-      ? <ArticleCreateWidget key="article-create" />
-      : null,
+    showArticleCreate && currentUser ? (
+      <ArticleCreateWidget key="article-create" />
+    ) : null,
 
     showSearchHistory ? <SearchHistory key="search-history" /> : null,
     showHotSearch ? <HotSearch key="hot-search" /> : null,
@@ -72,8 +72,9 @@ export async function Sidebar({
 
         {showAuthorInfo && author && <AuthorInfoWidget author={author} />}
 
-        {showCollectionList && collectionId && (
+        {showCollectionList && collectionId && author && (
           <CollectionListWidget
+            userId={author.id}
             collectionId={collectionId}
             collectionName={collectionName}
             currentArticleId={currentArticleId}

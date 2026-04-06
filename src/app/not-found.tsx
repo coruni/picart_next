@@ -1,4 +1,4 @@
-import { cn } from "@/components/editor/types";
+import { cn } from "@/lib";
 import Link from "next/link";
 
 export default function RootNotFound() {

@@ -84,13 +84,13 @@ export function DropdownMenu({
 
       <div
         className={cn(
-          "absolute top-8 z-10 min-w-50 w-max rounded-xl border border-border/70 bg-card shadow-lg transition-[opacity,transform] duration-150 ease-out",
+          "absolute top-8 z-10 min-w-50 w-max rounded-xl border border-border/70 bg-card shadow-lg",
           position === "right"
             ? "right-0 origin-top-right"
             : "left-0 origin-top-left",
           isOpen
-            ? "translate-y-0 opacity-100"
-            : "pointer-events-none -translate-y-1 opacity-0",
+            ? "opacity-100"
+            : "pointer-events-none opacity-0",
           menuClassName,
         )}
         role="menu"
@@ -113,7 +113,7 @@ export function DropdownMenu({
               role="menuitem"
               aria-disabled={item.disabled}
               className={cn(
-                "flex items-center gap-2 rounded-xl p-2 text-sm whitespace-nowrap transition-[background-color,color,transform,opacity] duration-150",
+                "flex items-center gap-2 rounded-xl p-2 text-sm whitespace-nowrap",
                 item.disabled
                   ? "cursor-not-allowed opacity-50"
                   : "group cursor-pointer text-black/75 hover:bg-primary/12 hover:text-primary dark:text-white/75",

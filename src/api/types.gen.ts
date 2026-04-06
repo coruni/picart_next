@@ -15517,8 +15517,21 @@ export type SearchControllerGetStatusData = {
 };
 
 export type SearchControllerGetStatusResponses = {
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            data: {
+                enabled: boolean;
+                documentCount: number;
+                indexSize: string;
+            };
+        };
+    };
 };
+
+export type SearchControllerGetStatusResponse = SearchControllerGetStatusResponses[keyof SearchControllerGetStatusResponses];
 
 export type SearchControllerClearArticlesData = {
     body?: never;

@@ -13,6 +13,7 @@ type CollectionArticleItem =
 
 interface CollectionListWidgetProps {
   collectionId: number;
+  userId: number | string;
   collectionName?: string;
   currentArticleId?: number;
 }
@@ -20,6 +21,7 @@ interface CollectionListWidgetProps {
 export const CollectionListWidget = ({
   collectionId,
   collectionName,
+  userId,
   currentArticleId,
 }: CollectionListWidgetProps) => {
   const t = useTranslations("sidebar");
@@ -130,7 +132,7 @@ export const CollectionListWidget = ({
       {hasMore && (
         <div className="px-2 mt-3">
           <Link
-            href={`/collection/${collectionId}`}
+            href={`/account/${userId}/collection/${collectionId}`}
             className="text-sm text-primary hover:text-primary/80 cursor-pointer"
           >
             {t("viewMoreArticles")}

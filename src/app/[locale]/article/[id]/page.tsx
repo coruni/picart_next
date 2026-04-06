@@ -261,7 +261,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                   data-auto-translate-content={
                     shouldTranslateArticleDetail ? true : undefined
                   }
-                  className="mt-2 text-sm"
+                  className="mt-4 text-sm"
                 >
                   {article.content}
                 </div>

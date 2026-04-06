@@ -6,6 +6,10 @@ import {
   searchControllerGetStatus,
   searchControllerSyncArticles,
 } from "@/api";
+import type {
+  ArticleControllerFindHotSearchResponse,
+  SearchControllerGetStatusResponse,
+} from "@/api/types.gen";
 import { Button } from "@/components/ui/Button";
 import {
   Dialog,
@@ -14,7 +18,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
-import { useLocale } from "next-intl";
 import {
   AlertTriangle,
   Database,
@@ -23,24 +26,23 @@ import {
   Trash2,
   TrendingUp,
 } from "lucide-react";
+import { useLocale } from "next-intl";
 import { useEffect, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardPanel } from "./DashboardPanel";
 import { DashboardStatusBadge } from "./DashboardStatusBadge";
-import type { DashboardHotSearchItem } from "./types";
 import { useDashboardGuard } from "./useDashboardGuard";
-import { formatDashboardCount, formatDashboardDate } from "./utils";
+import { formatDashboardCount } from "./utils";
 
-type SearchStatus = {
-  status: string;
-  articleIndex?: {
-    documentCount: number;
-    indexSize: string;
-    lastSyncTime: string | null;
-  };
-} | null;
+type SearchStatus = NonNullable<
+  SearchControllerGetStatusResponse["data"]
+>["data"];
+
+type HotSearchItem = NonNullable<
+  ArticleControllerFindHotSearchResponse["data"]
+>["data"][number];
 
 export function DashboardSearchPage() {
   const locale = useLocale();
@@ -49,8 +51,8 @@ export function DashboardSearchPage() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [clearing, setClearing] = useState(false);
-  const [status, setStatus] = useState<SearchStatus>(null);
-  const [hotSearches, setHotSearches] = useState<DashboardHotSearchItem[]>([]);
+  const [status, setStatus] = useState<SearchStatus | null>(null);
+  const [hotSearches, setHotSearches] = useState<HotSearchItem[]>([]);
   const [showClearDialog, setShowClearDialog] = useState(false);
 
   const loadData = async () => {
@@ -61,11 +63,11 @@ export function DashboardSearchPage() {
         articleControllerFindHotSearch(),
       ]);
 
-      const statusData = statusRes?.data as SearchStatus;
-      setStatus(statusData);
+      const statusData = statusRes.data?.data?.data;
+      setStatus(statusData || null);
 
-      const hotData = hotRes?.data?.data || [];
-      setHotSearches(hotData as DashboardHotSearchItem[]);
+      const hotData = hotRes.data?.data?.data;
+      setHotSearches(Array.isArray(hotData) ? hotData : []);
     } catch (error) {
       console.error("Failed to load search data:", error);
     } finally {
@@ -134,9 +136,9 @@ export function DashboardSearchPage() {
               <Database className="h-4 w-4 text-muted-foreground" />
             </div>
             <div className="text-2xl font-bold">
-              {status?.status ? (
+              {status ? (
                 <DashboardStatusBadge
-                  value={status.status === "connected" ? "active" : "inactive"}
+                  value={status.enabled ? "active" : "inactive"}
                 />
               ) : (
                 "-"
@@ -153,10 +155,7 @@ export function DashboardSearchPage() {
               <Search className="h-4 w-4 text-muted-foreground" />
             </div>
             <div className="text-2xl font-bold">
-              {formatDashboardCount(
-                status?.articleIndex?.documentCount || 0,
-                locale
-              )}
+              {formatDashboardCount(status?.documentCount || 0, locale)}
             </div>
           </div>
 
@@ -169,11 +168,11 @@ export function DashboardSearchPage() {
               <Database className="h-4 w-4 text-muted-foreground" />
             </div>
             <div className="text-2xl font-bold">
-              {status?.articleIndex?.indexSize || "-"}
+              {status?.indexSize || "-"}
             </div>
           </div>
 
-          {/* Last Sync Time Card */}
+          {/* Last Sync Time Card - 从其他 API 获取或从 status 扩展 */}
           <div className="rounded-xl border border-border bg-card p-4">
             <div className="flex flex-row items-center justify-between pb-2">
               <div className="text-sm font-medium text-muted-foreground">
@@ -181,11 +180,7 @@ export function DashboardSearchPage() {
               </div>
               <RefreshCw className="h-4 w-4 text-muted-foreground" />
             </div>
-            <div className="text-lg font-bold">
-              {status?.articleIndex?.lastSyncTime
-                ? formatDashboardDate(status.articleIndex.lastSyncTime)
-                : "-"}
-            </div>
+            <div className="text-lg font-bold">-</div>
           </div>
         </div>
 
@@ -201,9 +196,9 @@ export function DashboardSearchPage() {
               {copy.pages.search.syncArticles}
             </Button>
             <Button
-              variant="outline"
+              variant="danger"
               onClick={() => setShowClearDialog(true)}
-              className="rounded-full text-red-500 hover:text-red-600"
+              className="rounded-full "
             >
               <Trash2 className="mr-2 h-4 w-4" />
               {copy.pages.search.clearArticles}
@@ -224,13 +219,13 @@ export function DashboardSearchPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {hotSearches.map((item, index) => (
                 <div
-                  key={item.id || index}
+                  key={index}
                   className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card"
                 >
                   <div
                     className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${
                       index < 3
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-primary text-white"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
@@ -254,21 +249,22 @@ export function DashboardSearchPage() {
 
       {/* Clear Confirm Dialog */}
       <Dialog open={showClearDialog} onOpenChange={setShowClearDialog}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg p-0!">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-red-500">
+            <DialogTitle className="flex items-center gap-2 text-red-400">
               <AlertTriangle className="h-5 w-5" />
               {copy.pages.search.clearArticles}
             </DialogTitle>
           </DialogHeader>
-          <div className="py-4">
+          <div className="py-4 px-6">
             <p className="text-sm text-muted-foreground">
               {copy.pages.search.clearConfirm}
             </p>
           </div>
-          <DialogFooter>
+          <DialogFooter className="px-6 pb-4 gap-4!">
             <Button
               variant="outline"
+              className="rounded-full"
               onClick={() => setShowClearDialog(false)}
               disabled={clearing}
             >
@@ -277,6 +273,7 @@ export function DashboardSearchPage() {
             <Button
               variant="danger"
               onClick={handleClear}
+              className="rounded-full"
               loading={clearing}
             >
               {copy.common.delete}

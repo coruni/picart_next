@@ -47474,6 +47474,57 @@
         "responses": {
           "200": {
             "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "enabled": {
+                              "type": "boolean"
+                            },
+                            "documentCount": {
+                              "type": "integer"
+                            },
+                            "indexSize": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "enabled",
+                            "documentCount",
+                            "indexSize"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "success",
+                        "data"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           }
         },
