@@ -215,6 +215,17 @@ button {
     /* 或者用其他视觉手段 */
 }
 
+/* 防止 viewerjs 在 body 上添加 padding-right */
+body.viewer-open {
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
+body.viewer-open .fixed {
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
 
 
 

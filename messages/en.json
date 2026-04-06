@@ -943,6 +943,16 @@
         "required": "Please enter an address",
         "updateError": "Failed to update address, please try again later"
       }
+    },
+    "blockedUsers": {
+      "title": "Blocked Users Management",
+      "description": "You have blocked the following users. They will not be able to send you direct messages.",
+      "emptyDescription": "You haven't blocked any users yet",
+      "blockedAt": "Blocked at",
+      "viewProfile": "View Profile",
+      "unblock": "Unblock",
+      "unblockConfirmTitle": "Confirm Unblock",
+      "unblockConfirmDescription": "Are you sure you want to unblock {username}? They will be able to send you direct messages again."
     }
   }
 }

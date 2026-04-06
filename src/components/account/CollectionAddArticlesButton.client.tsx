@@ -19,10 +19,10 @@ import { Input } from "@/components/ui/Input";
 import { useRouter } from "@/i18n/routing";
 import { cn, formatShortDate } from "@/lib";
 import type { ArticleUserList } from "@/types";
+import { getImageUrl } from "@/types/image";
 import { Check, Plus } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getImageUrl } from "@/types/image";
 
 type CollectionAddArticlesButtonProps = {
   collectionId: number;
@@ -215,13 +215,13 @@ export function CollectionAddArticlesButton({
       </Button>
 
       <Dialog open={open} onOpenChange={resetState}>
-        <DialogContent className="flex max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-card p-5">
+        <DialogContent className="flex max-h-[85vh] max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-card p-0!">
           <DialogHeader className="mb-0 shrink-0 space-y-1">
             <DialogTitle>{t("addArticlesDialog.title")}</DialogTitle>
             {/* <FormDescription>{t("addArticlesDialog.subtitle")}</FormDescription> */}
           </DialogHeader>
 
-          <div className="mt-4 flex shrink-0 items-center gap-3">
+          <div className="mt-4 flex shrink-0 items-center gap-3 px-6">
             <Input
               value={draftKeyword}
               onChange={(event) => setDraftKeyword(event.target.value)}
@@ -245,7 +245,7 @@ export function CollectionAddArticlesButton({
             </Button>
           </div>
 
-          <div className="mt-4 min-h-0 flex-1 overflow-y-auto pr-1">
+          <div className="mt-4  min-h-0 flex-1 overflow-y-auto px-6">
             {articles.length === 0 && !loading ? (
               <div className="rounded-xl border border-dashed border-border px-4 py-10 text-center text-sm text-secondary">
                 {t("addArticlesDialog.empty")}
@@ -271,7 +271,11 @@ export function CollectionAddArticlesButton({
                       <div className="relative mt-0.5 size-18 shrink-0 overflow-hidden rounded-lg bg-muted">
                         {article.cover ? (
                           <ImageWithFallback
-                            src={typeof article.cover === "string" ? article.cover : getImageUrl(article.cover, "small")}
+                            src={
+                              typeof article.cover === "string"
+                                ? article.cover
+                                : getImageUrl(article.cover, "small")
+                            }
                             alt={article.title}
                             fill
                             className="object-cover"
@@ -341,8 +345,7 @@ export function CollectionAddArticlesButton({
           </div>
 
           {error ? <p className="mt-3 text-sm text-red-500">{error}</p> : null}
-
-          <DialogFooter className="mt-4 flex flex-row! justify-end gap-4!">
+          <DialogFooter className="mt-6 flex justify-end gap-4! pb-4! px-6">
             <Button
               type="button"
               variant="outline"

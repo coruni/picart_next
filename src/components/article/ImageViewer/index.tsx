@@ -12,6 +12,11 @@ import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
 import { ImageComment } from "./imageComment";
 import { cleanupViewerCustomUI, setupViewerCustomUI } from "./imageViewerUI";
+
+// Global stack to track active ImageViewer instances for ESC key handling
+const viewerStack: number[] = [];
+let viewerIdCounter = 0;
+
 type Article = ArticleList[number] | ArticleDetail;
 type ImageViewerProps = {
   article?: Article;
@@ -56,6 +61,7 @@ export function ImageViewer({
   const onCloseRef = useRef(onClose);
   const onChangeRef = useRef(onChange);
   const resizeFrameRef = useRef<number | null>(null);
+  const viewerIdRef = useRef<number>(0);
 
   // Sync pendingIndexRef with initialIndex prop changes
   useEffect(() => {
@@ -293,6 +299,14 @@ export function ImageViewer({
   }, [cleanupCustomUI]);
 
   const destroyViewerInstance = useCallback(() => {
+    // Remove this viewer from the stack
+    if (viewerIdRef.current > 0) {
+      const index = viewerStack.indexOf(viewerIdRef.current);
+      if (index > -1) {
+        viewerStack.splice(index, 1);
+      }
+      viewerIdRef.current = 0;
+    }
     disposeViewerInstance();
     panelExpandedRef.current = false;
     setPanelExpanded(false);
@@ -344,10 +358,36 @@ export function ImageViewer({
   ]);
 
   useEffect(() => {
-    if (enableSidePanel) return;
-    panelExpandedRef.current = false;
-    setPanelExpanded(false);
-  }, [enableSidePanel]);
+    if (!visible) return;
+
+    // Store original body styles
+    const originalPaddingRight = document.body.style.paddingRight;
+    const originalPaddingLeft = document.body.style.paddingLeft;
+    const originalOverflow = document.body.style.overflow;
+
+    // Remove padding styles that viewerjs might add
+    const observer = new MutationObserver(() => {
+      if (document.body.style.paddingRight) {
+        document.body.style.paddingRight = "";
+      }
+      if (document.body.style.paddingLeft) {
+        document.body.style.paddingLeft = "";
+      }
+    });
+
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+
+    return () => {
+      observer.disconnect();
+      // Restore original styles
+      document.body.style.paddingRight = originalPaddingRight;
+      document.body.style.paddingLeft = originalPaddingLeft;
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [visible]);
 
   useEffect(() => {
     if (!visible) {
@@ -387,7 +427,7 @@ export function ImageViewer({
       scalable: true,
       transition: true,
       fullscreen: true,
-      keyboard: true,
+      keyboard: false, // Disable built-in keyboard to handle ESC ourselves
       loop: true,
       url: "data-src",
       container: viewerContainerRef.current,
@@ -395,6 +435,13 @@ export function ImageViewer({
       shown() {
         isShownRef.current = true;
         setViewerMounted(true);
+
+        // Push this viewer to the stack when shown
+        if (viewerIdRef.current === 0) {
+          viewerIdCounter += 1;
+          viewerIdRef.current = viewerIdCounter;
+        }
+        viewerStack.push(viewerIdRef.current);
 
         // Defer non-critical UI setup to next frame
         requestAnimationFrame(() => {
@@ -410,6 +457,11 @@ export function ImageViewer({
       },
 
       hidden() {
+        // Remove this viewer from the stack when hidden
+        const index = viewerStack.indexOf(viewerIdRef.current);
+        if (index > -1) {
+          viewerStack.splice(index, 1);
+        }
         destroyViewerInstance();
       },
 
@@ -428,7 +480,23 @@ export function ImageViewer({
 
     openViewerInstance(pendingIndexRef.current);
 
+    // Custom ESC key handler - only close if this viewer is at the top of the stack
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        // Only handle ESC if this viewer is the topmost one
+        if (viewerStack[viewerStack.length - 1] === viewerIdRef.current) {
+          e.stopPropagation();
+          e.preventDefault();
+          onCloseRef.current();
+        }
+      }
+    };
+
+    // Add capture phase listener to intercept before viewerjs
+    document.addEventListener("keydown", handleKeyDown, true);
+
     return () => {
+      document.removeEventListener("keydown", handleKeyDown, true);
       destroyViewerInstance();
     };
   }, [

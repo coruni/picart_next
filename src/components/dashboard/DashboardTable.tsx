@@ -294,13 +294,13 @@ export function DashboardTable<T>({
               <Button
                 type="button"
                 variant="outline"
-                className="h-7 rounded-full"
+                className="h-7 rounded-full truncate"
                 disabled={pagination.previousDisabled}
                 onClick={pagination.onPrevious}
               >
                 {paginationLabels.previous}
               </Button>
-              <div className="text-secondary text-xs">
+              <div className="text-secondary text-xs truncate">
                 {paginationLabels.page
                   .replace("{page}", String(pagination.page))
                   .replace("{totalPages}", String(pagination.totalPages))}
@@ -309,7 +309,7 @@ export function DashboardTable<T>({
               <Button
                 type="button"
                 variant="outline"
-                className="h-7 rounded-full"
+                className="h-7 rounded-full truncate"
                 onClick={pagination.onNext}
               >
                 {paginationLabels.next}

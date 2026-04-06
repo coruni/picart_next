@@ -940,17 +940,17 @@
         "loadError": "地址信息加载失败",
         "required": "请输入地址",
         "updateError": "地址更新失败，请稍后重试"
-      },
-      "blockedUsers": {
-        "title": "屏蔽用户管理",
-        "description": "您已屏蔽以下用户，他们将无法向您发送私信。",
-        "emptyDescription": "您还没有屏蔽任何用户",
-        "blockedAt": "屏蔽时间",
-        "viewProfile": "查看主页",
-        "unblock": "取消屏蔽",
-        "unblockConfirmTitle": "确认取消屏蔽",
-        "unblockConfirmDescription": "确定要取消对 {username} 的屏蔽吗？取消后对方将可以再次给您发送私信。"
       }
+    },
+    "blockedUsers": {
+      "title": "屏蔽用户管理",
+      "description": "您已屏蔽以下用户，他们将无法向您发送私信。",
+      "emptyDescription": "您还没有屏蔽任何用户",
+      "blockedAt": "屏蔽时间",
+      "viewProfile": "查看主页",
+      "unblock": "取消屏蔽",
+      "unblockConfirmTitle": "确认取消屏蔽",
+      "unblockConfirmDescription": "确定要取消对 {username} 的屏蔽吗？取消后对方将可以再次给您发送私信。"
     }
   }
 }

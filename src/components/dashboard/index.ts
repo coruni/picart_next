@@ -6,6 +6,7 @@ export { DashboardCommentsPage } from "./DashboardCommentsPage.client";
 export { DashboardConfigsPage } from "./DashboardConfigsPage.client";
 export { DashboardDataPanel } from "./DashboardDataPanel";
 export { DashboardDecorationsPage } from "./DashboardDecorationsPage.client";
+export { DashboardEmojisPage } from "./DashboardEmojisPage.client";
 export { DashboardOrdersPage } from "./DashboardOrdersPage.client";
 export { DashboardPermissionsPage } from "./DashboardPermissionsPage.client";
 export { DashboardReportsPage } from "./DashboardReportsPage.client";

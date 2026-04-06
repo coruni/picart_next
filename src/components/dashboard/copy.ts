@@ -66,6 +66,7 @@ const copy = {
       banners: "轮播",
       reports: "举报",
       decorations: "装饰品",
+      emojis: "表情",
       achievements: "成就",
       search: "搜索",
     },
@@ -179,6 +180,10 @@ const copy = {
         title: "装饰品管理",
         description: "查看装饰品状态、类型、稀有度和价格信息。",
       },
+      emojis: {
+        title: "表情管理",
+        description: "查看表情状态、分类、使用次数和公开状态。",
+      },
       achievements: {
         title: "成就管理",
         description: "查看成就基础信息、类型、稀有度和启用状态。",
@@ -232,6 +237,7 @@ const copy = {
       banners: "查看轮播状态、图片和链接配置。",
       reports: "巡检举报记录和处理状态。",
       decorations: "查看装饰品类型、价格和上架状态。",
+      emojis: "查看表情分类、使用次数和公开状态。",
       achievements: "查看成就类型、稀有度和启用状态。",
     },
     filters: {
@@ -246,6 +252,7 @@ const copy = {
       bannerTitlePlaceholder: "输入轮播标题",
       reportPlaceholder: "搜索举报原因",
       decorationPlaceholder: "搜索装饰品名称",
+      emojiPlaceholder: "搜索表情名称",
       achievementPlaceholder: "搜索成就名称",
       status: "状态",
       group: "分组",
@@ -303,6 +310,7 @@ const copy = {
       banners: "没有匹配的轮播。",
       reports: "没有匹配的举报。",
       decorations: "没有匹配的装饰品。",
+      emojis: "没有匹配的表情。",
       achievements: "没有匹配的成就。",
     },
     status: {
@@ -392,6 +400,7 @@ const copy = {
       banners: "Banners",
       reports: "Reports",
       decorations: "Decorations",
+      emojis: "Emojis",
       achievements: "Achievements",
       search: "Search",
     },
@@ -512,6 +521,10 @@ const copy = {
         title: "Decoration Management",
         description: "Review decoration status, type, rarity, and pricing.",
       },
+      emojis: {
+        title: "Emoji Management",
+        description: "Review emoji status, category, usage count and public status.",
+      },
       achievements: {
         title: "Achievement Management",
         description:
@@ -566,6 +579,7 @@ const copy = {
       banners: "Review banner status, image, and link settings.",
       reports: "Inspect report records and moderation status.",
       decorations: "Review decoration type, price, and availability.",
+      emojis: "Review emoji category, usage count and public status.",
       achievements: "Review achievement type, rarity, and enabled state.",
     },
     filters: {
@@ -580,6 +594,7 @@ const copy = {
       bannerTitlePlaceholder: "Enter banner title",
       reportPlaceholder: "Search report reason",
       decorationPlaceholder: "Search decoration name",
+      emojiPlaceholder: "Search emoji name",
       achievementPlaceholder: "Search achievement name",
       status: "Status",
       group: "Group",
@@ -637,6 +652,7 @@ const copy = {
       banners: "No matching banners.",
       reports: "No matching reports.",
       decorations: "No matching decorations.",
+      emojis: "No matching emojis.",
       achievements: "No matching achievements.",
     },
     status: {

@@ -254,14 +254,14 @@ export function CollectionEditDialog({
         }
       }}
     >
-      <DialogContent className="flex max-h-[85vh] max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-card p-5">
-        <DialogHeader className="mb-0 shrink-0 space-y-1">
+      <DialogContent className="flex max-h-[85vh] max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-card p-0!">
+        <DialogHeader className="mb-0 shrink-0 space-y-1 ">
           <DialogTitle className="font-semibold">
             {editorMode ? editorTitle : t(`${mode}.title`)}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="mt-2 min-h-0 flex-1 overflow-y-auto pr-1">
+        <div className="mt-2 min-h-0 flex-1 overflow-y-auto px-6!">
           {editorMode && selectedImage ? (
             <div className="flex flex-col gap-4 py-2">
               {!isEditingAvatar ? (
@@ -312,31 +312,10 @@ export function CollectionEditDialog({
               </div>
 
               <p className="text-center text-xs text-secondary">{editorHint}</p>
-
-              <DialogFooter className="mt-2 flex justify-end gap-4!">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="rounded-full"
-                  onClick={handleCancelEditor}
-                  disabled={editorUploading}
-                >
-                  {t("actions.cancel")}
-                </Button>
-                <Button
-                  type="button"
-                  variant="primary"
-                  className="rounded-full"
-                  onClick={() => void handleSaveEditor()}
-                  loading={editorUploading}
-                >
-                  {t("actions.confirm")}
-                </Button>
-              </DialogFooter>
             </div>
           ) : (
             <Form
-              className="space-y-4"
+              className="space-y-4 pb-4"
               errors={errors}
               touched={touched}
               onSubmit={(event) => {
@@ -458,7 +437,10 @@ export function CollectionEditDialog({
                 />
               </FormField>
 
-              <FormField name="description" label={t("fields.descriptionLabel")}>
+              <FormField
+                name="description"
+                label={t("fields.descriptionLabel")}
+              >
                 <div className="space-y-2">
                   <textarea
                     id="collection-description"
@@ -494,30 +476,54 @@ export function CollectionEditDialog({
               </FormField>
 
               {error ? <p className="text-sm text-red-500">{error}</p> : null}
-
-              <DialogFooter className="mt-6 flex justify-end gap-4!">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="rounded-full"
-                  onClick={() => onOpenChange(false)}
-                  disabled={loading}
-                >
-                  {t("actions.cancel")}
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="rounded-full"
-                  loading={loading}
-                  disabled={!name.trim()}
-                >
-                  {t(`actions.${mode}`)}
-                </Button>
-              </DialogFooter>
             </Form>
           )}
         </div>
+
+        {editorMode && selectedImage ? (
+          <DialogFooter className="mt-2 flex shrink-0 justify-end gap-4! px-6 pb-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-full"
+              onClick={handleCancelEditor}
+              disabled={editorUploading}
+            >
+              {t("actions.cancel")}
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              className="rounded-full"
+              onClick={() => void handleSaveEditor()}
+              loading={editorUploading}
+            >
+              {t("actions.confirm")}
+            </Button>
+          </DialogFooter>
+        ) : (
+          <DialogFooter className="mt-6 flex shrink-0 justify-end gap-4! px-6 pb-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-full"
+              onClick={() => onOpenChange(false)}
+              disabled={loading}
+            >
+              {t("actions.cancel")}
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              className="rounded-full"
+              onClick={() => void handleSubmit()}
+              loading={loading}
+              disabled={!name.trim()}
+            >
+              {t(`actions.${mode}`)}
+            </Button>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );

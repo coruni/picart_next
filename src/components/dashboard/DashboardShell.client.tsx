@@ -16,6 +16,7 @@ import {
   ReceiptText,
   Search,
   ShieldUser,
+  Smile,
   Sparkles,
   Tags,
   TriangleAlert,
@@ -104,6 +105,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
       label: copy.nav.decorations,
       description: copy.pages.decorations.description,
       icon: Sparkles,
+    },
+    {
+      href: "/dashboard/emojis",
+      label: copy.nav.emojis,
+      description: copy.pages.emojis.description,
+      icon: Smile,
     },
     {
       href: "/dashboard/achievements",
