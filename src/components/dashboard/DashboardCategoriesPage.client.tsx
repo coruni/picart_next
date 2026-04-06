@@ -45,7 +45,6 @@ export function DashboardCategoriesPage() {
     [],
   );
 
-
   // 获取父分类选项
   const parentOptions = useMemo(() => {
     const options = [{ value: "0", label: "顶级分类" }];
@@ -441,7 +440,9 @@ export function DashboardCategoriesPage() {
         initialValues={{
           name: editingItem?.name,
           description: editingItem?.description,
-          parentId: editingItem?.parentId ? String(editingItem.parentId) : "0",
+          parentId: editingItem?.parentId
+            ? String(editingItem.parentId)
+            : undefined,
           avatar: editingItem?.avatar,
           background: editingItem?.background,
           cover: editingItem?.cover,
