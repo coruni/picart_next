@@ -1,40 +1,19 @@
 "use client";
 
 import {
-  configControllerCreate,
   configControllerFindAll,
-  configControllerFindByGroup,
-  configControllerRemove,
   configControllerUpdate,
   uploadControllerUploadFile,
 } from "@/api";
+import { cn } from "@/lib";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { cn } from "@/lib";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/Dialog";
-import {
-  DropdownMenu,
-  type MenuItem,
-} from "@/components/shared";
-import {
-  ImagePlus,
-  X,
-  Plus,
-  MoreHorizontal,
-  Trash2,
-  PencilLine,
-} from "lucide-react";
+import { ImagePlus, X, Save } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useImageCompression } from "@/hooks/useImageCompression";
 import { getDashboardCopy } from "./copy";
 import {
@@ -154,52 +133,173 @@ function createDraftMap(items: DashboardConfigItem[]) {
 
 type DashboardCopy = ReturnType<typeof getDashboardCopy>;
 
-type ConfigCardProps = {
-  item: DashboardConfigItem;
-  draftValue: string;
-  saving: boolean;
+// 纯编辑器组件，无状态管理
+function ConfigEditor({
+  kind,
+  value,
+  inputId,
+  uploading,
+  text,
+  onChange,
+  onImageSelect,
+}: {
+  kind: ConfigEditorKind;
+  value: string;
+  inputId: string;
   uploading: boolean;
-  error?: string;
   text: DashboardCopy["pages"]["configs"];
-  saveText: string;
-  onValueChange: (value: string) => void;
+  onChange: (value: string) => void;
   onImageSelect: (file: File) => void;
-  onSave: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
-};
+}) {
+  const handleFileChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      event.target.value = "";
+      if (file) {
+        onImageSelect(file);
+      }
+    },
+    [onImageSelect]
+  );
 
-function ConfigCard({
+  switch (kind) {
+    case "boolean":
+      return (
+        <div className="flex items-center justify-between rounded-xl border border-border/70 bg-card px-3 py-3">
+          <div className="text-sm text-muted-foreground">{value}</div>
+          <Switch
+            checked={value === "true"}
+            onCheckedChange={(checked) => onChange(checked ? "true" : "false")}
+          />
+        </div>
+      );
+
+    case "input":
+      return (
+        <Input
+          fullWidth
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-10"
+        />
+      );
+
+    case "number":
+      return (
+        <Input
+          fullWidth
+          type="number"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-10"
+        />
+      );
+
+    case "textarea":
+      return (
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={cn(
+            "min-h-32 w-full rounded-xl border border-border bg-card px-3 py-2 text-sm text-foreground outline-none transition-colors",
+            "focus:border-primary hover:border-primary",
+          )}
+        />
+      );
+
+    case "image":
+      return (
+        <div className="space-y-3">
+          <input
+            id={inputId}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+
+          <div className="overflow-hidden rounded-xl border border-border/70 bg-card">
+            <div className="relative aspect-16/7 overflow-hidden">
+              {value ? (
+                <ImageWithFallback
+                  src={value}
+                  alt={text.imagePreviewAlt}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-muted-foreground">
+                  <ImagePlus className="size-6" />
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <label
+              htmlFor={inputId}
+              className={cn(
+                "inline-flex h-7 cursor-pointer items-center justify-center rounded-full border-2 border-primary px-4 text-sm font-medium text-primary transition-colors",
+                "hover:bg-primary hover:text-white",
+                uploading && "pointer-events-none opacity-60",
+              )}
+            >
+              {uploading
+                ? text.saving
+                : value
+                  ? text.replaceImage
+                  : text.uploadImage}
+            </label>
+
+            {value ? (
+              <button
+                type="button"
+                className="inline-flex h-7 items-center justify-center rounded-full border border-border/70 px-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                onClick={() => onChange("")}
+              >
+                <X className="mr-1 size-3.5" />
+                {text.removeImage}
+              </button>
+            ) : null}
+          </div>
+        </div>
+      );
+
+    default:
+      return null;
+  }
+}
+
+// 简化的 ConfigCard，使用 memo 优化
+const ConfigCard = React.memo(function ConfigCard({
   item,
   draftValue,
-  saving,
   uploading,
   error,
   text,
-  saveText,
   onValueChange,
   onImageSelect,
-  onSave,
-  onEdit,
-  onDelete,
-}: ConfigCardProps) {
-  const editorKind = getConfigEditorKind(item);
-  const dirty = draftValue !== (item.value ?? "");
+}: {
+  item: DashboardConfigItem;
+  draftValue: string;
+  uploading: boolean;
+  error?: string;
+  text: DashboardCopy["pages"]["configs"];
+  onValueChange: (id: number, value: string) => void;
+  onImageSelect: (id: number, file: File) => void;
+}) {
+  const editorKind = useMemo(() => getConfigEditorKind(item), [item]);
   const inputId = `dashboard-config-upload-${item.id}`;
 
-  const menuItems: MenuItem[] = [
-    {
-      label: saveText,
-      icon: <PencilLine size={16} />,
-      onClick: onEdit,
-    },
-    {
-      label: text.removeImage,
-      icon: <Trash2 size={16} />,
-      className: "text-red-500",
-      onClick: onDelete,
-    },
-  ];
+  const handleChange = useCallback(
+    (value: string) => onValueChange(item.id, value),
+    [item.id, onValueChange]
+  );
+
+  const handleImageSelect = useCallback(
+    (file: File) => onImageSelect(item.id, file),
+    [item.id, onImageSelect]
+  );
 
   return (
     <article className="rounded-xl border border-border/70 bg-card p-4">
@@ -220,32 +320,6 @@ function ConfigCard({
             </span>
           </div>
         </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="primary"
-            className="h-7 rounded-full px-4"
-            onClick={onSave}
-            loading={saving}
-            disabled={!dirty || uploading}
-          >
-            {saving ? text.saving : saveText}
-          </Button>
-          <DropdownMenu
-            title={text.typeLabel}
-            items={menuItems}
-            trigger={
-              <button
-                type="button"
-                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <MoreHorizontal size={16} />
-              </button>
-            }
-            className="inline-flex"
-            menuClassName="top-8"
-          />
-        </div>
       </div>
 
       <p className="mt-3 text-sm leading-6 text-muted-foreground">
@@ -253,332 +327,23 @@ function ConfigCard({
       </p>
 
       <div className="mt-4 space-y-3">
-        {editorKind === "boolean" ? (
-          <div className="flex items-center justify-between rounded-xl border border-border/70 bg-card px-3 py-3">
-            <div className="text-sm text-muted-foreground">{draftValue}</div>
-            <Switch
-              checked={draftValue === "true"}
-              onCheckedChange={(checked) =>
-                onValueChange(checked ? "true" : "false")
-              }
-            />
-          </div>
-        ) : null}
-
-        {editorKind === "input" ? (
-          <Input
-            fullWidth
-            value={draftValue}
-            onChange={(event) => onValueChange(event.target.value)}
-            className="h-10"
-          />
-        ) : null}
-
-        {editorKind === "number" ? (
-          <Input
-            fullWidth
-            type="number"
-            value={draftValue}
-            onChange={(event) => onValueChange(event.target.value)}
-            className="h-10"
-          />
-        ) : null}
-
-        {editorKind === "textarea" ? (
-          <textarea
-            value={draftValue}
-            onChange={(event) => onValueChange(event.target.value)}
-            className={cn(
-              "min-h-32 w-full rounded-xl border border-border bg-card px-3 py-2 text-sm text-foreground outline-none transition-colors",
-              "focus:border-primary hover:border-primary",
-            )}
-          />
-        ) : null}
-
-        {editorKind === "image" ? (
-          <div className="space-y-3">
-            <input
-              id={inputId}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                event.target.value = "";
-
-                if (file) {
-                  onImageSelect(file);
-                }
-              }}
-            />
-
-            <div className="overflow-hidden rounded-xl border border-border/70 bg-card">
-              <div className="relative aspect-16/7 overflow-hidden">
-                {draftValue ? (
-                  <ImageWithFallback
-                    src={draftValue}
-                    alt={text.imagePreviewAlt}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-muted-foreground">
-                    <ImagePlus className="size-6" />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <label
-                htmlFor={inputId}
-                className={cn(
-                  "inline-flex h-7 cursor-pointer items-center justify-center rounded-full border-2 border-primary px-4 text-sm font-medium text-primary transition-colors",
-                  "hover:bg-primary hover:text-white",
-                  uploading && "pointer-events-none opacity-60",
-                )}
-              >
-                {uploading
-                  ? text.saving
-                  : draftValue
-                    ? text.replaceImage
-                    : text.uploadImage}
-              </label>
-
-              {draftValue ? (
-                <button
-                  type="button"
-                  className="inline-flex h-7 items-center justify-center rounded-full border border-border/70 px-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  onClick={() => onValueChange("")}
-                >
-                  <X className="mr-1 size-3.5" />
-                  {text.removeImage}
-                </button>
-              ) : null}
-            </div>
-          </div>
-        ) : null}
-
+        <ConfigEditor
+          kind={editorKind}
+          value={draftValue}
+          inputId={inputId}
+          uploading={uploading}
+          text={text}
+          onChange={handleChange}
+          onImageSelect={handleImageSelect}
+        />
         {error ? <p className="text-sm text-red-500">{error}</p> : null}
       </div>
     </article>
   );
-}
+});
 
-// Create/Edit Config Dialog
-type ConfigDialogProps = {
-  open: boolean;
-  editingItem: DashboardConfigItem | null;
-  text: DashboardCopy["pages"]["configs"];
-  commonText: DashboardCopy["common"];
-  groups: string[];
-  onOpenChange: (open: boolean) => void;
-  onSubmit: (values: {
-    key: string;
-    value: string;
-    type: string;
-    group: string;
-    description: string;
-    public: boolean;
-  }) => void;
-  loading: boolean;
-};
-
-function ConfigDialog({
-  open,
-  editingItem,
-  text,
-  commonText,
-  groups,
-  onOpenChange,
-  onSubmit,
-  loading,
-}: ConfigDialogProps) {
-  const [key, setKey] = useState("");
-  const [value, setValue] = useState("");
-  const [type, setType] = useState("string");
-  const [group, setGroup] = useState("");
-  const [description, setDescription] = useState("");
-  const [isPublic, setIsPublic] = useState(false);
-  const [keyError, setKeyError] = useState("");
-
-  const isEditing = Boolean(editingItem);
-  const title = isEditing ? text.editTitle : text.createTitle;
-
-  useEffect(() => {
-    if (editingItem) {
-      setKey(editingItem.key);
-      setValue(editingItem.value ?? "");
-      setType(editingItem.type || "string");
-      setGroup(editingItem.group || "");
-      setDescription(editingItem.description || "");
-      setIsPublic(editingItem.public);
-    } else {
-      setKey("");
-      setValue("");
-      setType("string");
-      setGroup("");
-      setDescription("");
-      setIsPublic(false);
-    }
-    setKeyError("");
-  }, [editingItem, open]);
-
-  const handleSubmit = () => {
-    if (!key.trim()) {
-      setKeyError(text.keyRequired);
-      return;
-    }
-    onSubmit({
-      key: key.trim(),
-      value: value.trim(),
-      type,
-      group: group.trim(),
-      description: description.trim(),
-      public: isPublic,
-    });
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Plus className="size-5" />
-            {title}
-          </DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">{text.keyLabel}</label>
-            <Input
-              fullWidth
-              value={key}
-              onChange={(e) => {
-                setKey(e.target.value);
-                setKeyError("");
-              }}
-              placeholder={text.keyPlaceholder}
-              disabled={isEditing}
-              className={cn(keyError && "border-red-500")}
-            />
-            {keyError && <p className="text-xs text-red-500">{keyError}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">{text.typeSelectLabel}</label>
-            <select
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-              className="w-full h-10 rounded-xl border border-border bg-card px-3 text-sm outline-none focus:border-primary"
-            >
-              {CONFIG_TYPES.map((t) => (
-                <option key={t.value} value={t.value}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">{text.groupLabel}</label>
-            <div className="flex gap-2">
-              <Input
-                fullWidth
-                value={group}
-                onChange={(e) => setGroup(e.target.value)}
-                placeholder={text.groupPlaceholder}
-              />
-              {groups.length > 0 && (
-                <select
-                  value=""
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      setGroup(e.target.value);
-                    }
-                  }}
-                  className="h-10 rounded-xl border border-border bg-card px-3 text-sm outline-none focus:border-primary"
-                >
-                  <option value="">选择现有分组</option>
-                  {groups.map((g) => (
-                    <option key={g} value={g}>
-                      {g}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">{text.valueLabel}</label>
-            {type === "boolean" ? (
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={value === "true"}
-                  onCheckedChange={(checked) => setValue(checked ? "true" : "false")}
-                />
-                <span className="text-sm text-muted-foreground">{value || "false"}</span>
-              </div>
-            ) : type === "text" || type === "json" ? (
-              <textarea
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                className={cn(
-                  "min-h-24 w-full rounded-xl border border-border bg-card px-3 py-2 text-sm text-foreground outline-none transition-colors",
-                  "focus:border-primary hover:border-primary",
-                )}
-              />
-            ) : (
-              <Input
-                fullWidth
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                placeholder="输入默认值"
-              />
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium">{text.descriptionLabel}</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder={text.descriptionPlaceholder}
-              className={cn(
-                "min-h-20 w-full rounded-xl border border-border bg-card px-3 py-2 text-sm text-foreground outline-none transition-colors",
-                "focus:border-primary hover:border-primary",
-              )}
-            />
-          </div>
-
-          <div className="flex items-center justify-between rounded-xl border border-border/70 bg-card px-3 py-3">
-            <div className="text-sm font-medium">{text.publicLabel}</div>
-            <Switch checked={isPublic} onCheckedChange={setIsPublic} />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-            disabled={loading}
-            className="rounded-full"
-          >
-            {commonText.cancel}
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleSubmit}
-            loading={loading}
-            className="rounded-full"
-          >
-            {commonText.save}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+// 导入 React
+import React from "react";
 
 export function DashboardConfigsPage() {
   const locale = useLocale();
@@ -593,30 +358,27 @@ export function DashboardConfigsPage() {
   const [activeGroup, setActiveGroup] = useState(ALL_GROUP_VALUE);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [savingId, setSavingId] = useState<number | null>(null);
   const [uploadingId, setUploadingId] = useState<number | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<number, string>>({});
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Dialog states
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<DashboardConfigItem | null>(null);
-  const [dialogLoading, setDialogLoading] = useState(false);
+  // 使用 ref 来跟踪是否有未保存的更改
+  const hasChangesRef = useRef(false);
 
   const loadAllConfigs = useCallback(
     async (showLoading = true) => {
       if (showLoading) {
         setLoading(true);
       }
-
       setError(false);
 
       try {
         const response = await configControllerFindAll();
         const nextConfigs = response?.data?.data?.data || [];
-
         setAllConfigs(nextConfigs);
         setDrafts(createDraftMap(nextConfigs));
         setFieldErrors({});
+        hasChangesRef.current = false;
       } catch {
         setError(true);
       } finally {
@@ -625,81 +387,43 @@ export function DashboardConfigsPage() {
         }
       }
     },
-    [],
+    []
   );
 
   useEffect(() => {
-    if (!ready) {
-      return;
-    }
-
+    if (!ready) return;
     void loadAllConfigs();
   }, [loadAllConfigs, ready]);
 
   const groups = useMemo(() => {
     const values = Array.from(
-      new Set(allConfigs.map((item) => item.group).filter(Boolean)),
+      new Set(allConfigs.map((item) => item.group).filter(Boolean))
     );
-
-    return [{ value: ALL_GROUP_VALUE, label: copy.common.all }, ...values.map((item) => ({
-      value: item,
-      label: item,
-    }))];
+    return [
+      { value: ALL_GROUP_VALUE, label: copy.common.all },
+      ...values.map((item) => ({ value: item, label: item })),
+    ];
   }, [allConfigs, copy.common.all]);
 
   const existingGroups = useMemo(() => {
-    return Array.from(new Set(allConfigs.map((item) => item.group).filter(Boolean)));
+    return Array.from(
+      new Set(allConfigs.map((item) => item.group).filter(Boolean))
+    );
   }, [allConfigs]);
 
+  // 使用 allConfigs 在客户端过滤，避免切换 tab 时的 API 请求和 loading 闪烁
   useEffect(() => {
-    if (!ready) {
-      return;
+    if (!ready) return;
+
+    if (activeGroup === ALL_GROUP_VALUE) {
+      setConfigs(allConfigs);
+    } else {
+      // 客户端过滤，无延迟、无 loading 闪烁
+      const filteredConfigs = allConfigs.filter(
+        (item) => item.group === activeGroup
+      );
+      setConfigs(filteredConfigs);
     }
-
-    let mounted = true;
-
-    async function loadCurrentGroup() {
-      if (activeGroup === ALL_GROUP_VALUE) {
-        setConfigs(allConfigs);
-        return;
-      }
-
-      setLoading(true);
-      setError(false);
-
-      try {
-        const response = await configControllerFindByGroup({
-          path: {
-            group: activeGroup,
-          },
-        });
-
-        if (!mounted) {
-          return;
-        }
-
-        const nextConfigs = response?.data?.data?.data || [];
-        setConfigs(nextConfigs);
-        setDrafts((previous) => ({
-          ...createDraftMap(nextConfigs),
-          ...previous,
-        }));
-      } catch {
-        if (mounted) {
-          setError(true);
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    void loadCurrentGroup();
-
-    return () => {
-      mounted = false;
-    };
   }, [activeGroup, allConfigs, ready]);
 
   useEffect(() => {
@@ -710,166 +434,131 @@ export function DashboardConfigsPage() {
 
   const visibleConfigs = useMemo(() => {
     const normalizedKeyword = keyword.trim().toLowerCase();
-
     return configs.filter((item) => {
       const matchesKeyword =
         !normalizedKeyword ||
         item.key.toLowerCase().includes(normalizedKeyword) ||
         item.description?.toLowerCase().includes(normalizedKeyword);
-
       return matchesKeyword;
     });
   }, [configs, keyword]);
 
+  // 计算是否有未保存的更改
+  const hasUnsavedChanges = useMemo(() => {
+    return visibleConfigs.some((item) => {
+      const draftValue = drafts[item.id];
+      return draftValue !== undefined && draftValue !== (item.value ?? "");
+    });
+  }, [visibleConfigs, drafts]);
+
+  // 获取已修改的配置项
+  const modifiedConfigs = useMemo(() => {
+    return visibleConfigs.filter((item) => {
+      const draftValue = drafts[item.id];
+      return draftValue !== undefined && draftValue !== (item.value ?? "");
+    });
+  }, [visibleConfigs, drafts]);
+
   const handleImageUpload = useCallback(
     async (id: number, file: File) => {
       setUploadingId(id);
-      setFieldErrors((previous) => {
-        const next = { ...previous };
+      setFieldErrors((prev) => {
+        const next = { ...prev };
         delete next[id];
         return next;
       });
 
       try {
-        // 压缩图片
         const compressedResult = await compressImage(file);
         const compressedFile = compressedResult.file;
-
         const { data } = await uploadControllerUploadFile({
-          body: {
-            file: compressedFile,
-          },
+          body: { file: compressedFile },
         });
-
         const uploadedUrl = data?.data?.[0]?.url || "";
-
         if (!uploadedUrl) {
           throw new Error(text.uploadFailed);
         }
-
-        setDrafts((previous) => ({
-          ...previous,
-          [id]: uploadedUrl,
-        }));
+        setDrafts((prev) => ({ ...prev, [id]: uploadedUrl }));
+        hasChangesRef.current = true;
       } catch {
-        setFieldErrors((previous) => ({
-          ...previous,
-          [id]: text.uploadFailed,
-        }));
+        setFieldErrors((prev) => ({ ...prev, [id]: text.uploadFailed }));
       } finally {
         setUploadingId(null);
       }
     },
-    [text.uploadFailed, compressImage],
+    [text.uploadFailed, compressImage]
   );
 
-  const handleSave = useCallback(
-    async (item: DashboardConfigItem) => {
-      const nextValue = drafts[item.id] ?? "";
-      setSavingId(item.id);
-      setFieldErrors((previous) => {
-        const next = { ...previous };
-        delete next[item.id];
-        return next;
-      });
+  const handleValueChange = useCallback((id: number, value: string) => {
+    setDrafts((prev) => ({ ...prev, [id]: value }));
+    hasChangesRef.current = true;
+  }, []);
 
+  // 批量保存所有修改
+  const handleBatchSave = useCallback(async () => {
+    if (modifiedConfigs.length === 0) return;
+
+    setIsSaving(true);
+    setFieldErrors({});
+
+    const errors: Record<number, string> = {};
+    const updates: { id: number; value: string }[] = [];
+
+    // 准备更新数据
+    for (const item of modifiedConfigs) {
+      updates.push({ id: item.id, value: drafts[item.id] ?? "" });
+    }
+
+    // 串行保存，避免同时请求过多
+    for (const update of updates) {
       try {
         await configControllerUpdate({
-          path: {
-            id: item.id,
-          },
-          body: {
-            value: nextValue,
-          },
+          path: { id: update.id },
+          body: { value: update.value },
         });
-
-        setConfigs((previous) =>
-          previous.map((current) =>
-            current.id === item.id
-              ? {
-                  ...current,
-                  value: nextValue,
-                  updatedAt: new Date().toISOString(),
-                }
-              : current,
-          ),
-        );
-        setAllConfigs((previous) =>
-          previous.map((current) =>
-            current.id === item.id
-              ? {
-                  ...current,
-                  value: nextValue,
-                  updatedAt: new Date().toISOString(),
-                }
-              : current,
-          ),
-        );
       } catch {
-        setFieldErrors((previous) => ({
-          ...previous,
-          [item.id]: text.saveFailed,
-        }));
-      } finally {
-        setSavingId(null);
+        errors[update.id] = text.saveFailed;
       }
-    },
-    [drafts, text.saveFailed],
-  );
-
-  const handleCreate = async (values: {
-    key: string;
-    value: string;
-    type: string;
-    group: string;
-    description: string;
-    public: boolean;
-  }) => {
-    setDialogLoading(true);
-    try {
-      await configControllerCreate({
-        body: {
-          key: values.key,
-          value: values.value,
-          type: values.type,
-          group: values.group,
-          description: values.description,
-          public: values.public,
-        },
-      });
-      setDialogOpen(false);
-      setEditingItem(null);
-      await loadAllConfigs();
-    } catch {
-      alert(text.createFailed);
-    } finally {
-      setDialogLoading(false);
     }
-  };
 
-  const handleDelete = async (item: DashboardConfigItem) => {
-    if (!window.confirm(text.deleteConfirm)) {
-      return;
+    // 更新本地状态
+    setConfigs((prev) =>
+      prev.map((item) => {
+        const update = updates.find((u) => u.id === item.id);
+        if (update) {
+          return {
+            ...item,
+            value: update.value,
+            updatedAt: new Date().toISOString(),
+          };
+        }
+        return item;
+      })
+    );
+
+    setAllConfigs((prev) =>
+      prev.map((item) => {
+        const update = updates.find((u) => u.id === item.id);
+        if (update) {
+          return {
+            ...item,
+            value: update.value,
+            updatedAt: new Date().toISOString(),
+          };
+        }
+        return item;
+      })
+    );
+
+    setFieldErrors(errors);
+    setIsSaving(false);
+    hasChangesRef.current = false;
+
+    // 如果有错误，提示用户
+    if (Object.keys(errors).length > 0) {
+      alert(`${text.saveFailed} (${Object.keys(errors).length})`);
     }
-    try {
-      await configControllerRemove({
-        path: { id: item.id },
-      });
-      await loadAllConfigs();
-    } catch {
-      alert(text.deleteFailed);
-    }
-  };
-
-  const handleOpenCreate = () => {
-    setEditingItem(null);
-    setDialogOpen(true);
-  };
-
-  const handleOpenEdit = (item: DashboardConfigItem) => {
-    setEditingItem(item);
-    setDialogOpen(true);
-  };
+  }, [modifiedConfigs, drafts, text.saveFailed]);
 
   if (!ready || loading) {
     return <DashboardLoadingView text={copy.common.loading} />;
@@ -899,12 +588,17 @@ export function DashboardConfigsPage() {
             <div className="flex items-center justify-between gap-3 border-b border-border/70 px-3 py-3">
               <div>
                 <h2 className="text-sm font-semibold tracking-[0.01em] text-foreground md:text-base">
-                {copy.pages.configs.title}
+                  {copy.pages.configs.title}
                 </h2>
                 <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
                   {text.selectedGroupCount.replace(
                     "{count}",
-                    String(visibleConfigs.length),
+                    String(visibleConfigs.length)
+                  )}
+                  {hasUnsavedChanges && (
+                    <span className="ml-2 text-primary">
+                      · {modifiedConfigs.length} 项未保存
+                    </span>
                   )}
                 </p>
               </div>
@@ -916,14 +610,17 @@ export function DashboardConfigsPage() {
                 >
                   {copy.common.refresh}
                 </Button>
-                <Button
-                  variant="primary"
-                  className="h-7 rounded-full px-4"
-                  onClick={handleOpenCreate}
-                >
-                  <Plus className="mr-1 size-4" />
-                  {text.create}
-                </Button>
+                {hasUnsavedChanges && (
+                  <Button
+                    variant="primary"
+                    className="h-7 rounded-full px-4"
+                    onClick={handleBatchSave}
+                    loading={isSaving}
+                  >
+                    <Save className="mr-1 size-4" />
+                    {copy.common.save} ({modifiedConfigs.length})
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -959,21 +656,11 @@ export function DashboardConfigsPage() {
                   key={item.id}
                   item={item}
                   draftValue={drafts[item.id] ?? ""}
-                  saving={savingId === item.id}
                   uploading={uploadingId === item.id}
                   error={fieldErrors[item.id]}
                   text={text}
-                  saveText={copy.common.save}
-                  onValueChange={(value) =>
-                    setDrafts((previous) => ({
-                      ...previous,
-                      [item.id]: value,
-                    }))
-                  }
-                  onImageSelect={(file) => void handleImageUpload(item.id, file)}
-                  onSave={() => void handleSave(item)}
-                  onEdit={() => handleOpenEdit(item)}
-                  onDelete={() => void handleDelete(item)}
+                  onValueChange={handleValueChange}
+                  onImageSelect={handleImageUpload}
                 />
               ))}
             </div>
@@ -984,17 +671,6 @@ export function DashboardConfigsPage() {
           )}
         </div>
       </DashboardPanel>
-
-      <ConfigDialog
-        open={dialogOpen}
-        editingItem={editingItem}
-        text={text}
-        commonText={copy.common}
-        groups={existingGroups}
-        onOpenChange={setDialogOpen}
-        onSubmit={handleCreate}
-        loading={dialogLoading}
-      />
     </DashboardPageFrame>
   );
 }
