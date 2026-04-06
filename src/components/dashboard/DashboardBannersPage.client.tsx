@@ -15,6 +15,7 @@ import {
   DashboardEditDialog,
   type DashboardEditField,
 } from "./DashboardEditDialog.client";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
@@ -31,7 +32,9 @@ export function DashboardBannersPage() {
   const [editingItem, setEditingItem] = useState<DashboardBannerItem | null>(
     null,
   );
+  const [deletingItem, setDeletingItem] = useState<DashboardBannerItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const statusValueEnum = useMemo(
@@ -154,16 +157,7 @@ export function DashboardBannersPage() {
                     label: copy.common.delete,
                     icon: <Trash2 size={16} />,
                     className: "text-red-500",
-                    onClick: async () => {
-                      if (!window.confirm(copy.common.deleteConfirm)) {
-                        return;
-                      }
-
-                      await bannerControllerRemove({
-                        path: { id: bannerId },
-                      });
-                      setRefreshKey((current) => current + 1);
-                    },
+                    onClick: () => setDeletingItem(item),
                   },
                 ]}
                 trigger={
@@ -185,6 +179,21 @@ export function DashboardBannersPage() {
     ],
     [copy, statusValueEnum],
   );
+
+  const handleDelete = async () => {
+    if (!deletingItem?.id) return;
+
+    setDeleteLoading(true);
+    try {
+      await bannerControllerRemove({
+        path: { id: deletingItem.id },
+      });
+      setDeletingItem(null);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
@@ -281,6 +290,18 @@ export function DashboardBannersPage() {
             setSubmitting(false);
           }
         }}
+      />
+      <DeleteConfirmDialog
+        open={Boolean(deletingItem)}
+        onOpenChange={(open) => {
+          if (!open) setDeletingItem(null);
+        }}
+        title={copy.common.delete}
+        description={copy.common.deleteConfirm}
+        onConfirm={handleDelete}
+        loading={deleteLoading}
+        confirmText={copy.common.delete}
+        cancelText={copy.common.cancel}
       />
     </DashboardPageFrame>
   );

@@ -8,6 +8,7 @@ import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { DashboardEditDialog, type DashboardEditField } from "./DashboardEditDialog.client";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
@@ -27,7 +28,9 @@ export function DashboardUsersPage() {
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
   const [editingItem, setEditingItem] = useState<DashboardUserItem | null>(null);
+  const [deletingItem, setDeletingItem] = useState<DashboardUserItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const editFields = useMemo<DashboardEditField[]>(
@@ -178,16 +181,7 @@ export function DashboardUsersPage() {
               label: copy.common.delete,
               icon: <Trash2 size={16} />,
               className: "text-red-500",
-              onClick: async () => {
-                if (!window.confirm(copy.common.deleteConfirm)) {
-                  return;
-                }
-
-                await userControllerRemove({
-                  path: { id: String(item.id) },
-                });
-                setRefreshKey((current) => current + 1);
-              },
+              onClick: () => setDeletingItem(item),
             },
           ];
 
@@ -212,6 +206,21 @@ export function DashboardUsersPage() {
     ],
     [copy, locale],
   );
+
+  const handleDelete = async () => {
+    if (!deletingItem?.id) return;
+
+    setDeleteLoading(true);
+    try {
+      await userControllerRemove({
+        path: { id: String(deletingItem.id) },
+      });
+      setDeletingItem(null);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
@@ -310,6 +319,18 @@ export function DashboardUsersPage() {
             setSubmitting(false);
           }
         }}
+      />
+      <DeleteConfirmDialog
+        open={Boolean(deletingItem)}
+        onOpenChange={(open) => {
+          if (!open) setDeletingItem(null);
+        }}
+        title={copy.common.delete}
+        description={copy.common.deleteConfirm}
+        onConfirm={handleDelete}
+        loading={deleteLoading}
+        confirmText={copy.common.delete}
+        cancelText={copy.common.cancel}
       />
     </DashboardPageFrame>
   );

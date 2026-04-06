@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { GuardedLink } from "@/components/shared/GuardedLink";
+import { looksLikeAdminRole } from "@/components/dashboard/utils";
 import { Button } from "@/components/ui/Button";
 import {
   Dialog,
@@ -39,7 +40,7 @@ import {
   UserRoundX,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { Avatar } from "../ui/Avatar";
 import { UserLoginDialog } from "./UserLoginDialog";
 
@@ -70,6 +71,10 @@ export function UserDropdown() {
     (state) => state.setAutoTranslateContent,
   );
   const modalStore = useModalStore();
+
+  const hasAdminRole = useMemo(() => {
+    return looksLikeAdminRole(user?.roles);
+  }, [user?.roles]);
 
   const themeOptions = [
     {
@@ -196,6 +201,7 @@ export function UserDropdown() {
                   <ChevronRight className="size-4" />
                 </Link>
               </div>
+                {hasAdminRole && (
                 <div className="p-1">
                   <GuardedLink
                     href="/dashboard"
@@ -212,6 +218,7 @@ export function UserDropdown() {
                     <ChevronRight className="size-4" />
                   </GuardedLink>
                 </div>
+                )}
                 <div className="p-1">
                   <GuardedLink
                     href="/message"
@@ -462,6 +469,7 @@ export function UserDropdown() {
                     </div>
                     <ChevronRight className="size-4" />
                   </Link>
+                  {hasAdminRole && (
                   <GuardedLink
                     href="/dashboard"
                     onClick={closeMobileMenu}
@@ -475,6 +483,7 @@ export function UserDropdown() {
                     </div>
                     <ChevronRight className="size-4" />
                   </GuardedLink>
+                  )}
                   <GuardedLink
                     href="/message"
                     onClick={closeMobileMenu}

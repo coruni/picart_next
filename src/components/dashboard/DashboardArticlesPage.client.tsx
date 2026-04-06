@@ -27,6 +27,7 @@ import {
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
@@ -45,6 +46,8 @@ export function DashboardArticlesPage() {
   const [auditingItem, setAuditingItem] = useState<DashboardArticleItem | null>(
     null,
   );
+  const [deletingItem, setDeletingItem] = useState<DashboardArticleItem | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [auditReason, setAuditReason] = useState("");
   const [auditSubmitting, setAuditSubmitting] = useState(false);
 
@@ -176,16 +179,7 @@ export function DashboardArticlesPage() {
               label: copy.common.delete,
               icon: <Trash2 size={16} />,
               className: "text-red-500",
-              onClick: async () => {
-                if (!window.confirm(copy.common.deleteConfirm)) {
-                  return;
-                }
-
-                await articleControllerRemove({
-                  path: { id: String(item.id) },
-                });
-                setRefreshKey((current) => current + 1);
-              },
+              onClick: () => setDeletingItem(item),
             },
           ];
 
@@ -210,6 +204,21 @@ export function DashboardArticlesPage() {
     ],
     [copy, locale, router, statusValueEnum],
   );
+
+  const handleDelete = async () => {
+    if (!deletingItem?.id) return;
+
+    setDeleteLoading(true);
+    try {
+      await articleControllerRemove({
+        path: { id: String(deletingItem.id) },
+      });
+      setDeletingItem(null);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
@@ -304,6 +313,19 @@ export function DashboardArticlesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <DeleteConfirmDialog
+        open={Boolean(deletingItem)}
+        onOpenChange={(open) => {
+          if (!open) setDeletingItem(null);
+        }}
+        title={copy.common.delete}
+        description={copy.common.deleteConfirm}
+        onConfirm={handleDelete}
+        loading={deleteLoading}
+        confirmText={copy.common.delete}
+        cancelText={copy.common.cancel}
+      />
     </DashboardPageFrame>
   );
 }

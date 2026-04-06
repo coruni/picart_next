@@ -899,19 +899,12 @@
     "more": "More"
   },
   "searchBox": {
-    "hotSearches": [
-      "Check in",
-      "Genshin",
-      "Honkai",
-      "Star Rail",
-      "ZZZ"
-    ]
+    "hotSearches": ["Check in", "Genshin", "Honkai", "Star Rail", "ZZZ"]
   },
   "languageSwitcher": {
     "zh": "Chinese",
     "en": "English"
-  }
-,
+  },
   "setting": {
     "contact": {
       "notice": "Please carefully fill in and maintain your contact information. We will keep your information strictly confidential and use it only for account contact, notifications, and necessary service support.",
@@ -949,18 +942,6 @@
         "loadError": "Failed to load address information",
         "required": "Please enter an address",
         "updateError": "Failed to update address, please try again later"
-      }
-    }
-      },
-      "blockedUsers": {
-        "title": "Blocked Users",
-        "description": "You have blocked the following users. They cannot send you private messages.",
-        "emptyDescription": "You haven't blocked any users yet",
-        "blockedAt": "Blocked on",
-        "viewProfile": "View Profile",
-        "unblock": "Unblock",
-        "unblockConfirmTitle": "Confirm Unblock",
-        "unblockConfirmDescription": "Are you sure you want to unblock {username}? After unblocking, they will be able to send you private messages again."
       }
     }
   }

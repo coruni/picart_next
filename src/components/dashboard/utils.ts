@@ -83,7 +83,7 @@ export function getRoleLabels(
   roles?: Array<{ displayName?: string; name?: string }> | null,
 ) {
   return (roles || [])
-    .map((role) => role.displayName || role.name)
+    .map((role) => role.name||role.displayName)
     .filter((value): value is string => Boolean(value));
 }
 
@@ -91,7 +91,7 @@ export function looksLikeAdminRole(
   roles?: Array<{ displayName?: string; name?: string }> | null,
 ) {
   return getRoleLabels(roles).some((role) =>
-    /admin|root|super|manage|运营|管理/i.test(role),
+    /admin|root|super|manage|运营|管理|super-admin/i.test(role),
   );
 }
 

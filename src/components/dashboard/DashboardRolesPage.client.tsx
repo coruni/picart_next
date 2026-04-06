@@ -21,6 +21,7 @@ import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import { DashboardEditDialog, type DashboardEditField } from "./DashboardEditDialog.client";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
@@ -36,11 +37,13 @@ export function DashboardRolesPage() {
   const { ready } = useDashboardGuard();
   const [editingItem, setEditingItem] = useState<DashboardRoleItem | null>(null);
   const [editingPermissionsItem, setEditingPermissionsItem] = useState<DashboardRoleItem | null>(null);
+  const [deletingItem, setDeletingItem] = useState<DashboardRoleItem | null>(null);
   const [permissions, setPermissions] = useState<DashboardPermissionItem[]>([]);
   const [selectedPermissions, setSelectedPermissions] = useState<number[]>([]);
   const [permissionsLoading, setPermissionsLoading] = useState(false);
   const [permissionsSubmitting, setPermissionsSubmitting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const statusValueEnum = useMemo(
@@ -193,15 +196,9 @@ export function DashboardRolesPage() {
               icon: <Trash2 size={16} />,
               className: "text-red-500",
               disabled: item.isSystem,
-              onClick: async () => {
-                if (item.isSystem || !window.confirm(copy.common.deleteConfirm)) {
-                  return;
-                }
-
-                await roleControllerRemove({
-                  path: { id: String(item.id) },
-                });
-                setRefreshKey((current) => current + 1);
+              onClick: () => {
+                if (item.isSystem) return;
+                setDeletingItem(item);
               },
             },
           ];
@@ -227,6 +224,21 @@ export function DashboardRolesPage() {
     ],
     [copy, statusValueEnum],
   );
+
+  const handleDelete = async () => {
+    if (!deletingItem?.id || deletingItem.isSystem) return;
+
+    setDeleteLoading(true);
+    try {
+      await roleControllerRemove({
+        path: { id: String(deletingItem.id) },
+      });
+      setDeletingItem(null);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
@@ -376,6 +388,19 @@ export function DashboardRolesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <DeleteConfirmDialog
+        open={Boolean(deletingItem)}
+        onOpenChange={(open) => {
+          if (!open) setDeletingItem(null);
+        }}
+        title={copy.common.delete}
+        description={copy.common.deleteConfirm}
+        onConfirm={handleDelete}
+        loading={deleteLoading}
+        confirmText={copy.common.delete}
+        cancelText={copy.common.cancel}
+      />
     </DashboardPageFrame>
   );
 }

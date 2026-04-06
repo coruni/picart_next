@@ -641,7 +641,7 @@ export function CommentEditor({
               className="comment-editor-upload-swiper"
             >
               {attachments.map((attachment) => (
-                <SwiperSlide key={attachment.id} className="!w-auto">
+                <SwiperSlide key={attachment.id} className="w-auto!">
                   <AttachmentPreviewCard
                     attachment={attachment}
                     onRemove={removeAttachment}
@@ -785,7 +785,7 @@ export function CommentEditor({
             size="md"
             loading={isSubmitting}
             className={cn(
-              "h-9 min-w-24 rounded-full px-6 font-semibold shadow-none",
+              "h-8 min-w-24 rounded-full px-4 font-semibold shadow-none",
               canSubmit
                 ? "hover:opacity-90"
                 : "cursor-not-allowed bg-[#e9eef7] text-[#b7c1d3]",
