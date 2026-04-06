@@ -112,6 +112,7 @@ export function CommentReplyList({
     renderKey: modalRenderKey,
     shouldAutoTranslate: shouldAutoTranslateModal,
     toggleTranslate: toggleModalTranslate,
+    contentMatchesLocale,
   } = useManualHtmlTranslate({
     html: contentHtml,
     resetKey: `${data.id}-${data.content}`,
@@ -418,22 +419,24 @@ export function CommentReplyList({
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <button
-                    type="button"
-                    title={tComment("translate")}
-                    className={cn(
-                      "flex size-7 cursor-pointer items-center justify-center rounded-lg p-1 text-secondary hover:bg-muted hover:text-primary",
-                      isModalTranslated && "bg-muted text-primary",
-                      isModalTranslating && "pointer-events-none opacity-70",
-                    )}
-                    onClick={toggleModalTranslate}
-                  >
-                    {isModalTranslating ? (
-                      <LoaderCircle size={18} className="animate-spin" />
-                    ) : (
-                      <Languages size={20} />
-                    )}
-                  </button>
+                  {!contentMatchesLocale && (
+                    <button
+                      type="button"
+                      title={tComment("translate")}
+                      className={cn(
+                        "flex size-7 cursor-pointer items-center justify-center rounded-lg p-1 text-secondary hover:bg-muted hover:text-primary",
+                        isModalTranslated && "bg-muted text-primary",
+                        isModalTranslating && "pointer-events-none opacity-70",
+                      )}
+                      onClick={toggleModalTranslate}
+                    >
+                      {isModalTranslating ? (
+                        <LoaderCircle size={18} className="animate-spin" />
+                      ) : (
+                        <Languages size={20} />
+                      )}
+                    </button>
+                  )}
                   <button
                     title={tComment("translate")}
                     className="flex size-7 cursor-pointer items-center justify-center p-1 text-secondary"

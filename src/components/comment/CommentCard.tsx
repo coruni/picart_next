@@ -68,6 +68,7 @@ export function CommentCard({
     renderKey,
     shouldAutoTranslate,
     toggleTranslate,
+    contentMatchesLocale,
   } = useManualHtmlTranslate({
     html: contentHtml,
     resetKey: `account-comment-${comment.id}-${comment.content}`,
@@ -101,22 +102,24 @@ export function CommentCard({
               {formatRelativeTime(comment?.createdAt || "", t, locale)}
             </span>
           </div>
-          <button
-            type="button"
-            title={tComment("translate")}
-            className={cn(
-              "flex size-7 cursor-pointer items-center justify-center rounded-lg p-1 text-secondary transition hover:bg-muted hover:text-primary",
-              isTranslated && "bg-muted text-primary",
-              isTranslating && "pointer-events-none opacity-70",
-            )}
-            onClick={() => void toggleTranslate()}
-          >
-            {isTranslating ? (
-              <LoaderCircle size={16} className="animate-spin" />
-            ) : (
-              <Languages size={18} />
-            )}
-          </button>
+          {!contentMatchesLocale && (
+            <button
+              type="button"
+              title={tComment("translate")}
+              className={cn(
+                "flex size-7 cursor-pointer items-center justify-center rounded-lg p-1 text-secondary transition hover:bg-muted hover:text-primary",
+                isTranslated && "bg-muted text-primary",
+                isTranslating && "pointer-events-none opacity-70",
+              )}
+              onClick={() => void toggleTranslate()}
+            >
+              {isTranslating ? (
+                <LoaderCircle size={16} className="animate-spin" />
+              ) : (
+                <Languages size={18} />
+              )}
+            </button>
+          )}
         </div>
       </div>
 

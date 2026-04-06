@@ -92,6 +92,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
     renderKey,
     shouldAutoTranslate,
     toggleTranslate,
+    contentMatchesLocale,
   } = useManualHtmlTranslate({
     html: replyContentHtml,
     resetKey: `${reply.id}-${reply.content}`,
@@ -153,7 +154,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
               {reply.author?.nickname || reply.author?.username}
             </span>
           </div>
-          {showTranslateButton ? (
+          {showTranslateButton && !contentMatchesLocale ? (
             <button
               type="button"
               title={tComment("translate")}

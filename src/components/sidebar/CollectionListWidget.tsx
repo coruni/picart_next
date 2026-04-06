@@ -3,8 +3,9 @@
 import { CollectionControllerGetCollectionItemsResponse } from "@/api";
 import { collectionControllerGetCollectionItems } from "@/api/sdk.gen";
 import { Link } from "@/i18n/routing";
+import { formatCompactNumber } from "@/lib";
 import { getImageUrl } from "@/types/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 
@@ -29,6 +30,7 @@ export const CollectionListWidget = ({
   const [articles, setArticles] = useState<CollectionArticleItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
+  const locale = useLocale();
 
   useEffect(() => {
     const fetchCollectionItems = async () => {
@@ -101,11 +103,28 @@ export const CollectionListWidget = ({
             >
               {/* Content */}
               <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-medium truncate group-hover:text-primary transition-colors line-clamp-2">
+                <h4
+                  className="text-sm font-medium truncate group-hover:text-primary transition-colors line-clamp-2"
+                  data-auto-translate-content
+                >
                   {item.article?.title}
                 </h4>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {(item.article?.views || 0).toLocaleString()}
+                  {formatCompactNumber(item.article?.views, {
+                    locale: locale,
+                    labels:
+                      locale === "zh"
+                        ? {
+                            thousand: "千",
+                            tenThousand: "万",
+                            hundredMillion: "亿",
+                          }
+                        : {
+                            thousand: "k",
+                            million: "M",
+                            billion: "B",
+                          },
+                  })}
                   {tc("views")}
                 </p>
               </div>

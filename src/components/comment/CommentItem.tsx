@@ -77,6 +77,7 @@ export const CommentItem = memo(function CommentItem({
     renderKey,
     shouldAutoTranslate,
     toggleTranslate,
+    contentMatchesLocale,
   } = useManualHtmlTranslate({
     html: contentHtml,
     resetKey: `${commentState.id}-${commentState.content}`,
@@ -205,24 +206,26 @@ export const CommentItem = memo(function CommentItem({
           </span>
         </div>
         <div className="flex items-center space-x-2">
-          <button
-            type="button"
-            title={tComment("translate")}
-            className={cn(
-              "flex items-center justify-center outline-none focus:outline-0 border-0",
-              "cursor-pointer p-1 hover:bg-muted rounded-lg text-secondary size-7",
-              "hover:text-primary",
-              isTranslated && "text-primary bg-muted",
-              isTranslating && "pointer-events-none opacity-70",
-            )}
-            onClick={toggleTranslate}
-          >
-            {isTranslating ? (
-              <LoaderCircle size={18} className="animate-spin" />
-            ) : (
-              <Languages size={20} />
-            )}
-          </button>
+          {!contentMatchesLocale && (
+            <button
+              type="button"
+              title={tComment("translate")}
+              className={cn(
+                "flex items-center justify-center outline-none focus:outline-0 border-0",
+                "cursor-pointer p-1 hover:bg-muted rounded-lg text-secondary size-7",
+                "hover:text-primary",
+                isTranslated && "text-primary bg-muted",
+                isTranslating && "pointer-events-none opacity-70",
+              )}
+              onClick={toggleTranslate}
+            >
+              {isTranslating ? (
+                <LoaderCircle size={18} className="animate-spin" />
+              ) : (
+                <Languages size={20} />
+              )}
+            </button>
+          )}
           <button
             title={tComment("translate")}
             className={cn(

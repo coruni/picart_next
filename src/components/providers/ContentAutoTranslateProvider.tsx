@@ -1,9 +1,10 @@
 "use client";
 
 import { usePathname } from "@/i18n/routing";
+import { detectContentLanguage } from "@/lib/translate";
 import { useTranslateStore } from "@/stores";
 import { useLocale } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const AUTO_TRANSLATE_SELECTOR =
   "[data-auto-translate-content], [data-auto-translate-comment]";
@@ -15,6 +16,29 @@ const TRANSLATE_LANGUAGE_MAP: Record<string, string> = {
 };
 const TRANSLATE_SCRIPT_ID = "local-translate-js";
 const MUTATION_TRANSLATE_DEBOUNCE_MS = 180;
+const MIN_TEXT_LENGTH_FOR_DETECTION = 1;
+
+// Extract text content from element for language detection
+function extractElementText(element: HTMLElement): string {
+  // Get text content, excluding script/style tags
+  const clone = element.cloneNode(true) as HTMLElement;
+  const scripts = clone.querySelectorAll("script, style");
+  scripts.forEach((el) => el.remove());
+  return clone.textContent || "";
+}
+
+// Check if element's content language matches current locale
+function shouldSkipTranslation(element: HTMLElement, locale: string): boolean {
+  const text = extractElementText(element).trim();
+  if (text.length < MIN_TEXT_LENGTH_FOR_DETECTION) {
+    return false; // Too short to detect reliably
+  }
+  const detectedLang = detectContentLanguage(text);
+  if (!detectedLang) {
+    return false; // Could not detect, allow translation
+  }
+  return detectedLang === locale;
+}
 
 function getTranslateDocuments() {
   return Array.from(
@@ -24,7 +48,8 @@ function getTranslateDocuments() {
 
 function getPendingTranslateDocuments() {
   return getTranslateDocuments().filter(
-    (element) => element.dataset.translateBound !== "true",
+    (element) => element.dataset.translateBound !== "true" &&
+      element.dataset.translateSkipped !== "true",
   );
 }
 
@@ -34,9 +59,16 @@ function markTranslateDocuments(documents: HTMLElement[]) {
   });
 }
 
+function markSkippedDocuments(documents: HTMLElement[]) {
+  documents.forEach((element) => {
+    element.dataset.translateSkipped = "true";
+  });
+}
+
 function clearTranslateDocumentMarks() {
   getTranslateDocuments().forEach((element) => {
     delete element.dataset.translateBound;
+    delete element.dataset.translateSkipped;
   });
 }
 
@@ -54,6 +86,7 @@ function disableTranslateLanguageSelector() {
     container.remove();
   }
 }
+
 
 function configureSessionStorage() {
   const translate = window.translate;
@@ -83,6 +116,28 @@ export function ContentAutoTranslateProvider() {
   const translateTimerRef = useRef<number | null>(null);
   const autoTranslateContent = useTranslateStore(
     (state) => state.autoTranslateContent,
+  );
+
+  const skippedElementsRef = useRef<Set<HTMLElement>>(new Set());
+
+
+  // Filter documents that need translation (exclude those matching current locale)
+  const filterDocumentsByLanguage = useCallback(
+    (documents: HTMLElement[]): { toTranslate: HTMLElement[]; skipped: HTMLElement[] } => {
+      const toTranslate: HTMLElement[] = [];
+      const skipped: HTMLElement[] = [];
+
+      for (const doc of documents) {
+        if (shouldSkipTranslation(doc, locale)) {
+          skipped.push(doc);
+        } else {
+          toTranslate.push(doc);
+        }
+      }
+
+      return { toTranslate, skipped };
+    },
+    [locale],
   );
 
   useEffect(() => {
@@ -121,10 +176,12 @@ export function ContentAutoTranslateProvider() {
     };
     document.body.appendChild(script);
 
+
     return () => {
       script.onload = null;
     };
   }, []);
+
 
   useEffect(() => {
     if (!scriptReady) {
@@ -171,23 +228,45 @@ export function ContentAutoTranslateProvider() {
     }
 
     if (shouldRefreshAll) {
-      translate.setDocuments?.(documents);
-      translate.execute(documents);
-      markTranslateDocuments(documents);
+      // Filter by language before translating
+      const { toTranslate, skipped } = filterDocumentsByLanguage(documents);
+
+      if (toTranslate.length > 0) {
+        translate.setDocuments?.(toTranslate);
+        translate.execute(toTranslate);
+        markTranslateDocuments(toTranslate);
+      }
+
+      // Mark skipped elements
+      if (skipped.length > 0) {
+        markSkippedDocuments(skipped);
+        skipped.forEach((el) => skippedElementsRef.current.add(el));
+      }
+
       translatedScopeKeyRef.current = scopeKey;
     } else {
       translate.setDocuments?.(documents);
-      const pendingDocuments = getPendingTranslateDocuments();
-      if (pendingDocuments.length > 0) {
-        translate.execute(pendingDocuments);
-        markTranslateDocuments(pendingDocuments);
+      const pending = getPendingTranslateDocuments();
+
+      if (pending.length > 0) {
+        const { toTranslate, skipped } = filterDocumentsByLanguage(pending);
+
+        if (toTranslate.length > 0) {
+          translate.execute(toTranslate);
+          markTranslateDocuments(toTranslate);
+        }
+
+        if (skipped.length > 0) {
+          markSkippedDocuments(skipped);
+          skipped.forEach((el) => skippedElementsRef.current.add(el));
+        }
       }
     }
 
     window.requestAnimationFrame(() => {
       translate.changeLanguage?.(targetLanguage);
     });
-  }, [autoTranslateContent, locale, pathname, scriptReady]);
+  }, [autoTranslateContent, locale, pathname, scriptReady, filterDocumentsByLanguage]);
 
   useEffect(() => {
     if (!scriptReady) {
@@ -197,6 +276,7 @@ export function ContentAutoTranslateProvider() {
     return () => {
       initializedRef.current = false;
       translatedScopeKeyRef.current = null;
+      skippedElementsRef.current.clear();
     };
   }, [scriptReady]);
 
@@ -238,15 +318,32 @@ export function ContentAutoTranslateProvider() {
 
       translateTimerRef.current = window.setTimeout(() => {
         const allDocuments = getTranslateDocuments();
-        const pendingDocuments = getPendingTranslateDocuments();
-        if (allDocuments.length === 0 || pendingDocuments.length === 0) {
+        const pending = getPendingTranslateDocuments();
+
+        if (allDocuments.length === 0 || pending.length === 0) {
+          return;
+        }
+
+        // Filter by language
+        const { toTranslate, skipped } = filterDocumentsByLanguage(pending);
+
+        if (toTranslate.length === 0 && skipped.length === 0) {
           return;
         }
 
         disableTranslateLanguageSelector();
         translate.setDocuments?.(allDocuments);
-        translate.execute(pendingDocuments);
-        markTranslateDocuments(pendingDocuments);
+
+        if (toTranslate.length > 0) {
+          translate.execute(toTranslate);
+          markTranslateDocuments(toTranslate);
+        }
+
+        if (skipped.length > 0) {
+          markSkippedDocuments(skipped);
+          skipped.forEach((el) => skippedElementsRef.current.add(el));
+        }
+
         translate.changeLanguage?.(targetLanguage);
       }, MUTATION_TRANSLATE_DEBOUNCE_MS);
     };
@@ -285,7 +382,7 @@ export function ContentAutoTranslateProvider() {
         translateTimerRef.current = null;
       }
     };
-  }, [autoTranslateContent, locale, scriptReady]);
+  }, [autoTranslateContent, locale, scriptReady, filterDocumentsByLanguage]);
 
   return null;
 }

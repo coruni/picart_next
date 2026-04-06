@@ -1,8 +1,9 @@
 "use client";
 
+import { isContentMatchingLocale } from "@/lib/translate";
 import { useTranslateStore } from "@/stores";
 import { useLocale } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const TRANSLATE_LOCAL_LANGUAGE = "chinese_simplified";
 const TRANSLATE_LANGUAGE_MAP: Record<string, string> = {
@@ -110,6 +111,11 @@ export function useManualHtmlTranslate({
   const [isTranslating, setIsTranslating] = useState(false);
   const previousAutoTranslateRef = useRef(autoTranslateContent);
 
+  // Detect if content language matches current locale
+  const contentMatchesLocale = useMemo(() => {
+    return isContentMatchingLocale(html, locale);
+  }, [html, locale]);
+
   const toggleTranslate = useCallback(async () => {
     const targetLanguage = TRANSLATE_LANGUAGE_MAP[locale];
     if (!targetLanguage || isTranslating) {
@@ -170,10 +176,11 @@ export function useManualHtmlTranslate({
   }, [autoTranslateContent, manualMode]);
 
   const isFollowingAuto = manualMode === "follow-auto";
-  const shouldAutoTranslate = autoTranslateContent && isFollowingAuto;
+  // Don't auto translate if content matches current locale
+  const shouldAutoTranslate = autoTranslateContent && isFollowingAuto && !contentMatchesLocale;
   const isTranslated =
     manualMode === "translated" ||
-    (autoTranslateContent && manualMode === "follow-auto");
+    (autoTranslateContent && manualMode === "follow-auto" && !contentMatchesLocale);
   const renderMode = shouldAutoTranslate ? "auto" : "static";
 
   return {
@@ -184,5 +191,6 @@ export function useManualHtmlTranslate({
     renderKey: `${String(resetKey ?? html)}-${manualMode}-${renderMode}`,
     shouldAutoTranslate,
     toggleTranslate,
+    contentMatchesLocale,
   };
 }
