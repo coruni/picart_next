@@ -85,7 +85,7 @@ export function ArticleCommentList({
           page: pageToLoad,
           limit: pageSize,
           sortBy: sortByMap[sortKey],
-          onlyAuthor: sortKey === "rootOnly",
+          ...(sortKey === "rootOnly" && { onlyAuthor: true }),
         },
       });
 
