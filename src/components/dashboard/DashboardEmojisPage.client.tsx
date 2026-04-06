@@ -4,6 +4,7 @@ import {
   emojiControllerFindAll,
   emojiControllerRemove,
   emojiControllerUpdate,
+  emojiControllerUpload,
 } from "@/api";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { DropdownMenu, type MenuItem } from "@/components/shared";
@@ -18,8 +19,8 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
 import { useLocale, useTranslations } from "next-intl";
-import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { MoreHorizontal, PencilLine, Plus, Trash2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { DashboardLoadingView } from "./DashboardFeedback";
@@ -53,8 +54,10 @@ export function DashboardEmojisPage() {
   const t = useTranslations("dashboard");
   const { ready } = useDashboardGuard();
   const [editingItem, setEditingItem] = useState<EmojiItem | null>(null);
+  const [creatingItem, setCreatingItem] = useState(false);
   const [deletingItem, setDeletingItem] = useState<EmojiItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -216,6 +219,26 @@ export function DashboardEmojisPage() {
     }
   };
 
+  const handleCreate = async (values: {
+    name: string;
+    code?: string;
+    category?: string;
+    tags?: string;
+    isPublic: boolean;
+    file: File;
+  }) => {
+    setCreateLoading(true);
+    try {
+      await emojiControllerUpload({
+        body: values as unknown as { name: string; code?: string; category?: string; tags?: string; isPublic: boolean; file: File },
+      });
+      setCreatingItem(false);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
   }
@@ -225,6 +248,16 @@ export function DashboardEmojisPage() {
       <DashboardProTable
         key={refreshKey}
         title={copy.pages.emojis.title}
+        action={
+          <Button
+            variant="primary"
+            className="rounded-full"
+            onClick={() => setCreatingItem(true)}
+          >
+            <Plus size={16} className="mr-1" />
+            {copy.common.create}
+          </Button>
+        }
         columns={columns}
         request={async ({ current, pageSize, keyword }) => {
           const response = await emojiControllerFindAll({
@@ -268,6 +301,12 @@ export function DashboardEmojisPage() {
         onSubmit={handleSubmit}
         loading={submitting}
       />
+      <EmojiCreateDialog
+        open={creatingItem}
+        onOpenChange={setCreatingItem}
+        onSubmit={handleCreate}
+        loading={createLoading}
+      />
     </DashboardPageFrame>
   );
 }
@@ -292,6 +331,15 @@ function EmojiEditDialog({
   const [category, setCategory] = useState(item?.category || "");
   const [tags, setTags] = useState(item?.tags || "");
   const [isPublic, setIsPublic] = useState(item?.isPublic ?? true);
+
+  // Sync state when item changes
+  useEffect(() => {
+    setName(item?.name || "");
+    setCode(item?.code || "");
+    setCategory(item?.category || "");
+    setTags(item?.tags || "");
+    setIsPublic(item?.isPublic ?? true);
+  }, [item]);
 
   const handleSubmit = useCallback(() => {
     onSubmit({
@@ -379,6 +427,186 @@ function EmojiEditDialog({
             loading={loading}
           >
             保存
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function EmojiCreateDialog({
+  open,
+  onOpenChange,
+  onSubmit,
+  loading,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSubmit: (values: {
+    name: string;
+    code?: string;
+    category?: string;
+    tags?: string;
+    isPublic: boolean;
+    file: File;
+  }) => Promise<void>;
+  loading: boolean;
+}) {
+  const copy = getDashboardCopy("zh");
+  const [name, setName] = useState("");
+  const [code, setCode] = useState("");
+  const [category, setCategory] = useState("");
+  const [tags, setTags] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
+  const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  // Reset state when dialog opens/closes
+  useEffect(() => {
+    if (open) {
+      setName("");
+      setCode("");
+      setCategory("");
+      setTags("");
+      setIsPublic(true);
+      setFile(null);
+      setPreviewUrl(null);
+    }
+  }, [open]);
+
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const selectedFile = e.target.files?.[0];
+      if (selectedFile) {
+        setFile(selectedFile);
+        const url = URL.createObjectURL(selectedFile);
+        setPreviewUrl(url);
+      }
+    },
+    [],
+  );
+
+  const handleSubmit = useCallback(() => {
+    if (!file || !name) return;
+    onSubmit({
+      name,
+      code,
+      category,
+      tags,
+      isPublic,
+      file,
+    });
+  }, [name, code, category, tags, isPublic, file, onSubmit]);
+
+  // Cleanup preview URL
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [previewUrl]);
+
+  return (
+    <Dialog open={open} onOpenChange={() => onOpenChange(false)}>
+      <DialogContent className="max-w-md p-0!">
+        <DialogHeader>
+          <DialogTitle>{copy.common.create}</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 px-6 py-4">
+          {/* File Upload */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              表情图片 <span className="text-red-500">*</span>
+            </label>
+            <div className="flex flex-col items-center gap-3">
+              {previewUrl ? (
+                <div className="relative size-20 overflow-hidden rounded-lg bg-muted">
+                  <ImageWithFallback
+                    src={previewUrl}
+                    alt="Preview"
+                    fill
+                    className="object-contain p-2"
+                  />
+                </div>
+              ) : (
+                <div className="flex size-20 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+                  <span className="text-xs">未选择</span>
+                </div>
+              )}
+              <label className="inline-flex cursor-pointer items-center gap-1 rounded-full border border-primary px-4 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-white">
+                <span>{file ? "更换图片" : "选择图片"}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleFileChange}
+                  disabled={loading}
+                />
+              </label>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              名称 <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="表情名称"
+              fullWidth
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">代码</label>
+            <Input
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="表情代码"
+              fullWidth
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">分类</label>
+            <Input
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="分类"
+              fullWidth
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">标签</label>
+            <Input
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="标签（逗号分隔）"
+              fullWidth
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium">公开</label>
+            <Switch checked={isPublic} onCheckedChange={setIsPublic} />
+          </div>
+        </div>
+        <DialogFooter className="gap-4! px-6 pb-4">
+          <Button
+            variant="outline"
+            className="rounded-full"
+            onClick={() => onOpenChange(false)}
+            disabled={loading}
+          >
+            {copy.common.cancel}
+          </Button>
+          <Button
+            variant="primary"
+            className="rounded-full"
+            onClick={handleSubmit}
+            loading={loading}
+            disabled={!file || !name}
+          >
+            {copy.common.create}
           </Button>
         </DialogFooter>
       </DialogContent>
