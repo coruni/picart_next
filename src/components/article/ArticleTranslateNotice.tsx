@@ -1,15 +1,12 @@
 "use client";
 
 import { useTranslateStore } from "@/stores";
+import { TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const DETAIL_TRANSLATE_SCOPE_SELECTOR =
   "[data-auto-translate-article-detail] [data-auto-translate-content]";
-const TRANSLATE_LANGUAGE_MAP: Record<string, string> = {
-  zh: "chinese_simplified",
-  en: "english",
-};
 const DEBOUNCE_DELAY = 150;
 
 function getTranslateApi() {
@@ -133,6 +130,8 @@ export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }
 
       translate.service?.use?.("client.edge");
       translate.language?.setLocal?.("chinese_simplified");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (translate.language as any).translateLocal = true;
       translate.setDocuments?.(documents);
       translate.listener?.start?.();
       translate.execute(documents);

@@ -1,5 +1,19 @@
 import { franc } from "franc-min";
 
+// Locale to translate.js language code mapping
+export const TRANSLATE_LANGUAGE_MAP: Record<string, string> = {
+  zh: "chinese_simplified",
+  en: "english",
+  ja: "japanese",
+  ko: "korean",
+  fr: "french",
+  es: "spanish",
+  de: "german",
+  ru: "russian",
+  it: "italian",
+  pt: "portuguese",
+};
+
 // franc language code mapping to our locale
 const FRANC_TO_LOCALE: Record<string, string> = {
   cmn: "zh", // Chinese (Mandarin)
@@ -34,6 +48,13 @@ function cleanTextForDetection(value: string): string {
   );
 }
 
+// Check if text contains Japanese characters (Hiragana or Katakana)
+function containsJapaneseCharacters(value: string): boolean {
+  // Hiragana: \u3040-\u309F, Katakana: \u30A0-\u30FF
+  const japaneseMatches = value.match(/[\u3040-\u309F\u30A0-\u30FF]/g);
+  return (japaneseMatches?.length ?? 0) > 0;
+}
+
 function isLikelyChineseContent(value: string): boolean {
   const text = value.replace(/\s+/g, "");
   if (!text) {
@@ -52,7 +73,7 @@ function isLikelyChineseContent(value: string): boolean {
 }
 
 /**
- * Detect the language of a text using franc with Chinese pre-detection
+ * Detect the language of a text using franc with pre-detection
  * @param text - The text to detect (may contain HTML)
  * @returns The detected locale code or null if undetermined
  */
@@ -60,6 +81,12 @@ export function detectContentLanguage(text: string): string | null {
   const cleanText = cleanTextForDetection(text);
   if (!cleanText || cleanText.length < 10) {
     return null;
+  }
+
+  // Pre-check: detect Japanese first (before Chinese, since Japanese uses kanji)
+  // This is important because Japanese uses Chinese characters (kanji) plus hiragana/katakana
+  if (containsJapaneseCharacters(cleanText)) {
+    return "ja";
   }
 
   // Pre-check: if content is mostly Chinese, return zh directly
@@ -91,7 +118,10 @@ export function isContentMatchingLocale(
   const cleanText = cleanTextForDetection(text);
   const detectedLang = detectContentLanguage(cleanText);
   if (!detectedLang) {
-    // Fallback to simple Chinese detection using clean text
+    // Fallback: check for specific languages
+    if (containsJapaneseCharacters(cleanText)) {
+      return locale === "ja";
+    }
     return isLikelyChineseContent(cleanText) === (locale === "zh");
   }
   return detectedLang === locale;

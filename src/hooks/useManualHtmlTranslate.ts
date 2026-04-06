@@ -1,15 +1,11 @@
 "use client";
 
-import { isContentMatchingLocale } from "@/lib/translate";
+import { isContentMatchingLocale, TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
 import { useTranslateStore } from "@/stores";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const TRANSLATE_LOCAL_LANGUAGE = "chinese_simplified";
-const TRANSLATE_LANGUAGE_MAP: Record<string, string> = {
-  zh: "chinese_simplified",
-  en: "english",
-};
 const MANUAL_TRANSLATE_SELECTOR = "[data-manual-translate-comment]";
 const TRANSLATE_TIMEOUT_MS = 1800;
 const TRANSLATE_SETTLE_MS = 160;
@@ -77,6 +73,8 @@ async function translateHtmlContent(
 
     translate.service?.use?.("client.edge");
     translate.language?.setLocal?.(TRANSLATE_LOCAL_LANGUAGE);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (translate.language as any).translateLocal = true;
     translate.setDocuments?.(documents);
     translate.listener?.start?.();
     translate.execute(documents);

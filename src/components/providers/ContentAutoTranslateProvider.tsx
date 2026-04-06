@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "@/i18n/routing";
-import { detectContentLanguage } from "@/lib/translate";
+import { detectContentLanguage, TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
 import { useTranslateStore } from "@/stores";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -10,10 +10,6 @@ const AUTO_TRANSLATE_SELECTOR =
   "[data-auto-translate-content], [data-auto-translate-comment]";
 const TRANSLATE_LOCAL_LANGUAGE = "chinese_simplified";
 const LOCAL_TRANSLATE_SCRIPT_PATH = "/vendor/translate.js/3.18.66/translate.js";
-const TRANSLATE_LANGUAGE_MAP: Record<string, string> = {
-  zh: "chinese_simplified",
-  en: "english",
-};
 const TRANSLATE_SCRIPT_ID = "local-translate-js";
 const MUTATION_TRANSLATE_DEBOUNCE_MS = 180;
 const MIN_TEXT_LENGTH_FOR_DETECTION = 1;
@@ -202,6 +198,8 @@ export function ContentAutoTranslateProvider() {
 
     translate.service?.use?.("client.edge");
     translate.language?.setLocal?.(TRANSLATE_LOCAL_LANGUAGE);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (translate.language as any).translateLocal = true;
     disableTranslateLanguageSelector();
 
     if (!autoTranslateContent) {
