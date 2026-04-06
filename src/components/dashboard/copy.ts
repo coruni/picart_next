@@ -67,6 +67,7 @@ const copy = {
       reports: "举报",
       decorations: "装饰品",
       achievements: "成就",
+      search: "搜索",
     },
     pages: {
       overview: {
@@ -165,6 +166,24 @@ const copy = {
       achievements: {
         title: "成就管理",
         description: "查看成就基础信息、类型、稀有度和启用状态。",
+      },
+      search: {
+        title: "搜索管理",
+        description: "管理 Elasticsearch 搜索索引、同步状态和热门搜索词。",
+        syncArticles: "同步文章索引",
+        clearArticles: "清空文章索引",
+        syncStatus: "同步状态",
+        hotSearch: "热门搜索",
+        hotSearchManagement: "热门搜索词管理",
+        indexStatus: "索引状态",
+        lastSyncTime: "最后同步时间",
+        documentCount: "文档数量",
+        indexSize: "索引大小",
+        syncing: "同步中...",
+        syncSuccess: "同步成功",
+        syncFailed: "同步失败",
+        clearConfirm: "确定要清空所有文章搜索索引吗？此操作不可恢复！",
+        clearSuccess: "索引已清空",
       },
     },
     summary: {
@@ -358,6 +377,7 @@ const copy = {
       reports: "Reports",
       decorations: "Decorations",
       achievements: "Achievements",
+      search: "Search",
     },
     pages: {
       overview: {
@@ -464,6 +484,24 @@ const copy = {
         title: "Achievement Management",
         description:
           "Review achievement basics, type, rarity, and enabled state.",
+      },
+      search: {
+        title: "Search Management",
+        description: "Manage Elasticsearch index, sync status and hot search keywords.",
+        syncArticles: "Sync Article Index",
+        clearArticles: "Clear Article Index",
+        syncStatus: "Sync Status",
+        hotSearch: "Hot Search",
+        hotSearchManagement: "Hot Search Management",
+        indexStatus: "Index Status",
+        lastSyncTime: "Last Sync Time",
+        documentCount: "Document Count",
+        indexSize: "Index Size",
+        syncing: "Syncing...",
+        syncSuccess: "Sync Successful",
+        syncFailed: "Sync Failed",
+        clearConfirm: "Are you sure you want to clear all article search indexes? This action cannot be undone!",
+        clearSuccess: "Index Cleared",
       },
     },
     summary: {

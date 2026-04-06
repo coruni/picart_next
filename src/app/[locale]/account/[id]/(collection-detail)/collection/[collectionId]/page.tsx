@@ -70,7 +70,7 @@ export default async function CollectionDetailPage({
   return (
     <>
       <div className="rounded-t-xl bg-card sticky top-header z-10">
-        <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-4 font-semibold">
+        <div className="flex items-center h-14 justify-between gap-3 border-b border-border px-4 py-4 font-semibold">
           <span>{collection.name}</span>
           {currentUserId === String(collection.userId) ? (
             <div className="flex items-center gap-3">

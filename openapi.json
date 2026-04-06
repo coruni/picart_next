@@ -71,6 +71,9 @@
     },
     {
       "name": "统计模块"
+    },
+    {
+      "name": "搜索管理"
     }
   ],
   "paths": {
@@ -10493,7 +10496,7 @@
                               "type": "string"
                             },
                             "avatar": {
-                              "type": "null"
+                              "type": "string"
                             },
                             "cover": {
                               "type": "string"
@@ -10516,14 +10519,85 @@
                             "updatedAt": {
                               "type": "string"
                             },
+                            "current": {
+                              "type": "object",
+                              "properties": {
+                                "itemId": {
+                                  "type": "integer"
+                                },
+                                "articleId": {
+                                  "type": "integer"
+                                },
+                                "index": {
+                                  "type": "integer"
+                                },
+                                "sort": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "itemId",
+                                "articleId",
+                                "index",
+                                "sort"
+                              ]
+                            },
                             "navigation": {
                               "type": "object",
                               "properties": {
                                 "prev": {
-                                  "type": "null"
+                                  "type": "object",
+                                  "properties": {
+                                    "itemId": {
+                                      "type": "integer"
+                                    },
+                                    "articleId": {
+                                      "type": "integer"
+                                    },
+                                    "title": {
+                                      "type": "string"
+                                    },
+                                    "cover": {
+                                      "type": "string"
+                                    },
+                                    "index": {
+                                      "type": "integer"
+                                    }
+                                  },
+                                  "required": [
+                                    "itemId",
+                                    "articleId",
+                                    "title",
+                                    "cover",
+                                    "index"
+                                  ]
                                 },
                                 "next": {
-                                  "type": "null"
+                                  "type": "object",
+                                  "properties": {
+                                    "itemId": {
+                                      "type": "integer"
+                                    },
+                                    "articleId": {
+                                      "type": "integer"
+                                    },
+                                    "title": {
+                                      "type": "string"
+                                    },
+                                    "cover": {
+                                      "type": "string"
+                                    },
+                                    "index": {
+                                      "type": "integer"
+                                    }
+                                  },
+                                  "required": [
+                                    "itemId",
+                                    "articleId",
+                                    "title",
+                                    "cover",
+                                    "index"
+                                  ]
                                 }
                               },
                               "required": [
@@ -10544,6 +10618,7 @@
                             "views",
                             "createdAt",
                             "updatedAt",
+                            "current",
                             "navigation"
                           ]
                         },
@@ -39230,6 +39305,1008 @@
         ]
       }
     },
+    "/decoration/achievement-badges/my": {
+      "get": {
+        "summary": "获取我的成就勋章",
+        "deprecated": false,
+        "description": "",
+        "operationId": "DecorationController_getMyAchievementBadges",
+        "tags": [
+          "装饰品管理"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "page": {
+                              "type": "integer"
+                            },
+                            "limit": {
+                              "type": "integer"
+                            },
+                            "totalPages": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "total",
+                            "page",
+                            "limit",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "data",
+                        "meta"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/decoration/activity": {
+      "get": {
+        "summary": "获取活动列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "DecorationController_findAllActivities",
+        "tags": [
+          "装饰品管理"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "状态筛选",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "类型筛选",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string"
+                              },
+                              "decorationId": {
+                                "type": "integer"
+                              },
+                              "decoration": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "imageUrl": {
+                                    "type": "string"
+                                  },
+                                  "previewUrl": {
+                                    "type": "string"
+                                  },
+                                  "rarity": {
+                                    "type": "string"
+                                  },
+                                  "obtainMethod": {
+                                    "type": "string"
+                                  },
+                                  "isPurchasable": {
+                                    "type": "boolean"
+                                  },
+                                  "price": {
+                                    "type": "string"
+                                  },
+                                  "isPermanent": {
+                                    "type": "boolean"
+                                  },
+                                  "validDays": {
+                                    "type": "integer"
+                                  },
+                                  "sort": {
+                                    "type": "integer"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "activityId": {
+                                    "type": "null"
+                                  },
+                                  "achievementId": {
+                                    "type": "null"
+                                  },
+                                  "requiredLikes": {
+                                    "type": "integer"
+                                  },
+                                  "requiredComments": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "type",
+                                  "description",
+                                  "imageUrl",
+                                  "previewUrl",
+                                  "rarity",
+                                  "obtainMethod",
+                                  "isPurchasable",
+                                  "price",
+                                  "isPermanent",
+                                  "validDays",
+                                  "sort",
+                                  "status",
+                                  "activityId",
+                                  "achievementId",
+                                  "requiredLikes",
+                                  "requiredComments",
+                                  "createdAt",
+                                  "updatedAt"
+                                ]
+                              },
+                              "articleId": {
+                                "type": "integer"
+                              },
+                              "article": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "requireLogin": {
+                                    "type": "boolean"
+                                  },
+                                  "requireFollow": {
+                                    "type": "boolean"
+                                  },
+                                  "requirePayment": {
+                                    "type": "boolean"
+                                  },
+                                  "requireMembership": {
+                                    "type": "boolean"
+                                  },
+                                  "listRequireLogin": {
+                                    "type": "boolean"
+                                  },
+                                  "viewPrice": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string"
+                                  },
+                                  "content": {
+                                    "type": "string"
+                                  },
+                                  "images": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "sort": {
+                                    "type": "integer"
+                                  },
+                                  "summary": {
+                                    "type": "string"
+                                  },
+                                  "views": {
+                                    "type": "integer"
+                                  },
+                                  "likes": {
+                                    "type": "integer"
+                                  },
+                                  "favoriteCount": {
+                                    "type": "integer"
+                                  },
+                                  "commentCount": {
+                                    "type": "integer"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "cover": {
+                                    "type": "string"
+                                  },
+                                  "authorId": {
+                                    "type": "integer"
+                                  },
+                                  "activityId": {
+                                    "type": "null"
+                                  },
+                                  "downloadCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  },
+                                  "imageCount": {
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "title",
+                                  "requireLogin",
+                                  "requireFollow",
+                                  "requirePayment",
+                                  "requireMembership",
+                                  "listRequireLogin",
+                                  "viewPrice",
+                                  "type",
+                                  "content",
+                                  "images",
+                                  "sort",
+                                  "summary",
+                                  "views",
+                                  "likes",
+                                  "favoriteCount",
+                                  "commentCount",
+                                  "status",
+                                  "cover",
+                                  "authorId",
+                                  "activityId",
+                                  "downloadCount",
+                                  "createdAt",
+                                  "updatedAt",
+                                  "imageCount"
+                                ]
+                              },
+                              "requiredLikes": {
+                                "type": "integer"
+                              },
+                              "requiredComments": {
+                                "type": "integer"
+                              },
+                              "requiredShares": {
+                                "type": "integer"
+                              },
+                              "requiredRecharge": {
+                                "type": "string"
+                              },
+                              "requiredSignInDays": {
+                                "type": "integer"
+                              },
+                              "isPermanent": {
+                                "type": "boolean"
+                              },
+                              "validDays": {
+                                "type": "integer"
+                              },
+                              "startTime": {
+                                "type": "string"
+                              },
+                              "endTime": {
+                                "type": "string"
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "participantCount": {
+                                "type": "integer"
+                              },
+                              "completedCount": {
+                                "type": "integer"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "page": {
+                              "type": "integer"
+                            },
+                            "limit": {
+                              "type": "integer"
+                            },
+                            "totalPages": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "total",
+                            "page",
+                            "limit",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "data",
+                        "meta"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "创建活动",
+        "deprecated": false,
+        "description": "",
+        "operationId": "DecorationController_createActivity",
+        "tags": [
+          "装饰品管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateActivityDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string"
+                            },
+                            "decorationId": {
+                              "type": "integer"
+                            },
+                            "articleId": {
+                              "type": "integer"
+                            },
+                            "requiredLikes": {
+                              "type": "integer"
+                            },
+                            "requiredComments": {
+                              "type": "integer"
+                            },
+                            "requiredShares": {
+                              "type": "integer"
+                            },
+                            "requiredRecharge": {
+                              "type": "string"
+                            },
+                            "requiredSignInDays": {
+                              "type": "integer"
+                            },
+                            "isPermanent": {
+                              "type": "boolean"
+                            },
+                            "validDays": {
+                              "type": "integer"
+                            },
+                            "startTime": {
+                              "type": "string"
+                            },
+                            "endTime": {
+                              "type": "string"
+                            },
+                            "status": {
+                              "type": "string"
+                            },
+                            "participantCount": {
+                              "type": "integer"
+                            },
+                            "completedCount": {
+                              "type": "integer"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "description",
+                            "type",
+                            "decorationId",
+                            "articleId",
+                            "requiredLikes",
+                            "requiredComments",
+                            "requiredShares",
+                            "requiredRecharge",
+                            "requiredSignInDays",
+                            "isPermanent",
+                            "validDays",
+                            "startTime",
+                            "endTime",
+                            "status",
+                            "participantCount",
+                            "completedCount",
+                            "createdAt",
+                            "updatedAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "success",
+                        "message",
+                        "data"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/decoration/activity/{id}": {
+      "get": {
+        "summary": "获取活动详情",
+        "deprecated": false,
+        "description": "",
+        "operationId": "DecorationController_findOneActivity",
+        "tags": [
+          "装饰品管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "summary": "更新活动",
+        "deprecated": false,
+        "description": "",
+        "operationId": "DecorationController_updateActivity",
+        "tags": [
+          "装饰品管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateActivityDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "删除活动",
+        "deprecated": false,
+        "description": "",
+        "operationId": "DecorationController_removeActivity",
+        "tags": [
+          "装饰品管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/decoration/purchase": {
       "post": {
         "summary": "购买装饰品",
@@ -39773,153 +40850,6 @@
                         "success",
                         "message",
                         "count"
-                      ]
-                    }
-                  },
-                  "required": [
-                    "code",
-                    "message",
-                    "data"
-                  ]
-                }
-              }
-            },
-            "headers": {}
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/decoration/achievement-badges/my": {
-      "get": {
-        "summary": "获取我的成就勋章",
-        "deprecated": false,
-        "description": "",
-        "operationId": "DecorationController_getMyAchievementBadges",
-        "tags": [
-          "装饰品管理"
-        ],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "页码",
-            "required": false,
-            "schema": {
-              "minimum": 1,
-              "default": 1,
-              "type": "number"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "每页数量",
-            "required": false,
-            "schema": {
-              "minimum": 1,
-              "maximum": 100,
-              "default": 10,
-              "type": "number"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "获取成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "code": {
-                      "type": "integer"
-                    },
-                    "message": {
-                      "type": "string"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "data": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
-                        },
-                        "meta": {
-                          "type": "object",
-                          "properties": {
-                            "total": {
-                              "type": "integer"
-                            },
-                            "page": {
-                              "type": "integer"
-                            },
-                            "limit": {
-                              "type": "integer"
-                            },
-                            "totalPages": {
-                              "type": "integer"
-                            }
-                          },
-                          "required": [
-                            "total",
-                            "page",
-                            "limit",
-                            "totalPages"
-                          ]
-                        }
-                      },
-                      "required": [
-                        "data",
-                        "meta"
                       ]
                     }
                   },
@@ -46186,6 +47116,239 @@
           }
         ]
       }
+    },
+    "/search/sync/articles": {
+      "post": {
+        "summary": "同步文章到 Elasticsearch（全量同步）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "SearchController_syncArticles",
+        "tags": [
+          "搜索管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "success",
+                        "message"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/search/status": {
+      "get": {
+        "summary": "获取 Elasticsearch 状态",
+        "deprecated": false,
+        "description": "",
+        "operationId": "SearchController_getStatus",
+        "tags": [
+          "搜索管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/search/clear/articles": {
+      "post": {
+        "summary": "清空文章搜索索引",
+        "deprecated": false,
+        "description": "",
+        "operationId": "SearchController_clearArticles",
+        "tags": [
+          "搜索管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -46726,19 +47889,19 @@
         "properties": {
           "articleCommissionRate": {
             "type": "number",
-            "description": "文章抽成比例（0-1之间）"
+            "description": "文章抽成比例，0-1 之间"
           },
           "membershipCommissionRate": {
             "type": "number",
-            "description": "会员抽成比例（0-1之间）"
+            "description": "会员抽成比例，0-1 之间"
           },
           "productCommissionRate": {
             "type": "number",
-            "description": "商品抽成比例（0-1之间）"
+            "description": "商品抽成比例，0-1 之间"
           },
           "serviceCommissionRate": {
             "type": "number",
-            "description": "服务抽成比例（0-1之间）"
+            "description": "服务抽成比例，0-1 之间"
           },
           "enableCustomCommission": {
             "type": "boolean",
@@ -46934,9 +48097,22 @@
             "example": "这是文章的摘要..."
           },
           "images": {
-            "type": "string",
-            "description": "文章图片",
-            "example": "https://example.com/image.jpg"
+            "description": "文章图片，传单个URL字符串或URL数组",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ],
+            "example": [
+              "https://example.com/image1.jpg",
+              "https://example.com/image2.jpg"
+            ]
           },
           "cover": {
             "type": "string",
@@ -47026,6 +48202,11 @@
               "mixed"
             ],
             "default": "mixed"
+          },
+          "activityId": {
+            "type": "number",
+            "description": "关联活动ID",
+            "example": 1
           },
           "downloads": {
             "description": "下载资源列表",
@@ -47068,9 +48249,22 @@
             "example": "这是文章的摘要..."
           },
           "images": {
-            "type": "string",
-            "description": "文章图片",
-            "example": "https://example.com/image.jpg"
+            "description": "文章图片，传单个URL字符串或URL数组",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ],
+            "example": [
+              "https://example.com/image1.jpg",
+              "https://example.com/image2.jpg"
+            ]
           },
           "cover": {
             "type": "string",
@@ -47160,6 +48354,11 @@
               "mixed"
             ],
             "default": "mixed"
+          },
+          "activityId": {
+            "type": "number",
+            "description": "关联活动ID",
+            "example": 1
           },
           "downloads": {
             "description": "下载资源列表",
@@ -47778,11 +48977,18 @@
             "example": 1
           },
           "images": {
-            "description": "评论图片列表（最多9张）",
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
+            "description": "评论图片，传单个URL字符串或URL数组（最多9张）",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ],
             "example": [
               "https://example.com/image1.jpg",
               "https://example.com/image2.jpg"
@@ -48282,7 +49488,7 @@
           },
           "validDays": {
             "type": "number",
-            "description": "有效天数"
+            "description": "有效天数（0或999表示永久）"
           },
           "sort": {
             "type": "number",
@@ -48366,7 +49572,7 @@
           },
           "validDays": {
             "type": "number",
-            "description": "有效天数"
+            "description": "有效天数（0或999表示永久）"
           },
           "sort": {
             "type": "number",
@@ -48846,15 +50052,16 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "收藏夹名称",
+            "description": "合集名称",
             "maxLength": 100
-          },
-          "avatar": {
-            "type": "string"
           },
           "description": {
             "type": "string",
-            "description": "收藏夹描述"
+            "description": "合集描述"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "头像"
           },
           "cover": {
             "type": "string",
@@ -48880,15 +50087,16 @@
         "properties": {
           "name": {
             "type": "string",
-            "description": "收藏夹名称",
+            "description": "合集名称",
             "maxLength": 100
-          },
-          "avatar": {
-            "type": "string"
           },
           "description": {
             "type": "string",
-            "description": "收藏夹描述"
+            "description": "合集描述"
+          },
+          "avatar": {
+            "type": "string",
+            "description": "头像"
           },
           "cover": {
             "type": "string",
@@ -48903,6 +50111,152 @@
             "type": "number",
             "description": "排序",
             "default": 0
+          }
+        }
+      },
+      "CreateActivityDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "活动名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "活动描述"
+          },
+          "type": {
+            "type": "string",
+            "description": "活动类型",
+            "enum": [
+              "LIKE",
+              "COMMENT",
+              "SHARE",
+              "RECHARGE",
+              "SIGN_IN",
+              "CUSTOM"
+            ]
+          },
+          "decorationId": {
+            "type": "number",
+            "description": "奖励装饰品ID"
+          },
+          "articleId": {
+            "type": "number",
+            "description": "关联文章ID（活动说明）"
+          },
+          "requiredLikes": {
+            "type": "number",
+            "description": "所需点赞数"
+          },
+          "requiredComments": {
+            "type": "number",
+            "description": "所需评论数"
+          },
+          "requiredShares": {
+            "type": "number",
+            "description": "所需分享数"
+          },
+          "requiredRecharge": {
+            "type": "number",
+            "description": "所需充值金额"
+          },
+          "requiredSignInDays": {
+            "type": "number",
+            "description": "所需签到天数"
+          },
+          "isPermanent": {
+            "type": "boolean",
+            "description": "奖励是否永久"
+          },
+          "validDays": {
+            "type": "number",
+            "description": "奖励有效天数"
+          },
+          "startTime": {
+            "type": "string",
+            "description": "开始时间"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "结束时间"
+          }
+        },
+        "required": [
+          "name",
+          "type",
+          "decorationId",
+          "isPermanent",
+          "startTime",
+          "endTime"
+        ]
+      },
+      "UpdateActivityDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "活动名称"
+          },
+          "description": {
+            "type": "string",
+            "description": "活动描述"
+          },
+          "type": {
+            "type": "string",
+            "description": "活动类型",
+            "enum": [
+              "LIKE",
+              "COMMENT",
+              "SHARE",
+              "RECHARGE",
+              "SIGN_IN",
+              "CUSTOM"
+            ]
+          },
+          "decorationId": {
+            "type": "number",
+            "description": "奖励装饰品ID"
+          },
+          "articleId": {
+            "type": "number",
+            "description": "关联文章ID（活动说明）"
+          },
+          "requiredLikes": {
+            "type": "number",
+            "description": "所需点赞数"
+          },
+          "requiredComments": {
+            "type": "number",
+            "description": "所需评论数"
+          },
+          "requiredShares": {
+            "type": "number",
+            "description": "所需分享数"
+          },
+          "requiredRecharge": {
+            "type": "number",
+            "description": "所需充值金额"
+          },
+          "requiredSignInDays": {
+            "type": "number",
+            "description": "所需签到天数"
+          },
+          "isPermanent": {
+            "type": "boolean",
+            "description": "奖励是否永久"
+          },
+          "validDays": {
+            "type": "number",
+            "description": "奖励有效天数"
+          },
+          "startTime": {
+            "type": "string",
+            "description": "开始时间"
+          },
+          "endTime": {
+            "type": "string",
+            "description": "结束时间"
           }
         }
       }

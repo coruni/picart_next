@@ -26,6 +26,7 @@
     "noSearchHistory": "No search history",
     "viewAllResults": "View all results",
     "noResults": "No results found",
+    "retry": "Retry",
     "numberUnits": {
       "thousand": "k",
       "tenThousand": "w",
@@ -524,6 +525,28 @@
     "follow": "Following",
     "recommend": "Recommend",
     "activity": "Activity"
+  },
+  "activity": {
+    "loadFailed": "Failed to load, please retry",
+    "loginPrompt": "Please login to view activities",
+    "active": "Active",
+    "ended": "Ended",
+    "requiredLikes": "{count} likes required",
+    "requiredComments": "{count} comments required",
+    "requiredShares": "{count} shares required",
+    "timeRange": "{start} to {end}",
+    "viewArticle": "View Article",
+    "viewDetails": "View Details",
+    "loading": "Loading...",
+    "loadMore": "Load More",
+    "allLoaded": "All Loaded",
+    "noActivities": "No activities yet",
+    "rarity": {
+      "common": "Common",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    }
   },
   "searchFeedTabs": {
     "article": "Posts",

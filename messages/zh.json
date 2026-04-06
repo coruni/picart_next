@@ -25,7 +25,8 @@
     "clear": "清空",
     "noSearchHistory": "暂无搜索历史",
     "viewAllResults": "查看全部结果",
-    "noResults": "未找到相关内容"
+    "noResults": "未找到相关内容",
+    "retry": "重试"
   },
   "nav": {
     "home": "首页",
@@ -516,6 +517,28 @@
     "follow": "关注",
     "recommend": "推荐",
     "activity": "活动"
+  },
+  "activity": {
+    "loadFailed": "加载失败，请重试",
+    "loginPrompt": "登录后可查看活动",
+    "active": "进行中",
+    "ended": "已结束",
+    "requiredLikes": "需{count}个赞",
+    "requiredComments": "需{count}条评论",
+    "requiredShares": "需{count}次分享",
+    "timeRange": "{start} 至 {end}",
+    "viewArticle": "查看文章",
+    "viewDetails": "查看详情",
+    "loading": "加载中...",
+    "loadMore": "加载更多",
+    "allLoaded": "已加载全部",
+    "noActivities": "暂无活动",
+    "rarity": {
+      "common": "普通",
+      "rare": "稀有",
+      "epic": "史诗",
+      "legendary": "传说"
+    }
   },
   "searchFeedTabs": {
     "article": "帖子",

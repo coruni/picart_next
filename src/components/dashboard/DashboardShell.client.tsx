@@ -14,6 +14,7 @@ import {
   Menu,
   MessageSquareText,
   ReceiptText,
+  Search,
   ShieldUser,
   Sparkles,
   Tags,
@@ -121,6 +122,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
       label: copy.nav.configs,
       description: copy.pages.configs.description,
       icon: FileCog,
+    },
+    {
+      href: "/dashboard/search",
+      label: copy.nav.search,
+      description: copy.pages.search.description,
+      icon: Search,
     },
   ];
 

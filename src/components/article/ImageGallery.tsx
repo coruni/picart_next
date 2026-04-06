@@ -2,6 +2,7 @@
 
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { ArticleDetail } from "@/types";
+import { getImageUrl, type ImageInfo } from "@/types/image";
 import { ChevronLeft, ChevronRight, Fullscreen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -9,7 +10,6 @@ import type { Swiper as SwiperType } from "swiper";
 import { FreeMode, Thumbs } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { ImageViewer } from "./ImageViewer";
-import { getImageUrl, type ImageInfo } from "@/types/image";
 
 import "swiper/css";
 import "swiper/css/thumbs";
@@ -76,7 +76,10 @@ export function ImageGallery({
   if (!images || !Array.isArray(images) || images.length === 0) return null;
 
   if (images.length === 1) {
-    const imgUrl = typeof images[0] === "string" ? images[0] : getImageUrl(images[0], "large");
+    const imgUrl =
+      typeof images[0] === "string"
+        ? images[0]
+        : getImageUrl(images[0], "large");
 
     return (
       <>
@@ -108,6 +111,7 @@ export function ImageGallery({
             article={article}
             images={imageUrls}
             initialIndex={activeIndex}
+            enableSidePanel={false}
             visible={viewerVisible}
             onClose={() => setViewerVisible(false)}
             alt={alt}

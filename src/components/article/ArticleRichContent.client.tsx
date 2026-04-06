@@ -9,7 +9,7 @@ type ArticleRichContentProps = {
   html: string;
 };
 
-export function   ArticleRichContent({ html }: ArticleRichContentProps) {
+export function ArticleRichContent({ html }: ArticleRichContentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [viewerVisible, setViewerVisible] = useState(false);
   const [images, setImages] = useState<string[]>([]);
@@ -88,6 +88,7 @@ export function   ArticleRichContent({ html }: ArticleRichContentProps) {
       {viewerVisible && images.length > 0 && (
         <ImageViewer
           images={images}
+          enableSidePanel={false}
           initialIndex={activeIndex}
           visible={viewerVisible}
           onClose={handleCloseViewer}
