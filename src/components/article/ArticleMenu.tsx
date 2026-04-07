@@ -58,6 +58,16 @@ export function ArticleMenu({
     isOwnerProp ||
     (currentUser?.id != null && String(currentUser.id) === String(authorId));
 
+  // 检查用户是否有 article:manage 权限
+  const hasManagePermission = currentUser?.roles?.some(
+    (role) => role.permissions?.some(
+      (permission) => permission.name === "article:manage"
+    )
+  ) ?? false;
+
+  // 可以编辑的条件：是作者或有管理权限
+  const canEdit = isOwner || hasManagePermission;
+
   const requireAuth = () => {
     if (isAuthenticated) return true;
     openLoginDialog();
@@ -117,7 +127,7 @@ export function ArticleMenu({
   };
 
   const handleEditArticle = () => {
-    if (!isOwner) return;
+    if (!canEdit) return;
     const editPath =
       articleType === "image"
         ? `/create/image?articleId=${articleId}`
@@ -125,14 +135,9 @@ export function ArticleMenu({
     router.push(editPath);
   };
 
-  const menuItems: MenuItem[] = isOwner
-    ? [
-        {
-          label: t("editPost"),
-          icon: <PencilLine size={18} />,
-          onClick: handleEditArticle,
-        },
-      ]
+  // 基础操作项（举报、拉黑、不喜欢）- 给非作者用户
+  const baseMenuItems: MenuItem[] = isOwner
+    ? []
     : [
         {
           label: t("reportPost"),
@@ -151,6 +156,18 @@ export function ArticleMenu({
           onClick: handleDislikeContent,
         },
       ];
+
+  // 编辑操作项 - 给作者或有管理权限的用户
+  const editMenuItem: MenuItem = {
+    label: t("editPost"),
+    icon: <PencilLine size={18} />,
+    onClick: handleEditArticle,
+  };
+
+  // 最终菜单项：有编辑权限则添加编辑项，再加上基础操作项
+  const menuItems: MenuItem[] = canEdit
+    ? [editMenuItem, ...baseMenuItems]
+    : baseMenuItems;
 
   return (
     <>

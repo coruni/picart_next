@@ -1,5 +1,6 @@
 "use client";
 
+import { resolveMessagePreviewText } from "@/components/message/MessageCenter.utils";
 import { EmptyState } from "@/components/shared";
 import { GuardedLink } from "@/components/shared/GuardedLink";
 import { Avatar } from "@/components/ui/Avatar";
@@ -7,8 +8,8 @@ import { Button } from "@/components/ui/Button";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { useIsMobile } from "@/hooks";
 import { cn, formatRelativeTime, formatShortDate } from "@/lib";
+import { prepareRichTextHtmlForSummary } from "@/lib/rich-text";
 import { openLoginDialog } from "@/lib/modal-helpers";
-import { resolveMessagePreviewText } from "@/components/message/MessageCenter.utils";
 import { useMessageNotificationStore, useUserStore } from "@/stores";
 import type { MessageTab } from "@/stores/useMessageNotificationStore";
 import { BrushCleaning, MessageCircle, Settings } from "lucide-react";
@@ -251,7 +252,7 @@ export function MessageDropdown({
           "px-3 py-2",
           mobile
             ? "min-h-0 flex-1 overflow-y-auto overscroll-contain"
-            : "max-h-96 overflow-y-auto",
+            : "h-70 overflow-y-auto",
         )}
         style={
           mobile
@@ -302,9 +303,12 @@ export function MessageDropdown({
                         formatRelativeTime(message.createdAt || "", tTime, locale)}
                     </span>
                   </div>
-                  <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                    {previewText}
-                  </p>
+                  <div
+                    className="mt-1 line-clamp-2 text-xs text-muted-foreground"
+                    dangerouslySetInnerHTML={{
+                      __html: prepareRichTextHtmlForSummary(previewText),
+                    }}
+                  />
                 </div>
               </GuardedLink>
             );
@@ -361,7 +365,7 @@ export function MessageDropdown({
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                <span className="flex items-center gap-1.5">
+                <span className="flex items-center gap-1.5 justify-center">
                   {tab.label}
                   {hasUnread && (
                     <span className="flex size-2 items-center justify-center rounded-full bg-red-400" />
@@ -394,7 +398,7 @@ export function MessageDropdown({
           <MessageCircle className="size-5" />
           {unreadCount > 0 && (
             <span className="absolute right-1 top-1 flex size-2 items-center justify-center">
-              <span className="absolute size-3 rounded-full bg-red-400/40 animate-ping [animation-duration:2s]" />
+              <span className="absolute size-3 rounded-full bg-red-400/40 animate-ping animation-duration-[2s]" />
               <span className="relative block size-2 rounded-full bg-red-400" />
             </span>
           )}

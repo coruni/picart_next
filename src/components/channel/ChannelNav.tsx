@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { Link } from "@/i18n/routing";
 import { Avatar } from "@/components/ui/Avatar";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Link } from "@/i18n/routing";
 import { CategoryList } from "@/types";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 interface ChannelNavProps {
   channels: CategoryList;
@@ -93,7 +93,7 @@ export function ChannelNav({ channels, currentId }: ChannelNavProps) {
     >
       <div className="w-full h-15 border-b border-[#ffffff1a]">
         <div className="max-w-7xl mx-auto w-full h-full px-8">
-          <div className="flex items-center w-full h-full relative">
+          <div className="flex items-center w-full h-full relative justify-center">
             {/* 左滑 */}
             <div
               className={`h-full top-0 -left-6 absolute items-center z-10 transition-opacity duration-200 ${
@@ -124,7 +124,7 @@ export function ChannelNav({ channels, currentId }: ChannelNavProps) {
             {/* 频道列表 */}
             <ul
               ref={scrollRef}
-              className="h-full w-full overflow-x-scroll flex items-center gap-4 overflow-y-hidden"
+              className="h-full w-full overflow-x-scroll flex items-center gap-4 overflow-y-hidden justify-center"
               style={{ scrollbarWidth: "none" }}
             >
               {channels.map((channel) => {
