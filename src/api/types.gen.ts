@@ -2863,29 +2863,13 @@ export type UserControllerFindAllResponses = {
                 isFollowed: boolean;
                 articles: Array<{
                     id: number;
-                    title: string;
-                    requireLogin: boolean;
-                    requireFollow: boolean;
-                    requirePayment: boolean;
-                    requireMembership: boolean;
-                    listRequireLogin: boolean;
-                    viewPrice: string;
-                    type: string;
-                    content: string;
-                    sort: number;
-                    summary: unknown;
-                    views: number;
-                    likes: number;
-                    favoriteCount: number;
-                    commentCount: number;
-                    status: string;
                     cover: string;
-                    authorId: number;
+                    images: string;
                     category: {
                         id: number;
                         name: string;
                         description: string;
-                        parentId: unknown;
+                        parentId: number;
                         link: string;
                         avatar: string;
                         background: string;
@@ -2897,22 +2881,6 @@ export type UserControllerFindAllResponses = {
                         createdAt: string;
                         updatedAt: string;
                     };
-                    tags: Array<{
-                        id: number;
-                        name: string;
-                        description: string;
-                        avatar: string;
-                        background: string;
-                        cover: string;
-                        sort: number;
-                        articleCount: number;
-                        followCount: number;
-                        createdAt: string;
-                        updatedAt: string;
-                    }>;
-                    downloadCount: number;
-                    createdAt: string;
-                    updatedAt: string;
                 }>;
                 equippedDecorations: Decoration;
             }>;

@@ -3105,59 +3105,11 @@
                                     "id": {
                                       "type": "integer"
                                     },
-                                    "title": {
-                                      "type": "string"
-                                    },
-                                    "requireLogin": {
-                                      "type": "boolean"
-                                    },
-                                    "requireFollow": {
-                                      "type": "boolean"
-                                    },
-                                    "requirePayment": {
-                                      "type": "boolean"
-                                    },
-                                    "requireMembership": {
-                                      "type": "boolean"
-                                    },
-                                    "listRequireLogin": {
-                                      "type": "boolean"
-                                    },
-                                    "viewPrice": {
-                                      "type": "string"
-                                    },
-                                    "type": {
-                                      "type": "string"
-                                    },
-                                    "content": {
-                                      "type": "string"
-                                    },
-                                    "sort": {
-                                      "type": "integer"
-                                    },
-                                    "summary": {
-                                      "type": "null"
-                                    },
-                                    "views": {
-                                      "type": "integer"
-                                    },
-                                    "likes": {
-                                      "type": "integer"
-                                    },
-                                    "favoriteCount": {
-                                      "type": "integer"
-                                    },
-                                    "commentCount": {
-                                      "type": "integer"
-                                    },
-                                    "status": {
-                                      "type": "string"
-                                    },
                                     "cover": {
                                       "type": "string"
                                     },
-                                    "authorId": {
-                                      "type": "integer"
+                                    "images": {
+                                      "type": "string"
                                     },
                                     "category": {
                                       "type": "object",
@@ -3172,7 +3124,7 @@
                                           "type": "string"
                                         },
                                         "parentId": {
-                                          "type": "null"
+                                          "type": "integer"
                                         },
                                         "link": {
                                           "type": "string"
@@ -3221,96 +3173,13 @@
                                         "createdAt",
                                         "updatedAt"
                                       ]
-                                    },
-                                    "tags": {
-                                      "type": "array",
-                                      "items": {
-                                        "type": "object",
-                                        "properties": {
-                                          "id": {
-                                            "type": "integer"
-                                          },
-                                          "name": {
-                                            "type": "string"
-                                          },
-                                          "description": {
-                                            "type": "string"
-                                          },
-                                          "avatar": {
-                                            "type": "string"
-                                          },
-                                          "background": {
-                                            "type": "string"
-                                          },
-                                          "cover": {
-                                            "type": "string"
-                                          },
-                                          "sort": {
-                                            "type": "integer"
-                                          },
-                                          "articleCount": {
-                                            "type": "integer"
-                                          },
-                                          "followCount": {
-                                            "type": "integer"
-                                          },
-                                          "createdAt": {
-                                            "type": "string"
-                                          },
-                                          "updatedAt": {
-                                            "type": "string"
-                                          }
-                                        },
-                                        "required": [
-                                          "id",
-                                          "name",
-                                          "description",
-                                          "avatar",
-                                          "background",
-                                          "cover",
-                                          "sort",
-                                          "articleCount",
-                                          "followCount",
-                                          "createdAt",
-                                          "updatedAt"
-                                        ]
-                                      }
-                                    },
-                                    "downloadCount": {
-                                      "type": "integer"
-                                    },
-                                    "createdAt": {
-                                      "type": "string"
-                                    },
-                                    "updatedAt": {
-                                      "type": "string"
                                     }
                                   },
                                   "required": [
                                     "id",
-                                    "title",
-                                    "requireLogin",
-                                    "requireFollow",
-                                    "requirePayment",
-                                    "requireMembership",
-                                    "listRequireLogin",
-                                    "viewPrice",
-                                    "type",
-                                    "content",
-                                    "sort",
-                                    "summary",
-                                    "views",
-                                    "likes",
-                                    "favoriteCount",
-                                    "commentCount",
-                                    "status",
                                     "cover",
-                                    "authorId",
-                                    "category",
-                                    "tags",
-                                    "downloadCount",
-                                    "createdAt",
-                                    "updatedAt"
+                                    "images",
+                                    "category"
                                   ]
                                 }
                               },
