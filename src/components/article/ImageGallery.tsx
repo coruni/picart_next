@@ -36,10 +36,14 @@ export function ImageGallery({
 
   // Convert images to URLs for display
   const imageUrls = images.map((img) =>
-    typeof img === "string" ? img : getImageUrl(img, "original"),
+    typeof img === "string" ? img : getImageUrl(img, "large"),
   );
   const thumbnailUrls = images.map((img) =>
-    typeof img === "string" ? img : getImageUrl(img, "small"),
+    typeof img === "string" ? img : getImageUrl(img, "thumb"),
+  );
+  // Original URLs for ImageViewer
+  const originalUrls = images.map((img) =>
+    typeof img === "string" ? img : getImageUrl(img, "original"),
   );
 
   const syncThumbNavState = (swiper: SwiperType) => {
@@ -79,7 +83,7 @@ export function ImageGallery({
     const imgUrl =
       typeof images[0] === "string"
         ? images[0]
-        : getImageUrl(images[0], "large");
+        : getImageUrl(images[0], "small");
 
     return (
       <>
@@ -109,7 +113,7 @@ export function ImageGallery({
         {viewerVisible && (
           <ImageViewer
             article={article}
-            images={imageUrls}
+            images={originalUrls}
             initialIndex={activeIndex}
             enableSidePanel={false}
             visible={viewerVisible}
@@ -245,7 +249,7 @@ export function ImageGallery({
       {viewerVisible && (
         <ImageViewer
           article={article}
-          images={imageUrls}
+          images={originalUrls}
           initialIndex={activeIndex}
           visible={viewerVisible}
           onClose={() => setViewerVisible(false)}

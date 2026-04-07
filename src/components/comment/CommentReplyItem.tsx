@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { memo, useCallback, useMemo } from "react";
+import { GuardedLink } from "../shared";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
 import { CommentImageGallery } from "./CommentImageGallery";
@@ -67,7 +68,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
       million: tAccountInfo("numberUnits.million"),
       billion: tAccountInfo("numberUnits.billion"),
     }),
-    [tAccountInfo]
+    [tAccountInfo],
   );
 
   const replyTarget = useMemo(() => {
@@ -83,7 +84,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   // 缓存内容处理结果
   const replyContentHtml = useMemo(
     () => prepareCommentHtmlForDisplay(reply.content || ""),
-    [reply.content]
+    [reply.content],
   );
   const {
     displayHtml,
@@ -149,7 +150,12 @@ export const CommentReplyItem = memo(function CommentReplyItem({
       <div>
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <Avatar url={reply.author?.avatar} className="size-5 shrink-0" />
+            <GuardedLink
+              href={`/account/${reply.author.id}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Avatar url={reply.author?.avatar} className="size-5 shrink-0" />
+            </GuardedLink>
             <span className="font-semibold text-foreground">
               {reply.author?.nickname || reply.author?.username}
             </span>
@@ -216,7 +222,9 @@ export const CommentReplyItem = memo(function CommentReplyItem({
               images={reply.images}
               imageAltPrefix={`Comment reply image ${reply.id}`}
               className="mt-3"
-              onOpenImageViewer={(images, index) => onOpenImageViewer(images, index)}
+              onOpenImageViewer={(images, index) =>
+                onOpenImageViewer(images, index)
+              }
             />
           ) : null}
           {reply.images?.length && imageDisplayMode === "link" ? (

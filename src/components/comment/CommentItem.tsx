@@ -54,7 +54,7 @@ export const CommentItem = memo(function CommentItem({
       million: tAccountInfo("numberUnits.million"),
       billion: tAccountInfo("numberUnits.billion"),
     }),
-    [tAccountInfo]
+    [tAccountInfo],
   );
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const [commentState, setCommentState] = useState(data);
@@ -68,7 +68,7 @@ export const CommentItem = memo(function CommentItem({
   // 使用 useMemo 缓存内容处理结果
   const contentHtml = useMemo(
     () => prepareCommentHtmlForDisplay(commentState.content || ""),
-    [commentState.content]
+    [commentState.content],
   );
   const {
     displayHtml,
@@ -97,21 +97,24 @@ export const CommentItem = memo(function CommentItem({
     setViewerVisible(true);
   }, []);
 
-  const toggleReplyEditor = useCallback((parentId: number | undefined) => {
-    if (!parentId) {
-      return;
-    }
+  const toggleReplyEditor = useCallback(
+    (parentId: number | undefined) => {
+      if (!parentId) {
+        return;
+      }
 
-    // 如果提供了外部 onReplyClick，优先使用它（用于在 Dialog 中打开回复）
-    if (onReplyClick) {
-      onReplyClick(parentId);
-      return;
-    }
+      // 如果提供了外部 onReplyClick，优先使用它（用于在 Dialog 中打开回复）
+      if (onReplyClick) {
+        onReplyClick(parentId);
+        return;
+      }
 
-    setActiveReplyParentId((current) =>
-      current === parentId ? null : parentId,
-    );
-  }, [onReplyClick]);
+      setActiveReplyParentId((current) =>
+        current === parentId ? null : parentId,
+      );
+    },
+    [onReplyClick],
+  );
 
   const handleReplySubmitted = useCallback(async () => {
     setActiveReplyParentId(null);
@@ -186,12 +189,15 @@ export const CommentItem = memo(function CommentItem({
     <article>
       {/* User Info element */}
       <div className="px-6 py-1 flex items-center space-x-3">
-        <Avatar
-          className="size-10"
-          alt={data.author.nickname || data.author.username}
-          url={data.author.avatar}
-          frameUrl={data.author?.equippedDecorations?.AVATAR_FRAME?.imageUrl}
-        />
+        <Link href={`/account/${data.author.id}`}>
+          <Avatar
+            className="size-10"
+            alt={data.author.nickname || data.author.username}
+            url={data.author.avatar}
+            frameUrl={data.author?.equippedDecorations?.AVATAR_FRAME?.imageUrl}
+          />
+        </Link>
+
         <div className="grow w-0">
           <Link
             className="flex items-center"

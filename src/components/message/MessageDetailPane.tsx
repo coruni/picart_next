@@ -1,6 +1,7 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
+import { ImageViewer } from "@/components/article/ImageViewer";
 import {
   createDefaultReportReasons,
   DropdownMenu,
@@ -122,6 +123,10 @@ export function MessageDetailPane({
     x: number;
     y: number;
   } | null>(null);
+  // ImageViewer state
+  const [imageViewerOpen, setImageViewerOpen] = useState(false);
+  const [imageViewerImages, setImageViewerImages] = useState<string[]>([]);
+  const [imageViewerIndex, setImageViewerIndex] = useState(0);
 
   const typeLabel =
     selectedItem?.type === "notification"
@@ -471,7 +476,7 @@ export function MessageDetailPane({
           isMobileDetailOpen ? "flex" : "hidden",
         )}
       >
-        <div className="flex min-w-0 shrink-0 items-center justify-between border-b border-border md:pl-4 pt-4 pb-1 md:pr-1">
+        <div className="flex min-w-0 shrink-0 items-center justify-between border-b border-card md:pl-4 pt-4 pb-1 md:pr-1 bg-card">
           <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
             <Button
               variant="ghost"
@@ -525,7 +530,7 @@ export function MessageDetailPane({
 
         {selectedItem.type === "private" ? (
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <div className="relative min-h-0 min-w-0 flex-1">
+            <div className="relative min-h-0 min-w-0 flex-1 ">
               <div
                 ref={scrollViewportRef}
                 className="h-full min-h-0 min-w-0 overflow-x-hidden overflow-y-auto py-4 md:border-r md:border-border md:pl-4 md:py-4 md:pr-1"
@@ -661,8 +666,13 @@ export function MessageDetailPane({
                                             stickToBottom();
                                           }
                                         }}
+                                        onClick={() => {
+                                          setImageViewerImages(imageUrls);
+                                          setImageViewerIndex(index);
+                                          setImageViewerOpen(true);
+                                        }}
                                         className={cn(
-                                          "block w-full rounded-xl object-cover",
+                                          "block w-full rounded-xl object-cover cursor-pointer",
                                           imageUrls.length === 1
                                             ? "max-h-80"
                                             : "aspect-square max-h-44",
@@ -928,6 +938,15 @@ export function MessageDetailPane({
           await onReportSelectedUser(payload);
           setShowReportDialog(false);
         }}
+      />
+
+      <ImageViewer
+        images={imageViewerImages}
+        initialIndex={imageViewerIndex}
+        visible={imageViewerOpen}
+        onClose={() => setImageViewerOpen(false)}
+        alt={copy.imageMessage}
+        enableSidePanel={false}
       />
     </>
   );

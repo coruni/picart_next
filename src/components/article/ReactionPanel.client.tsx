@@ -171,7 +171,7 @@ export const ReactionPanel = ({
 
       {isOpen && (
         <div className="absolute bottom-full right-0 mb-2 bg-card rounded-xl shadow-lg py-2 px-3 z-10 min-w-92 max-w-100 w-full border border-border">
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-5 gap-2 flex-wrap">
             {REACTIONS.map((reaction) => {
               const Icon = reaction.icon;
               const count = stats[reaction.type];

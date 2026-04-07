@@ -1,8 +1,8 @@
 "use client";
 
 import { articleControllerLike } from "@/api";
-import { useState } from "react";
 import { cn } from "@/lib";
+import { useState } from "react";
 
 interface ReactionStatsProps {
     articleId: string;
@@ -98,7 +98,7 @@ export function ReactionStats({ articleId, initialStats, initialUserReaction }: 
     }
 
     return (
-        <div className="mt-5 flex items-center gap-1 text-xs text-secondary">
+        <div className="mt-5 flex items-center gap-1 text-xs text-secondary flex-wrap">
             {Object.entries(reactionStats).map(([emoji, count]) => {
                 const isReacted = userReactions.has(emoji);
                 return (

@@ -28,6 +28,25 @@ function getUnreadBadgeText(message: { unreadCount?: number }) {
   return count > 0 ? String(count) : "•";
 }
 
+function getTabUnreadCount(
+  tab: MessageTab,
+  summary: { personal?: number; notification?: number; broadcast?: number; total?: number } | null,
+): number {
+  if (!summary) return 0;
+  switch (tab) {
+    case "all":
+      return summary.total || 0;
+    case "notification":
+      return summary.notification || 0;
+    case "private":
+      return summary.personal || 0;
+    case "system":
+      return summary.broadcast || 0;
+    default:
+      return 0;
+  }
+}
+
 export function MessageDropdown({
   isTransparentBgPage,
   scrolled,
@@ -51,6 +70,7 @@ export function MessageDropdown({
   const token = useUserStore((state) => state.token);
   const messages = useMessageNotificationStore((state) => state.dropdownMessages);
   const unreadCount = useMessageNotificationStore((state) => state.unreadCount);
+  const unreadSummary = useMessageNotificationStore((state) => state.unreadSummary);
   const isLoading = useMessageNotificationStore((state) => state.dropdownIsLoading);
   const hasLoadedDropdownMessages = useMessageNotificationStore(
     (state) => state.hasLoadedDropdownMessages,
@@ -325,24 +345,34 @@ export function MessageDropdown({
       </div>
       <div className="shrink-0 border-b border-border bg-card/95 px-4 backdrop-blur">
         <div className="flex items-center gap-5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          {tabs.map((tab) => (
-            <button
-              key={tab.value}
-              type="button"
-              onClick={() => handleTabChange(tab.value)}
-              className={cn(
-                "relative shrink-0 min-w-12 cursor-pointer px-1 pb-3 pt-3 text-sm font-medium transition-colors",
-                dropdownTab === tab.value
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {tab.label}
-              {dropdownTab === tab.value && (
-                <span className="absolute bottom-0 left-1/2 h-1 w-6 -translate-x-1/2 rounded-full bg-primary" />
-              )}
-            </button>
-          ))}
+          {tabs.map((tab) => {
+            const tabUnreadCount = getTabUnreadCount(tab.value, unreadSummary);
+            const hasUnread = tabUnreadCount > 0;
+
+            return (
+              <button
+                key={tab.value}
+                type="button"
+                onClick={() => handleTabChange(tab.value)}
+                className={cn(
+                  "relative shrink-0 min-w-12 cursor-pointer px-1 pb-3 pt-3 text-sm font-medium transition-colors",
+                  dropdownTab === tab.value
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <span className="flex items-center gap-1.5">
+                  {tab.label}
+                  {hasUnread && (
+                    <span className="flex size-2 items-center justify-center rounded-full bg-red-400" />
+                  )}
+                </span>
+                {dropdownTab === tab.value && (
+                  <span className="absolute bottom-0 left-1/2 h-1 w-6 -translate-x-1/2 rounded-full bg-primary" />
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
       {renderListContent(mobile)}
