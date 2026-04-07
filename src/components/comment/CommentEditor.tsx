@@ -8,6 +8,7 @@ import {
 } from "@/api";
 import { useImageCompression } from "@/hooks/useImageCompression";
 import { cn, sanitizeRichTextHtml } from "@/lib";
+import { buildUploadMetadata } from "@/lib/file-hash";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import {
@@ -463,6 +464,9 @@ export function CommentEditor({
       return;
     }
 
+    // 保存原始文件引用（用于计算 hash）
+    const originalFiles = files;
+
     // 压缩图片
     const compressionResults = await compressImages(files);
 
@@ -473,6 +477,9 @@ export function CommentEditor({
       console.error(validation.error);
       return;
     }
+
+    // 计算原始文件的 hash
+    const metadata = await buildUploadMetadata(originalFiles);
 
     // Create attachment entries for all files first
     const fileIds: string[] = [];
@@ -502,7 +509,7 @@ export function CommentEditor({
     // Upload all compressed files in one request
     try {
       const response = await uploadControllerUploadFile({
-        body: { file: compressedFiles as any },
+        body: { file: compressedFiles as any, metadata },
       });
 
       const uploadedUrls = response.data?.data || [];

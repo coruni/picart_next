@@ -25,6 +25,7 @@ import { TagSelect } from "@/components/ui/TagSelect";
 import { useForm } from "@/hooks/useForm";
 import { useRouter } from "@/i18n/routing";
 import { cn, prepareRichTextHtmlForDisplay, sanitizeRichTextHtml } from "@/lib";
+import { buildUploadMetadata } from "@/lib/file-hash";
 import { useUserStore } from "@/stores";
 import { Edit, Loader2, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -571,8 +572,12 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       const croppedFile = new File([blob], selectedCoverImage.name, {
         type: "image/png",
       });
+
+      // 计算原始选中文件的 hash（裁剪前的原始文件）
+      const metadata = await buildUploadMetadata([selectedCoverImage]);
+
       const { data } = await uploadControllerUploadFile({
-        body: { file: croppedFile },
+        body: { file: croppedFile, metadata },
       });
       if (data?.data?.[0]) {
         setFieldValues({ cover: data.data[0].url! });

@@ -159,7 +159,7 @@ export function CommentCard({
             let imageUrl: string | undefined;
 
             if (cover) {
-              imageUrl = typeof cover === "string" ? cover : getImageUrl(cover, "small");
+              imageUrl = cover;
             } else if (rawImages.length > 0) {
               const firstImg = rawImages[0];
               imageUrl = typeof firstImg === "string" ? firstImg : getImageUrl(firstImg, "small");

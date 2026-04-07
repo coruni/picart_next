@@ -5,19 +5,19 @@ import {
   decorationControllerRemove,
   decorationControllerUpdate,
 } from "@/api";
-import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { DropdownMenu, type MenuItem } from "@/components/shared";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import { DashboardEditDialog, type DashboardEditField } from "./DashboardEditDialog.client";
-import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
 import { DashboardStatusBadge } from "./DashboardStatusBadge";
 import type { DashboardTableColumn } from "./DashboardTable";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import type { DashboardDecorationItem } from "./types";
 import { useDashboardGuard } from "./useDashboardGuard";
 import { formatDashboardDate } from "./utils";

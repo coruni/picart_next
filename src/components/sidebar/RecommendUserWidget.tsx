@@ -1,5 +1,8 @@
 "use server";
 
+import recommendUserLeft from "@/assets/images/sidebar/recommend/recommend_user_left.png";
+import recommendUserRight from "@/assets/images/sidebar/recommend/recommend_user_right.png";
+import { Link } from "@/i18n/routing";
 import { serverApi } from "@/lib/server-api";
 import { UserList } from "@/types";
 import { Plus } from "lucide-react";
@@ -8,10 +11,6 @@ import Image from "next/image";
 import { GuardedLink } from "../shared";
 import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
-import { getImageUrl } from "@/types/image";
-import { Link } from "@/i18n/routing";
-import recommendUserLeft from "@/assets/images/sidebar/recommend/recommend_user_left.png";
-import recommendUserRight from "@/assets/images/sidebar/recommend/recommend_user_right.png";
 
 export const RecommendUserWidget = async () => {
   const t = await getTranslations("sidebar");
@@ -68,11 +67,11 @@ export const RecommendUserWidget = async () => {
               key={article.id}
             >
               <Image
-                src={typeof article.cover === "string" ? article.cover : getImageUrl(article.cover, "small")}
+                src={article.cover || article.images|| ""}
                 fill
                 sizes="96px"
                 className="object-cover rounded-lg"
-                alt={article.title}
+                alt={`articleId_${String(article.id)}`}
               />
             </div>
           ))}

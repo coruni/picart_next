@@ -611,7 +611,10 @@
       "recalledPreview": "撤回了一条消息",
       "recallReasonDefault": "发错了",
       "imageOnlyPreview": "[图片]"
-    }
+    },
+    "blockConfirmTitle": "确认拉黑",
+    "blockConfirmDescription": "拉黑后，对方将无法再给您发送私信。确定要拉黑该用户吗？",
+    "blockUser": "拉黑"
   },
   "articleDetail": {
     "pageTitle": "帖子详情",

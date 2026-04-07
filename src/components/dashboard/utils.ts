@@ -154,6 +154,29 @@ export function normalizeUnknownListResponse(value: unknown) {
   };
 }
 
+export function normalizePendingOrderNos(value: unknown) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map((item) => {
+      if (typeof item === "string") {
+        return item;
+      }
+
+      if (isRecord(item)) {
+        const orderNo = item.orderNo;
+        if (typeof orderNo === "string" && orderNo) {
+          return orderNo;
+        }
+      }
+
+      return null;
+    })
+    .filter((item): item is string => Boolean(item));
+}
+
 export function getStringField(record: Record<string, unknown>, key: string) {
   const value = record[key];
   return typeof value === "string" ? value : "";

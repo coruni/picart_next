@@ -53,22 +53,16 @@ export function UserStateProvider({
         setToken(resolvedToken);
       }
 
-      if (initialUser) {
-        const currentUser = useUserStore.getState().user;
-        if (!currentUser || currentUser.id !== initialUser.id) {
-          setUser(initialUser);
-        }
-      }
-
       if (initialConfig) {
         setConfig(initialConfig);
       }
 
-      setIsInitialized(true);
-
-      const currentUser = useUserStore.getState().user;
-
-      if (!initialUser && resolvedToken && !currentUser) {
+      // 优先使用服务端获取的 initialUser，避免客户端重复请求
+      if (initialUser) {
+        setUser(initialUser);
+        setIsInitialized(true);
+      } else if (resolvedToken) {
+        // 服务端未获取到用户信息，但存在 token，尝试客户端获取
         const fetchProfile = async () => {
           try {
             const response = await userControllerGetProfile();
@@ -76,10 +70,7 @@ export function UserStateProvider({
 
             if (profile) {
               startTransition(() => {
-                const currentUser = useUserStore.getState().user;
-                if (!currentUser || currentUser.id !== profile.id) {
-                  setUser(profile);
-                }
+                setUser(profile);
               });
             }
           } catch (error) {
@@ -88,6 +79,8 @@ export function UserStateProvider({
                 error,
               });
             }
+          } finally {
+            setIsInitialized(true);
           }
         };
 
@@ -100,11 +93,12 @@ export function UserStateProvider({
         } else {
           setTimeout(schedule, 0);
         }
+      } else {
+        setIsInitialized(true);
       }
     };
 
     void run();
-    // 只在组件挂载时运行一次，不依赖动态的 token 和 user
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

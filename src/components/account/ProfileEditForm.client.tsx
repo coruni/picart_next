@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { useRouter } from "@/i18n/routing";
+import { buildUploadMetadata } from "@/lib/file-hash";
 import type { UserDetail } from "@/types";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -89,9 +90,13 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
         type: "image/jpeg",
       });
 
+      // 计算原始选中文件的 hash（裁剪前的原始文件）
+      const metadata = await buildUploadMetadata([selectedAvatarImage]);
+
       const { data } = await uploadControllerUploadFile({
         body: {
           file: croppedFile,
+          metadata,
         },
       });
 
@@ -144,9 +149,13 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
         type: "image/jpeg",
       });
 
+      // 计算原始选中文件的 hash（裁剪前的原始文件）
+      const metadata = await buildUploadMetadata([selectedBackgroundImage]);
+
       const { data } = await uploadControllerUploadFile({
         body: {
           file: croppedFile,
+          metadata,
         },
       });
 

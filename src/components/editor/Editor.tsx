@@ -16,6 +16,7 @@ import { useImageCompression } from "@/hooks/useImageCompression";
 import { useEditorFocus } from "@/hooks/useEditorFocus";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { prepareRichTextHtmlForEditor, sanitizeRichTextHtml } from "@/lib";
+import { buildUploadMetadata } from "@/lib/file-hash";
 import { useUserStore } from "@/stores";
 import { ArticleList } from "@/types";
 import { getImageUrl, ImageInfo } from "@/types/image";
@@ -361,10 +362,11 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               const selection = quill.getSelection();
               const startIndex = selection?.index || 0;
 
+              // 保存原始文件引用（用于计算 hash）
+              const originalFiles = Array.from(files);
+
               // 压缩图片
-              const compressionResults = await compressImages(
-                Array.from(files),
-              );
+              const compressionResults = await compressImages(originalFiles);
 
               // 验证压缩后的文件大小
               const validation = validateFiles(
@@ -375,6 +377,9 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 console.error(validation.error);
                 return;
               }
+
+              // 计算原始文件的 hash 并构建 metadata
+              const metadata = await buildUploadMetadata(originalFiles);
 
               // Store upload info for each file
               const uploadItems: {
@@ -489,7 +494,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               try {
                 const compressedFiles = compressionResults.map((r) => r.file);
                 const response = await uploadControllerUploadFile({
-                  body: { file: compressedFiles as any },
+                  body: { file: compressedFiles as any, metadata },
                 });
 
                 const uploadedUrls = response.data?.data || [];

@@ -3,9 +3,9 @@
 import {
   articleControllerFindAll,
   commentControllerFindAllComments,
+  configControllerFindAll,
   configControllerGetAdvertisementConfig,
   configControllerGetPublicConfigs,
-  configControllerFindAll,
   orderControllerGetAllOrders,
   orderControllerGetPendingOrders,
   statisticsControllerGetOverview,
@@ -25,8 +25,8 @@ import {
   ShieldUser,
   Sparkles,
   Tags,
-  Trophy,
   TriangleAlert,
+  Trophy,
   UserRoundCog,
 } from "lucide-react";
 import { useLocale } from "next-intl";
@@ -39,15 +39,15 @@ import { DashboardStatCards } from "./DashboardStatCards";
 import { DashboardStatusBadge } from "./DashboardStatusBadge";
 import { DashboardTable } from "./DashboardTable";
 import type { DashboardOverviewData } from "./types";
+import { useDashboardGuard } from "./useDashboardGuard";
 import {
   compactText,
   formatDashboardCount,
   formatDashboardDate,
   getApiErrorStatus,
   getRoleLabels,
-  looksLikeAdminRole,
+  looksLikeAdminRole
 } from "./utils";
-import { useDashboardGuard } from "./useDashboardGuard";
 
 export function DashboardClientPage() {
   const locale = useLocale();

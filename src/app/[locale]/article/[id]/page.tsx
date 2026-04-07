@@ -21,7 +21,6 @@ import {
   prepareRichTextHtmlForDisplay,
 } from "@/lib";
 import { serverApi } from "@/lib/server-api";
-import { getImageUrl } from "@/types/image";
 import {
   ChevronLeft,
   ChevronRight,
@@ -196,11 +195,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           {article?.cover && (
             <div className="relative w-full h-80 md:h-120">
               <ImageWithFallback
-                src={
-                  typeof article.cover === "string"
-                    ? article.cover
-                    : getImageUrl(article.cover, "large")
-                }
+                src={article.cover}
                 fill
                 loading="eager"
                 fetchPriority="high"

@@ -12,13 +12,7 @@ import { CommentList } from "@/types";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
-import {
-  memo,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { CommentItem } from "./CommentItem";
 import { CommentListSkeleton } from "./CommentSkeleton";
 
@@ -28,7 +22,7 @@ const CommentEditor = dynamic(
   {
     ssr: false,
     loading: () => <div className="h-32 animate-pulse bg-muted rounded-lg" />,
-  }
+  },
 );
 
 // 使用 memo 优化 CommentItem 重渲染

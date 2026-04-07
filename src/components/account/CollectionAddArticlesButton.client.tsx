@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/Input";
 import { useRouter } from "@/i18n/routing";
 import { cn, formatShortDate } from "@/lib";
 import type { ArticleUserList } from "@/types";
-import { getImageUrl } from "@/types/image";
 import { Check, Plus } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -271,11 +270,7 @@ export function CollectionAddArticlesButton({
                       <div className="relative mt-0.5 size-18 shrink-0 overflow-hidden rounded-lg bg-muted">
                         {article.cover ? (
                           <ImageWithFallback
-                            src={
-                              typeof article.cover === "string"
-                                ? article.cover
-                                : getImageUrl(article.cover, "small")
-                            }
+                            src={article.cover}
                             alt={article.title}
                             fill
                             className="object-cover"

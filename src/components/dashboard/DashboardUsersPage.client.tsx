@@ -8,13 +8,13 @@ import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
-import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { DashboardEditDialog, type DashboardEditField } from "./DashboardEditDialog.client";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
 import { DashboardStatusBadge } from "./DashboardStatusBadge";
 import type { DashboardTableColumn } from "./DashboardTable";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import type { DashboardUserItem } from "./types";
 import { useDashboardGuard } from "./useDashboardGuard";
 import {

@@ -614,6 +614,9 @@
       "recallReasonDefault": "Sent by mistake",
       "imageOnlyPreview": "[Image]"
     },
+    "blockConfirmTitle": "Confirm Block",
+    "blockConfirmDescription": "After blocking, this user will no longer be able to send you private messages. Are you sure you want to block this user?",
+    "blockUser": "Block",
     "tabs": {
       "all": "All",
       "notification": "Notifications",

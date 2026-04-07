@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/Dialog";
 import { useIsMobile } from "@/hooks";
 import { useImageCompression } from "@/hooks/useImageCompression";
+import { buildUploadMetadata } from "@/lib/file-hash";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { messageSocketClient } from "@/lib/message-socket";
 import { openLoginDialog } from "@/lib/modal-helpers";
@@ -884,6 +885,9 @@ export function MessageCenterClient() {
     setIsUploadingImages(true);
 
     void (async () => {
+      // 保存原始文件引用（用于计算 hash）
+      const originalFiles = nextFiles;
+
       // 压缩图片
       const compressionResults = await compressImages(nextFiles);
 
@@ -898,12 +902,13 @@ export function MessageCenterClient() {
         return;
       }
 
-      const drafts = compressionResults.map((result) => ({
+      const drafts = compressionResults.map((result, index) => ({
         id:
           typeof crypto !== "undefined" && "randomUUID" in crypto
             ? crypto.randomUUID()
             : `${Date.now()}-${Math.random()}`,
         file: result.file,
+        originalFile: originalFiles[index], // 保存原始文件用于计算 hash
         previewUrl: URL.createObjectURL(result.file),
       }));
 
@@ -920,8 +925,11 @@ export function MessageCenterClient() {
       try {
         for (const draft of drafts) {
           try {
+            // 计算原始文件的 hash
+            const metadata = await buildUploadMetadata([draft.originalFile]);
+
             const response = await uploadControllerUploadFile({
-              body: { file: draft.file },
+              body: { file: draft.file, metadata },
             });
             const uploadedUrl = response?.data?.data?.[0]?.url;
 

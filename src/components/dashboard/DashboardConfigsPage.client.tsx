@@ -2,7 +2,7 @@
 
 import {
   configControllerFindAll,
-  configControllerUpdate,
+  configControllerUpdateAll,
   uploadControllerUploadFile,
 } from "@/api";
 import { cn } from "@/lib";
@@ -15,6 +15,7 @@ import { ImagePlus, X, Save } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useImageCompression } from "@/hooks/useImageCompression";
+import { buildUploadMetadata } from "@/lib/file-hash";
 import { getDashboardCopy } from "./copy";
 import {
   DashboardErrorView,
@@ -469,10 +470,16 @@ export function DashboardConfigsPage() {
       });
 
       try {
+        // 保存原始文件引用用于计算 hash
+        const originalFile = file;
         const compressedResult = await compressImage(file);
         const compressedFile = compressedResult.file;
+
+        // 计算原始文件的 hash
+        const metadata = await buildUploadMetadata([originalFile]);
+
         const { data } = await uploadControllerUploadFile({
-          body: { file: compressedFile },
+          body: { file: compressedFile, metadata },
         });
         const uploadedUrl = data?.data?.[0]?.url || "";
         if (!uploadedUrl) {
@@ -501,62 +508,58 @@ export function DashboardConfigsPage() {
     setIsSaving(true);
     setFieldErrors({});
 
-    const errors: Record<number, string> = {};
-    const updates: { id: number; value: string }[] = [];
+    try {
+      // 准备包含 id、key、value 的更新数据
+      const configsToUpdate = modifiedConfigs.map((item) => ({
+        id: item.id,
+        key: item.key,
+        value: drafts[item.id] ?? "",
+      }));
 
-    // 准备更新数据
-    for (const item of modifiedConfigs) {
-      updates.push({ id: item.id, value: drafts[item.id] ?? "" });
-    }
+      await configControllerUpdateAll({
+        body: configsToUpdate,
+      });
 
-    // 串行保存，避免同时请求过多
-    for (const update of updates) {
-      try {
-        await configControllerUpdate({
-          path: { id: update.id },
-          body: { value: update.value },
-        });
-      } catch {
-        errors[update.id] = text.saveFailed;
-      }
-    }
+      // 更新本地状态
+      setConfigs((prev) =>
+        prev.map((item) => {
+          const draftValue = drafts[item.id];
+          if (draftValue !== undefined && draftValue !== (item.value ?? "")) {
+            return {
+              ...item,
+              value: draftValue,
+              updatedAt: new Date().toISOString(),
+            };
+          }
+          return item;
+        })
+      );
 
-    // 更新本地状态
-    setConfigs((prev) =>
-      prev.map((item) => {
-        const update = updates.find((u) => u.id === item.id);
-        if (update) {
-          return {
-            ...item,
-            value: update.value,
-            updatedAt: new Date().toISOString(),
-          };
-        }
-        return item;
-      })
-    );
+      setAllConfigs((prev) =>
+        prev.map((item) => {
+          const draftValue = drafts[item.id];
+          if (draftValue !== undefined && draftValue !== (item.value ?? "")) {
+            return {
+              ...item,
+              value: draftValue,
+              updatedAt: new Date().toISOString(),
+            };
+          }
+          return item;
+        })
+      );
 
-    setAllConfigs((prev) =>
-      prev.map((item) => {
-        const update = updates.find((u) => u.id === item.id);
-        if (update) {
-          return {
-            ...item,
-            value: update.value,
-            updatedAt: new Date().toISOString(),
-          };
-        }
-        return item;
-      })
-    );
-
-    setFieldErrors(errors);
-    setIsSaving(false);
-    hasChangesRef.current = false;
-
-    // 如果有错误，提示用户
-    if (Object.keys(errors).length > 0) {
-      alert(`${text.saveFailed} (${Object.keys(errors).length})`);
+      hasChangesRef.current = false;
+    } catch {
+      setFieldErrors(
+        modifiedConfigs.reduce((acc, item) => {
+          acc[item.id] = text.saveFailed;
+          return acc;
+        }, {} as Record<number, string>)
+      );
+      alert(text.saveFailed);
+    } finally {
+      setIsSaving(false);
     }
   }, [modifiedConfigs, drafts, text.saveFailed]);
 

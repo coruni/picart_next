@@ -86,10 +86,7 @@ export const ArticleCard = ({
 
   const renderMediaElement = () => {
     if (article.cover) {
-      const coverUrl =
-        typeof article.cover === "string"
-          ? article.cover
-          : getImageUrl(article.cover, "medium");
+      const coverUrl = article.cover;
 
       return (
         <div

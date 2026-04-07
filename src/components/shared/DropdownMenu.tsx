@@ -1,16 +1,27 @@
-﻿"use client";
+"use client";
+
+
 
 import { useClickOutside } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { ReactNode, useMemo, useRef, useState } from "react";
 
+type MenuItemConfirmDialog = {
+  enabled?: boolean;
+  title?: string;
+  description?: string;
+  confirmText?: string;
+  cancelText?: string;
+};
+
 export type MenuItem = {
   label: string;
   icon?: ReactNode;
-  onClick: () => void;
+  onClick: () => void | Promise<void>;
   className?: string;
   disabled?: boolean;
+  confirmDialog?: MenuItemConfirmDialog;
 };
 
 type DropdownMenuProps = {
@@ -34,6 +45,8 @@ export function DropdownMenu({
 }: DropdownMenuProps) {
   const t = useTranslations("dropdownMenu");
   const [isOpen, setIsOpen] = useState(false);
+  const [confirmingItem, setConfirmingItem] = useState<MenuItem | null>(null);
+  const [confirming, setConfirming] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const setOpen = (nextOpen: boolean) => {
@@ -52,35 +65,62 @@ export function DropdownMenu({
   }, [isOpen, trigger]);
 
   const handleItemClick = (item: MenuItem) => {
-    if (item.disabled) return;
+    if (item.disabled) {
+      return;
+    }
+
+    if (item.confirmDialog?.enabled) {
+      setConfirmingItem(item);
+      setOpen(false);
+      return;
+    }
+
     item.onClick();
     setOpen(false);
   };
 
-  return (
-    <div className={cn("relative", className)} ref={menuRef}>
-      <div
-        role="button"
-        tabIndex={0}
-        aria-expanded={isOpen}
-        aria-haspopup="menu"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setOpen(!isOpen);
-        }}
-        onKeyDown={(e) => {
-          if (e.key !== "Enter" && e.key !== " ") {
-            return;
-          }
+  const handleConfirm = async () => {
+    if (!confirmingItem) {
+      return;
+    }
 
-          e.preventDefault();
-          e.stopPropagation();
-          setOpen(!isOpen);
-        }}
-      >
-        {resolvedTrigger}
-      </div>
+    setConfirming(true);
+
+    try {
+      await confirmingItem.onClick();
+      setConfirmingItem(null);
+    } catch (error) {
+      console.error("Dropdown menu confirm action failed:", error);
+    } finally {
+      setConfirming(false);
+    }
+  };
+
+  return (
+    <>
+      <div className={cn("relative", className)} ref={menuRef}>
+        <div
+          role="button"
+          tabIndex={0}
+          aria-expanded={isOpen}
+          aria-haspopup="menu"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setOpen(!isOpen);
+          }}
+          onKeyDown={(e) => {
+            if (e.key !== "Enter" && e.key !== " ") {
+              return;
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+            setOpen(!isOpen);
+          }}
+        >
+          {resolvedTrigger}
+        </div>
 
       <div
         className={cn(
@@ -128,5 +168,6 @@ export function DropdownMenu({
         </div>
       </div>
     </div>
+  </>
   );
 }
