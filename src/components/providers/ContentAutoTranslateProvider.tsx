@@ -5,7 +5,6 @@ import { detectContentLanguage, TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
 import { useTranslateStore } from "@/stores";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
-
 const AUTO_TRANSLATE_SELECTOR =
   "[data-auto-translate-content], [data-auto-translate-comment]";
 const TRANSLATE_LOCAL_LANGUAGE = "chinese_simplified";
@@ -42,7 +41,8 @@ function getTranslateDocuments() {
 
 function getPendingTranslateDocuments() {
   return getTranslateDocuments().filter(
-    (element) => element.dataset.translateBound !== "true" &&
+    (element) =>
+      element.dataset.translateBound !== "true" &&
       element.dataset.translateSkipped !== "true",
   );
 }
@@ -81,7 +81,6 @@ function disableTranslateLanguageSelector() {
   }
 }
 
-
 function configureSessionStorage() {
   const translate = window.translate;
   if (!translate?.storage) return;
@@ -119,39 +118,47 @@ export function ContentAutoTranslateProvider() {
     // Dynamically import translate.js only on client side
     const loadTranslateScript = async () => {
       if (typeof window === "undefined") return;
-      await import("@/assets/js/translate/translate.js");
+
+      // Use script tag for UMD module instead of ES module import
+      if (!window.translate) {
+        const script = document.createElement("script");
+        script.src = "https://cdn.staticfile.net/translate.js/3.18.66/translate.js";
+        script.async = true;
+        script.onload = () => {
+          setScriptReady(true);
+        };
+        script.onerror = () => {
+          console.error("Failed to load translate.js");
+        };
+        document.head.appendChild(script);
+      } else {
+        setScriptReady(true);
+      }
     };
 
     loadTranslateScript();
+  }, []);
 
-    const checkTranslateLoaded = () => {
-      if (window.translate) {
-        disableTranslateLanguageSelector();
-        configureSessionStorage();
-        setScriptReady(true);
-        return true;
-      }
-      return false;
-    };
-
-    // Check immediately
-    if (checkTranslateLoaded()) {
+  // Configure translate.js after it's loaded
+  useEffect(() => {
+    if (!scriptReady) {
       return;
     }
 
-    // Poll for translate.js to be loaded (it might load async)
-    const interval = setInterval(() => {
-      if (checkTranslateLoaded()) {
-        clearInterval(interval);
-      }
-    }, 100);
+    const translate = window.translate;
+    if (!translate) {
+      return;
+    }
 
-    return () => clearInterval(interval);
-  }, []);
+    disableTranslateLanguageSelector();
+    configureSessionStorage();
+  }, [scriptReady]);
 
   // Filter documents that need translation (exclude those matching current locale)
   const filterDocumentsByLanguage = useCallback(
-    (documents: HTMLElement[]): { toTranslate: HTMLElement[]; skipped: HTMLElement[] } => {
+    (
+      documents: HTMLElement[],
+    ): { toTranslate: HTMLElement[]; skipped: HTMLElement[] } => {
       const toTranslate: HTMLElement[] = [];
       const skipped: HTMLElement[] = [];
 
@@ -254,7 +261,13 @@ export function ContentAutoTranslateProvider() {
     window.requestAnimationFrame(() => {
       translate.changeLanguage?.(targetLanguage);
     });
-  }, [autoTranslateContent, locale, pathname, scriptReady, filterDocumentsByLanguage]);
+  }, [
+    autoTranslateContent,
+    locale,
+    pathname,
+    scriptReady,
+    filterDocumentsByLanguage,
+  ]);
 
   useEffect(() => {
     if (!scriptReady) {
