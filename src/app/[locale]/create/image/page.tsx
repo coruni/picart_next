@@ -13,16 +13,17 @@ import { Form, FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
 import { TagSelect } from "@/components/ui/TagSelect";
+import { useForm } from "@/hooks/useForm";
 import { useImageCompression } from "@/hooks/useImageCompression";
-import { buildUploadMetadata } from "@/lib/file-hash";
 import { useRouter } from "@/i18n/routing";
 import { cn } from "@/lib";
+import { buildUploadMetadata } from "@/lib/file-hash";
 import { getImageUrls, type ImageInfo } from "@/types/image";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type CreateImageFormData = {
   title: string;
@@ -593,9 +594,8 @@ export default function CreateImagePage() {
       const uploadedUrls = await uploadImagesBatch(files, compressImages);
 
       if (uploadedUrls.length > 0) {
-        const mergedImages = Array.from(
-          new Set([...values.images, ...uploadedUrls]),
-        );
+        // 允许重复图片，不进行 Set 去重
+        const mergedImages = [...values.images, ...uploadedUrls];
         setFieldValues({
           images: mergedImages,
         });
