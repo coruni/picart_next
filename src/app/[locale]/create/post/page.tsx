@@ -573,8 +573,8 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         type: "image/png",
       });
 
-      // 计算原始选中文件的 hash（裁剪前的原始文件）
-      const metadata = await buildUploadMetadata([selectedCoverImage]);
+      // 计算裁剪后文件的 hash（与上传的文件保持一致）
+      const metadata = await buildUploadMetadata([croppedFile]);
 
       const { data } = await uploadControllerUploadFile({
         body: { file: croppedFile, metadata },

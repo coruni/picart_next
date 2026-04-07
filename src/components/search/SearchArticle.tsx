@@ -109,15 +109,22 @@ export function SearchArticle({
             </div>
           </div>
         </div>
-        <div className="w-full max-w-56 aspect-5/3 overflow-hidden relative rounded-lg shrink-0">
-          <ImageWithFallback
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover rounded-lg"
-            fill
-            src={article.cover || getImageUrl(article.images[0], "small")}
-            alt={article.title || "article cover"}
-          />
-        </div>
+        {article.cover ||
+          (article?.images.length > 0 && (
+            <div className="w-full max-w-56 aspect-5/3 overflow-hidden relative rounded-lg shrink-0">
+              <ImageWithFallback
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="object-cover rounded-lg"
+                fill
+                src={
+                  article.cover ||
+                  getImageUrl(article.images?.[0], "small") ||
+                  ""
+                }
+                alt={article.title || "article cover"}
+              />
+            </div>
+          ))}
       </Link>
     </article>
   );

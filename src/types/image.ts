@@ -69,6 +69,8 @@ export function getImageUrl(
   image: ImageInfo | string,
   size: ImageSize = "original",
 ): string {
+  // 不存在直接返回空
+  if (!image) return "";
   // 如果是字符串（旧格式或兜底），直接返回
   if (typeof image === "string") {
     return image;

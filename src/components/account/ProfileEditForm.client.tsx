@@ -90,8 +90,8 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
         type: "image/jpeg",
       });
 
-      // 计算原始选中文件的 hash（裁剪前的原始文件）
-      const metadata = await buildUploadMetadata([selectedAvatarImage]);
+      // 计算裁剪后文件的 hash
+      const metadata = await buildUploadMetadata([croppedFile]);
 
       const { data } = await uploadControllerUploadFile({
         body: {
@@ -149,8 +149,8 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
         type: "image/jpeg",
       });
 
-      // 计算原始选中文件的 hash（裁剪前的原始文件）
-      const metadata = await buildUploadMetadata([selectedBackgroundImage]);
+      // 计算裁剪后文件的 hash
+      const metadata = await buildUploadMetadata([croppedFile]);
 
       const { data } = await uploadControllerUploadFile({
         body: {
