@@ -156,7 +156,7 @@ export const ArticleCard = ({
 
     if (imageCount === 2) {
       return (
-        <div className="mt-3 flex gap-2">
+        <div className="mt-3 grid grid-cols-2 md:flex gap-2">
           {previewImages.slice(0, 2).map((img, idx) => {
             const imgUrl =
               typeof img === "string" ? img : getImageUrl(img, "small");
@@ -166,9 +166,7 @@ export const ArticleCard = ({
                 role="button"
                 tabIndex={0}
                 data-guarded-link-ignore="true"
-                className="rounded-xl overflow-hidden w-31/100 relative cursor-zoom-in"
-                style={{ paddingTop: "31%" }}
-                // ✅ paddingTop 与 width 相同百分比 → 正方形
+                className="rounded-xl overflow-hidden relative cursor-zoom-in aspect-square md:w-31/100 md:pt-[31%]"
                 onClick={(e) => {
                   stopLinkNavigationEvent(e);
                   openImageViewer(idx);
@@ -185,7 +183,7 @@ export const ArticleCard = ({
                   alt={`${article?.title || "image"} ${idx + 1}`}
                   fill
                   quality={75}
-                  sizes="31vw"
+                  sizes="(max-width: 768px) 50vw, 31vw"
                   className="object-cover"
                 />
               </div>
@@ -199,7 +197,7 @@ export const ArticleCard = ({
     const remainingCount = imageCount - 3;
 
     return (
-      <div className="mt-3 flex gap-2">
+      <div className="mt-3 grid grid-cols-3 md:flex gap-2">
         {displayImages.map((img, idx) => {
           const imgUrl =
             typeof img === "string" ? img : getImageUrl(img, "small");
@@ -209,9 +207,7 @@ export const ArticleCard = ({
               role="button"
               tabIndex={0}
               data-guarded-link-ignore="true"
-              className="rounded-xl overflow-hidden w-1/5 relative cursor-zoom-in"
-              style={{ paddingTop: "20%" }}
-              // ✅ paddingTop 与 width 相同百分比 → 正方形
+              className="rounded-xl overflow-hidden relative cursor-zoom-in aspect-square md:w-1/5 md:pt-[20%]"
               onClick={(e) => {
                 stopLinkNavigationEvent(e);
                 openImageViewer(idx);
@@ -228,7 +224,7 @@ export const ArticleCard = ({
                 alt={`${article?.title || "image"} ${idx + 1}`}
                 fill
                 quality={75}
-                sizes="20vw"
+                sizes="(max-width: 768px) 33vw, 20vw"
                 className="object-cover"
               />
               {idx === 2 && remainingCount > 0 && (
