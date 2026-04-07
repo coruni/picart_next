@@ -206,7 +206,7 @@ export function CommentReplyList({
           page: pageToLoad,
           limit: 10,
           sortBy: sortByMap[sortKey],
-          onlyAuthor: sortKey === "rootOnly",
+          ...(sortKey === "rootOnly" && { onlyAuthor: true }),
         },
       });
 
