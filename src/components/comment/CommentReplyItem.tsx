@@ -9,6 +9,7 @@ import {
   prepareCommentHtmlForDisplay,
 } from "@/lib";
 import { CommentList } from "@/types";
+import { getImageUrls, type ImageInfo } from "@/types/image";
 import {
   Image as ImageIcon,
   Languages,
@@ -17,7 +18,7 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { memo, useCallback } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
 import { CommentImageGallery } from "./CommentImageGallery";
@@ -26,13 +27,14 @@ export type CommentReply = NonNullable<CommentList[number]["replies"]>[number];
 type CommentReplyItemProps = {
   articleId: string;
   rootCommentId: number;
-  reply: CommentReply;
+  reply: CommentReply & { images?: (string | ImageInfo)[] };
   isReplyEditorOpen: boolean;
   onToggleReplyEditor: (parentId: number | undefined) => void;
   onToggleLike: (commentId: number | undefined) => void | Promise<void>;
   onReplySubmitted: () => void | Promise<void>;
   onOpenImageViewer: (images: string[], index?: number) => void;
   onOpenModal?: (reply: CommentReply) => void;
+  onReplyClick?: (commentId: number) => void;
   imageDisplayMode?: "link" | "gallery";
   showTranslateButton?: boolean;
 };
@@ -47,6 +49,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   onReplySubmitted,
   onOpenImageViewer,
   onOpenModal,
+  onReplyClick,
   imageDisplayMode = "link",
   showTranslateButton = false,
 }: CommentReplyItemProps) {
@@ -54,21 +57,34 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   const tAccountInfo = useTranslations("accountInfo");
   const tTime = useTranslations("time");
   const locale = useLocale();
-  const compactNumberLabels = {
-    thousand: tAccountInfo("numberUnits.thousand"),
-    tenThousand: tAccountInfo("numberUnits.tenThousand"),
-    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
-    million: tAccountInfo("numberUnits.million"),
-    billion: tAccountInfo("numberUnits.billion"),
-  };
-  const replyTarget =
-    reply.parent && reply.parent.id !== rootCommentId
-      ? {
-          id: reply.parent.author?.id,
-          name: reply.parent.author?.nickname || reply.parent.author?.username,
-        }
-      : null;
-  const replyContentHtml = prepareCommentHtmlForDisplay(reply.content || "");
+
+  // 使用 useMemo 缓存翻译和计算结果
+  const compactNumberLabels = useMemo(
+    () => ({
+      thousand: tAccountInfo("numberUnits.thousand"),
+      tenThousand: tAccountInfo("numberUnits.tenThousand"),
+      hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+      million: tAccountInfo("numberUnits.million"),
+      billion: tAccountInfo("numberUnits.billion"),
+    }),
+    [tAccountInfo]
+  );
+
+  const replyTarget = useMemo(() => {
+    if (reply.parent && reply.parent.id !== rootCommentId) {
+      return {
+        id: reply.parent.author?.id,
+        name: reply.parent.author?.nickname || reply.parent.author?.username,
+      };
+    }
+    return null;
+  }, [reply.parent, rootCommentId]);
+
+  // 缓存内容处理结果
+  const replyContentHtml = useMemo(
+    () => prepareCommentHtmlForDisplay(reply.content || ""),
+    [reply.content]
+  );
   const {
     displayHtml,
     isTranslated,
@@ -76,6 +92,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
     renderKey,
     shouldAutoTranslate,
     toggleTranslate,
+    contentMatchesLocale,
   } = useManualHtmlTranslate({
     html: replyContentHtml,
     resetKey: `${reply.id}-${reply.content}`,
@@ -96,9 +113,14 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   const handleOpenReplyEditor = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
+      // 如果提供了外部 onReplyClick，优先使用它（用于在 Dialog 中打开回复）
+      if (onReplyClick) {
+        onReplyClick(reply.id);
+        return;
+      }
       onToggleReplyEditor(reply.id);
     },
-    [onToggleReplyEditor, reply.id],
+    [onReplyClick, onToggleReplyEditor, reply.id],
   );
 
   const handleToggleLike = useCallback(
@@ -112,7 +134,8 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   const handleOpenImageViewer = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
-      onOpenImageViewer(reply.images || [], 0);
+      const imageUrls = getImageUrls(reply.images || [], "original");
+      onOpenImageViewer(imageUrls, 0);
     },
     [onOpenImageViewer, reply.images],
   );
@@ -131,7 +154,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
               {reply.author?.nickname || reply.author?.username}
             </span>
           </div>
-          {showTranslateButton ? (
+          {showTranslateButton && !contentMatchesLocale ? (
             <button
               type="button"
               title={tComment("translate")}
@@ -190,10 +213,10 @@ export const CommentReplyItem = memo(function CommentReplyItem({
           )}
           {reply.images?.length && imageDisplayMode === "gallery" ? (
             <CommentImageGallery
-              images={reply.images || []}
+              images={reply.images}
               imageAltPrefix={`Comment reply image ${reply.id}`}
               className="mt-3"
-              onOpenImageViewer={onOpenImageViewer}
+              onOpenImageViewer={(images, index) => onOpenImageViewer(images, index)}
             />
           ) : null}
           {reply.images?.length && imageDisplayMode === "link" ? (

@@ -15,6 +15,7 @@ import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
 import { DashboardStatusBadge } from "./DashboardStatusBadge";
 import type { DashboardTableColumn } from "./DashboardTable";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import type { DashboardOrderItem } from "./types";
 import { useDashboardGuard } from "./useDashboardGuard";
 import { formatDashboardDate } from "./utils";
@@ -24,6 +25,9 @@ export function DashboardOrdersPage() {
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
   const [refreshKey, setRefreshKey] = useState(0);
+  const [actionItem, setActionItem] = useState<DashboardOrderItem | null>(null);
+  const [actionType, setActionType] = useState<"cancel" | "refund" | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const statusValueEnum = useMemo(
     () => ({
@@ -108,18 +112,9 @@ export function DashboardOrdersPage() {
             menuItems.push({
               label: "Cancel order",
               icon: <XCircle size={16} />,
-              confirmDialog: {
-                enabled: true,
-                title: "Cancel order",
-                description: "Cancel this order?",
-                confirmText: "Cancel order",
-                cancelText: copy.common.cancel,
-              },
-              onClick: async () => {
-                await orderControllerCancelOrder({
-                  path: { id: String(item.id) },
-                });
-                setRefreshKey((current) => current + 1);
+              onClick: () => {
+                setActionItem(item);
+                setActionType("cancel");
               },
             });
           }
@@ -128,18 +123,9 @@ export function DashboardOrdersPage() {
             menuItems.push({
               label: "Refund",
               icon: <RotateCcw size={16} />,
-              confirmDialog: {
-                enabled: true,
-                title: "Refund",
-                description: "Request refund?",
-                confirmText: "Refund",
-                cancelText: copy.common.cancel,
-              },
-              onClick: async () => {
-                await orderControllerRequestRefund({
-                  path: { id: String(item.id) },
-                });
-                setRefreshKey((current) => current + 1);
+              onClick: () => {
+                setActionItem(item);
+                setActionType("refund");
               },
             });
           }
@@ -169,6 +155,35 @@ export function DashboardOrdersPage() {
     ],
     [copy, statusValueEnum],
   );
+
+  const handleActionConfirm = async () => {
+    if (!actionItem?.id || !actionType) return;
+
+    setActionLoading(true);
+    try {
+      if (actionType === "cancel") {
+        await orderControllerCancelOrder({
+          path: { id: String(actionItem.id) },
+        });
+      } else if (actionType === "refund") {
+        await orderControllerRequestRefund({
+          path: { id: String(actionItem.id) },
+        });
+      }
+      setActionItem(null);
+      setActionType(null);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const actionTitle = actionType === "cancel" ? "Cancel Order" : actionType === "refund" ? "Request Refund" : "";
+  const actionDescription = actionType === "cancel"
+    ? "Are you sure you want to cancel this order?"
+    : actionType === "refund"
+      ? "Are you sure you want to request a refund for this order?"
+      : "";
 
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
@@ -204,6 +219,21 @@ export function DashboardOrdersPage() {
         getRowKey={(item) => item.id}
         emptyText={copy.empty.orders}
         className="h-full"
+      />
+      <DeleteConfirmDialog
+        open={Boolean(actionItem)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setActionItem(null);
+            setActionType(null);
+          }
+        }}
+        title={actionTitle}
+        description={actionDescription}
+        onConfirm={handleActionConfirm}
+        loading={actionLoading}
+        confirmText={actionType === "cancel" ? "Cancel" : "Refund"}
+        cancelText={copy.common.cancel}
       />
     </DashboardPageFrame>
   );

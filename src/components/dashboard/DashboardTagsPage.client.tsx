@@ -4,8 +4,8 @@ import { tagControllerFindAll, tagControllerRemove, tagControllerUpdate } from "
 import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { Avatar } from "@/components/ui/Avatar";
 import { Link } from "@/i18n/routing";
-import { useLocale } from "next-intl";
 import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
+import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import { DashboardEditDialog, type DashboardEditField } from "./DashboardEditDialog.client";
@@ -13,6 +13,7 @@ import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
 import type { DashboardTableColumn } from "./DashboardTable";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import type { DashboardTagItem } from "./types";
 import { useDashboardGuard } from "./useDashboardGuard";
 import {
@@ -25,16 +26,36 @@ export function DashboardTagsPage() {
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
   const [editingItem, setEditingItem] = useState<DashboardTagItem | null>(null);
+  const [deletingItem, setDeletingItem] = useState<DashboardTagItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const editFields = useMemo<DashboardEditField[]>(
     () => [
       { name: "name", label: copy.columns.name },
       { name: "description", label: copy.columns.description, type: "textarea" },
-      { name: "avatar", label: "Avatar", type: "image" },
-      { name: "background", label: "Background", type: "image" },
-      { name: "cover", label: "Cover", type: "image" },
+      {
+        name: "avatar",
+        label: "Avatar",
+        type: "image",
+        imagePreviewClassName: "aspect-square h-auto w-full max-w-52",
+        imageObjectFit: "contain",
+      },
+      {
+        name: "background",
+        label: "Background",
+        type: "image",
+        imagePreviewClassName: "aspect-video h-auto w-full max-w-52",
+        imageObjectFit: "cover",
+      },
+      {
+        name: "cover",
+        label: "Cover",
+        type: "image",
+        imagePreviewClassName: "aspect-video h-auto w-full max-w-52",
+        imageObjectFit: "cover",
+      },
       { name: "sort", label: copy.columns.sort, type: "number", step: 1 },
     ],
     [copy],
@@ -112,19 +133,7 @@ export function DashboardTagsPage() {
               label: copy.common.delete,
               icon: <Trash2 size={16} />,
               className: "text-red-500",
-              confirmDialog: {
-                enabled: true,
-                title: copy.common.delete,
-                description: copy.common.deleteConfirm,
-                confirmText: copy.common.delete,
-                cancelText: copy.common.cancel,
-              },
-              onClick: async () => {
-                await tagControllerRemove({
-                  path: { id: String(item.id) },
-                });
-                setRefreshKey((current) => current + 1);
-              },
+              onClick: () => setDeletingItem(item),
             },
           ];
 
@@ -149,6 +158,21 @@ export function DashboardTagsPage() {
     ],
     [copy, locale],
   );
+
+  const handleDelete = async () => {
+    if (!deletingItem?.id) return;
+
+    setDeleteLoading(true);
+    try {
+      await tagControllerRemove({
+        path: { id: String(deletingItem.id) },
+      });
+      setDeletingItem(null);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
@@ -224,6 +248,18 @@ export function DashboardTagsPage() {
             setSubmitting(false);
           }
         }}
+      />
+      <DeleteConfirmDialog
+        open={Boolean(deletingItem)}
+        onOpenChange={(open) => {
+          if (!open) setDeletingItem(null);
+        }}
+        title={copy.common.delete}
+        description={copy.common.deleteConfirm}
+        onConfirm={handleDelete}
+        loading={deleteLoading}
+        confirmText={copy.common.delete}
+        cancelText={copy.common.cancel}
       />
     </DashboardPageFrame>
   );

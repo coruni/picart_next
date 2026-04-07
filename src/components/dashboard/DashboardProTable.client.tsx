@@ -10,6 +10,7 @@ import {
   DashboardTable,
   type DashboardTableColumn,
   type DashboardValueEnum,
+  type ExpandableConfig,
 } from "./DashboardTable";
 import { DashboardTableToolbar } from "./DashboardTableToolbar.client";
 
@@ -39,9 +40,15 @@ type DashboardProTableProps<T> = {
     | React.ReactNode
     | ((state: DashboardProTableActionState<T>) => React.ReactNode);
   columns: DashboardTableColumn<T>[];
-  request: (
+  expandable?: ExpandableConfig<T>;
+  request?: (
     params: DashboardProTableRequestParams,
   ) => Promise<DashboardProTableRequestResult<T>>;
+  data?: T[];
+  total?: number;
+  totalPages?: number;
+  loading?: boolean;
+  onReload?: () => void;
   getRowKey: (row: T) => string | number;
   emptyText: string;
   className?: string;
@@ -63,7 +70,13 @@ export function DashboardProTable<T>({
   title,
   action,
   columns,
+  expandable,
   request,
+  data,
+  total: externalTotal,
+  totalPages: externalTotalPages,
+  loading: externalLoading,
+  onReload,
   getRowKey,
   emptyText,
   className,
@@ -76,6 +89,7 @@ export function DashboardProTable<T>({
 }: DashboardProTableProps<T>) {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
+  const isControlled = data !== undefined;
   const searchColumns = useMemo(
     () => columns.filter((column) => !column.hideInSearch && column.dataIndex),
     [columns],
@@ -94,10 +108,10 @@ export function DashboardProTable<T>({
     useState<Record<string, string>>(initialQueryValues);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(initialPageSize);
-  const [rows, setRows] = useState<T[]>([]);
-  const [total, setTotal] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [internalRows, setInternalRows] = useState<T[]>([]);
+  const [internalTotal, setInternalTotal] = useState(0);
+  const [internalTotalPages, setInternalTotalPages] = useState(1);
+  const [internalLoading, setInternalLoading] = useState(false);
   const [error, setError] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
   const [searchValueEnumMap, setSearchValueEnumMap] = useState<
@@ -106,6 +120,23 @@ export function DashboardProTable<T>({
   const [queryExpanded, setQueryExpanded] = useState(false);
   const [visibleSearchCount, setVisibleSearchCount] = useState(3);
   const requestRef = useRef(request);
+
+  // 使用外部数据或内部数据
+  const rows = isControlled ? data : internalRows;
+  const total = isControlled ? (externalTotal ?? data.length) : internalTotal;
+  const totalPages = isControlled
+    ? (externalTotalPages ?? Math.max(1, Math.ceil(total / pageSize)))
+    : internalTotalPages;
+  const loading = isControlled ? (externalLoading ?? false) : internalLoading;
+
+  const triggerReload = () => {
+    if (onReload) {
+      onReload();
+    } else {
+      setReloadKey((k) => k + 1);
+    }
+  };
+
 
   useEffect(() => {
     requestRef.current = request;
@@ -143,25 +174,26 @@ export function DashboardProTable<T>({
     return () => window.removeEventListener("resize", updateVisibleSearchCount);
   }, []);
 
+  // 只在非受控模式下加载数据
   useEffect(() => {
-    if (!enabled) {
+    if (!enabled || isControlled) {
       return;
     }
 
     let mounted = true;
 
     async function loadRows() {
-      setLoading(true);
+      setInternalLoading(true);
       setError(false);
 
       try {
-        const result = await requestRef.current({
+        const result = await requestRef.current?.({
           current: page,
           pageSize,
           ...queryValues,
         });
 
-        if (!mounted) {
+        if (!mounted || !result) {
           return;
         }
 
@@ -169,20 +201,20 @@ export function DashboardProTable<T>({
         const nextTotalPages =
           result.totalPages ?? Math.max(1, Math.ceil(nextTotal / pageSize));
 
-        setRows(result.data);
-        setTotal(nextTotal);
-        setTotalPages(nextTotalPages);
+        setInternalRows(result.data);
+        setInternalTotal(nextTotal);
+        setInternalTotalPages(nextTotalPages);
         setSearchValueEnumMap(result.searchValueEnum || {});
       } catch {
         if (mounted) {
           setError(true);
-          setRows([]);
-          setTotal(0);
-          setTotalPages(1);
+          setInternalRows([]);
+          setInternalTotal(0);
+          setInternalTotalPages(1);
         }
       } finally {
         if (mounted) {
-          setLoading(false);
+          setInternalLoading(false);
         }
       }
     }
@@ -192,7 +224,7 @@ export function DashboardProTable<T>({
     return () => {
       mounted = false;
     };
-  }, [enabled, page, pageSize, queryValues, reloadKey]);
+  }, [enabled, isControlled, page, pageSize, queryValues, reloadKey]);
 
   const resolvedAction =
     typeof action === "function"
@@ -319,7 +351,7 @@ export function DashboardProTable<T>({
           }
           density={density}
           onDensityChange={setDensity}
-          onReload={() => setReloadKey((current) => current + 1)}
+          onReload={triggerReload}
           labels={{
             refresh: copy.common.refresh,
             density: copy.common.density,
@@ -356,6 +388,7 @@ export function DashboardProTable<T>({
           loading={loading}
           loadingText={copy.common.loading}
           density={density}
+          expandable={expandable}
           pagination={{
             page,
             totalPages,

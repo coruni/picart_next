@@ -101,10 +101,12 @@ export default function SettingPrivacyPage() {
 
         setConfig(nextConfig);
         setHasLoadedConfig(true);
-        if (user?.config) {
-          updateUser({
+        // 使用函数式更新避免依赖 user
+        const currentUser = useUserStore.getState().user;
+        if (currentUser?.config) {
+          useUserStore.getState().updateUser({
             config: {
-              ...user.config,
+              ...currentUser.config,
               ...nextConfig,
             },
           });
@@ -115,7 +117,9 @@ export default function SettingPrivacyPage() {
     };
 
     void loadConfig();
-  }, [hasLoadedConfig, storeHasPrivacyConfig, updateUser, user?.config]);
+    // 只在挂载时运行一次
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleToggle = async (
     key: keyof PrivacyConfigState,

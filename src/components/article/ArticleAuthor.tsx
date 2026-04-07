@@ -1,15 +1,15 @@
 "use client";
 
-import { useIsMobile } from "@/hooks";
-import { useEffect, useRef, useState } from "react";
 import { Avatar } from "@/components/ui/Avatar";
-import { Button } from "@/components/ui/Button";
+import { useIsMobile } from "@/hooks";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { Link } from "@/i18n/routing";
 import { cn, formatRelativeTime } from "@/lib/utils";
 import { useUserStore } from "@/stores";
 import type { ArticleDetail } from "@/types";
 import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
+import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
 
 type ArticleAuthorProps = {
   author: ArticleDetail["author"];
@@ -143,16 +143,13 @@ export function ArticleAuthor({
           </div>
         </div>
 
-        {!author?.isFollowed && !isSelf && (
-          <div className="ml-3 flex w-auto items-center">
-            <Button
-              className="ml-2 min-w-18 rounded-full px-4 md:min-w-22 md:px-6"
-              onClick={onFollow}
-            >
-              <span className="text-xs">{tFollow("follow")}</span>
-            </Button>
-          </div>
-        )}
+        <div className="ml-3 flex w-auto items-center">
+          <FollowButtonWithStatus
+            author={author}
+            className="min-w-20 px-4"
+            forceShow
+          />
+        </div>
       </div>
     </div>
   );

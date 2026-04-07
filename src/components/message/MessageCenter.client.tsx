@@ -5,8 +5,8 @@ import {
   messageControllerGetPrivateConversation,
   messageControllerMarkPrivateMessagesRead,
   reportControllerCreate,
-  userControllerFindOne,
   uploadControllerUploadFile,
+  userControllerFindOne,
 } from "@/api";
 import type {
   ComposerImageItem,
@@ -17,16 +17,26 @@ import type {
   PrivateRealtimePayload,
   PrivateUserStatus,
 } from "@/components/message/MessageCenter.types";
-import { openLoginDialog } from "@/lib/modal-helpers";
-import { usePathname, useRouter } from "@/i18n/routing";
-import { useIsMobile } from "@/hooks";
 import {
   getMessageDayKey,
   getMessageDayLabel,
 } from "@/components/message/MessageCenter.utils";
 import { MessageConversationList } from "@/components/message/MessageConversationList";
 import { MessageDetailPane } from "@/components/message/MessageDetailPane";
+import { Button } from "@/components/ui/Button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/Dialog";
+import { useIsMobile } from "@/hooks";
+import { useImageCompression } from "@/hooks/useImageCompression";
+import { usePathname, useRouter } from "@/i18n/routing";
 import { messageSocketClient } from "@/lib/message-socket";
+import { openLoginDialog } from "@/lib/modal-helpers";
 import { useMessageNotificationStore, useUserStore } from "@/stores";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -188,6 +198,7 @@ export function MessageCenterClient() {
     (state) => state.socketConnected,
   );
   const isLoading = useMessageNotificationStore((state) => state.isLoading);
+  const isSwitchingTab = useMessageNotificationStore((state) => state.isSwitchingTab);
   const fetchMessages = useMessageNotificationStore(
     (state) => state.fetchMessages,
   );
@@ -225,6 +236,7 @@ export function MessageCenterClient() {
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [reportSubmitting, setReportSubmitting] = useState(false);
   const [blockSubmitting, setBlockSubmitting] = useState(false);
+  const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const [selectedUserStatus, setSelectedUserStatus] =
     useState<PrivateUserStatus | null>(null);
   const [pendingPrivateTarget, setPendingPrivateTarget] = useState<{
@@ -234,6 +246,7 @@ export function MessageCenterClient() {
     counterpartId: number;
   } | null>(null);
   const composerImagesRef = useRef<ComposerImageItem[]>([]);
+  const { compressImages, validateFiles } = useImageCompression();
 
   const tabs: MessageCenterTabItem[] = [
     { value: "all", label: tMsg("tabs.all") },
@@ -519,6 +532,7 @@ export function MessageCenterClient() {
       await messageControllerBlockPrivateUser({
         path: { userId: String(selectedPrivateCounterpartId) },
       });
+      setBlockDialogOpen(false);
       removeSelectedPrivateConversation();
       void fetchUnreadCount();
     } catch (error) {
@@ -526,6 +540,13 @@ export function MessageCenterClient() {
     } finally {
       setBlockSubmitting(false);
     }
+  };
+
+  const openBlockDialog = () => {
+    if (!selectedPrivateCounterpartId || !requireAuth()) {
+      return;
+    }
+    setBlockDialogOpen(true);
   };
 
   useEffect(() => {
@@ -863,13 +884,27 @@ export function MessageCenterClient() {
     setIsUploadingImages(true);
 
     void (async () => {
-      const drafts = nextFiles.map((file) => ({
+      // 压缩图片
+      const compressionResults = await compressImages(nextFiles);
+
+      // 验证压缩后的文件大小
+      const validation = validateFiles(
+        compressionResults.map((r) => r.file),
+        true,
+      );
+      if (!validation.valid) {
+        console.error(validation.error);
+        setIsUploadingImages(false);
+        return;
+      }
+
+      const drafts = compressionResults.map((result) => ({
         id:
           typeof crypto !== "undefined" && "randomUUID" in crypto
             ? crypto.randomUUID()
             : `${Date.now()}-${Math.random()}`,
-        file,
-        previewUrl: URL.createObjectURL(file),
+        file: result.file,
+        previewUrl: URL.createObjectURL(result.file),
       }));
 
       setComposerImages((current) => [
@@ -886,14 +921,6 @@ export function MessageCenterClient() {
         for (const draft of drafts) {
           try {
             const response = await uploadControllerUploadFile({
-              headers: {
-                "Content-Type": null,
-              },
-              bodySerializer: (body) => {
-                const formData = new FormData();
-                formData.append("file", body.file);
-                return formData
-              },
               body: { file: draft.file },
             });
             const uploadedUrl = response?.data?.data?.[0]?.url;
@@ -1026,6 +1053,7 @@ export function MessageCenterClient() {
             copy={copy}
             filteredMessages={filteredMessages}
             isLoading={isLoading}
+            isSwitchingTab={isSwitchingTab}
             isMobileDetailOpen={isMobileDetailOpen}
             locale={locale}
             onTabChange={handleTabChange}
@@ -1056,7 +1084,7 @@ export function MessageCenterClient() {
             isUploadingImages={isUploadingImages}
             locale={locale}
             markAllAsRead={markAllAsRead}
-            onBlockSelectedUser={handleBlockSelectedUser}
+            onBlockSelectedUser={openBlockDialog}
             onPickComposerImages={handlePickComposerImages}
             onLoadOlderHistory={handleLoadOlderHistory}
             onRemoveComposerImage={handleRemoveComposerImage}
@@ -1075,6 +1103,36 @@ export function MessageCenterClient() {
           />
         </div>
       </div>
+
+      {/* 拉黑确认 Dialog */}
+      <Dialog open={blockDialogOpen} onOpenChange={setBlockDialogOpen}>
+        <DialogContent className="max-w-sm rounded-2xl p-6" showClose={false}>
+          <DialogHeader className="mb-0 space-y-2 text-center sm:text-center">
+            <DialogTitle>{tMsg("blockConfirmTitle")}</DialogTitle>
+            <DialogDescription>
+              {tMsg("blockConfirmDescription")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-6 flex-row justify-center gap-6! sm:justify-center">
+            <Button
+              variant="outline"
+              className="h-8 rounded-full px-6 min-w-20"
+              onClick={() => setBlockDialogOpen(false)}
+              disabled={blockSubmitting}
+            >
+              {tCommon("cancel")}
+            </Button>
+            <Button
+              className="h-8 rounded-full px-6 min-w-20"
+              onClick={handleBlockSelectedUser}
+              loading={blockSubmitting}
+              disabled={blockSubmitting}
+            >
+              {tMsg("blockUser")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

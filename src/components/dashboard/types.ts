@@ -1,5 +1,6 @@
 import type {
   AchievementControllerFindAllResponse,
+  CategoryControllerFindAllResponse,
   CommentControllerFindAllCommentsResponse,
   ConfigControllerGetAdvertisementConfigResponse,
   ConfigControllerGetPublicConfigsResponse,
@@ -20,6 +21,8 @@ import type {
 export type DashboardUserItem = UserList[number];
 export type DashboardArticleItem = ArticleList[number];
 export type DashboardTagItem = TagList[number];
+export type DashboardCategoryItem =
+  NonNullable<CategoryControllerFindAllResponse["data"]>["data"][number];
 export type DashboardRoleItem = RolePaginated[number];
 export type DashboardPermissionItem =
   NonNullable<PermissionControllerFindAllResponse["data"]["data"]>[number];
@@ -60,4 +63,12 @@ export type DashboardOverviewData = {
   publicConfig: DashboardPublicConfig | null;
   advertisementConfig: DashboardAdvertisementConfig | null;
   pendingOrderNos: string[];
+};
+
+export type DashboardHotSearchItem = {
+  id?: number;
+  keyword: string;
+  count: number;
+  createdAt?: string;
+  updatedAt?: string;
 };

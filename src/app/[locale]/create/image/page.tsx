@@ -16,6 +16,7 @@ import { TagSelect } from "@/components/ui/TagSelect";
 import { useForm } from "@/hooks/useForm";
 import { useRouter } from "@/i18n/routing";
 import { cn } from "@/lib";
+import { getImageUrls, type ImageInfo } from "@/types/image";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -40,7 +41,20 @@ type CreateImageFormData = {
 };
 
 const normalizeImageList = (value: unknown): string[] => {
-  if (Array.isArray(value)) {
+  // 处理 ImageInfo 对象数组（新格式）
+  if (Array.isArray(value) && value.length > 0) {
+    // 检查是否是 ImageInfo 对象数组
+    const isImageInfoArray = value.every(
+      (item) =>
+        item &&
+        typeof item === "object" &&
+        ("url" in item || "original" in item || "thumbnails" in item),
+    );
+    if (isImageInfoArray) {
+      return getImageUrls(value as ImageInfo[], "original");
+    }
+
+    // 处理字符串数组（旧格式）
     return value
       .filter((item): item is string => typeof item === "string" && !!item)
       .map((item) => item.trim().replace(/^[\s"'[\]]+|[\s"'[\]]+$/g, ""));
@@ -53,6 +67,18 @@ const normalizeImageList = (value: unknown): string[] => {
   try {
     const parsed = JSON.parse(value);
     if (Array.isArray(parsed)) {
+      // 检查是否是 ImageInfo 对象数组
+      const isImageInfoArray = parsed.every(
+        (item) =>
+          item &&
+          typeof item === "object" &&
+          ("url" in item || "original" in item || "thumbnails" in item),
+      );
+      if (isImageInfoArray) {
+        return getImageUrls(parsed as ImageInfo[], "original");
+      }
+
+      // 处理字符串数组
       return parsed
         .filter((item): item is string => typeof item === "string" && !!item)
         .map((item) => item.trim().replace(/^[\s"'[\]]+|[\s"'[\]]+$/g, ""));
@@ -77,17 +103,7 @@ async function uploadImagesBatch(files: File[]): Promise<string[]> {
   if (files.length === 0) return [];
 
   const { data } = await uploadControllerUploadFile({
-    bodySerializer: () => {
-      const formData = new FormData();
-      files.forEach((file) => {
-        formData.append("file", file);
-      });
-      return formData;
-    },
-    headers: {
-      "Content-Type": null,
-    },
-    body: { file: files[0] },
+    body: { file: (files as any) },
   });
 
   return (data?.data || [])

@@ -174,7 +174,7 @@ export function DialogOverlay({
   return (
     <div
       className={cn(
-        "fixed inset-0 z-50 bg-black/50",
+        "fixed inset-0 z-100 bg-black/50",
         "animate-in fade-in-0 duration-200",
         className,
       )}
@@ -211,11 +211,11 @@ export function DialogContent({
         role="dialog"
         aria-modal="true"
         className={cn(
-          "fixed left-[50%] top-[50%] z-50 w-full max-w-lg",
+          "fixed left-[50%] top-[50%] z-101 w-full max-w-lg",
           "translate-x-[-50%] translate-y-[-50%]",
           "rounded-lg border bg-card border-border p-6 shadow-xl",
           "animate-in fade-in-0 zoom-in-95 duration-200",
-          "max-h-[90vh] overflow-y-auto",
+          // "max-h-[90vh] overflow-y-auto",
           className,
         )}
         style={style}
@@ -269,7 +269,7 @@ export function DialogHeader({ className, children }: DialogHeaderProps) {
   return (
     <div
       className={cn(
-        "mb-4 flex flex-col space-y-1.5 text-center sm:text-left",
+        "flex  px-6 py-4 flex-col space-y-1.5 text-center sm:text-left text-sm",
         className,
       )}
     >
@@ -307,7 +307,7 @@ export function DialogTitle({ className, children }: DialogTitleProps) {
   return (
     <h2
       className={cn(
-        "text-lg font-semibold leading-none tracking-tight text-gray-900 dark:text-gray-100",
+        "text-sm font-semibold leading-none tracking-tight text-gray-900 dark:text-gray-100",
         className,
       )}
     >

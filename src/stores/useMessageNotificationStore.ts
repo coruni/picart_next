@@ -64,6 +64,7 @@ interface MessageNotificationState {
   unreadCount: number;
   unreadSummary: UnreadCount | null;
   isLoading: boolean;
+  isSwitchingTab: boolean;
   dropdownIsLoading: boolean;
   isUnreadLoading: boolean;
   hasLoadedMessages: boolean;
@@ -302,6 +303,7 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
     unreadCount: 0,
     unreadSummary: null,
     isLoading: false,
+    isSwitchingTab: false, // 新增：tab 切换中状态
     dropdownIsLoading: false,
     isUnreadLoading: false,
     hasLoadedMessages: false,
@@ -313,8 +315,11 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
         return;
       }
 
+      const isTabSwitch = tab !== get().selectedTab;
+
       set({
         isLoading: true,
+        isSwitchingTab: isTabSwitch, // 标记是否在切换 tab
       });
 
       try {
@@ -326,7 +331,7 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
       } catch (error) {
         console.error("Failed to fetch messages:", error);
       } finally {
-        set({ isLoading: false });
+        set({ isLoading: false, isSwitchingTab: false });
       }
     },
 

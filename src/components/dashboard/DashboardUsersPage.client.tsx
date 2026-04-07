@@ -14,6 +14,7 @@ import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
 import { DashboardStatusBadge } from "./DashboardStatusBadge";
 import type { DashboardTableColumn } from "./DashboardTable";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import type { DashboardUserItem } from "./types";
 import { useDashboardGuard } from "./useDashboardGuard";
 import {
@@ -27,15 +28,30 @@ export function DashboardUsersPage() {
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
   const [editingItem, setEditingItem] = useState<DashboardUserItem | null>(null);
+  const [deletingItem, setDeletingItem] = useState<DashboardUserItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const editFields = useMemo<DashboardEditField[]>(
     () => [
       { name: "username", label: "Username" },
       { name: "nickname", label: copy.columns.name },
-      { name: "avatar", label: "Avatar", type: "image" },
-      { name: "background", label: "Background", type: "image" },
+      { name: "password", label: "Password", type: "text", placeholder: copy.common.passwordPlaceholder },
+      {
+        name: "avatar",
+        label: "Avatar",
+        type: "image",
+        imagePreviewClassName: "aspect-square h-auto w-full max-w-52",
+        imageObjectFit: "contain",
+      },
+      {
+        name: "background",
+        label: "Background",
+        type: "image",
+        imagePreviewClassName: "aspect-video h-auto w-full max-w-52",
+        imageObjectFit: "cover",
+      },
       { name: "description", label: copy.columns.description, type: "textarea" },
       {
         name: "status",
@@ -47,6 +63,34 @@ export function DashboardUsersPage() {
           { value: "BANNED", label: "BANNED" },
         ],
       },
+      { name: "banReason", label: copy.pages.users.fields.banReason, type: "textarea" },
+      { name: "address", label: copy.pages.users.fields.address, type: "text" },
+      {
+        name: "gender",
+        label: copy.pages.users.fields.gender,
+        type: "select",
+        options: [
+          { value: "male", label: copy.pages.users.gender.male },
+          { value: "female", label: copy.pages.users.gender.female },
+          { value: "other", label: copy.pages.users.gender.other },
+        ],
+      },
+      { name: "birthDate", label: copy.pages.users.fields.birthDate, type: "date" },
+      { name: "wallet", label: copy.pages.users.fields.wallet, type: "number", min: 0 },
+      { name: "inviteCode", label: copy.pages.users.fields.inviteCode, type: "text" },
+      { name: "membershipLevel", label: copy.pages.users.fields.membershipLevel, type: "number", min: 0 },
+      { name: "membershipLevelName", label: copy.pages.users.fields.membershipLevelName, type: "text" },
+      {
+        name: "membershipStatus",
+        label: copy.pages.users.fields.membershipStatus,
+        type: "select",
+        options: [
+          { value: "ACTIVE", label: "ACTIVE" },
+          { value: "INACTIVE", label: "INACTIVE" },
+        ],
+      },
+      { name: "membershipStartDate", label: copy.pages.users.fields.membershipStartDate, type: "date" },
+      { name: "membershipEndDate", label: copy.pages.users.fields.membershipEndDate, type: "date" },
     ],
     [copy],
   );
@@ -149,19 +193,7 @@ export function DashboardUsersPage() {
               label: copy.common.delete,
               icon: <Trash2 size={16} />,
               className: "text-red-500",
-              confirmDialog: {
-                enabled: true,
-                title: copy.common.delete,
-                description: copy.common.deleteConfirm,
-                confirmText: copy.common.delete,
-                cancelText: copy.common.cancel,
-              },
-              onClick: async () => {
-                await userControllerRemove({
-                  path: { id: String(item.id) },
-                });
-                setRefreshKey((current) => current + 1);
-              },
+              onClick: () => setDeletingItem(item),
             },
           ];
 
@@ -186,6 +218,21 @@ export function DashboardUsersPage() {
     ],
     [copy, locale],
   );
+
+  const handleDelete = async () => {
+    if (!deletingItem?.id) return;
+
+    setDeleteLoading(true);
+    try {
+      await userControllerRemove({
+        path: { id: String(deletingItem.id) },
+      });
+      setDeletingItem(null);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
@@ -229,6 +276,17 @@ export function DashboardUsersPage() {
           background: editingItem?.background,
           description: editingItem?.description,
           status: editingItem?.status,
+          banReason: editingItem?.banReason,
+          address: editingItem?.address,
+          gender: editingItem?.gender,
+          birthDate: editingItem?.birthDate,
+          wallet: editingItem?.wallet,
+          inviteCode: editingItem?.inviteCode,
+          membershipLevel: editingItem?.membershipLevel,
+          membershipLevelName: editingItem?.membershipLevelName,
+          membershipStatus: editingItem?.membershipStatus,
+          membershipStartDate: editingItem?.membershipStartDate,
+          membershipEndDate: editingItem?.membershipEndDate,
         }}
         loading={submitting}
         onOpenChange={(open) => {
@@ -249,10 +307,22 @@ export function DashboardUsersPage() {
               body: {
                 username: values.username as string | undefined,
                 nickname: values.nickname as string | undefined,
+                password: values.password as string | undefined,
                 avatar: values.avatar as string | undefined,
                 background: values.background as string | undefined,
                 description: values.description as string | undefined,
                 status: values.status as "ACTIVE" | "INACTIVE" | "BANNED" | undefined,
+                banReason: values.banReason as string | undefined,
+                address: values.address as string | undefined,
+                gender: values.gender as "male" | "female" | "other" | undefined,
+                birthDate: values.birthDate as string | undefined,
+                wallet: values.wallet as number | undefined,
+                inviteCode: values.inviteCode as string | undefined,
+                membershipLevel: values.membershipLevel as number | undefined,
+                membershipLevelName: values.membershipLevelName as string | undefined,
+                membershipStatus: values.membershipStatus as "ACTIVE" | "INACTIVE" | undefined,
+                membershipStartDate: values.membershipStartDate as string | undefined,
+                membershipEndDate: values.membershipEndDate as string | undefined,
               },
             });
             setEditingItem(null);
@@ -261,6 +331,18 @@ export function DashboardUsersPage() {
             setSubmitting(false);
           }
         }}
+      />
+      <DeleteConfirmDialog
+        open={Boolean(deletingItem)}
+        onOpenChange={(open) => {
+          if (!open) setDeletingItem(null);
+        }}
+        title={copy.common.delete}
+        description={copy.common.deleteConfirm}
+        onConfirm={handleDelete}
+        loading={deleteLoading}
+        confirmText={copy.common.delete}
+        cancelText={copy.common.cancel}
       />
     </DashboardPageFrame>
   );

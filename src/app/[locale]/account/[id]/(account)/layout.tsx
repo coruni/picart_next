@@ -51,7 +51,7 @@ export default async function AccountLayout({
         <div className="absolute bottom-0 left-0 z-2 h-18 w-full bg-linear-to-t from-[#00000066] to-transparent md:h-25" />
       </div>
 
-      <div className="relative z-10 mt-56 w-full bg-background md:mt-75">
+      <div className="relative mt-56 w-full bg-background md:mt-75">
         <AccountInfo user={user} />
 
         <div className="page-container px-3 pt-3! md:px-0 md:pt-4!">

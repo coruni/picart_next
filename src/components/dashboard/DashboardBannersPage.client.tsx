@@ -5,8 +5,8 @@ import {
   bannerControllerRemove,
   bannerControllerUpdate,
 } from "@/api";
-import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { DropdownMenu } from "@/components/shared";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
@@ -20,6 +20,7 @@ import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
 import { DashboardStatusBadge } from "./DashboardStatusBadge";
 import type { DashboardTableColumn } from "./DashboardTable";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import type { DashboardBannerItem } from "./types";
 import { useDashboardGuard } from "./useDashboardGuard";
 import { formatDashboardDate } from "./utils";
@@ -31,7 +32,9 @@ export function DashboardBannersPage() {
   const [editingItem, setEditingItem] = useState<DashboardBannerItem | null>(
     null,
   );
+  const [deletingItem, setDeletingItem] = useState<DashboardBannerItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const statusValueEnum = useMemo(
@@ -51,7 +54,13 @@ export function DashboardBannersPage() {
         label: copy.columns.description,
         type: "textarea",
       },
-      { name: "imageUrl", label: "Image", type: "image" },
+      {
+        name: "imageUrl",
+        label: "Image",
+        type: "image",
+        imagePreviewClassName: "aspect-video h-auto w-full max-w-52",
+        imageObjectFit: "cover",
+      },
       { name: "linkUrl", label: copy.columns.link },
       {
         name: "sortOrder",
@@ -154,19 +163,7 @@ export function DashboardBannersPage() {
                     label: copy.common.delete,
                     icon: <Trash2 size={16} />,
                     className: "text-red-500",
-                    confirmDialog: {
-                      enabled: true,
-                      title: copy.common.delete,
-                      description: copy.common.deleteConfirm,
-                      confirmText: copy.common.delete,
-                      cancelText: copy.common.cancel,
-                    },
-                    onClick: async () => {
-                      await bannerControllerRemove({
-                        path: { id: bannerId },
-                      });
-                      setRefreshKey((current) => current + 1);
-                    },
+                    onClick: () => setDeletingItem(item),
                   },
                 ]}
                 trigger={
@@ -188,6 +185,21 @@ export function DashboardBannersPage() {
     ],
     [copy, statusValueEnum],
   );
+
+  const handleDelete = async () => {
+    if (!deletingItem?.id) return;
+
+    setDeleteLoading(true);
+    try {
+      await bannerControllerRemove({
+        path: { id: deletingItem.id },
+      });
+      setDeletingItem(null);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
@@ -284,6 +296,18 @@ export function DashboardBannersPage() {
             setSubmitting(false);
           }
         }}
+      />
+      <DeleteConfirmDialog
+        open={Boolean(deletingItem)}
+        onOpenChange={(open) => {
+          if (!open) setDeletingItem(null);
+        }}
+        title={copy.common.delete}
+        description={copy.common.deleteConfirm}
+        onConfirm={handleDelete}
+        loading={deleteLoading}
+        confirmText={copy.common.delete}
+        cancelText={copy.common.cancel}
       />
     </DashboardPageFrame>
   );

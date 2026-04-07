@@ -13,6 +13,7 @@ import {
 } from "@/lib";
 import { useUserStore } from "@/stores";
 import type { ArticleDetail, ArticleList } from "@/types";
+import { getImageUrl, getImageUrls, type ImageInfo } from "@/types/image";
 import {
   Eye,
   FileImage,
@@ -52,9 +53,14 @@ export const ArticleCard = ({
       ? prepareRichTextHtmlForSummary(article.summary)
       : "";
 
-  const previewImages = (article.images || []).filter(
-    (url) => !!url && url !== article.cover,
-  );
+  // Handle new image format (ImageInfo[])
+  const rawImages = (article.images || []) as (string | ImageInfo)[];
+  const previewImages = rawImages.filter((img) => {
+    const url = typeof img === "string" ? img : img.url;
+    const coverUrl = article.cover;
+    return url && url !== coverUrl;
+  });
+
   const compactNumberLabels = {
     thousand: tAccountInfo("numberUnits.thousand"),
     tenThousand: tAccountInfo("numberUnits.tenThousand"),
@@ -80,13 +86,15 @@ export const ArticleCard = ({
 
   const renderMediaElement = () => {
     if (article.cover) {
+      const coverUrl = article.cover;
+
       return (
         <div
           className="mt-3 rounded-xl overflow-hidden w-62/100 min-w-56 min-h-32.5 relative"
           style={{ paddingTop: "35%" }}
         >
           <ImageWithFallback
-            src={article.cover}
+            src={coverUrl}
             alt={article?.title || "cover"}
             fill
             quality={75}
@@ -107,6 +115,9 @@ export const ArticleCard = ({
     const imageCount = previewImages.length;
 
     if (imageCount === 1) {
+      const img = previewImages[0];
+      const imgUrl = typeof img === "string" ? img : getImageUrl(img, "medium");
+
       return (
         <div
           className="mt-3 rounded-xl overflow-hidden w-62/100 min-w-56 min-h-32.5 relative"
@@ -129,7 +140,7 @@ export const ArticleCard = ({
             }}
           >
             <ImageWithFallback
-              src={previewImages[0]}
+              src={imgUrl}
               alt={article?.title || "image"}
               fill
               quality={75}
@@ -146,14 +157,60 @@ export const ArticleCard = ({
     if (imageCount === 2) {
       return (
         <div className="mt-3 flex gap-2">
-          {previewImages.slice(0, 2).map((img, idx) => (
+          {previewImages.slice(0, 2).map((img, idx) => {
+            const imgUrl =
+              typeof img === "string" ? img : getImageUrl(img, "small");
+            return (
+              <div
+                key={`${imgUrl}-${idx}`}
+                role="button"
+                tabIndex={0}
+                data-guarded-link-ignore="true"
+                className="rounded-xl overflow-hidden w-31/100 relative cursor-zoom-in"
+                style={{ paddingTop: "31%" }}
+                // ✅ paddingTop 与 width 相同百分比 → 正方形
+                onClick={(e) => {
+                  stopLinkNavigationEvent(e);
+                  openImageViewer(idx);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key !== "Enter" && e.key !== " ") return;
+                  e.preventDefault();
+                  e.stopPropagation();
+                  openImageViewer(idx);
+                }}
+              >
+                <ImageWithFallback
+                  src={imgUrl}
+                  alt={`${article?.title || "image"} ${idx + 1}`}
+                  fill
+                  quality={75}
+                  sizes="31vw"
+                  className="object-cover"
+                />
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    const displayImages = previewImages.slice(0, 3);
+    const remainingCount = imageCount - 3;
+
+    return (
+      <div className="mt-3 flex gap-2">
+        {displayImages.map((img, idx) => {
+          const imgUrl =
+            typeof img === "string" ? img : getImageUrl(img, "small");
+          return (
             <div
-              key={`${img}-${idx}`}
+              key={`${imgUrl}-${idx}`}
               role="button"
               tabIndex={0}
               data-guarded-link-ignore="true"
-              className="rounded-xl overflow-hidden w-31/100 relative cursor-zoom-in"
-              style={{ paddingTop: "31%" }}
+              className="rounded-xl overflow-hidden w-1/5 relative cursor-zoom-in"
+              style={{ paddingTop: "20%" }}
               // ✅ paddingTop 与 width 相同百分比 → 正方形
               onClick={(e) => {
                 stopLinkNavigationEvent(e);
@@ -167,63 +224,29 @@ export const ArticleCard = ({
               }}
             >
               <ImageWithFallback
-                src={img}
+                src={imgUrl}
                 alt={`${article?.title || "image"} ${idx + 1}`}
                 fill
                 quality={75}
-                sizes="31vw"
+                sizes="20vw"
                 className="object-cover"
               />
+              {idx === 2 && remainingCount > 0 && (
+                <div className="absolute bg-black/60 flex items-center justify-center bottom-2 right-2 rounded-full px-2 gap-1 text-white text-sm leading-3.5">
+                  <GalleryHorizontalEnd size={12} strokeWidth={3} />
+                  <span>+{remainingCount}</span>
+                </div>
+              )}
             </div>
-          ))}
-        </div>
-      );
-    }
-
-    const displayImages = previewImages.slice(0, 3);
-    const remainingCount = imageCount - 3;
-
-    return (
-      <div className="mt-3 flex gap-2">
-        {displayImages.map((img, idx) => (
-          <div
-            key={`${img}-${idx}`}
-            role="button"
-            tabIndex={0}
-            data-guarded-link-ignore="true"
-            className="rounded-xl overflow-hidden w-1/5 relative cursor-zoom-in"
-            style={{ paddingTop: "20%" }}
-            // ✅ paddingTop 与 width 相同百分比 → 正方形
-            onClick={(e) => {
-              stopLinkNavigationEvent(e);
-              openImageViewer(idx);
-            }}
-            onKeyDown={(e) => {
-              if (e.key !== "Enter" && e.key !== " ") return;
-              e.preventDefault();
-              e.stopPropagation();
-              openImageViewer(idx);
-            }}
-          >
-            <ImageWithFallback
-              src={img}
-              alt={`${article?.title || "image"} ${idx + 1}`}
-              fill
-              quality={75}
-              sizes="20vw"
-              className="object-cover"
-            />
-            {idx === 2 && remainingCount > 0 && (
-              <div className="absolute bg-black/60 flex items-center justify-center bottom-2 right-2 rounded-full px-2 gap-1 text-white text-sm leading-3.5">
-                <GalleryHorizontalEnd size={12} strokeWidth={3} />
-                <span>+{remainingCount}</span>
-              </div>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   };
+
+  // Prepare viewer URLs (original size for full view)
+  const viewerUrls = getImageUrls(previewImages, "original");
+
   return (
     <article className="p-6 border-border border-b">
       <div className="flex items-center">
@@ -346,9 +369,10 @@ export const ArticleCard = ({
         </div>
       </div>
 
-      {viewerVisible && previewImages.length > 0 && (
+      {viewerVisible && viewerUrls.length > 0 && (
         <ImageViewer
-          images={previewImages}
+          article={article}
+          images={viewerUrls}
           initialIndex={viewerIndex}
           visible={viewerVisible}
           onClose={() => setViewerVisible(false)}

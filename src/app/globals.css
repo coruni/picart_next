@@ -174,7 +174,27 @@ button {
 }
 
 .viewer-container{
-  @apply absolute! left-0! bottom-0!
+  @apply absolute! left-0! top-0! w-full! h-full! z-101!
+}
+
+/* 确保右侧面板在 viewer 之上 - viewerjs backdrop z-index 是 2015 */
+#right-panel {
+  z-index: 3000 !important;
+}
+
+/* 确保右侧面板内的元素可以正常交互 */
+#right-panel * {
+  pointer-events: auto !important;
+}
+
+/* 当右侧面板存在时，确保左侧 viewer 画布不会拦截事件 */
+.custom-viewer-wrapper:has(#right-panel) .viewer-canvas {
+  pointer-events: none !important;
+}
+
+/* 但 viewer-canvas 内的图片需要能接收拖拽事件 */
+.custom-viewer-wrapper:has(#right-panel) .viewer-canvas > img {
+  pointer-events: auto !important;
 }
 
 /* 隐藏 viewerjs 默认 toolbar，只显示自定义 toolbar */
@@ -193,6 +213,17 @@ button {
 .viewer-backdrop {
     @apply bg-black/60! backdrop-blur-lg
     /* 或者用其他视觉手段 */
+}
+
+/* 防止 viewerjs 在 body 上添加 padding-right */
+body.viewer-open {
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
+body.viewer-open .fixed {
+  padding-right: 0 !important;
+  padding-left: 0 !important;
 }
 
 
@@ -474,9 +505,9 @@ button {
 }
 
 .ql-editor hr {
-  margin: 0.9rem 0;
+  margin: 1.2rem 0;
   border: 0;
-  border-top: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--foreground) 12%, transparent);
   opacity: 1;
 }
 
@@ -584,11 +615,9 @@ button {
 
 
 /*图片自定义样式*/
-.ql-image{
-  @apply rounded-3xl!
-}
+
 .ql-image-selected{
-  @apply outline-2! outline-primary! rounded-xl! outline-offset-2!
+  @apply outline-2! outline-primary! rounded-lg! outline-offset-2!
 }
 
 
@@ -654,4 +683,107 @@ button {
 
 .floating-scrollbar::-webkit-scrollbar-corner {
   background: transparent;
+}
+
+
+/* Divider animations */
+@keyframes grow-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes travel {
+  0% { left: -20%; }
+  100% { left: 100%; }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Divider hover animations */
+.ql-divider:hover .div-line-left {
+  animation: grow-x 0.6s ease-out both;
+}
+
+.ql-divider:hover .div-line-right {
+  animation: grow-x 0.6s ease-out both;
+  animation-delay: 0.1s;
+}
+
+.ql-divider:hover .div-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.ql-divider:hover .div-triple-1 {
+  animation: grow-x 0.45s ease-out both;
+}
+
+.ql-divider:hover .div-triple-2 {
+  animation: grow-x 0.5s ease-out both;
+  animation-delay: 60ms;
+}
+
+.ql-divider:hover .div-triple-3 {
+  animation: grow-x 0.55s ease-out both;
+  animation-delay: 120ms;
+}
+
+.ql-divider:hover .div-hex-left {
+  animation: grow-x 0.5s ease-out both;
+}
+
+.ql-divider:hover .div-hex-right {
+  animation: grow-x 0.5s ease-out both;
+}
+
+.ql-divider:hover .div-hex-icon {
+  animation: fade-up 0.4s ease both;
+}
+
+.ql-divider:hover .div-hex-icon:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.ql-divider:hover .div-hex-icon:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.ql-divider:hover .div-travel-dot {
+  animation: travel 1.6s linear infinite;
+}
+
+.ql-divider:hover .div-dashed-slash {
+  animation: fade-up 0.5s ease both;
+}
+.ql-divider:hover .div-dashed-1 { animation-delay: 0s; }
+.ql-divider:hover .div-dashed-2 { animation-delay: 0.08s; }
+.ql-divider:hover .div-dashed-3 { animation-delay: 0.16s; }
+.ql-divider:hover .div-dashed-4 { animation-delay: 0.24s; }
+.ql-divider:hover .div-dashed-5 { animation-delay: 0.32s; }
+.ql-divider:hover .div-dashed-6 { animation-delay: 0.4s; }
+.ql-divider:hover .div-dashed-7 { animation-delay: 0.48s; }
+
+/* Divider styles */
+.ql-divider {
+  user-select: none;
+  cursor: pointer !important;
+  margin: 1.5rem 0;
+}
+.ql-divider * {
+  user-select: none;
+  pointer-events: none;
 }

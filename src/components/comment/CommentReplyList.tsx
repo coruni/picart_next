@@ -60,6 +60,7 @@ type CommentReplyListProps = {
   onToggleLike: (commentId: number | undefined) => void | Promise<void>;
   onReplySubmitted: () => void | Promise<void>;
   onOpenImageViewer: (images: string[], index?: number) => void;
+  onReplyClick?: (commentId: number) => void;
 };
 
 type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
@@ -72,6 +73,7 @@ export function CommentReplyList({
   onToggleLike,
   onReplySubmitted,
   onOpenImageViewer,
+  onReplyClick,
 }: CommentReplyListProps) {
   const tComment = useTranslations("commentList");
   const tAccountInfo = useTranslations("accountInfo");
@@ -110,6 +112,7 @@ export function CommentReplyList({
     renderKey: modalRenderKey,
     shouldAutoTranslate: shouldAutoTranslateModal,
     toggleTranslate: toggleModalTranslate,
+    contentMatchesLocale,
   } = useManualHtmlTranslate({
     html: contentHtml,
     resetKey: `${data.id}-${data.content}`,
@@ -366,6 +369,7 @@ export function CommentReplyList({
               onReplySubmitted={onReplySubmitted}
               onOpenImageViewer={onOpenImageViewer}
               onOpenModal={openReplyModal}
+              onReplyClick={onReplyClick}
             />
           ))}
         </div>
@@ -415,22 +419,24 @@ export function CommentReplyList({
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <button
-                    type="button"
-                    title={tComment("translate")}
-                    className={cn(
-                      "flex size-7 cursor-pointer items-center justify-center rounded-lg p-1 text-secondary hover:bg-muted hover:text-primary",
-                      isModalTranslated && "bg-muted text-primary",
-                      isModalTranslating && "pointer-events-none opacity-70",
-                    )}
-                    onClick={toggleModalTranslate}
-                  >
-                    {isModalTranslating ? (
-                      <LoaderCircle size={18} className="animate-spin" />
-                    ) : (
-                      <Languages size={20} />
-                    )}
-                  </button>
+                  {!contentMatchesLocale && (
+                    <button
+                      type="button"
+                      title={tComment("translate")}
+                      className={cn(
+                        "flex size-7 cursor-pointer items-center justify-center rounded-lg p-1 text-secondary hover:bg-muted hover:text-primary",
+                        isModalTranslated && "bg-muted text-primary",
+                        isModalTranslating && "pointer-events-none opacity-70",
+                      )}
+                      onClick={toggleModalTranslate}
+                    >
+                      {isModalTranslating ? (
+                        <LoaderCircle size={18} className="animate-spin" />
+                      ) : (
+                        <Languages size={20} />
+                      )}
+                    </button>
+                  )}
                   <button
                     title={tComment("translate")}
                     className="flex size-7 cursor-pointer items-center justify-center p-1 text-secondary"
@@ -533,6 +539,7 @@ export function CommentReplyList({
                       onOpenImageViewer={onOpenImageViewer}
                       imageDisplayMode="gallery"
                       showTranslateButton
+                      onReplyClick={onReplyClick}
                     />
                   ))}
                 </div>

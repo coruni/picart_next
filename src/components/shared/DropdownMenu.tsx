@@ -1,14 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/Button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/Dialog";
+
+
 import { useClickOutside } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
@@ -129,93 +122,52 @@ export function DropdownMenu({
           {resolvedTrigger}
         </div>
 
-        <div
-          className={cn(
-            "absolute top-8 z-10 min-w-50 w-max rounded-xl border border-border/70 bg-card shadow-lg transition-[opacity,transform] duration-150 ease-out",
-            position === "right"
-              ? "right-0 origin-top-right"
-              : "left-0 origin-top-left",
-            isOpen
-              ? "translate-y-0 opacity-100"
-              : "pointer-events-none -translate-y-1 opacity-0",
-            menuClassName,
-          )}
-          role="menu"
-          aria-hidden={!isOpen}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-        >
-          <div className="p-2 text-sm">
-            {(title ?? t("more")) && (
-              <div className="mb-1 px-2 font-medium text-foreground/80">
-                <span>{title ?? t("more")}</span>
-              </div>
-            )}
-
-            {items.map((item, index) => (
-              <div
-                key={index}
-                role="menuitem"
-                aria-disabled={item.disabled}
-                className={cn(
-                  "flex items-center gap-2 rounded-xl p-2 text-sm whitespace-nowrap transition-[background-color,color,transform,opacity] duration-150",
-                  item.disabled
-                    ? "cursor-not-allowed opacity-50"
-                    : "group cursor-pointer text-black/75 hover:bg-primary/12 hover:text-primary dark:text-white/75",
-                  item.className,
-                )}
-                onClick={() => handleItemClick(item)}
-              >
-                {item.icon && <span>{item.icon}</span>}
-                <span className="whitespace-nowrap">{item.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <Dialog
-        open={Boolean(confirmingItem)}
-        onOpenChange={(nextOpen) => {
-          if (!confirming && !nextOpen) {
-            setConfirmingItem(null);
-          }
+      <div
+        className={cn(
+          "absolute top-8 z-10 min-w-50 w-max rounded-xl border border-border/70 bg-card shadow-lg",
+          position === "right"
+            ? "right-0 origin-top-right"
+            : "left-0 origin-top-left",
+          isOpen
+            ? "opacity-100"
+            : "pointer-events-none opacity-0",
+          menuClassName,
+        )}
+        role="menu"
+        aria-hidden={!isOpen}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
         }}
       >
-        <DialogContent className="max-w-sm rounded-2xl p-6" showClose={false}>
-          <DialogHeader className="mb-0 space-y-2 text-center sm:text-center">
-            <DialogTitle>
-              {confirmingItem?.confirmDialog?.title || confirmingItem?.label}
-            </DialogTitle>
-            {confirmingItem?.confirmDialog?.description ? (
-              <DialogDescription>
-                {confirmingItem.confirmDialog.description}
-              </DialogDescription>
-            ) : null}
-          </DialogHeader>
-          <DialogFooter className="mt-6 flex-row justify-center gap-6! sm:justify-center">
-            <Button
-              variant="outline"
-              className="h-8 rounded-full px-6"
-              onClick={() => setConfirmingItem(null)}
-              disabled={confirming}
+        <div className="p-2 text-sm">
+          {(title ?? t("more")) && (
+            <div className="mb-1 px-2 font-medium text-foreground/80">
+              <span>{title ?? t("more")}</span>
+            </div>
+          )}
+
+          {items.map((item, index) => (
+            <div
+              key={index}
+              role="menuitem"
+              aria-disabled={item.disabled}
+              className={cn(
+                "flex items-center gap-2 rounded-xl p-2 text-sm whitespace-nowrap",
+                item.disabled
+                  ? "cursor-not-allowed opacity-50"
+                  : "group cursor-pointer text-black/75 hover:bg-primary/12 hover:text-primary dark:text-white/75",
+                item.className,
+              )}
+              onClick={() => handleItemClick(item)}
             >
-              {confirmingItem?.confirmDialog?.cancelText || "Cancel"}
-            </Button>
-            <Button
-              className="h-8 rounded-full px-6"
-              onClick={handleConfirm}
-              loading={confirming}
-              disabled={confirming}
-            >
-              {confirmingItem?.confirmDialog?.confirmText ||
-                confirmingItem?.label}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+              {item.icon && <span>{item.icon}</span>}
+              <span className="whitespace-nowrap">{item.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </>
   );
 }

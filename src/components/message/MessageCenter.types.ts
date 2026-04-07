@@ -92,6 +92,7 @@ export type MessageConversationListProps = {
   copy: MessageCenterCopy;
   filteredMessages: MessageDropdownItem[];
   isLoading: boolean;
+  isSwitchingTab: boolean; // 新增：tab 切换中
   isMobileDetailOpen: boolean;
   locale: string;
   search: string;
@@ -126,7 +127,7 @@ export type MessageDetailPaneProps = {
   isUploadingImages: boolean;
   locale: string;
   markAllAsRead: (tab?: MessageTab) => Promise<void>;
-  onBlockSelectedUser: () => Promise<void>;
+  onBlockSelectedUser: () => void | Promise<void>;
   onPickComposerImages: (files: FileList | null) => void;
   onLoadOlderHistory: () => Promise<void>;
   onRemoveComposerImage: (id: string) => void;

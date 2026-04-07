@@ -24,11 +24,12 @@ import { Switch } from "@/components/ui/Switch";
 import { TagSelect } from "@/components/ui/TagSelect";
 import { useForm } from "@/hooks/useForm";
 import { useRouter } from "@/i18n/routing";
-import { cn, prepareRichTextHtmlForDisplay } from "@/lib";
+import { cn, prepareRichTextHtmlForDisplay, sanitizeRichTextHtml } from "@/lib";
 import { useUserStore } from "@/stores";
 import { Edit, Loader2, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
+import Quill from "quill";
 import { useEffect, useMemo, useRef, useState } from "react";
 import AvatarEditor from "react-avatar-editor";
 
@@ -70,6 +71,8 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   const tTag = useTranslations("tagSelect");
   const coverEditorRef = useRef<AvatarEditor>(null);
   const currentUser = useUserStore((state) => state.user);
+  const editorRef = useRef<Quill | null>(null);
+  const latestContentRef = useRef("");
 
   // Article loading state for edit mode
   const [articleLoading, setArticleLoading] = useState(isEditMode);
@@ -156,8 +159,16 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       categoryId: { required: t("form.categoryRequired") },
     },
     async onSubmit(values) {
+      const editorHtml = sanitizeRichTextHtml(
+        editorRef.current?.root.innerHTML || "",
+      );
+
+      const latestContent =
+        editorHtml || latestContentRef.current || values.content || "";
+
       const body = {
         ...values,
+        content: latestContent,
         categoryId: Number(values.categoryId),
         sort: 0,
         type: "mixed" as const,
@@ -213,7 +224,9 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           setFieldValues({
             cover: article.cover || "",
             title: article.title || "",
-            content: article.content || "",
+            content: (latestContentRef.current = sanitizeRichTextHtml(
+              article.content || "",
+            )),
             categoryId: String(article.category.id || ""),
             tagIds: article.tags?.map((tag) => String(tag.id)) || [],
             tagNames: [],
@@ -559,14 +572,6 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         type: "image/png",
       });
       const { data } = await uploadControllerUploadFile({
-        bodySerializer: (body) => {
-          const formData = new FormData();
-          formData.append("file", body.file);
-          return formData;
-        },
-        headers: {
-          "Content-Type": null,
-        },
         body: { file: croppedFile },
       });
       if (data?.data?.[0]) {
@@ -685,9 +690,12 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                 </FormField>
                 <FormField name="content" label={t("form.content")}>
                   <Editor
+                    ref={editorRef}
                     value={values.content}
                     onChange={(value: string) => {
-                      setFieldValues({ content: value });
+                      const sanitized = sanitizeRichTextHtml(value || "");
+                      latestContentRef.current = sanitized;
+                      setFieldValues({ content: sanitized });
                     }}
                     placeholder={t("form.contentPlaceholder")}
                     className="min-h-75"

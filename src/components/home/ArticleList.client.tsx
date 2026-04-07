@@ -19,6 +19,11 @@ export const ArticleListClient = (props: ArticleListClientProps) => {
       initPage={props.initPage}
       initTotal={props.initTotal}
       fetchArticles={articleControllerFindAll}
+      fetchParams={{
+        query: {
+          type: "popular",
+        },
+      }}
       cacheKey="home-articles"
     />
   );

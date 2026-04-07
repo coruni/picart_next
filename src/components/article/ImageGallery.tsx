@@ -1,6 +1,8 @@
 "use client";
 
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
+import { ArticleDetail } from "@/types";
+import { getImageUrl, type ImageInfo } from "@/types/image";
 import { ChevronLeft, ChevronRight, Fullscreen } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -13,13 +15,15 @@ import "swiper/css";
 import "swiper/css/thumbs";
 
 type ImageGalleryProps = {
-  images: string[];
+  images: (string | ImageInfo)[];
   alt?: string;
+  article?: ArticleDetail;
 };
 
 export function ImageGallery({
   images,
   alt = "Gallery image",
+  article,
 }: ImageGalleryProps) {
   const t = useTranslations("imageGallery");
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
@@ -29,6 +33,14 @@ export function ImageGallery({
   const [thumbCanScrollNext, setThumbCanScrollNext] = useState(false);
   const [thumbHasOverflow, setThumbHasOverflow] = useState(false);
   const [overflowingIndexes, setOverflowingIndexes] = useState<number[]>([]);
+
+  // Convert images to URLs for display
+  const imageUrls = images.map((img) =>
+    typeof img === "string" ? img : getImageUrl(img, "original"),
+  );
+  const thumbnailUrls = images.map((img) =>
+    typeof img === "string" ? img : getImageUrl(img, "small"),
+  );
 
   const syncThumbNavState = (swiper: SwiperType) => {
     const wrapperWidth = swiper.wrapperEl?.scrollWidth || 0;
@@ -64,6 +76,11 @@ export function ImageGallery({
   if (!images || !Array.isArray(images) || images.length === 0) return null;
 
   if (images.length === 1) {
+    const imgUrl =
+      typeof images[0] === "string"
+        ? images[0]
+        : getImageUrl(images[0], "large");
+
     return (
       <>
         <div
@@ -74,7 +91,7 @@ export function ImageGallery({
           }}
         >
           <ImageWithFallback
-            src={images[0]}
+            src={imgUrl}
             fill
             quality={95}
             className="transition-transform group-hover:scale-105 object-cover"
@@ -91,8 +108,10 @@ export function ImageGallery({
         </div>
         {viewerVisible && (
           <ImageViewer
-            images={images}
+            article={article}
+            images={imageUrls}
             initialIndex={activeIndex}
+            enableSidePanel={false}
             visible={viewerVisible}
             onClose={() => setViewerVisible(false)}
             alt={alt}
@@ -132,7 +151,7 @@ export function ImageGallery({
             onFromEdge={syncThumbNavState}
             className="thumbs-swiper w-full min-w-0 max-w-full overflow-hidden!"
           >
-            {images.map((image, index) => (
+            {thumbnailUrls.map((imageUrl, index) => (
               <SwiperSlide
                 key={`thumb-${index}`}
                 style={{ width: "128px", height: "128px" }}
@@ -140,7 +159,7 @@ export function ImageGallery({
               >
                 <div className="relative h-full w-full cursor-pointer overflow-hidden rounded-lg border-2 border-gray-200 transition-colors hover:border-primary">
                   <ImageWithFallback
-                    src={image}
+                    src={imageUrl}
                     fill
                     quality={95}
                     loading="eager"
@@ -175,7 +194,7 @@ export function ImageGallery({
             className="main-swiper w-full"
             onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
           >
-            {images.map((image, index) => (
+            {imageUrls.map((imageUrl, index) => (
               <SwiperSlide
                 key={`main-${index}`}
                 className="relative h-auto! group"
@@ -185,7 +204,7 @@ export function ImageGallery({
                   onClick={() => setViewerVisible(true)}
                 >
                   <ImageWithFallback
-                    src={image}
+                    src={imageUrl}
                     width={0}
                     height={0}
                     quality={95}
@@ -225,7 +244,8 @@ export function ImageGallery({
       </div>
       {viewerVisible && (
         <ImageViewer
-          images={images}
+          article={article}
+          images={imageUrls}
           initialIndex={activeIndex}
           visible={viewerVisible}
           onClose={() => setViewerVisible(false)}

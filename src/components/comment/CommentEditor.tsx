@@ -6,7 +6,7 @@ import {
   emojiControllerIncrementUseCount,
   uploadControllerUploadFile,
 } from "@/api";
-import { CustomEmojiBlot } from "@/components/editor";
+import { useImageCompression } from "@/hooks/useImageCompression";
 import { cn, sanitizeRichTextHtml } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
@@ -20,8 +20,6 @@ import {
   X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Quill from "quill";
-import "quill/dist/quill.snow.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FreeMode } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -29,11 +27,28 @@ import { Button } from "../ui/Button";
 
 import "swiper/css";
 
+// 动态导入 Quill 以减少初始包大小
+let QuillModule: typeof import("quill")["default"] | null = null;
+let CustomEmojiBlot: unknown = null;
+
+async function loadQuill() {
+  if (!QuillModule) {
+    const [{ default: Quill }, { CustomEmojiBlot: emojiBlot }] = await Promise.all([
+      import("quill"),
+      import("@/components/editor"),
+    ]);
+    QuillModule = Quill;
+    CustomEmojiBlot = emojiBlot;
+  }
+  return { Quill: QuillModule, CustomEmojiBlot };
+}
+
 type CommentEditorProps = {
-  articleId: string;
+  articleId: string | number;
   parentId?: number | string;
   className?: string;
   onSubmitted?: () => void | Promise<void>;
+  minHeight?: string | number;
 };
 
 type EmojiRecord = {
@@ -61,7 +76,7 @@ declare global {
   }
 }
 
-function registerCommentQuillModules() {
+async function registerCommentQuillModules() {
   if (
     typeof window !== "undefined" &&
     window.__PICART_COMMENT_QUILL_REGISTERED__
@@ -69,7 +84,11 @@ function registerCommentQuillModules() {
     return;
   }
 
-  Quill.register({ "formats/emoji": CustomEmojiBlot }, true);
+  const { Quill, CustomEmojiBlot } = await loadQuill();
+
+  if (Quill && CustomEmojiBlot) {
+    (Quill as unknown as { register: (path: string, target: unknown, overwrite?: boolean) => void }).register("formats/emoji", CustomEmojiBlot, true);
+  }
 
   if (typeof window !== "undefined") {
     window.__PICART_COMMENT_QUILL_REGISTERED__ = true;
@@ -126,14 +145,12 @@ function normalizeEmojiGroups(response: unknown): EmojiGroup[] {
   }, []);
 }
 
-function hasQuillContent(quill: Quill | null) {
+function hasQuillContent(quill: { getText: () => string; root: Element } | null) {
   if (!quill) {
     return false;
   }
 
-  const text = quill
-    .getText()
-    .replace(/[\s\u00A0\u200B-\u200D\uFEFF]/g, "");
+  const text = quill.getText().replace(/[\s\u00A0\u200B-\u200D\uFEFF]/g, "");
   if (text.length > 0) {
     return true;
   }
@@ -172,7 +189,9 @@ function AttachmentPreviewCard({
         <div
           className={cn(
             "flex items-center overflow-hidden whitespace-nowrap transition-[max-width,opacity,margin] duration-300",
-            isUploading ? "mr-1 max-w-20 opacity-100" : "mr-0 max-w-0 opacity-0",
+            isUploading
+              ? "mr-1 max-w-20 opacity-100"
+              : "mr-0 max-w-0 opacity-0",
           )}
         >
           <LoaderCircle className="mr-2 size-3.5 shrink-0 animate-spin" />
@@ -196,16 +215,18 @@ export function CommentEditor({
   parentId,
   className,
   onSubmitted,
+  minHeight,
 }: CommentEditorProps) {
   const t = useTranslations("commentEditor");
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const emojiPanelRef = useRef<HTMLDivElement>(null);
   const emojiTabsViewportRef = useRef<HTMLDivElement>(null);
-  const quillRef = useRef<Quill | null>(null);
+  const quillRef = useRef<unknown>(null);
   const uploadTimersRef = useRef<Record<string, number>>({});
   const attachmentsRef = useRef<UploadedAttachment[]>([]);
   const removedAttachmentIdsRef = useRef(new Set<string>());
+  const { compressImages, validateFiles } = useImageCompression();
   const [emojiGroups, setEmojiGroups] = useState<EmojiGroup[]>([]);
   const [activeEmojiGroup, setActiveEmojiGroup] = useState<string>("all");
   const [emojiOpen, setEmojiOpen] = useState(false);
@@ -241,36 +262,46 @@ export function CommentEditor({
     (editorHasContent || attachments.some((attachment) => attachment.url));
 
   useEffect(() => {
-    registerCommentQuillModules();
+    const initQuill = async () => {
+      await registerCommentQuillModules();
 
-    if (!containerRef.current || quillRef.current) {
-      return;
-    }
+      if (!containerRef.current || quillRef.current) {
+        return;
+      }
 
-    const quill = new Quill(containerRef.current, {
-      theme: "snow",
-      modules: {
-        toolbar: false,
-        history: {
-          delay: 800,
-          maxStack: 50,
-          userOnly: true,
+      const { Quill } = await loadQuill();
+      if (!Quill) return;
+
+      const quill = new Quill(containerRef.current, {
+        theme: "snow",
+        modules: {
+          toolbar: false,
+          history: {
+            delay: 800,
+            maxStack: 50,
+            userOnly: true,
+          },
         },
-      },
-      formats: ["emoji"],
-      placeholder: t("placeholder"),
-    });
+        formats: ["emoji"],
+        placeholder: t("placeholder"),
+      });
 
-    quillRef.current = quill;
-    const syncEditorState = () => {
-      setEditorHasContent(hasQuillContent(quill));
+      quillRef.current = quill;
+      const syncEditorState = () => {
+        setEditorHasContent(hasQuillContent(quill));
+      };
+      quill.on("text-change", syncEditorState);
+      syncEditorState();
     };
-    quill.on("text-change", syncEditorState);
-    syncEditorState();
+
+    void initQuill();
 
     return () => {
-      quill.off("text-change", syncEditorState);
-      quillRef.current = null;
+      const quill = quillRef.current as { off: (event: string, handler: () => void) => void } | null;
+      if (quill) {
+        quill.off("text-change", () => {});
+        quillRef.current = null;
+      }
     };
   }, [t]);
 
@@ -364,7 +395,13 @@ export function CommentEditor({
   };
 
   const handleEmojiSelect = async (emoji: EmojiRecord) => {
-    const quill = quillRef.current;
+    const quill = quillRef.current as {
+      getSelection: (focus: boolean) => { index: number } | null;
+      getLength: () => number;
+      insertEmbed: (index: number, type: string, value: unknown, source: string) => void;
+      insertText: (index: number, text: string, source: string) => void;
+      setSelection: (index: number, length: number, source: string) => void;
+    } | null;
     if (!quill) {
       return;
     }
@@ -426,11 +463,30 @@ export function CommentEditor({
       return;
     }
 
-    for (const file of files) {
+    // 压缩图片
+    const compressionResults = await compressImages(files);
+
+    // 验证压缩后的文件大小
+    const compressedFiles = compressionResults.map((r) => r.file);
+    const validation = validateFiles(compressedFiles, true);
+    if (!validation.valid) {
+      console.error(validation.error);
+      return;
+    }
+
+    // Create attachment entries for all files first
+    const fileIds: string[] = [];
+    const fileMap = new Map<string, File>();
+
+    for (const result of compressionResults) {
+      const file = result.file;
       const id = `${file.name}-${file.size}-${Date.now()}-${Math.random()}`;
       const previewUrl = URL.createObjectURL(file);
 
+      fileIds.push(id);
+      fileMap.set(id, file);
       removedAttachmentIdsRef.current.delete(id);
+
       setAttachments((current) => [
         ...current,
         {
@@ -441,47 +497,55 @@ export function CommentEditor({
         },
       ]);
       startUploadProgress(id);
+    }
 
-      try {
-        const response = await uploadControllerUploadFile({
-          bodySerializer: (body) => {
-            const formData = new FormData();
-            formData.append("files", body.file);
-            return formData;
-          },
-          body: { file },
-          headers: {
-            "Content-Type": null,
-          },
-        });
+    // Upload all compressed files in one request
+    try {
+      const response = await uploadControllerUploadFile({
+        body: { file: compressedFiles as any },
+      });
 
+      const uploadedUrls = response.data?.data || [];
+
+      // Update each attachment with its uploaded URL
+      fileIds.forEach((id, index) => {
         if (removedAttachmentIdsRef.current.has(id)) {
-          URL.revokeObjectURL(previewUrl);
-          continue;
+          const file = fileMap.get(id);
+          if (file) {
+            URL.revokeObjectURL(URL.createObjectURL(file));
+          }
+          return;
         }
 
-        const uploadedUrl = response.data?.data?.[0]?.url;
-        if (!uploadedUrl) {
-          throw new Error("Missing uploaded file url");
+        const uploadedUrl = uploadedUrls[index]?.url;
+        if (uploadedUrl) {
+          clearUploadTimer(id);
+          updateAttachment(id, (attachment) => ({
+            ...attachment,
+            status: "uploaded",
+            progress: 100,
+            url: uploadedUrl,
+          }));
+        } else {
+          clearUploadTimer(id);
+          removeAttachment(id);
         }
-
-        clearUploadTimer(id);
-        updateAttachment(id, (attachment) => ({
-          ...attachment,
-          status: "uploaded",
-          progress: 100,
-          url: uploadedUrl,
-        }));
-      } catch (error) {
+      });
+    } catch (error) {
+      // Clear all upload timers and remove attachments on error
+      fileIds.forEach((id) => {
         clearUploadTimer(id);
         removeAttachment(id);
-        console.error("Failed to upload comment image:", error);
-      }
+      });
+      console.error("Failed to upload comment images:", error);
     }
   };
 
   const handleSubmit = async () => {
-    const quill = quillRef.current;
+    const quill = quillRef.current as {
+      root: { innerHTML: string };
+      setContents: (content: unknown[], source: string) => void;
+    } | null;
     if (!quill) {
       return;
     }
@@ -500,7 +564,7 @@ export function CommentEditor({
       (attachment) => attachment.status === "uploaded" && attachment.url,
     );
 
-    if (!hasQuillContent(quill) && uploadedAttachments.length === 0) {
+    if (!hasQuillContent(quill as unknown as { getText: () => string; root: Element }) && uploadedAttachments.length === 0) {
       return;
     }
 
@@ -544,9 +608,21 @@ export function CommentEditor({
             "comment-editor-shell rounded-xl border border-primary/90 bg-card transition-shadow focus-within:shadow-[0_0_0_3px_rgba(102,128,255,0.08)]",
             "[&_.ql-container]:border-0 [&_.ql-container]:rounded-2xl",
             "[&_.ql-container.ql-snow]:border-none!",
-            "[&_.ql-editor]:min-h-24 [&_.ql-editor]:px-5 [&_.ql-editor]:py-4 [&_.ql-editor]:text-sm [&_.ql-editor]:leading-6",
+            "[&_.ql-editor]:px-5 [&_.ql-editor]:py-4 [&_.ql-editor]:text-sm [&_.ql-editor]:leading-6",
             "[&_.ql-editor.ql-blank::before]:left-5 [&_.ql-editor.ql-blank::before]:right-5 [&_.ql-editor.ql-blank::before]:font-sans [&_.ql-editor.ql-blank::before]:text-sm [&_.ql-editor.ql-blank::before]:font-normal [&_.ql-editor.ql-blank::before]:leading-6 [&_.ql-editor.ql-blank::before]:text-muted-foreground [&_.ql-editor.ql-blank::before]:not-italic! dark:[&_.ql-editor.ql-blank::before]:text-white/45!",
+            !minHeight && "[&_.ql-editor]:min-h-24",
+            minHeight && "[&_.ql-editor]:min-h-(--editor-min-height)",
           )}
+          style={
+            minHeight
+              ? ({
+                  "--editor-min-height":
+                    typeof minHeight === "number"
+                      ? `${minHeight}px`
+                      : minHeight,
+                } as React.CSSProperties)
+              : undefined
+          }
         >
           <div ref={containerRef} />
         </div>
@@ -565,7 +641,7 @@ export function CommentEditor({
               className="comment-editor-upload-swiper"
             >
               {attachments.map((attachment) => (
-                <SwiperSlide key={attachment.id} className="!w-auto">
+                <SwiperSlide key={attachment.id} className="w-auto!">
                   <AttachmentPreviewCard
                     attachment={attachment}
                     onRemove={removeAttachment}
@@ -590,7 +666,13 @@ export function CommentEditor({
               </button>
 
               {emojiOpen && (
-                <div className="absolute bottom-full left-0 z-30 mb-3 w-[min(31rem,calc(100vw-3rem))] min-w-[18rem] overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
+                <div
+                  className="absolute top-full  z-30 mb-3 overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
+                  style={{
+                    width: "min(20rem, calc(100vw - 20rem))",
+                    minWidth: "16rem",
+                  }}
+                >
                   <div className="flex h-10 items-center gap-2 rounded-t-xl border-b border-border bg-border px-2.5">
                     <button
                       type="button"
@@ -651,13 +733,13 @@ export function CommentEditor({
                       <ChevronRight className="size-4" />
                     </button>
                   </div>
-                  <div className="grid h-52 grid-cols-7 content-start gap-1.5 overflow-y-auto px-2.5 py-2.5">
+                  <div className="grid h-52 grid-cols-7 content-start gap-1 overflow-y-auto px-2 py-2">
                     {emojiList.length > 0 ? (
                       emojiList.map((emoji) => (
                         <button
                           key={emoji.id}
                           type="button"
-                          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent p-1 transition-all hover:border-border hover:bg-accent"
+                          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent p-1 transition-all hover:border-border hover:bg-accent"
                           onClick={() => void handleEmojiSelect(emoji)}
                           title={emoji.name}
                         >
@@ -665,12 +747,12 @@ export function CommentEditor({
                           <img
                             src={emoji.url}
                             alt={emoji.name}
-                            className="max-h-8 max-w-8 object-contain"
+                            className="max-h-7 max-w-7 object-contain"
                           />
                         </button>
                       ))
                     ) : (
-                      <div className="col-span-6 py-8 text-center text-sm text-muted-foreground">
+                      <div className="col-span-7 py-8 text-center text-sm text-muted-foreground">
                         {t("emptyEmoji")}
                       </div>
                     )}
@@ -703,7 +785,7 @@ export function CommentEditor({
             size="md"
             loading={isSubmitting}
             className={cn(
-              "h-9 min-w-24 rounded-full px-6 font-semibold shadow-none",
+              "h-8 min-w-24 rounded-full px-4 font-semibold shadow-none",
               canSubmit
                 ? "hover:opacity-90"
                 : "cursor-not-allowed bg-[#e9eef7] text-[#b7c1d3]",

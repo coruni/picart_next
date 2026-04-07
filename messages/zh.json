@@ -25,7 +25,8 @@
     "clear": "清空",
     "noSearchHistory": "暂无搜索历史",
     "viewAllResults": "查看全部结果",
-    "noResults": "未找到相关内容"
+    "noResults": "未找到相关内容",
+    "retry": "重试"
   },
   "nav": {
     "home": "首页",
@@ -249,7 +250,11 @@
     "recommendUsers": "推荐用户",
     "viewMore": "查看更多",
     "loadError": "加载失败",
-    "authorInfo": "作者信息"
+    "authorInfo": "作者信息",
+    "collectionArticles": "合集文章",
+    "viewMoreArticles": "查看更多",
+    "collapse": "收起",
+    "expand": "展开"
   },
   "dashboard": {
     "metaTitle": "工作台",
@@ -395,19 +400,48 @@
       "clean": "清除格式",
       "confirm": "确定",
       "cancel": "取消",
-      "insert": "插入"
+      "insert": "插入",
+      "divider": "分割线",
+      "dividerTitle": "选择分割线样式",
+      "dividerGradient": "渐变",
+      "dividerPulse": "脉冲",
+      "dividerDashed": "虚线",
+      "dividerWave": "波浪",
+      "dividerRing": "双环",
+      "dividerZigzag": "锯齿",
+      "dividerStars": "星链",
+      "dividerThick": "粗细",
+      "inlineArticle": "内联文章",
+      "insertArticle": "插入内联文章",
+      "articleUrlPlaceholder": "请输入文章链接",
+      "inlineArticleError": "只能插入同域名文章链接",
+      "inlineArticleInvalid": "无效的文章链接"
     },
     "modal": {
       "insertVideo": "插入视频",
-      "videoUrlPlaceholder": "请输入视频链接",
+      "videoUrlPlaceholder": "支持 YouTube、Bilibili、TikTok 视频链接",
       "insertLink": "插入链接",
       "linkTextPlaceholder": "链接文字（可选，选中文字时自动填充）",
-      "linkUrlPlaceholder": "请输入链接地址"
+      "linkUrlPlaceholder": "请输入链接地址",
+      "insertArticle": "插入内联文章",
+      "articleUrlPlaceholder": "请输入文章链接",
+      "inlineArticleError": "只能插入同域名文章链接",
+      "inlineArticleInvalid": "无效的文章链接"
     },
     "upload": {
       "uploading": "上传中...",
       "uploadFailed": "上传失败",
       "percent": "{percent}%"
+    },
+    "articleSelector": {
+      "articles": "帖子({count})",
+      "selected": "已选({count})",
+      "searchPlaceholder": "搜索帖子或输入链接",
+      "loading": "加载中...",
+      "noArticles": "暂无文章",
+      "noSelectedArticles": "未选择文章",
+      "cancel": "取消",
+      "insert": "插入 ({count})"
     },
     "placeholder": "请输入内容",
     "imageCaptionPlaceholder": "添加图片说明..."
@@ -488,6 +522,28 @@
     "recommend": "推荐",
     "activity": "活动"
   },
+  "activity": {
+    "loadFailed": "加载失败，请重试",
+    "loginPrompt": "登录后可查看活动",
+    "active": "进行中",
+    "ended": "已结束",
+    "requiredLikes": "需{count}个赞",
+    "requiredComments": "需{count}条评论",
+    "requiredShares": "需{count}次分享",
+    "timeRange": "{start} 至 {end}",
+    "viewArticle": "查看文章",
+    "viewDetails": "查看详情",
+    "loading": "加载中...",
+    "loadMore": "加载更多",
+    "allLoaded": "已加载全部",
+    "noActivities": "暂无活动",
+    "rarity": {
+      "common": "普通",
+      "rare": "稀有",
+      "epic": "史诗",
+      "legendary": "传说"
+    }
+  },
   "searchFeedTabs": {
     "article": "帖子",
     "topic": "话题",
@@ -497,6 +553,9 @@
     "relatedArticles": "相关帖子",
     "relatedTopics": "相关话题",
     "relatedUsers": "相关用户"
+  },
+  "recommendPage": {
+    "title": "推荐用户"
   },
   "searchPanel": {
     "moreSort": "更多排序",
@@ -576,7 +635,10 @@
     "editPost": "编辑帖子",
     "reportPost": "举报帖子",
     "reportUser": "举报用户",
-    "blockUser": "拉黑用户",
+    "blockUser": "拉黑",
+    "blockConfirmTitle": "确认拉黑",
+    "blockConfirmDescription": "拉黑后，对方将无法再给您发送私信。确定要拉黑该用户吗？",
+    "cancel": "取消",
     "dislikeType": "我不喜欢这类内容",
     "moreActions": "更多操作",
     "reportDialog": {
@@ -639,6 +701,7 @@
     "editButton": "编辑合集",
     "posts": "帖子",
     "followers": "粉丝",
+    "views": "浏览",
     "empty": "暂无合集",
     "untitled": "未命名合集",
     "loading": "加载中",
@@ -878,6 +941,16 @@
         "required": "请输入地址",
         "updateError": "地址更新失败，请稍后重试"
       }
+    },
+    "blockedUsers": {
+      "title": "屏蔽用户管理",
+      "description": "您已屏蔽以下用户，他们将无法向您发送私信。",
+      "emptyDescription": "您还没有屏蔽任何用户",
+      "blockedAt": "屏蔽时间",
+      "viewProfile": "查看主页",
+      "unblock": "取消屏蔽",
+      "unblockConfirmTitle": "确认取消屏蔽",
+      "unblockConfirmDescription": "确定要取消对 {username} 的屏蔽吗？取消后对方将可以再次给您发送私信。"
     }
   }
 }

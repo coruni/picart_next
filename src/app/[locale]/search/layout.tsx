@@ -3,7 +3,7 @@ import { SearchPanel } from "@/components/search/SearchPanel";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Banner } from "@/components/ui/Banner";
 import { getPublicCategories } from "@/lib";
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 
 type SearchLayoutProps = {
   children: ReactNode;
@@ -21,8 +21,12 @@ export default async function SearchLayout(props: SearchLayoutProps) {
       <div className="left-container bg-transparent! space-y-4">
         <div className="relative space-y-4">
           <div className="top-header pt-4 sticky z-10  rounded-xl bg-card">
-            <SearchHeader categories={categories} className="w-full px-6" />
-            <SearchPanel />
+            <Suspense fallback={<div className="h-14 w-full px-6" />}>
+              <SearchHeader categories={categories} className="w-full px-6" />
+            </Suspense>
+            <Suspense fallback={<div className="h-12 w-full" />}>
+              <SearchPanel />
+            </Suspense>
           </div>
 
           <div className="rounded-xl bg-card p-6">

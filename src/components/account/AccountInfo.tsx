@@ -292,7 +292,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                       className={cn(
                         "flex size-8 cursor-pointer items-center justify-center rounded-full transition-[background-color,color,transform] duration-180 ease-out hover:text-primary md:size-9",
                         !scrolled
-                          ? "bg-[#000000a6]"
+                          ? "bg-[#000000a6] text-white"
                           : "bg-gray-50 text-foreground",
                         isOpen && "scale-105 text-primary",
                       )}

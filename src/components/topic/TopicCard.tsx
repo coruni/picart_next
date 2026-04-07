@@ -6,6 +6,7 @@ import { TagList } from "@/types";
 import { ChevronRight, Hash } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
+import noTag from "@/assets/images/placeholder/no_tag.webp";
 
 type TopicCardProps = {
   tag: TagList[number];
@@ -42,7 +43,7 @@ export const TopicCard = ({
               <ImageWithFallback
                 fill
                 quality={95}
-                src={tag.avatar || "/placeholder/no_tag.webp"}
+                src={tag.avatar || noTag}
                 alt={tag.name}
                 loading={loading}
                 className="object-cover rounded-lg"

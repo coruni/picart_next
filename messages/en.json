@@ -26,6 +26,7 @@
     "noSearchHistory": "No search history",
     "viewAllResults": "View all results",
     "noResults": "No results found",
+    "retry": "Retry",
     "numberUnits": {
       "thousand": "k",
       "tenThousand": "w",
@@ -257,7 +258,11 @@
     "recommendUsers": "Recommended Users",
     "viewMore": "View More",
     "loadError": "Failed to load",
-    "authorInfo": "Author Info"
+    "authorInfo": "Author Info",
+    "collectionArticles": "Collection Articles",
+    "viewMoreArticles": "View More",
+    "collapse": "Collapse",
+    "expand": "Expand"
   },
   "dashboard": {
     "metaTitle": "Dashboard",
@@ -403,19 +408,48 @@
       "clean": "Clear Formatting",
       "confirm": "Confirm",
       "cancel": "Cancel",
-      "insert": "Insert"
+      "insert": "Insert",
+      "divider": "Divider",
+      "dividerTitle": "Choose Divider Style",
+      "dividerGradient": "Gradient",
+      "dividerPulse": "Pulse",
+      "dividerDashed": "Dashed",
+      "dividerWave": "Wave",
+      "dividerRing": "Ring",
+      "dividerZigzag": "Zigzag",
+      "dividerStars": "Stars",
+      "dividerThick": "Thick",
+      "inlineArticle": "Inline Article",
+      "insertArticle": "Insert Inline Article",
+      "articleUrlPlaceholder": "Enter article URL",
+      "inlineArticleError": "Only same-origin article links are allowed",
+      "inlineArticleInvalid": "Invalid article URL"
     },
     "modal": {
       "insertVideo": "Insert Video",
-      "videoUrlPlaceholder": "Enter video URL",
+      "videoUrlPlaceholder": "Support YouTube, Bilibili, TikTok video URLs",
       "insertLink": "Insert Link",
       "linkTextPlaceholder": "Link text (optional, auto-filled when text is selected)",
-      "linkUrlPlaceholder": "Enter link URL"
+      "linkUrlPlaceholder": "Enter link URL",
+      "insertArticle": "Insert Inline Article",
+      "articleUrlPlaceholder": "Enter article URL",
+      "inlineArticleError": "Only same-origin article links are allowed",
+      "inlineArticleInvalid": "Invalid article URL"
     },
     "upload": {
       "uploading": "Uploading...",
       "uploadFailed": "Upload failed",
       "percent": "{percent}%"
+    },
+    "articleSelector": {
+      "articles": "Posts ({count})",
+      "selected": "Selected ({count})",
+      "searchPlaceholder": "Search posts or enter link",
+      "loading": "Loading...",
+      "noArticles": "No articles",
+      "noSelectedArticles": "No articles selected",
+      "cancel": "Cancel",
+      "insert": "Insert ({count})"
     },
     "placeholder": "Enter content here",
     "imageCaptionPlaceholder": "Add image caption..."
@@ -496,6 +530,28 @@
     "recommend": "Recommend",
     "activity": "Activity"
   },
+  "activity": {
+    "loadFailed": "Failed to load, please retry",
+    "loginPrompt": "Please login to view activities",
+    "active": "Active",
+    "ended": "Ended",
+    "requiredLikes": "{count} likes required",
+    "requiredComments": "{count} comments required",
+    "requiredShares": "{count} shares required",
+    "timeRange": "{start} to {end}",
+    "viewArticle": "View Article",
+    "viewDetails": "View Details",
+    "loading": "Loading...",
+    "loadMore": "Load More",
+    "allLoaded": "All Loaded",
+    "noActivities": "No activities yet",
+    "rarity": {
+      "common": "Common",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    }
+  },
   "searchFeedTabs": {
     "article": "Posts",
     "topic": "Topics",
@@ -505,6 +561,9 @@
     "relatedArticles": "Related Posts",
     "relatedTopics": "Related Topics",
     "relatedUsers": "Related Users"
+  },
+  "recommendPage": {
+    "title": "Recommended Users"
   },
   "searchPanel": {
     "moreSort": "More Sort",
@@ -584,7 +643,10 @@
     "editPost": "Edit Post",
     "reportPost": "Report Post",
     "reportUser": "Report User",
-    "blockUser": "Block User",
+    "blockUser": "Block",
+    "blockConfirmTitle": "Confirm Block",
+    "blockConfirmDescription": "After blocking, this user will no longer be able to send you private messages. Are you sure you want to block this user?",
+    "cancel": "Cancel",
     "dislikeType": "I dislike this type of content",
     "moreActions": "More Actions",
     "reportDialog": {
@@ -647,6 +709,7 @@
     "editButton": "Edit collection",
     "posts": "Posts",
     "followers": "Followers",
+    "views": "views",
     "empty": "No collections yet",
     "untitled": "Untitled collection",
     "loading": "Loading",
@@ -836,19 +899,12 @@
     "more": "More"
   },
   "searchBox": {
-    "hotSearches": [
-      "Check in",
-      "Genshin",
-      "Honkai",
-      "Star Rail",
-      "ZZZ"
-    ]
+    "hotSearches": ["Check in", "Genshin", "Honkai", "Star Rail", "ZZZ"]
   },
   "languageSwitcher": {
     "zh": "Chinese",
     "en": "English"
-  }
-,
+  },
   "setting": {
     "contact": {
       "notice": "Please carefully fill in and maintain your contact information. We will keep your information strictly confidential and use it only for account contact, notifications, and necessary service support.",
@@ -887,5 +943,16 @@
         "required": "Please enter an address",
         "updateError": "Failed to update address, please try again later"
       }
+    },
+    "blockedUsers": {
+      "title": "Blocked Users Management",
+      "description": "You have blocked the following users. They will not be able to send you direct messages.",
+      "emptyDescription": "You haven't blocked any users yet",
+      "blockedAt": "Blocked at",
+      "viewProfile": "View Profile",
+      "unblock": "Unblock",
+      "unblockConfirmTitle": "Confirm Unblock",
+      "unblockConfirmDescription": "Are you sure you want to unblock {username}? They will be able to send you direct messages again."
     }
-  }}
+  }
+}

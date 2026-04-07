@@ -64,6 +64,14 @@ export function getStatusClassName(value?: string | boolean | null) {
     return "border-rose-500/20 bg-rose-500/10 text-rose-700";
   }
 
+  if (normalized === "UNDER_REVIEW") {
+    return "border-violet-500/20 bg-violet-500/10 text-violet-700";
+  }
+
+  if (normalized === "APPROVED") {
+    return "border-emerald-500/20 bg-emerald-500/10 text-emerald-700";
+  }
+
   if (normalized === "RESOLVED" || normalized === "PUBLIC") {
     return "border-sky-500/20 bg-sky-500/10 text-sky-700";
   }
@@ -75,7 +83,7 @@ export function getRoleLabels(
   roles?: Array<{ displayName?: string; name?: string }> | null,
 ) {
   return (roles || [])
-    .map((role) => role.displayName || role.name)
+    .map((role) => role.name||role.displayName)
     .filter((value): value is string => Boolean(value));
 }
 
@@ -83,7 +91,7 @@ export function looksLikeAdminRole(
   roles?: Array<{ displayName?: string; name?: string }> | null,
 ) {
   return getRoleLabels(roles).some((role) =>
-    /admin|root|super|manage|运营|管理/i.test(role),
+    /admin|root|super|manage|运营|管理|super-admin/i.test(role),
   );
 }
 

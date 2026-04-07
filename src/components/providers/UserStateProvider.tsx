@@ -104,16 +104,9 @@ export function UserStateProvider({
     };
 
     void run();
-  }, [
-    initialConfig,
-    initialToken,
-    initialUser,
-    setConfig,
-    setToken,
-    setUser,
-    token,
-    user,
-  ]);
+    // 只在组件挂载时运行一次，不依赖动态的 token 和 user
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!isInitialized) {
     return null;

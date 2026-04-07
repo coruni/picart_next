@@ -8,15 +8,16 @@ export function useMediaQuery(query: string): boolean {
 
   useEffect(() => {
     const media = window.matchMedia(query);
-    if (media.matches !== matches) {
-      setMatches(media.matches);
-    }
+    // 初始化值
+    setMatches(media.matches);
 
-    const listener = () => setMatches(media.matches);
+    const listener = (event: MediaQueryListEvent) => {
+      setMatches(event.matches);
+    };
     media.addEventListener("change", listener);
 
     return () => media.removeEventListener("change", listener);
-  }, [matches, query]);
+  }, [query]); // 只依赖 query，不依赖 matches
 
   return matches;
 }

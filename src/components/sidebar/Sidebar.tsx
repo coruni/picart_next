@@ -4,6 +4,7 @@ import { ArticleDetail } from "@/types";
 import { Banner } from "../ui/Banner";
 import { ArticleCreateWidget } from "./ArticleCreateWidget";
 import { AuthorInfoWidget } from "./AuthorInfoWidget";
+import { CollectionListWidget } from "./CollectionListWidget";
 import { HotSearch } from "./HotSearch";
 import { LoginWidget } from "./LoadingWidget";
 import { RecommendUserWidget } from "./RecommendUserWidget";
@@ -23,6 +24,10 @@ type SidebarProps = {
   randomBanner?: boolean;
   author?: ArticleDetail["author"];
   showSiteContact?: boolean;
+  showCollectionList?: boolean;
+  collectionId?: number;
+  collectionName?: string;
+  currentArticleId?: number;
 };
 
 export async function Sidebar({
@@ -37,15 +42,19 @@ export async function Sidebar({
   randomBanner = true,
   author,
   showSiteContact = true,
+  showCollectionList = false,
+  collectionId,
+  collectionName,
+  currentArticleId,
 }: SidebarProps) {
   const currentUser = await getCurrentUser();
   const shouldShowBanner =
     showBanner && (randomBanner ? Math.random() >= 0.5 : true);
 
   const sidebarItems = [
-    showArticleCreate && currentUser
-      ? <ArticleCreateWidget key="article-create" />
-      : null,
+    showArticleCreate && currentUser ? (
+      <ArticleCreateWidget key="article-create" />
+    ) : null,
 
     showSearchHistory ? <SearchHistory key="search-history" /> : null,
     showHotSearch ? <HotSearch key="hot-search" /> : null,
@@ -62,6 +71,15 @@ export async function Sidebar({
         {showLogin && <LoginWidget />}
 
         {showAuthorInfo && author && <AuthorInfoWidget author={author} />}
+
+        {showCollectionList && collectionId && author && (
+          <CollectionListWidget
+            userId={author.id}
+            collectionId={collectionId}
+            collectionName={collectionName}
+            currentArticleId={currentArticleId}
+          />
+        )}
 
         {sidebarItems}
       </div>

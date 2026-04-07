@@ -18,6 +18,13 @@ export const quillOverrideStyles = `
     width: 24px !important;
     height: 24px !important;
   }
+  /* 排除分割线面板中的 SVG 预览 */
+  .ql-snow.ql-toolbar .ql-formats button:not(.h-8) #dropdown-divider-panel svg,
+  .ql-snow .ql-toolbar .ql-formats button:not(.h-8) #dropdown-divider-panel svg,
+  #dropdown-divider-panel svg {
+    width: auto !important;
+    height: auto !important;
+  }
   .ql-toolbar [id^="dropdown-"]{
     min-width:max-content !important;
   }
@@ -643,5 +650,48 @@ export const quillOverrideStyles = `
     justify-content: center;
     color: #8592a3;
     font-size: 13px;
+  }
+  /* 视频遮罩层 - 用于捕获点击事件 */
+  .ql-video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    cursor: pointer;
+    background: transparent;
+    border-radius: 8px;
+  }
+  /* 视频选中时隐藏遮罩层，允许与视频交互 */
+  .ql-video-wrapper.ql-video-selected .ql-video-overlay {
+    pointer-events: none;
+    z-index: -1;
+  }
+  .ql-video-error {
+    padding: 24px;
+    text-align: center;
+    color: #666;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+  /* 视频选中状态 */
+  .ql-video-wrapper.ql-video-selected {
+    outline: 2px solid var(--color-primary) !important;
+    outline-offset: 2px !important;
+    position: relative;
+  }
+  /* 确保选中状态可见 */
+  .ql-editor .ql-video-wrapper.ql-video-selected {
+    outline: 2px solid var(--color-primary) !important;
+    outline-offset: 2px !important;
+  }
+  /* 视频工具栏样式 */
+  .ql-video-wrapper .blot-formatter__toolbar {
+    position: absolute !important;
+    top: 0 !important;
+    left: 50% !important;
+    transform: translate(-50%, calc(-100% - 8px)) !important;
+    z-index: 1000 !important;
   }
 `;

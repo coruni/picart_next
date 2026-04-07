@@ -12,6 +12,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
+import noTag from "@/assets/images/placeholder/no_tag.webp";
 
 type TopicInfoProps = {
   tag: TagDetail;
@@ -84,7 +85,7 @@ export const TopicInfo = ({
     <div className="top-header sticky z-10 border-t border-t-border bg-card px-3 md:px-10">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-2 md:gap-4">
         <Avatar
-          url={tag?.avatar || "/placeholder/no_tag.webp"}
+          url={tag?.avatar || noTag}
           className={cn(
             "rounded-xl! transition-[width,height,top] duration-250 ease-out",
             !scrolled

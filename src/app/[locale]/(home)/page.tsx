@@ -5,6 +5,7 @@ export default async function HomePage() {
   const query = {
     page: 1,
     limit: 10,
+    type: "popular" as const,
   };
 
   const initialData = await serverApi.articleControllerFindAll({

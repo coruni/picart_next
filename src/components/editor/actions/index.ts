@@ -2,5 +2,8 @@ export { ReplaceAction } from "./ReplaceAction";
 export { ViewAction } from "./ViewAction";
 export { CopyAction } from "./CopyAction";
 export { DeleteAction } from "./DeleteAction";
+export { DeleteVideoAction } from "./DeleteVideoAction";
 export { EditLinkAction } from "./EditLinkAction";
 export { RemoveLinkAction } from "./RemoveLinkAction";
+export { EditInlineArticleAction } from "./EditInlineArticleAction";
+export { DeleteInlineArticleAction } from "./DeleteInlineArticleAction";

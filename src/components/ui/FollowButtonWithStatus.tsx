@@ -22,6 +22,7 @@ type FollowButtonWithStatusProps = {
   className?: string;
   children?: React.ReactNode;
   onFollowChange?: (isFollowed: boolean) => void;
+  forceShow?: boolean;
 };
 
 export const FollowButtonWithStatus = ({
@@ -30,6 +31,7 @@ export const FollowButtonWithStatus = ({
   className,
   children,
   onFollowChange,
+  forceShow = false,
 }: FollowButtonWithStatusProps) => {
   const t = useTranslations("followButton");
   const user = useUserStore((state) => state.user);
@@ -72,7 +74,7 @@ export const FollowButtonWithStatus = ({
     return null;
   }
 
-  if (isFollowed && !isAnimating && !isHiding) {
+  if (isFollowed && !isAnimating && !isHiding && !forceShow) {
     return null;
   }
 
@@ -133,11 +135,13 @@ export const FollowButtonWithStatus = ({
 
   return (
     <Button
+      variant={isFollowed ? "outline" : "default"}
       className={cn(
         "ml-2 rounded-full overflow-hidden transition-all duration-500 ease-in-out",
         isAnimating && !isHiding && "h-10! w-10! px-3!",
         isHiding && "translate-x-8 scale-0 opacity-0",
         !isAnimating && !isHiding && "px-6",
+        isFollowed && "bg-muted text-muted-foreground border-muted hover:bg-muted/80 hover:text-muted-foreground",
         className,
       )}
       onClick={handleFollowToggle}

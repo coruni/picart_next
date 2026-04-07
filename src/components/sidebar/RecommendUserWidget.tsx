@@ -8,6 +8,9 @@ import Image from "next/image";
 import { GuardedLink } from "../shared";
 import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
+import { Link } from "@/i18n/routing";
+import recommendUserLeft from "@/assets/images/sidebar/recommend/recommend_user_left.png";
+import recommendUserRight from "@/assets/images/sidebar/recommend/recommend_user_right.png";
 
 export const RecommendUserWidget = async () => {
   const t = await getTranslations("sidebar");
@@ -64,7 +67,7 @@ export const RecommendUserWidget = async () => {
               key={article.id}
             >
               <Image
-                src={article.cover}
+                src={article.cover || ""}
                 fill
                 sizes="96px"
                 className="object-cover rounded-lg"
@@ -76,7 +79,7 @@ export const RecommendUserWidget = async () => {
         <div
           className="px-4 flex items-center justify-center h-12 w-full bg-no-repeat"
           style={{
-            backgroundImage: `url(/sidebar/recommend/recommend_user_left.png),url(/sidebar/recommend/recommend_user_right.png)`,
+            backgroundImage: `url(${recommendUserLeft.src}),url(${recommendUserRight.src})`,
             backgroundSize: "24px 20px, 24px 20px",
             backgroundPosition: "left top, right bottom",
           }}
@@ -96,9 +99,12 @@ export const RecommendUserWidget = async () => {
       </div>
       {users.map((user) => userCard(user))}
       <div className="px-2 mt-2">
-        <span className="text-sm text-primary hover:text-primary/80 cursor-pointer">
+        <Link
+          href="/recommend/user"
+          className="text-sm text-primary hover:text-primary/80 cursor-pointer"
+        >
           {t("viewMore")}
-        </span>
+        </Link>
       </div>
     </section>
   );

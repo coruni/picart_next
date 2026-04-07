@@ -10,6 +10,12 @@ import { MODAL_IDS } from "@/lib/modal-helpers";
 import { UserAvatarFarmeDialog } from "@/components/layout/UserAvatarFarmeDialog";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
+import avatarFrameSvg from "@/assets/images/account/decoration/avatar_frame.svg";
+import avatarFrameActiveSvg from "@/assets/images/account/decoration/avatar_frame_active.svg";
+import emojiSvg from "@/assets/images/account/decoration/emoji.svg";
+import emojiActiveSvg from "@/assets/images/account/decoration/emoji_active.svg";
+import commentSvg from "@/assets/images/account/decoration/comment.svg";
+import commentActiveSvg from "@/assets/images/account/decoration/comment_active.svg";
 
 type DecorationType = "AVATAR_FRAME" | "EMOJI" | "COMMENT_BUBBLE";
 
@@ -224,7 +230,7 @@ export default function AccountDecorationPage() {
             >
               <div className="relative size-16">
                 <Image
-                  src="/account/decoration/avatar_frame.svg"
+                  src={avatarFrameSvg}
                   alt="avatar_frame"
                   fill
                   className={cn(
@@ -233,7 +239,7 @@ export default function AccountDecorationPage() {
                   )}
                 />
                 <Image
-                  src="/account/decoration/avatar_frame_active.svg"
+                  src={avatarFrameActiveSvg}
                   alt="avatar_frame"
                   fill
                   className={cn(
@@ -254,7 +260,7 @@ export default function AccountDecorationPage() {
             >
               <div className="relative size-16">
                 <Image
-                  src="/account/decoration/emoji.svg"
+                  src={emojiSvg}
                   alt="emoji"
                   fill
                   className={cn(
@@ -263,7 +269,7 @@ export default function AccountDecorationPage() {
                   )}
                 />
                 <Image
-                  src="/account/decoration/emoji_active.svg"
+                  src={emojiActiveSvg}
                   alt="emoji"
                   fill
                   className={cn(
@@ -287,7 +293,7 @@ export default function AccountDecorationPage() {
               <div className="relative size-16">
                 <Image
                   fill
-                  src="/account/decoration/comment.svg"
+                  src={commentSvg}
                   alt="comment"
                   className={cn(
                     "absolute w-full h-full top-50% left-50%",
@@ -296,7 +302,7 @@ export default function AccountDecorationPage() {
                 />
                 <Image
                   fill
-                  src="/account/decoration/comment_active.svg"
+                  src={commentActiveSvg}
                   alt="comment"
                   className={cn(
                     "h-full w-full",

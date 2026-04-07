@@ -3,6 +3,7 @@
 import { Link } from "@/i18n/routing";
 import { cn, formatCompactNumber, prepareRichTextHtmlForSummary } from "@/lib";
 import { ArticleList } from "@/types";
+import { getImageUrl } from "@/types/image";
 import { Eye } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
@@ -97,7 +98,7 @@ export function SearchArticle({
                 </span>
               </div>
               <div className="flex items-center text-secondary text-xs">
-                <Eye size={16}/>
+                <Eye size={16} />
                 <span className="ml-1 text-xs text-muted-foreground">
                   {formatCompactNumber(article.views, {
                     locale,
@@ -113,7 +114,7 @@ export function SearchArticle({
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover rounded-lg"
             fill
-            src={article.cover || article.images?.[0] || ""}
+            src={article.cover || getImageUrl(article.images[0], "small")}
             alt={article.title || "article cover"}
           />
         </div>

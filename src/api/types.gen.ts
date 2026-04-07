@@ -311,19 +311,19 @@ export type ChangePasswordDto = {
 
 export type UpdateUserConfigDto = {
     /**
-     * 文章抽成比例（0-1之间）
+     * 文章抽成比例，0-1 之间
      */
     articleCommissionRate?: number;
     /**
-     * 会员抽成比例（0-1之间）
+     * 会员抽成比例，0-1 之间
      */
     membershipCommissionRate?: number;
     /**
-     * 商品抽成比例（0-1之间）
+     * 商品抽成比例，0-1 之间
      */
     productCommissionRate?: number;
     /**
-     * 服务抽成比例（0-1之间）
+     * 服务抽成比例，0-1 之间
      */
     serviceCommissionRate?: number;
     /**
@@ -488,9 +488,9 @@ export type CreateArticleDto = {
      */
     summary?: string;
     /**
-     * 文章图片
+     * 文章图片，传单个URL字符串或URL数组
      */
-    images?: string;
+    images?: string | Array<string>;
     /**
      * 封面图片
      */
@@ -544,6 +544,10 @@ export type CreateArticleDto = {
      */
     type: 'image' | 'mixed';
     /**
+     * 关联活动ID
+     */
+    activityId?: number;
+    /**
      * 下载资源列表
      */
     downloads?: Array<DownloadDto>;
@@ -563,9 +567,9 @@ export type UpdateArticleDto = {
      */
     summary?: string;
     /**
-     * 文章图片
+     * 文章图片，传单个URL字符串或URL数组
      */
-    images?: string;
+    images?: string | Array<string>;
     /**
      * 封面图片
      */
@@ -618,6 +622,10 @@ export type UpdateArticleDto = {
      * 文章类型
      */
     type?: 'image' | 'mixed';
+    /**
+     * 关联活动ID
+     */
+    activityId?: number;
     /**
      * 下载资源列表
      */
@@ -1047,9 +1055,9 @@ export type CreateCommentDto = {
      */
     parentId?: number;
     /**
-     * 评论图片列表（最多9张）
+     * 评论图片，传单个URL字符串或URL数组（最多9张）
      */
-    images?: Array<string>;
+    images?: string | Array<string>;
 };
 
 export type UpdateCommentDto = {
@@ -1371,7 +1379,7 @@ export type CreateDecorationDto = {
      */
     isPermanent?: boolean;
     /**
-     * 有效天数
+     * 有效天数（0或999表示永久）
      */
     validDays?: number;
     /**
@@ -1430,7 +1438,7 @@ export type UpdateDecorationDto = {
      */
     isPermanent?: boolean;
     /**
-     * 有效天数
+     * 有效天数（0或999表示永久）
      */
     validDays?: number;
     /**
@@ -1749,14 +1757,17 @@ export type UpdateUserContactDto = {
 
 export type CreateCollectionDto = {
     /**
-     * 收藏夹名称
+     * 合集名称
      */
     name: string;
-    avatar?: string;
     /**
-     * 收藏夹描述
+     * 合集描述
      */
     description?: string;
+    /**
+     * 头像
+     */
+    avatar?: string;
     /**
      * 封面图片
      */
@@ -1773,14 +1784,17 @@ export type CreateCollectionDto = {
 
 export type UpdateCollectionDto = {
     /**
-     * 收藏夹名称
+     * 合集名称
      */
     name?: string;
-    avatar?: string;
     /**
-     * 收藏夹描述
+     * 合集描述
      */
     description?: string;
+    /**
+     * 头像
+     */
+    avatar?: string;
     /**
      * 封面图片
      */
@@ -1793,6 +1807,124 @@ export type UpdateCollectionDto = {
      * 排序
      */
     sort?: number;
+};
+
+export type CreateActivityDto = {
+    /**
+     * 活动名称
+     */
+    name: string;
+    /**
+     * 活动描述
+     */
+    description?: string;
+    /**
+     * 活动类型
+     */
+    type: 'LIKE' | 'COMMENT' | 'SHARE' | 'RECHARGE' | 'SIGN_IN' | 'CUSTOM';
+    /**
+     * 奖励装饰品ID
+     */
+    decorationId: number;
+    /**
+     * 关联文章ID（活动说明）
+     */
+    articleId?: number;
+    /**
+     * 所需点赞数
+     */
+    requiredLikes?: number;
+    /**
+     * 所需评论数
+     */
+    requiredComments?: number;
+    /**
+     * 所需分享数
+     */
+    requiredShares?: number;
+    /**
+     * 所需充值金额
+     */
+    requiredRecharge?: number;
+    /**
+     * 所需签到天数
+     */
+    requiredSignInDays?: number;
+    /**
+     * 奖励是否永久
+     */
+    isPermanent: boolean;
+    /**
+     * 奖励有效天数
+     */
+    validDays?: number;
+    /**
+     * 开始时间
+     */
+    startTime: string;
+    /**
+     * 结束时间
+     */
+    endTime: string;
+};
+
+export type UpdateActivityDto = {
+    /**
+     * 活动名称
+     */
+    name?: string;
+    /**
+     * 活动描述
+     */
+    description?: string;
+    /**
+     * 活动类型
+     */
+    type?: 'LIKE' | 'COMMENT' | 'SHARE' | 'RECHARGE' | 'SIGN_IN' | 'CUSTOM';
+    /**
+     * 奖励装饰品ID
+     */
+    decorationId?: number;
+    /**
+     * 关联文章ID（活动说明）
+     */
+    articleId?: number;
+    /**
+     * 所需点赞数
+     */
+    requiredLikes?: number;
+    /**
+     * 所需评论数
+     */
+    requiredComments?: number;
+    /**
+     * 所需分享数
+     */
+    requiredShares?: number;
+    /**
+     * 所需充值金额
+     */
+    requiredRecharge?: number;
+    /**
+     * 所需签到天数
+     */
+    requiredSignInDays?: number;
+    /**
+     * 奖励是否永久
+     */
+    isPermanent?: boolean;
+    /**
+     * 奖励有效天数
+     */
+    validDays?: number;
+    /**
+     * 开始时间
+     */
+    startTime?: string;
+    /**
+     * 结束时间
+     */
+    endTime?: string;
 };
 
 export type AppControllerGetHelloData = {
@@ -4549,7 +4681,19 @@ export type ArticleControllerFindAllResponses = {
                 viewPrice: string;
                 type: string;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 sort: number;
                 summary: string;
                 views: number;
@@ -4768,7 +4912,19 @@ export type ArticleControllerFindOneResponses = {
             viewPrice: string;
             type: string;
             content: string;
-            images: Array<string>;
+            images: Array<string & {
+                url: string;
+                width: number;
+                height: number;
+                size: number;
+                original: string;
+                thumbnails: {
+                    thumb: string;
+                    small: string;
+                    medium: string;
+                    large: string;
+                };
+            }>;
             sort: number;
             summary: string;
             views: number;
@@ -4890,7 +5046,7 @@ export type ArticleControllerFindOneResponses = {
                 id: number;
                 name: string;
                 description: string;
-                avatar: unknown;
+                avatar: string;
                 cover: string;
                 isPublic: boolean;
                 sort: number;
@@ -4898,9 +5054,27 @@ export type ArticleControllerFindOneResponses = {
                 views: number;
                 createdAt: string;
                 updatedAt: string;
+                current: {
+                    itemId: number;
+                    articleId: number;
+                    index: number;
+                    sort: number;
+                };
                 navigation: {
-                    prev: unknown;
-                    next: unknown;
+                    prev: {
+                        itemId: number;
+                        articleId: number;
+                        title: string;
+                        cover: string;
+                        index: number;
+                    };
+                    next: {
+                        itemId: number;
+                        articleId: number;
+                        title: string;
+                        cover: string;
+                        index: number;
+                    };
                 };
             };
             isFavorited: boolean;
@@ -5086,7 +5260,19 @@ export type ArticleControllerSearchResponses = {
                 viewPrice: string;
                 type: string;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 sort: number;
                 summary: string;
                 views: number;
@@ -5410,7 +5596,19 @@ export type ArticleControllerFindByAuthorResponses = {
                 viewPrice: string;
                 type: string;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 sort: number;
                 summary: string;
                 views: number;
@@ -6618,7 +6816,19 @@ export type CommentControllerFindAllResponses = {
             data: Array<{
                 id: number;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 likes: number;
                 replyCount: number;
                 status: string;
@@ -7091,7 +7301,19 @@ export type CommentControllerFindOneResponses = {
             data: Array<{
                 id: number;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 likes: number;
                 replyCount: number;
                 status: string;
@@ -7637,7 +7859,19 @@ export type CommentControllerFindAllCommentsResponses = {
             data: Array<{
                 id: number;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 likes: number;
                 replyCount: number;
                 status: string;
@@ -8134,7 +8368,19 @@ export type CommentControllerGetUserCommentsResponses = {
             data: Array<{
                 id: number;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 likes: number;
                 replyCount: number;
                 status: string;
@@ -8337,24 +8583,24 @@ export type CommentControllerGetUserCommentsResponses = {
                 };
                 rootId: number;
                 replies: Array<{
-                    id?: number;
-                    content?: string;
-                    images?: Array<string>;
-                    likes?: number;
-                    replyCount?: number;
-                    status?: string;
-                    author?: {
+                    id: number;
+                    content: string;
+                    images: Array<string>;
+                    likes: number;
+                    replyCount: number;
+                    status: string;
+                    author: {
                         id: number;
                         username: string;
                         nickname: string;
                         status: string;
-                        banned: unknown;
-                        banReason: unknown;
+                        banned: string;
+                        banReason: string;
                         avatar: string;
                         description: string;
                         background: string;
                         gender: string;
-                        birthDate: unknown;
+                        birthDate: string;
                         articleCount: number;
                         followerCount: number;
                         followingCount: number;
@@ -8365,13 +8611,13 @@ export type CommentControllerGetUserCommentsResponses = {
                         membershipLevel: number;
                         membershipLevelName: string;
                         membershipStatus: string;
-                        membershipStartDate: unknown;
-                        membershipEndDate: unknown;
+                        membershipStartDate: string;
+                        membershipEndDate: string;
                         lastLoginAt: string;
-                        lastActiveAt: unknown;
-                        inviterId: unknown;
+                        lastActiveAt: string;
+                        inviterId: string;
                         myInviteCode: string;
-                        inviteCode: unknown;
+                        inviteCode: string;
                         inviteEarnings: string;
                         inviteCount: number;
                         createdAt: string;
@@ -8394,7 +8640,7 @@ export type CommentControllerGetUserCommentsResponses = {
                         };
                         isMember: boolean;
                     };
-                    article?: {
+                    article: {
                         id: number;
                         title: string;
                         requireLogin: boolean;
@@ -8435,7 +8681,7 @@ export type CommentControllerGetUserCommentsResponses = {
                         createdAt: string;
                         updatedAt: string;
                     };
-                    parent?: {
+                    parent: {
                         id: number;
                         content: string;
                         images: string;
@@ -8493,15 +8739,15 @@ export type CommentControllerGetUserCommentsResponses = {
                             };
                             isMember: boolean;
                         };
-                        rootId: unknown;
+                        rootId: number;
                         createdAt: string;
                         updatedAt: string;
                     };
-                    rootId?: number;
-                    createdAt?: string;
-                    updatedAt?: string;
-                    parentId?: number;
-                    isLiked?: boolean;
+                    rootId: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    parentId: number;
+                    isLiked: boolean;
                 }>;
                 createdAt: string;
                 updatedAt: string;
@@ -10324,6 +10570,40 @@ export type UploadControllerFindAllResponses = {
 
 export type UploadControllerFindAllResponse = UploadControllerFindAllResponses[keyof UploadControllerFindAllResponses];
 
+export type UploadControllerGetUploadConfigData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/upload/config';
+};
+
+export type UploadControllerGetUploadConfigResponses = {
+    200: {
+        code: number;
+        message: string;
+        data: {
+            compression: {
+                maxWidth: number;
+                quality: number;
+                format: string;
+            };
+            limits: {
+                maxFileSize: number;
+                maxFileCount: number;
+            };
+            allowedMimeTypes: Array<string>;
+        };
+    };
+};
+
+export type UploadControllerGetUploadConfigResponse = UploadControllerGetUploadConfigResponses[keyof UploadControllerGetUploadConfigResponses];
+
 export type UploadControllerUploadFileData = {
     body: {
         file: Blob | File;
@@ -10362,18 +10642,34 @@ export type UploadControllerUploadFileResponses = {
         code: number;
         message: string;
         data: Array<{
-            id: number;
-            hash: string;
-            originalName: string;
-            storage: string;
-            filename: string;
-            path: string;
-            url: string;
-            size: number;
-            mimeType: string;
-            referenceCount: number;
-            createdAt: string;
-            updatedAt: string;
+            id?: number;
+            hash?: string;
+            originalName?: string;
+            storage?: string;
+            filename?: string;
+            path?: string;
+            url?: string;
+            size?: number;
+            mimeType?: string;
+            referenceCount?: number;
+            original?: {
+                url: string;
+                path: string;
+                size: number;
+                width: number;
+                height: number;
+            };
+            thumbnails?: Array<{
+                url: string;
+                name: string;
+                path: string;
+                size: number;
+                width: number;
+                height: number;
+            }>;
+            processed?: boolean;
+            createdAt?: string;
+            updatedAt?: string;
         }>;
     };
 };
@@ -12787,6 +13083,287 @@ export type DecorationControllerGetCurrentDecorationsResponses = {
 
 export type DecorationControllerGetCurrentDecorationsResponse = DecorationControllerGetCurrentDecorationsResponses[keyof DecorationControllerGetCurrentDecorationsResponses];
 
+export type DecorationControllerGetMyAchievementBadgesData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: {
+        /**
+         * 页码
+         */
+        page?: number;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+    };
+    url: '/decoration/achievement-badges/my';
+};
+
+export type DecorationControllerGetMyAchievementBadgesResponses = {
+    /**
+     * 获取成功
+     */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<string>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
+};
+
+export type DecorationControllerGetMyAchievementBadgesResponse = DecorationControllerGetMyAchievementBadgesResponses[keyof DecorationControllerGetMyAchievementBadgesResponses];
+
+export type DecorationControllerFindAllActivitiesData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: {
+        /**
+         * 状态筛选
+         */
+        status?: string;
+        /**
+         * 类型筛选
+         */
+        type?: string;
+        /**
+         * 页码
+         */
+        page?: number;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+    };
+    url: '/decoration/activity';
+};
+
+export type DecorationControllerFindAllActivitiesResponses = {
+    /**
+     * 获取成功
+     */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<{
+                id?: number;
+                name?: string;
+                description?: string;
+                type?: string;
+                decorationId?: number;
+                decoration?: {
+                    id: number;
+                    name: string;
+                    type: string;
+                    description: string;
+                    imageUrl: string;
+                    previewUrl: string;
+                    rarity: string;
+                    obtainMethod: string;
+                    isPurchasable: boolean;
+                    price: string;
+                    isPermanent: boolean;
+                    validDays: number;
+                    sort: number;
+                    status: string;
+                    activityId: unknown;
+                    achievementId: unknown;
+                    requiredLikes: number;
+                    requiredComments: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                articleId?: number;
+                article?: {
+                    id: number;
+                    title: string;
+                    requireLogin: boolean;
+                    requireFollow: boolean;
+                    requirePayment: boolean;
+                    requireMembership: boolean;
+                    listRequireLogin: boolean;
+                    viewPrice: string;
+                    type: string;
+                    content: string;
+                    images: Array<string>;
+                    sort: number;
+                    summary: string;
+                    views: number;
+                    likes: number;
+                    favoriteCount: number;
+                    commentCount: number;
+                    status: string;
+                    cover: string;
+                    authorId: number;
+                    activityId: unknown;
+                    downloadCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    imageCount: number;
+                };
+                requiredLikes?: number;
+                requiredComments?: number;
+                requiredShares?: number;
+                requiredRecharge?: string;
+                requiredSignInDays?: number;
+                isPermanent?: boolean;
+                validDays?: number;
+                startTime?: string;
+                endTime?: string;
+                status?: string;
+                participantCount?: number;
+                completedCount?: number;
+                createdAt?: string;
+                updatedAt?: string;
+            }>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
+};
+
+export type DecorationControllerFindAllActivitiesResponse = DecorationControllerFindAllActivitiesResponses[keyof DecorationControllerFindAllActivitiesResponses];
+
+export type DecorationControllerCreateActivityData = {
+    body: CreateActivityDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/decoration/activity';
+};
+
+export type DecorationControllerCreateActivityResponses = {
+    /**
+     * 创建成功
+     */
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+            data: {
+                id: number;
+                name: string;
+                description: string;
+                type: string;
+                decorationId: number;
+                articleId: number;
+                requiredLikes: number;
+                requiredComments: number;
+                requiredShares: number;
+                requiredRecharge: string;
+                requiredSignInDays: number;
+                isPermanent: boolean;
+                validDays: number;
+                startTime: string;
+                endTime: string;
+                status: string;
+                participantCount: number;
+                completedCount: number;
+                createdAt: string;
+                updatedAt: string;
+            };
+        };
+    };
+};
+
+export type DecorationControllerCreateActivityResponse = DecorationControllerCreateActivityResponses[keyof DecorationControllerCreateActivityResponses];
+
+export type DecorationControllerRemoveActivityData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/decoration/activity/{id}';
+};
+
+export type DecorationControllerRemoveActivityResponses = {
+    /**
+     * 删除成功
+     */
+    200: unknown;
+};
+
+export type DecorationControllerFindOneActivityData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/decoration/activity/{id}';
+};
+
+export type DecorationControllerFindOneActivityResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};
+
+export type DecorationControllerUpdateActivityData = {
+    body: UpdateActivityDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/decoration/activity/{id}';
+};
+
+export type DecorationControllerUpdateActivityResponses = {
+    /**
+     * 更新成功
+     */
+    200: unknown;
+};
+
 export type DecorationControllerPurchaseData = {
     body: PurchaseDecorationDto;
     headers?: {
@@ -12942,49 +13519,6 @@ export type DecorationControllerCleanExpiredResponses = {
 };
 
 export type DecorationControllerCleanExpiredResponse = DecorationControllerCleanExpiredResponses[keyof DecorationControllerCleanExpiredResponses];
-
-export type DecorationControllerGetMyAchievementBadgesData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: {
-        /**
-         * 页码
-         */
-        page?: number;
-        /**
-         * 每页数量
-         */
-        limit?: number;
-    };
-    url: '/decoration/achievement-badges/my';
-};
-
-export type DecorationControllerGetMyAchievementBadgesResponses = {
-    /**
-     * 获取成功
-     */
-    200: {
-        code: number;
-        message: string;
-        data: {
-            data: Array<string>;
-            meta: {
-                total: number;
-                page: number;
-                limit: number;
-                totalPages: number;
-            };
-        };
-    };
-};
-
-export type DecorationControllerGetMyAchievementBadgesResponse = DecorationControllerGetMyAchievementBadgesResponses[keyof DecorationControllerGetMyAchievementBadgesResponses];
 
 export type PointsControllerAddPointsData = {
     body: AddPointsDto;
@@ -14518,7 +15052,7 @@ export type CollectionControllerGetCollectionItemsResponses = {
                 id?: number;
                 collectionId?: number;
                 articleId?: number;
-                article?: {
+                article: {
                     id: number;
                     title: string;
                     requireLogin: boolean;
@@ -14529,7 +15063,19 @@ export type CollectionControllerGetCollectionItemsResponses = {
                     viewPrice: string;
                     type: string;
                     content: string;
-                    images: Array<string>;
+                    images: Array<string & {
+                        url: string;
+                        width: number;
+                        height: number;
+                        size: number;
+                        original: string;
+                        thumbnails: {
+                            thumb: string;
+                            small: string;
+                            medium: string;
+                            large: string;
+                        };
+                    }>;
                     sort: number;
                     summary: string;
                     views: number;
@@ -14647,6 +15193,42 @@ export type CollectionControllerGetCollectionItemsResponses = {
                         dislike: number;
                     };
                     userReaction: string;
+                    collection: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        avatar: string;
+                        cover: string;
+                        isPublic: boolean;
+                        sort: number;
+                        itemCount: number;
+                        views: number;
+                        createdAt: string;
+                        updatedAt: string;
+                        current: {
+                            itemId: number;
+                            articleId: number;
+                            index: number;
+                            sort: number;
+                        };
+                        navigation: {
+                            prev: {
+                                itemId: number;
+                                articleId: number;
+                                title: string;
+                                cover: string;
+                                index: number;
+                            };
+                            next: {
+                                itemId: number;
+                                articleId: number;
+                                title: string;
+                                cover: string;
+                                index: number;
+                            };
+                        };
+                    };
+                    isFavorited: boolean;
                 };
                 userId?: number;
                 sort?: number;
@@ -14893,4 +15475,77 @@ export type StatisticsControllerGetTrendsResponses = {
      * 获取成功
      */
     200: unknown;
+};
+
+export type SearchControllerSyncArticlesData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/search/sync/articles';
+};
+
+export type SearchControllerSyncArticlesResponses = {
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+        };
+    };
+};
+
+export type SearchControllerSyncArticlesResponse = SearchControllerSyncArticlesResponses[keyof SearchControllerSyncArticlesResponses];
+
+export type SearchControllerGetStatusData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/search/status';
+};
+
+export type SearchControllerGetStatusResponses = {
+    200: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            data: {
+                enabled: boolean;
+                documentCount: number;
+                indexSize: string;
+            };
+        };
+    };
+};
+
+export type SearchControllerGetStatusResponse = SearchControllerGetStatusResponses[keyof SearchControllerGetStatusResponses];
+
+export type SearchControllerClearArticlesData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/search/clear/articles';
+};
+
+export type SearchControllerClearArticlesResponses = {
+    201: unknown;
 };

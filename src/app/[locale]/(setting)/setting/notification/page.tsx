@@ -89,9 +89,11 @@ export default function SettingNotificationPage() {
         );
 
         setConfig(nextConfig);
-        updateUser({
+        // 使用函数式更新避免依赖 user
+        const currentUser = useUserStore.getState().user;
+        useUserStore.getState().updateUser({
           config: {
-            ...user?.config,
+            ...currentUser?.config,
             ...(nextConfig as any),
           },
         });
@@ -101,7 +103,9 @@ export default function SettingNotificationPage() {
     };
 
     void loadConfig();
-  }, [updateUser, user?.config]);
+    // 只在挂载时运行，或当 user?.config 从 undefined 变为有值时
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleToggle = async (
     key: keyof NotificationConfigState,

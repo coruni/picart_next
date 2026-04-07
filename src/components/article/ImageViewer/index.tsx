@@ -3,15 +3,23 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { cn } from "@/lib";
+import { ArticleDetail, ArticleList } from "@/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ComponentType, useCallback, useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
+import { ImageComment } from "./imageComment";
 import { cleanupViewerCustomUI, setupViewerCustomUI } from "./imageViewerUI";
 
+// Global stack to track active ImageViewer instances for ESC key handling
+const viewerStack: number[] = [];
+let viewerIdCounter = 0;
+
+type Article = ArticleList[number] | ArticleDetail;
 type ImageViewerProps = {
+  article?: Article;
   images: string[];
   initialIndex?: number;
   visible: boolean;
@@ -32,6 +40,7 @@ const renderIcon = (
 };
 
 export function ImageViewer({
+  article,
   images,
   initialIndex = 0,
   visible,
@@ -52,9 +61,16 @@ export function ImageViewer({
   const onCloseRef = useRef(onClose);
   const onChangeRef = useRef(onChange);
   const resizeFrameRef = useRef<number | null>(null);
+  const viewerIdRef = useRef<number>(0);
+
+  // Sync pendingIndexRef with initialIndex prop changes
+  useEffect(() => {
+    pendingIndexRef.current = initialIndex;
+  }, [initialIndex]);
 
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [viewerMounted, setViewerMounted] = useState(visible);
+  const [panelContentVisible, setPanelContentVisible] = useState(false);
   const totalImages = images.length;
 
   const isMobileViewport = () => window.innerWidth < 768;
@@ -69,6 +85,13 @@ export function ImageViewer({
 
   useEffect(() => {
     panelExpandedRef.current = panelExpanded;
+  }, [panelExpanded]);
+
+  // Defer panel content rendering until panel is expanded
+  useEffect(() => {
+    if (panelExpanded) {
+      setPanelContentVisible(true);
+    }
   }, [panelExpanded]);
 
   useEffect(() => {
@@ -89,7 +112,8 @@ export function ImageViewer({
       const safeIndex = getSafeIndex(index);
       pendingIndexRef.current = safeIndex;
 
-      requestAnimationFrame(() => {
+      // Defer state update to avoid blocking
+      setTimeout(() => {
         setViewerMounted(true);
 
         if (!viewerRef.current) return;
@@ -98,12 +122,24 @@ export function ImageViewer({
           if (!viewerRef.current) return;
 
           if (!isShownRef.current) {
+            // First time showing - show() will trigger shown() callback
+            // which sets up UI. We need to wait for it to complete before
+            // calling view() to switch to the correct image.
             viewerRef.current.show();
+
+            // Defer view() to next-next frame to ensure shown() has completed
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                if (!viewerRef.current) return;
+                viewerRef.current.view(safeIndex);
+              });
+            });
           } else {
+            // Already shown - just switch to the image
             viewerRef.current.view(safeIndex);
           }
         });
-      });
+      }, 0);
     },
     [getSafeIndex],
   );
@@ -148,6 +184,9 @@ export function ImageViewer({
     if (nextButton) nextButton.style.right = offset;
   }, []);
 
+  // Track last active index to avoid updating all thumbnails
+  const lastActiveIndexRef = useRef<number>(-1);
+
   const updateIndexDisplay = useCallback(
     (index: number) => {
       const viewerContainer = viewerContainerRef.current;
@@ -161,28 +200,36 @@ export function ImageViewer({
         indexDisplay.textContent = `${index + 1}/${totalImages}`;
       }
 
-      const thumbnails = viewerContainer.querySelectorAll(
-        ".custom-thumbnail-item",
-      );
-      thumbnails.forEach((thumb, i) => {
-        const el = thumb as HTMLElement;
-        if (i === index) {
-          el.style.borderColor = "var(--color-primary)";
-          el.style.opacity = "1";
-        } else {
-          el.style.borderColor = "rgba(255, 255, 255, 0.3)";
-          el.style.opacity = "0.6";
+      // Only update previous and current active thumbnails instead of all
+      const lastIndex = lastActiveIndexRef.current;
+      if (lastIndex !== -1 && lastIndex !== index) {
+        const prevThumbnail = viewerContainer.querySelector(
+          `.custom-thumbnail-item[data-index="${lastIndex}"]`,
+        ) as HTMLElement | null;
+        if (prevThumbnail) {
+          prevThumbnail.style.borderColor = "rgba(255, 255, 255, 0.3)";
+          prevThumbnail.style.opacity = "0.6";
         }
-      });
+      }
 
       const activeThumbnail = viewerContainer.querySelector(
         `.custom-thumbnail-item[data-index="${index}"]`,
       ) as HTMLElement | null;
 
-      activeThumbnail?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-      });
+      if (activeThumbnail) {
+        activeThumbnail.style.borderColor = "var(--color-primary)";
+        activeThumbnail.style.opacity = "1";
+
+        // Defer scrollIntoView to avoid forced reflow
+        requestAnimationFrame(() => {
+          activeThumbnail.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+        });
+      }
+
+      lastActiveIndexRef.current = index;
     },
     [totalImages],
   );
@@ -199,13 +246,16 @@ export function ImageViewer({
     const container = viewerContainerRef.current;
     if (!container) return;
 
-    const zoomDisplay = container.querySelector(
-      ".custom-zoom-display span",
-    ) as HTMLSpanElement | null;
+    // Defer DOM update to avoid forced reflow
+    requestAnimationFrame(() => {
+      const zoomDisplay = container.querySelector(
+        ".custom-zoom-display span",
+      ) as HTMLSpanElement | null;
 
-    if (zoomDisplay) {
-      zoomDisplay.textContent = getZoomPercentage();
-    }
+      if (zoomDisplay) {
+        zoomDisplay.textContent = getZoomPercentage();
+      }
+    });
   }, [getZoomPercentage]);
 
   const syncPanelToggleButton = useCallback(() => {
@@ -221,7 +271,7 @@ export function ImageViewer({
     if (!panelToggleBtn) return;
 
     panelToggleBtn.innerHTML = renderIcon(
-      panelExpandedRef.current ? ChevronRight : ChevronLeft,
+      panelExpandedRef.current ? ChevronLeft : ChevronRight,
       "",
       18,
     );
@@ -249,6 +299,14 @@ export function ImageViewer({
   }, [cleanupCustomUI]);
 
   const destroyViewerInstance = useCallback(() => {
+    // Remove this viewer from the stack
+    if (viewerIdRef.current > 0) {
+      const index = viewerStack.indexOf(viewerIdRef.current);
+      if (index > -1) {
+        viewerStack.splice(index, 1);
+      }
+      viewerIdRef.current = 0;
+    }
     disposeViewerInstance();
     panelExpandedRef.current = false;
     setPanelExpanded(false);
@@ -300,10 +358,36 @@ export function ImageViewer({
   ]);
 
   useEffect(() => {
-    if (enableSidePanel) return;
-    panelExpandedRef.current = false;
-    setPanelExpanded(false);
-  }, [enableSidePanel]);
+    if (!visible) return;
+
+    // Store original body styles
+    const originalPaddingRight = document.body.style.paddingRight;
+    const originalPaddingLeft = document.body.style.paddingLeft;
+    const originalOverflow = document.body.style.overflow;
+
+    // Remove padding styles that viewerjs might add
+    const observer = new MutationObserver(() => {
+      if (document.body.style.paddingRight) {
+        document.body.style.paddingRight = "";
+      }
+      if (document.body.style.paddingLeft) {
+        document.body.style.paddingLeft = "";
+      }
+    });
+
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
+
+    return () => {
+      observer.disconnect();
+      // Restore original styles
+      document.body.style.paddingRight = originalPaddingRight;
+      document.body.style.paddingLeft = originalPaddingLeft;
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [visible]);
 
   useEffect(() => {
     if (!visible) {
@@ -343,7 +427,7 @@ export function ImageViewer({
       scalable: true,
       transition: true,
       fullscreen: true,
-      keyboard: true,
+      keyboard: false, // Disable built-in keyboard to handle ESC ourselves
       loop: true,
       url: "data-src",
       container: viewerContainerRef.current,
@@ -351,14 +435,20 @@ export function ImageViewer({
       shown() {
         isShownRef.current = true;
         setViewerMounted(true);
-        setupCustomUI();
-        applyCanvasLayout();
 
-        const safeIndex = getSafeIndex(pendingIndexRef.current);
+        // Push this viewer to the stack when shown
+        if (viewerIdRef.current === 0) {
+          viewerIdCounter += 1;
+          viewerIdRef.current = viewerIdCounter;
+        }
+        viewerStack.push(viewerIdRef.current);
+
+        // Defer non-critical UI setup to next frame
         requestAnimationFrame(() => {
-          if (!viewerRef.current) return;
-          viewerRef.current.view(safeIndex);
-          updateIndexDisplay(safeIndex);
+          setupCustomUI();
+          applyCanvasLayout();
+          // Note: viewer.view() is called by openViewerInstance, not here
+          // to avoid duplicate calls and race conditions
         });
       },
 
@@ -367,6 +457,11 @@ export function ImageViewer({
       },
 
       hidden() {
+        // Remove this viewer from the stack when hidden
+        const index = viewerStack.indexOf(viewerIdRef.current);
+        if (index > -1) {
+          viewerStack.splice(index, 1);
+        }
         destroyViewerInstance();
       },
 
@@ -385,7 +480,23 @@ export function ImageViewer({
 
     openViewerInstance(pendingIndexRef.current);
 
+    // Custom ESC key handler - only close if this viewer is at the top of the stack
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        // Only handle ESC if this viewer is the topmost one
+        if (viewerStack[viewerStack.length - 1] === viewerIdRef.current) {
+          e.stopPropagation();
+          e.preventDefault();
+          onCloseRef.current();
+        }
+      }
+    };
+
+    // Add capture phase listener to intercept before viewerjs
+    document.addEventListener("keydown", handleKeyDown, true);
+
     return () => {
+      document.removeEventListener("keydown", handleKeyDown, true);
       destroyViewerInstance();
     };
   }, [
@@ -493,35 +604,32 @@ export function ImageViewer({
 
       <div
         className={cn(
-          "custom-viewer-wrapper fixed inset-0 z-998 flex h-full w-full transition-opacity",
+          "custom-viewer-wrapper fixed inset-0 z-100 flex h-full w-full transition-opacity",
           viewerMounted
-            ? "visible pointer-events-auto opacity-100"
-            : "invisible pointer-events-none opacity-0",
+            ? "visible opacity-100"
+            : "invisible opacity-0",
         )}
       >
         <div
           ref={viewerContainerRef}
-          className="relative flex-1"
+          className="relative flex-1 z-1"
           id="left-panel"
         />
 
-        {enableSidePanel ? (
+        {enableSidePanel && article && (
           <div
             ref={panelRef}
             className={cn(
-              "custom-panel relative flex h-full shrink-0 flex-col overflow-hidden bg-card transition-[width] duration-300",
+              "custom-panel relative flex h-screen shrink-0 flex-col overflow-hidden bg-card transition-[width] duration-300 pointer-events-auto z-200",
               panelExpanded ? "w-97.5" : "w-0",
             )}
             id="right-panel"
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
           >
-            <div className="border-b border-white/10 p-4">
-              <h3 className="text-lg font-medium text-white">{t("panelTitle")}</h3>
-            </div>
-            <div className="flex-1 overflow-auto p-4 text-white">
-              {/* panel content */}
-            </div>
+            {panelContentVisible && <ImageComment article={article} />}
           </div>
-        ) : null}
+        )}
       </div>
     </>
   );

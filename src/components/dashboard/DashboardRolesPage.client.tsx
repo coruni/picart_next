@@ -1,12 +1,22 @@
 "use client";
 
 import {
+  permissionControllerFindAll,
+  roleControllerAssignPermissions,
   roleControllerFindWithPagination,
   roleControllerRemove,
   roleControllerUpdate,
 } from "@/api";
 import { DropdownMenu, type MenuItem } from "@/components/shared";
-import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/Dialog";
+import { MoreHorizontal, PencilLine, Shield, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
@@ -16,7 +26,8 @@ import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
 import { DashboardStatusBadge } from "./DashboardStatusBadge";
 import type { DashboardTableColumn } from "./DashboardTable";
-import type { DashboardRoleItem } from "./types";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
+import type { DashboardPermissionItem, DashboardRoleItem } from "./types";
 import { useDashboardGuard } from "./useDashboardGuard";
 import { formatDashboardDate } from "./utils";
 
@@ -25,7 +36,14 @@ export function DashboardRolesPage() {
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
   const [editingItem, setEditingItem] = useState<DashboardRoleItem | null>(null);
+  const [editingPermissionsItem, setEditingPermissionsItem] = useState<DashboardRoleItem | null>(null);
+  const [deletingItem, setDeletingItem] = useState<DashboardRoleItem | null>(null);
+  const [permissions, setPermissions] = useState<DashboardPermissionItem[]>([]);
+  const [selectedPermissions, setSelectedPermissions] = useState<number[]>([]);
+  const [permissionsLoading, setPermissionsLoading] = useState(false);
+  const [permissionsSubmitting, setPermissionsSubmitting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const statusValueEnum = useMemo(
@@ -47,6 +65,55 @@ export function DashboardRolesPage() {
     ],
     [copy],
   );
+
+  const loadPermissions = async () => {
+    setPermissionsLoading(true);
+    try {
+      const response = await permissionControllerFindAll();
+      const data = response?.data?.data?.data || [];
+      setPermissions(data);
+    } catch (error) {
+      console.error("Failed to load permissions:", error);
+    } finally {
+      setPermissionsLoading(false);
+    }
+  };
+
+  const handleOpenPermissionsDialog = async (item: DashboardRoleItem) => {
+    setEditingPermissionsItem(item);
+    // 设置已选中的权限
+    const currentIds = item.permissions?.map((p) => p.id) || [];
+    setSelectedPermissions(currentIds);
+    await loadPermissions();
+  };
+
+  const handleTogglePermission = (permissionId: number) => {
+    setSelectedPermissions((prev) =>
+      prev.includes(permissionId)
+        ? prev.filter((id) => id !== permissionId)
+        : [...prev, permissionId]
+    );
+  };
+
+  const handleSavePermissions = async () => {
+    if (!editingPermissionsItem?.id) return;
+
+    setPermissionsSubmitting(true);
+    try {
+      await roleControllerAssignPermissions({
+        path: { id: String(editingPermissionsItem.id) },
+        body: {
+          permissionIds: selectedPermissions,
+        },
+      });
+      setEditingPermissionsItem(null);
+      setRefreshKey((current) => current + 1);
+    } catch (error) {
+      console.error("Failed to assign permissions:", error);
+    } finally {
+      setPermissionsSubmitting(false);
+    }
+  };
 
   const columns = useMemo<DashboardTableColumn<DashboardRoleItem>[]>(
     () => [
@@ -120,26 +187,18 @@ export function DashboardRolesPage() {
               onClick: () => setEditingItem(item),
             },
             {
+              label: "配置权限",
+              icon: <Shield size={16} />,
+              onClick: () => handleOpenPermissionsDialog(item),
+            },
+            {
               label: copy.common.delete,
               icon: <Trash2 size={16} />,
               className: "text-red-500",
               disabled: item.isSystem,
-              confirmDialog: {
-                enabled: !item.isSystem,
-                title: copy.common.delete,
-                description: copy.common.deleteConfirm,
-                confirmText: copy.common.delete,
-                cancelText: copy.common.cancel,
-              },
-              onClick: async () => {
-                if (item.isSystem) {
-                  return;
-                }
-
-                await roleControllerRemove({
-                  path: { id: String(item.id) },
-                });
-                setRefreshKey((current) => current + 1);
+              onClick: () => {
+                if (item.isSystem) return;
+                setDeletingItem(item);
               },
             },
           ];
@@ -165,6 +224,21 @@ export function DashboardRolesPage() {
     ],
     [copy, statusValueEnum],
   );
+
+  const handleDelete = async () => {
+    if (!deletingItem?.id || deletingItem.isSystem) return;
+
+    setDeleteLoading(true);
+    try {
+      await roleControllerRemove({
+        path: { id: String(deletingItem.id) },
+      });
+      setDeletingItem(null);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
@@ -238,6 +312,94 @@ export function DashboardRolesPage() {
             setSubmitting(false);
           }
         }}
+      />
+
+      {/* Permissions Dialog */}
+      <Dialog
+        open={Boolean(editingPermissionsItem)}
+        onOpenChange={(open) => {
+          if (!permissionsSubmitting && !open) {
+            setEditingPermissionsItem(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-2xl max-h-[80vh] p-0! overflow-hidden">
+          <DialogHeader className="px-6 py-4 mb-0! border-b border-border">
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <Shield className="size-5 text-primary" />
+              配置权限 · {editingPermissionsItem?.displayName || editingPermissionsItem?.name}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4 px-6 overflow-y-auto max-h-[60vh]">
+            {permissionsLoading ? (
+              <div className="flex items-center justify-center py-10">
+                <div className="text-sm text-muted-foreground">加载中...</div>
+              </div>
+            ) : permissions.length === 0 ? (
+              <div className="text-center py-10 text-sm text-muted-foreground">
+                暂无权限数据
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {permissions.map((permission) => (
+                  <div
+                    key={permission.id}
+                    className="flex items-start gap-3 p-3 rounded-lg border border-border/70 hover:border-primary/30 hover:bg-primary/5 transition-colors cursor-pointer"
+                    onClick={() => handleTogglePermission(permission.id)}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedPermissions.includes(permission.id)}
+                      onChange={() => {}}
+                      className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-foreground truncate">
+                        {permission.name}
+                      </div>
+                      {permission.description && (
+                        <div className="text-xs text-muted-foreground mt-0.5 line-clamp-2">
+                          {permission.description}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <DialogFooter className="gap-3 pb-4 px-6 border-t border-border pt-4">
+            <Button
+              variant="outline"
+              className="h-9 rounded-full px-4"
+              onClick={() => setEditingPermissionsItem(null)}
+              disabled={permissionsSubmitting}
+            >
+              {copy.common.cancel}
+            </Button>
+            <Button
+              variant="primary"
+              className="h-9 rounded-full px-4"
+              loading={permissionsSubmitting}
+              onClick={handleSavePermissions}
+            >
+              {copy.common.save}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <DeleteConfirmDialog
+        open={Boolean(deletingItem)}
+        onOpenChange={(open) => {
+          if (!open) setDeletingItem(null);
+        }}
+        title={copy.common.delete}
+        description={copy.common.deleteConfirm}
+        onConfirm={handleDelete}
+        loading={deleteLoading}
+        confirmText={copy.common.delete}
+        cancelText={copy.common.cancel}
       />
     </DashboardPageFrame>
   );

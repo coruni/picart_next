@@ -16,6 +16,7 @@ import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
 import { DashboardStatusBadge } from "./DashboardStatusBadge";
 import type { DashboardTableColumn } from "./DashboardTable";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import type { DashboardReportItem } from "./types";
 import { useDashboardGuard } from "./useDashboardGuard";
 import {
@@ -31,7 +32,9 @@ export function DashboardReportsPage() {
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
   const [editingItem, setEditingItem] = useState<DashboardReportItem | null>(null);
+  const [deletingItem, setDeletingItem] = useState<DashboardReportItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const typeValueEnum = useMemo(
@@ -199,19 +202,7 @@ export function DashboardReportsPage() {
                   label: copy.common.delete,
                   icon: <Trash2 size={16} />,
                   className: "text-red-500",
-                  confirmDialog: {
-                    enabled: true,
-                    title: copy.common.delete,
-                    description: copy.common.deleteConfirm,
-                    confirmText: copy.common.delete,
-                    cancelText: copy.common.cancel,
-                  },
-                  onClick: async () => {
-                    await reportControllerRemove({
-                      path: { id: String(reportId) },
-                    });
-                    setRefreshKey((current) => current + 1);
-                  },
+                  onClick: () => setDeletingItem(item),
                 },
               ]}
               trigger={
@@ -233,6 +224,26 @@ export function DashboardReportsPage() {
     ],
     [categoryValueEnum, copy, statusValueEnum, typeValueEnum],
   );
+
+  const handleDelete = async () => {
+    if (!deletingItem) return;
+
+    const reportId =
+      getNumberField(deletingItem, "id") || Number(getStringField(deletingItem, "id"));
+
+    if (!Number.isFinite(reportId) || reportId <= 0) return;
+
+    setDeleteLoading(true);
+    try {
+      await reportControllerRemove({
+        path: { id: String(reportId) },
+      });
+      setDeletingItem(null);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
@@ -337,6 +348,18 @@ export function DashboardReportsPage() {
             setSubmitting(false);
           }
         }}
+      />
+      <DeleteConfirmDialog
+        open={Boolean(deletingItem)}
+        onOpenChange={(open) => {
+          if (!open) setDeletingItem(null);
+        }}
+        title={copy.common.delete}
+        description={copy.common.deleteConfirm}
+        onConfirm={handleDelete}
+        loading={deleteLoading}
+        confirmText={copy.common.delete}
+        cancelText={copy.common.cancel}
       />
     </DashboardPageFrame>
   );

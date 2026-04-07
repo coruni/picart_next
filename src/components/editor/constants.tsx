@@ -33,6 +33,9 @@ import {
   Trash2,
   Unlink,
   Pencil,
+  Minus,
+  GripHorizontal,
+  FileText,
 } from "lucide-react";
 
 // 渲染图标组件为 HTML 字符串
@@ -77,6 +80,8 @@ export const defaultFormats = [
   "background",
   "font",
   "size",
+  "divider",
+  "inlineArticleList",
 ];
 
 // 字号选项
@@ -213,4 +218,7 @@ export const icons = {
   Heading4,
   Link,
   RemoveFormatting,
+  Minus,
+  GripHorizontal,
+  FileText,
 };

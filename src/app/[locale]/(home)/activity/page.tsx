@@ -1,20 +1,25 @@
 import { serverApi } from "@/lib/server-api";
+import { ActivityList } from "@/components/home/ActivityList.client";
 
 export default async function ActivityPage() {
-  // SSR: 服务端获取第一页数据
-  const initialData = await serverApi.articleControllerFindAll({
+  // SSR: 服务端获取第一页活动数据
+  const initialData = await serverApi.decorationControllerFindAllActivities({
     query: {
       page: 1,
-      limit: 20,
-      type: "activity",
+      limit: 10,
     },
-    
-  }).catch(() => ({ data: { data: { list: [], total: 0 } } }));
+    cache: "no-store",
+    next: { revalidate: 0 },
+  }).catch(() => ({ data: { data: { data: [], meta: { total: 0 } } } }));
 
-  const articles = initialData?.data?.data || [];
-  const total = initialData?.data?.data
+  const activities = initialData?.data?.data?.data || [];
+  const total = initialData?.data?.data?.meta?.total || 0;
 
   return (
-    <></>
+    <ActivityList
+      initActivities={activities}
+      initPage={2}
+      initTotal={total}
+    />
   );
 }

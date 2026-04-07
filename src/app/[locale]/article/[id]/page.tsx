@@ -10,12 +10,24 @@ import {
   ReactionStats,
 } from "@/components/article";
 import { ArticleCommentList } from "@/components/comment/ArticleCommentList.client";
+import "@/components/editor/inline-article.css";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Link } from "@/i18n/routing";
-import { generateArticleMetadata, prepareRichTextHtmlForDisplay } from "@/lib";
+import {
+  cn,
+  generateArticleMetadata,
+  isContentMatchingLocale,
+  prepareRichTextHtmlForDisplay,
+} from "@/lib";
 import { serverApi } from "@/lib/server-api";
-import { Forward, Hash } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Forward,
+  Hash,
+  Library,
+} from "lucide-react";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -23,22 +35,6 @@ import { cache } from "react";
 
 function stripHtmlTags(value: string) {
   return value.replace(/<[^>]+>/g, " ");
-}
-
-function isLikelyChineseContent(value: string) {
-  const text = value.replace(/\s+/g, "");
-  if (!text) {
-    return false;
-  }
-
-  const chineseMatches = text.match(
-    /[\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/g,
-  );
-  const letterMatches = text.match(/[A-Za-z]/g);
-  const chineseCount = chineseMatches?.length ?? 0;
-  const letterCount = letterMatches?.length ?? 0;
-
-  return chineseCount > 0 && chineseCount >= letterCount;
 }
 
 function decodeHtmlEntities(value: string) {
@@ -54,7 +50,10 @@ function decodeHtmlEntities(value: string) {
 function stripHeadingHtml(value: string) {
   return decodeHtmlEntities(
     value
-      .replace(/<span\b[^>]*class=(["'])[^"']*ql-ui[^"']*\1[^>]*>[\s\S]*?<\/span>/gi, "")
+      .replace(
+        /<span\b[^>]*class=(["'])[^"']*ql-ui[^"']*\1[^>]*>[\s\S]*?<\/span>/gi,
+        "",
+      )
       .replace(/<br\s*\/?>/gi, " ")
       .replace(/<[^>]+>/g, " "),
   )
@@ -149,15 +148,14 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
       /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
       "",
     ) || "";
-  const { html: contentWithTocMarkup, items: tocItems } = buildArticleToc(rawContent);
-  const content = prepareRichTextHtmlForDisplay(contentWithTocMarkup);
-  const shouldTranslateArticleDetail = !(
-    locale === "zh" &&
-    isLikelyChineseContent(
-      [article?.title, stripHtmlTags(article?.content || "")]
-        .filter(Boolean)
-        .join(" "),
-    )
+  const { html: contentWithTocMarkup, items: tocItems } =
+    buildArticleToc(rawContent);
+  const content = prepareRichTextHtmlForDisplay(contentWithTocMarkup, locale);
+  const shouldTranslateArticleDetail = !isContentMatchingLocale(
+    [article?.title, stripHtmlTags(article?.content || "")]
+      .filter(Boolean)
+      .join(" "),
+    locale,
   );
 
   return (
@@ -197,7 +195,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           {article?.cover && (
             <div className="relative w-full h-80 md:h-120">
               <ImageWithFallback
-                src={article?.cover}
+                src={article.cover}
                 fill
                 loading="eager"
                 fetchPriority="high"
@@ -229,6 +227,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             {article?.type === "image" && (
               <div className="relative w-full min-w-0 overflow-hidden">
                 <ImageGallery
+                  article={article}
                   images={article?.images || []}
                   alt={article?.title || ""}
                 />
@@ -240,7 +239,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                   data-auto-translate-content={
                     shouldTranslateArticleDetail ? true : undefined
                   }
-                  className="mt-2 text-sm"
+                  className="mt-4 text-sm"
                 >
                   {article.content}
                 </div>
@@ -285,6 +284,48 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               ))}
             </div>
           )}
+          {/* 合集占位 */}
+          {article.collection && (
+            <div className="mt-2 flex items-center gap-3 p-2 rounded-md bg-muted text-sm">
+              <Link
+                className={cn(
+                  "rounded-full text-white p-1 ",
+                  "disabled:cursor-not-allowed!",
+                  !article.collection.navigation?.prev?.articleId
+                    ? " bg-black/45 cursor-not-allowed pointer-events-none"
+                    : " bg-black/75 hover:bg-primary",
+                )}
+                href={`/article/${article.collection.navigation?.prev?.articleId}`}
+              >
+                <ChevronLeft size={16} />
+              </Link>
+              <div className="flex-1 flex items-center justify-center gap-4">
+                <div className="flex items-center gap-1 text-secondary ">
+                  <Library size={16} />
+                  <span className=" font-semibold">
+                    {article.collection.name}
+                  </span>
+                </div>
+                <div>
+                  ( {article.collection.current.index}/
+                  {article.collection.itemCount} )
+                </div>
+              </div>
+              <Link
+                className={cn(
+                  "rounded-full text-white p-1 ",
+                  "disabled:cursor-not-allowed!",
+                  !article.collection.navigation?.next?.articleId
+                    ? " bg-black/45 cursor-not-allowed"
+                    : " bg-black/75 hover:bg-primary",
+                )}
+                href={`/article/${article.collection.navigation?.next?.articleId}`}
+              >
+                <ChevronRight size={16} />
+              </Link>
+            </div>
+          )}
+
           <ReactionStats
             articleId={id}
             initialUserReaction={article.userReaction}
@@ -308,6 +349,10 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           showRecommendTag={false}
           showArticleCreate={false}
           author={article?.author}
+          showCollectionList={Boolean(article.collection)}
+          collectionId={article.collection?.id}
+          collectionName={article.collection?.name}
+          currentArticleId={article.id}
         />
       </div>
     </div>

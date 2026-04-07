@@ -13,6 +13,7 @@ import {
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
+import { type ImageInfo } from "@/types/image";
 import {
   EllipsisVertical,
   Languages,
@@ -21,7 +22,7 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
 import { CommentImageGallery } from "./CommentImageGallery";
@@ -29,25 +30,32 @@ import { CommentReplyList } from "./CommentReplyList";
 
 type CommentItemProps = {
   articleId: string;
-  data: CommentList[number];
+  data: CommentList[number] & { images?: (string | ImageInfo)[] };
   onSubmitted?: () => void | Promise<void>;
+  onReplyClick?: (commentId: number) => void;
 };
+
+// 使用 memo 优化性能
 export const CommentItem = memo(function CommentItem({
   articleId,
   data,
   onSubmitted,
+  onReplyClick,
 }: CommentItemProps) {
   const tComment = useTranslations("commentList");
   const tAccountInfo = useTranslations("accountInfo");
   const tTime = useTranslations("time");
   const locale = useLocale();
-  const compactNumberLabels = {
-    thousand: tAccountInfo("numberUnits.thousand"),
-    tenThousand: tAccountInfo("numberUnits.tenThousand"),
-    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
-    million: tAccountInfo("numberUnits.million"),
-    billion: tAccountInfo("numberUnits.billion"),
-  };
+  const compactNumberLabels = useMemo(
+    () => ({
+      thousand: tAccountInfo("numberUnits.thousand"),
+      tenThousand: tAccountInfo("numberUnits.tenThousand"),
+      hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+      million: tAccountInfo("numberUnits.million"),
+      billion: tAccountInfo("numberUnits.billion"),
+    }),
+    [tAccountInfo]
+  );
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const [commentState, setCommentState] = useState(data);
   const [viewerVisible, setViewerVisible] = useState(false);
@@ -56,7 +64,12 @@ export const CommentItem = memo(function CommentItem({
   const [activeReplyParentId, setActiveReplyParentId] = useState<number | null>(
     null,
   );
-  const contentHtml = prepareCommentHtmlForDisplay(commentState.content || "");
+
+  // 使用 useMemo 缓存内容处理结果
+  const contentHtml = useMemo(
+    () => prepareCommentHtmlForDisplay(commentState.content || ""),
+    [commentState.content]
+  );
   const {
     displayHtml,
     isTranslated,
@@ -64,6 +77,7 @@ export const CommentItem = memo(function CommentItem({
     renderKey,
     shouldAutoTranslate,
     toggleTranslate,
+    contentMatchesLocale,
   } = useManualHtmlTranslate({
     html: contentHtml,
     resetKey: `${commentState.id}-${commentState.content}`,
@@ -88,10 +102,16 @@ export const CommentItem = memo(function CommentItem({
       return;
     }
 
+    // 如果提供了外部 onReplyClick，优先使用它（用于在 Dialog 中打开回复）
+    if (onReplyClick) {
+      onReplyClick(parentId);
+      return;
+    }
+
     setActiveReplyParentId((current) =>
       current === parentId ? null : parentId,
     );
-  }, []);
+  }, [onReplyClick]);
 
   const handleReplySubmitted = useCallback(async () => {
     setActiveReplyParentId(null);
@@ -186,24 +206,26 @@ export const CommentItem = memo(function CommentItem({
           </span>
         </div>
         <div className="flex items-center space-x-2">
-          <button
-            type="button"
-            title={tComment("translate")}
-            className={cn(
-              "flex items-center justify-center outline-none focus:outline-0 border-0",
-              "cursor-pointer p-1 hover:bg-muted rounded-lg text-secondary size-7",
-              "hover:text-primary",
-              isTranslated && "text-primary bg-muted",
-              isTranslating && "pointer-events-none opacity-70",
-            )}
-            onClick={toggleTranslate}
-          >
-            {isTranslating ? (
-              <LoaderCircle size={18} className="animate-spin" />
-            ) : (
-              <Languages size={20} />
-            )}
-          </button>
+          {!contentMatchesLocale && (
+            <button
+              type="button"
+              title={tComment("translate")}
+              className={cn(
+                "flex items-center justify-center outline-none focus:outline-0 border-0",
+                "cursor-pointer p-1 hover:bg-muted rounded-lg text-secondary size-7",
+                "hover:text-primary",
+                isTranslated && "text-primary bg-muted",
+                isTranslating && "pointer-events-none opacity-70",
+              )}
+              onClick={toggleTranslate}
+            >
+              {isTranslating ? (
+                <LoaderCircle size={18} className="animate-spin" />
+              ) : (
+                <Languages size={20} />
+              )}
+            </button>
+          )}
           <button
             title={tComment("translate")}
             className={cn(
@@ -291,6 +313,7 @@ export const CommentItem = memo(function CommentItem({
         onToggleLike={handleToggleLike}
         onReplySubmitted={handleReplySubmitted}
         onOpenImageViewer={openImageViewer}
+        onReplyClick={onReplyClick}
       />
       {viewerVisible && viewerImages.length > 0 && (
         <ImageViewer

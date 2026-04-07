@@ -8,13 +8,16 @@ import {
   BadgeCheck,
   FileCog,
   FileText,
+  FolderTree,
   Images,
   KeyRound,
   LayoutDashboard,
   Menu,
   MessageSquareText,
   ReceiptText,
+  Search,
   ShieldUser,
+  Smile,
   Sparkles,
   Tags,
   TriangleAlert,
@@ -75,6 +78,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
       icon: Tags,
     },
     {
+      href: "/dashboard/categories",
+      label: copy.nav.categories,
+      description: copy.pages.categories.description,
+      icon: FolderTree,
+    },
+    {
       href: "/dashboard/roles",
       label: copy.nav.roles,
       description: copy.pages.roles.description,
@@ -105,6 +114,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
       icon: Sparkles,
     },
     {
+      href: "/dashboard/emojis",
+      label: copy.nav.emojis,
+      description: copy.pages.emojis.description,
+      icon: Smile,
+    },
+    {
       href: "/dashboard/achievements",
       label: copy.nav.achievements,
       description: copy.pages.achievements.description,
@@ -121,6 +136,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
       label: copy.nav.configs,
       description: copy.pages.configs.description,
       icon: FileCog,
+    },
+    {
+      href: "/dashboard/search",
+      label: copy.nav.search,
+      description: copy.pages.search.description,
+      icon: Search,
     },
   ];
 

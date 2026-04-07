@@ -11,14 +11,32 @@ import { ComponentType, Dispatch, SetStateAction } from "react";
 import ReactDOMServer from "react-dom/server";
 import Viewer from "viewerjs";
 
+// Icon cache to avoid re-rendering same icons - use WeakMap with Icon as key
+const iconCache = new WeakMap<ComponentType<{ size?: number; className?: string }>, Map<string, string>>();
+
 const renderIcon = (
   Icon: ComponentType<{ size?: number; className?: string }>,
   className?: string,
   size: number = 24,
 ) => {
-  return ReactDOMServer.renderToStaticMarkup(
+  const cacheKey = `${size}-${className}`;
+
+  // Get or create size cache for this Icon
+  let sizeCache = iconCache.get(Icon);
+  if (!sizeCache) {
+    sizeCache = new Map<string, string>();
+    iconCache.set(Icon, sizeCache);
+  }
+
+  if (sizeCache.has(cacheKey)) {
+    return sizeCache.get(cacheKey)!;
+  }
+
+  const markup = ReactDOMServer.renderToStaticMarkup(
     <Icon size={size} className={className} />,
   );
+  sizeCache.set(cacheKey, markup);
+  return markup;
 };
 
 export function cleanupViewerCustomUI(container: HTMLElement) {
@@ -162,7 +180,12 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
       "custom-thumbnail-column absolute right-4 top-1/2 z-[9998] inline-flex max-h-83 -translate-y-1/2 flex-col items-center gap-3 overflow-y-auto rounded-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
     const currentIndex = getCurrentIndex();
 
-    images.forEach((src, idx) => {
+    // Limit initial render to visible thumbnails (virtual list approach)
+    const MAX_VISIBLE_THUMBNAILS = 10;
+    const startIdx = Math.max(0, currentIndex - Math.floor(MAX_VISIBLE_THUMBNAILS / 2));
+    const endIdx = Math.min(images.length, startIdx + MAX_VISIBLE_THUMBNAILS);
+
+    const renderThumbnail = (src: string, idx: number) => {
       const thumbWrapper = document.createElement("div");
       thumbWrapper.className =
         "custom-thumbnail-item box-border size-15 shrink-0 cursor-pointer overflow-hidden rounded-md border-2 border-solid transition-all";
@@ -175,6 +198,7 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
       thumbImg.src = src;
       thumbImg.alt = `${alt} ${idx + 1}`;
       thumbImg.className = "block size-full object-cover";
+      thumbImg.loading = "lazy";
 
       thumbWrapper.appendChild(thumbImg);
 
@@ -198,10 +222,57 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
         }
       });
 
-      thumbnailColumn.appendChild(thumbWrapper);
-    });
+      return thumbWrapper;
+    };
+
+    // Render visible thumbnails first
+    for (let idx = startIdx; idx < endIdx; idx++) {
+      thumbnailColumn.appendChild(renderThumbnail(images[idx], idx));
+    }
 
     container.appendChild(thumbnailColumn);
+
+    // Defer remaining thumbnails to next frame
+    if (images.length > MAX_VISIBLE_THUMBNAILS) {
+      requestAnimationFrame(() => {
+        const remainingThumbs: { src: string; idx: number }[] = [];
+        for (let idx = 0; idx < images.length; idx++) {
+          if (idx < startIdx || idx >= endIdx) {
+            remainingThumbs.push({ src: images[idx], idx });
+          }
+        }
+
+        // Batch render remaining thumbnails in chunks
+        const CHUNK_SIZE = 5;
+        const renderChunk = (start: number) => {
+          const column = container.querySelector(".custom-thumbnail-column");
+          if (!column) return;
+
+          const end = Math.min(start + CHUNK_SIZE, remainingThumbs.length);
+          for (let i = start; i < end; i++) {
+            const { src, idx } = remainingThumbs[i];
+            const thumb = renderThumbnail(src, idx);
+
+            // Insert in correct position
+            const existing = column.querySelector(`[data-index="${idx}"]`);
+            if (!existing) {
+              const nextSibling = column.querySelector(`[data-index="${idx + 1}"]`);
+              if (nextSibling) {
+                column.insertBefore(thumb, nextSibling);
+              } else {
+                column.appendChild(thumb);
+              }
+            }
+          }
+
+          if (end < remainingThumbs.length) {
+            requestAnimationFrame(() => renderChunk(end));
+          }
+        };
+
+        requestAnimationFrame(() => renderChunk(0));
+      });
+    }
   }
 
   if (!container.querySelector(".custom-viewer-toolbar")) {

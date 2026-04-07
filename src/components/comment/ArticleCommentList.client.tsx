@@ -7,17 +7,41 @@ import {
   type MenuItem,
 } from "@/components/shared";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
+import { cn } from "@/lib";
 import { CommentList } from "@/types";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { CommentEditor } from "./CommentEditor";
+import dynamic from "next/dynamic";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { CommentItem } from "./CommentItem";
 import { CommentListSkeleton } from "./CommentSkeleton";
+
+// 延迟加载 CommentEditor，减少初始包大小
+const CommentEditor = dynamic(
+  () => import("./CommentEditor").then((mod) => mod.CommentEditor),
+  {
+    ssr: false,
+    loading: () => <div className="h-32 animate-pulse bg-muted rounded-lg" />,
+  }
+);
+
+// 使用 memo 优化 CommentItem 重渲染
+const MemoizedCommentItem = memo(CommentItem);
 
 type ArticleCommentListProps = {
   articleId: string;
   pageSize?: number;
+  showTopCommentEditor?: boolean;
+  stickySort?: boolean;
+  sortClassName?: string;
+  onSubmitted?: () => void;
+  onReplyClick?: (commentId: number) => void;
 };
 
 type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
@@ -25,6 +49,11 @@ type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
 export function ArticleCommentList({
   articleId,
   pageSize = 10,
+  showTopCommentEditor = true,
+  stickySort = false,
+  sortClassName,
+  onSubmitted,
+  onReplyClick,
 }: ArticleCommentListProps) {
   const t = useTranslations("commentList");
   const observerRef = useRef<HTMLDivElement>(null);
@@ -68,29 +97,54 @@ export function ArticleCommentList({
     [articleId, pageSize, sortKey],
   );
 
-  // 初始化加载
+  // 防抖的刷新函数
+  const refreshTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const refreshComments = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const result = await fetchComments(1);
-      setComments(result.comments);
-      setTotal(result.total);
-      setPage(2);
-      setHasMore(result.comments.length < result.total);
-    } catch (loadError) {
-      console.error("Failed to load comments:", loadError);
-      setError(t("loadFailed"));
-    } finally {
-      setLoading(false);
-      setIsSortChanging(false);
+    // 清除之前的防抖计时器
+    if (refreshTimeoutRef.current) {
+      clearTimeout(refreshTimeoutRef.current);
     }
-  }, [fetchComments, t]);
 
+    // 设置新的防抖计时器
+    refreshTimeoutRef.current = setTimeout(async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const result = await fetchComments(1);
+        setComments(result.comments);
+        setTotal(result.total);
+        setPage(2);
+        setHasMore(result.comments.length < result.total);
+      } catch (loadError) {
+        console.error("Failed to load comments:", loadError);
+        setError(t("loadFailed"));
+      } finally {
+        setLoading(false);
+        setIsSortChanging(false);
+        onSubmitted?.();
+      }
+    }, 100);
+  }, [fetchComments, onSubmitted, t]);
+
+  // 清理防抖计时器
+  useEffect(() => {
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // 初始化加载
   useEffect(() => {
     void refreshComments();
-  }, [refreshComments]);
+  }, []);
+
+  // 排序变化时重新加载
+  useEffect(() => {
+    void refreshComments();
+  }, [sortKey]);
 
   const handleSortChange = (nextSortKey: CommentSortKey) => {
     if (nextSortKey === sortKey) {
@@ -191,8 +245,15 @@ export function ArticleCommentList({
   if (loading && comments.length === 0) {
     return (
       <div className="space-y-4">
-        <CommentEditor articleId={articleId} onSubmitted={refreshComments} />
-        <div className="border-b border-border px-6 pb-4">
+        {showTopCommentEditor && (
+          <CommentEditor articleId={articleId} onSubmitted={refreshComments} />
+        )}
+        <div
+          className={cn(
+            "border-b border-border px-6 pb-4",
+            stickySort && "sticky top-0 z-10 bg-card",
+          )}
+        >
           <DropdownMenu
             className="w-fit"
             position="left"
@@ -218,9 +279,17 @@ export function ArticleCommentList({
 
   return (
     <div className="space-y-4">
-      <CommentEditor articleId={articleId} onSubmitted={refreshComments} />
+      {showTopCommentEditor && (
+        <CommentEditor articleId={articleId} onSubmitted={refreshComments} />
+      )}
 
-      <div className="border-b border-border px-6 pb-4 min-w-min">
+      <div
+        className={cn(
+          "border-b border-border px-6 pb-4 min-w-min",
+          stickySort && "sticky top-0 z-10 bg-card",
+          sortClassName,
+        )}
+      >
         <DropdownMenu
           className="w-fit text-sm "
           position="left"
@@ -245,11 +314,12 @@ export function ArticleCommentList({
       ) : (
         <>
           {comments.map((comment) => (
-            <CommentItem
+            <MemoizedCommentItem
               articleId={articleId}
               data={comment}
               key={comment.id}
               onSubmitted={refreshComments}
+              onReplyClick={onReplyClick}
             />
           ))}
 

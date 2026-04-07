@@ -32,6 +32,8 @@ const {
   Heading4,
   Link,
   RemoveFormatting,
+  Minus,
+  FileText,
 } = icons;
 
 interface RenderToolbarOptions {
@@ -41,6 +43,8 @@ interface RenderToolbarOptions {
   onVideoClick: () => void;
   onLinkClick: () => void;
   onImageUpload: () => void;
+  onArticleClick: () => void;
+  onSaveSelection?: () => void; // 保存选区的回调
 }
 
 type EmojiRecord = {
@@ -70,48 +74,9 @@ export const renderToolbar = ({
   onVideoClick,
   onLinkClick,
   onImageUpload,
+  onArticleClick,
+  onSaveSelection,
 }: RenderToolbarOptions) => {
-  const emojiCategories = [
-    {
-      id: "smileys",
-      icon: "🙂",
-      emojis: [
-        "😀",
-        "😄",
-        "😁",
-        "😆",
-        "😊",
-        "😍",
-        "🥳",
-        "😎",
-        "🤔",
-        "😭",
-        "😡",
-        "🥲",
-      ],
-    },
-    {
-      id: "gesture",
-      icon: "🤟",
-      emojis: ["❤️", "💔", "💕", "👍", "👎", "👏", "🙌", "🤝", "🙏", "💪"],
-    },
-    {
-      id: "animal",
-      icon: "🐱",
-      emojis: ["🐶", "🐱", "🐹", "🐰", "🦊", "🐼", "🐨", "🦁", "🐷", "🐸"],
-    },
-    {
-      id: "food",
-      icon: "🍰",
-      emojis: ["🍔", "🍟", "🍕", "🌮", "🍜", "🍩", "🍫", "🍿", "🧋", "🍰"],
-    },
-    {
-      id: "party",
-      icon: "🎉",
-      emojis: ["🎉", "🎊", "✨", "🎁", "🎈", "🎵", "🔥", "⭐", "💫", "🌈"],
-    },
-  ] as const;
-
   const toolbar = document.createElement("div");
   toolbar.className =
     "ql-toolbar ql-snow top-header sticky z-20 flex items-center bg-border! shadow-sm";
@@ -384,7 +349,7 @@ export const renderToolbar = ({
 
     const list = document.createElement("div");
     list.className =
-      "emoji-panel-list grid h-[256px] grid-cols-8 content-start gap-2 overflow-y-auto px-3 py-3";  
+      "emoji-panel-list grid h-[256px] grid-cols-8 content-start gap-2 overflow-y-auto px-3 py-3";
 
     const prevBtn = document.createElement("button");
     prevBtn.type = "button";
@@ -566,7 +531,15 @@ export const renderToolbar = ({
   videoBtn.className = "ql-video";
   videoBtn.type = "button";
   videoBtn.innerHTML = renderIcon(Video);
-  videoBtn.onclick = onVideoClick;
+  videoBtn.onmousedown = (e) => {
+    // 防止按钮导致失焦
+    e.preventDefault();
+  };
+  videoBtn.onclick = () => {
+    // 保存选区并打开对话框
+    onSaveSelection?.();
+    onVideoClick();
+  };
   row1.appendChild(createTooltipButton(videoBtn, t("video")));
 
   // 更多下拉菜单 - 点击显示
@@ -585,38 +558,163 @@ export const renderToolbar = ({
 
   const moreDropdown = document.createElement("div");
   moreDropdown.className =
-    "absolute top-full left-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg py-2 px-1 min-w-24 flex flex-col hidden";
+    "absolute top-full left-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg py-2 px-1 min-w-32 flex flex-col hidden";
   moreDropdown.id = "dropdown-more";
-  const moreOptions = [
-    { name: "link", label: t("link"), Icon: Link },
-    { name: "video", label: t("video"), Icon: Video },
-    { name: "clean", label: t("clean"), Icon: RemoveFormatting },
-  ];
-  moreOptions.forEach(({ name, label, Icon }) => {
-    const item = document.createElement("button");
-    item.className =
-      "w-full! hover:bg-primary/15! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary!  transition-colors text-nowrap";
-    item.type = "button";
-    item.innerHTML = `${Icon ? renderIcon(Icon, "w-4 h-4!") : ""}<span>${label}</span>`;
-    if (name === "link") {
+
+  // Link 项
+  const linkItem = document.createElement("button");
+  linkItem.className =
+    "w-full! hover:bg-primary/15! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors text-nowrap";
+  linkItem.type = "button";
+  linkItem.innerHTML = `${renderIcon(Link, "w-4 h-4!")}<span>${t("link")}</span>`;
+  linkItem.onclick = () => {
+    onLinkClick();
+    moreDropdown.classList.add("hidden");
+  };
+  moreDropdown.appendChild(linkItem);
+
+  // Video 项
+  const videoItem = document.createElement("button");
+  videoItem.className =
+    "w-full! hover:bg-primary/15! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors text-nowrap";
+  videoItem.type = "button";
+  videoItem.innerHTML = `${renderIcon(Video, "w-4 h-4!")}<span>${t("video")}</span>`;
+  videoItem.onmousedown = (e) => {
+    // 防止按钮导致失焦
+    e.preventDefault();
+  };
+  videoItem.onclick = () => {
+    // 保存选区并打开对话框
+    onSaveSelection?.();
+    onVideoClick();
+    moreDropdown.classList.add("hidden");
+  };
+  moreDropdown.appendChild(videoItem);
+
+  // 内联文章项
+  const articleItem = document.createElement("button");
+  articleItem.className =
+    "w-full! hover:bg-primary/15! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors text-nowrap";
+  articleItem.type = "button";
+  articleItem.innerHTML = `${renderIcon(FileText, "w-4 h-4!")}<span>${t("inlineArticle")}</span>`;
+  articleItem.onclick = () => {
+    onArticleClick();
+    moreDropdown.classList.add("hidden");
+  };
+  moreDropdown.appendChild(articleItem);
+
+  // 分割线
+  const divider = document.createElement("div");
+  divider.className = "border-t border-border my-1.5 mx-2";
+  moreDropdown.appendChild(divider);
+
+  // Clean 项
+  const cleanItem = document.createElement("button");
+  cleanItem.className =
+    "w-full! hover:bg-primary/15! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors text-nowrap";
+  cleanItem.type = "button";
+  cleanItem.innerHTML = `${renderIcon(RemoveFormatting, "w-4 h-4!")}<span>${t("clean")}</span>`;
+  cleanItem.onclick = () => {
+    const format = quill.getFormat();
+    Object.keys(format).forEach((key) => quill.format(key, false));
+    moreDropdown.classList.add("hidden");
+  };
+  moreDropdown.appendChild(cleanItem);
+
+  // 分割线二级面板 - hover 触发
+  const createDividerPanel = () => {
+    const dividerTrigger = document.createElement("div");
+    dividerTrigger.className =
+      "relative flex items-center px-3 py-2 rounded-md text-left gap-2 text-sm hover:text-primary hover:bg-primary/15 transition-colors text-nowrap cursor-pointer";
+    dividerTrigger.innerHTML = `${renderIcon(Minus, "w-4 h-4!")}<span>${t("divider")}</span><span class="ml-auto text-muted-foreground">›</span>`;
+
+    const dividerPanel = document.createElement("div");
+    dividerPanel.className =
+      "hidden absolute -top-2 left-full z-50 ml-1 w-32 rounded-xl border border-border bg-card px-3 py-3 shadow-lg";
+    dividerPanel.id = "dropdown-divider-panel";
+
+    // 网格容器
+    const grid = document.createElement("div");
+    grid.className = "grid grid-cols-1 gap-2";
+
+    // 分割线样式选项
+    const dividerStyles = [
+      {
+        name: "pulse",
+        preview: `<div class="flex items-center w-full"><div class="h-[1.5px] flex-1 bg-primary origin-right"></div><div class="relative mx-2 size-3.5 shrink-0"><span class="absolute inset-0 rounded-full bg-primary/30"></span><span class="relative block size-full rounded-full bg-primary"></span></div><div class="h-[1.5px] flex-1 bg-primary origin-left"></div></div>`,
+      },
+      {
+        name: "triple",
+        preview: `<div class="flex flex-col gap-0.75 w-full"><div class="h-1 rounded-sm bg-primary"></div><div class="h-0.5 rounded-sm bg-primary/60"></div><div class="h-px bg-primary/20"></div></div>`,
+      },
+      {
+        name: "hex",
+        preview: `<div class="flex items-center w-full"><div class="flex-1 h-0.5 bg-primary/30"></div><div class="flex gap-1.25 px-2.5 shrink-0 [&_svg]:size-2.5!"><svg width="10" height="11" viewBox="0 0 10 11" fill="none"><path d="M5 0.5L9.33 3v5L5 10.5.67 8V3L5 .5z" fill="#6680ff"/></svg><svg width="10" height="11" viewBox="0 0 10 11" fill="none"><path d="M5 .5L9.33 3v5L5 10.5.67 8V3L5 .5z" fill="#6680ff"/></svg><svg width="10" height="11" viewBox="0 0 10 11" fill="none"><path d="M5 .5L9.33 3v5L5 10.5.67 8V3L5 .5z" fill="#6680ff"/></svg></div><div class="flex-1 h-px bg-primary/30"></div></div>`,
+      },
+      {
+        name: "travel",
+        preview: `<div class="relative w-full h-0.5 overflow-hidden"><div class="absolute inset-0 border-t-2 border-dashed border-primary/40"></div><div class="absolute top-1/2 -translate-y-1/2 w-1/5 h-1.5 rounded-full bg-primary"></div></div>`,
+      },
+      {
+        name: "dashed",
+        preview: `<svg class="w-full h-5" viewBox="0 0 560 18" preserveAspectRatio="none"><line x1="0" y1="14" x2="560" y2="14" stroke="#a0b0ff" stroke-width="1.5" stroke-dasharray="8 6" opacity="0.6"/><line x1="40" y1="14" x2="35" y2="4" stroke="#6680ff" stroke-width="2" stroke-linecap="round"/><line x1="120" y1="14" x2="115" y2="4" stroke="#6680ff" stroke-width="2" stroke-linecap="round"/><line x1="200" y1="14" x2="195" y2="4" stroke="#6680ff" stroke-width="2" stroke-linecap="round"/><line x1="280" y1="14" x2="275" y2="4" stroke="#6680ff" stroke-width="2" stroke-linecap="round"/><line x1="360" y1="14" x2="355" y2="4" stroke="#6680ff" stroke-width="2" stroke-linecap="round"/><line x1="440" y1="14" x2="435" y2="4" stroke="#6680ff" stroke-width="2" stroke-linecap="round"/><line x1="520" y1="14" x2="515" y2="4" stroke="#6680ff" stroke-width="2" stroke-linecap="round"/></svg>`,
+      },
+    ];
+
+    dividerStyles.forEach(({ name, preview }) => {
+      const item = document.createElement("button");
+      item.className =
+        "flex items-center gap-2 p-3 rounded-lg hover:bg-accent transition-colors border border-border bg-card";
+      item.type = "button";
+
+      // 预览区域
+      const previewDiv = document.createElement("div");
+      previewDiv.className = "w-full flex items-center justify-center";
+      previewDiv.innerHTML = preview;
+
+      item.appendChild(previewDiv);
+
       item.onclick = () => {
-        onLinkClick();
+        const selection = quill.getSelection(true);
+        const index = selection?.index ?? quill.getLength();
+        quill.insertEmbed(index, "divider", { style: name }, "user");
+        quill.setSelection(index + 1, 0, "silent");
         moreDropdown.classList.add("hidden");
       };
-    } else if (name === "video") {
-      item.onclick = () => {
-        onVideoClick();
-        moreDropdown.classList.add("hidden");
-      };
-    } else if (name === "clean") {
-      item.onclick = () => {
-        const format = quill.getFormat();
-        Object.keys(format).forEach((key) => quill.format(key, false));
-        moreDropdown.classList.add("hidden");
-      };
-    }
-    moreDropdown.appendChild(item);
-  });
+
+      grid.appendChild(item);
+    });
+
+    dividerPanel.appendChild(grid);
+
+    // Hover 事件
+    dividerTrigger.addEventListener("mouseenter", () => {
+      dividerPanel.classList.remove("hidden");
+    });
+
+    dividerTrigger.addEventListener("mouseleave", () => {
+      setTimeout(() => {
+        if (!dividerPanel.matches(":hover")) {
+          dividerPanel.classList.add("hidden");
+        }
+      }, 100);
+    });
+
+    dividerPanel.addEventListener("mouseenter", () => {
+      dividerPanel.classList.remove("hidden");
+    });
+
+    dividerPanel.addEventListener("mouseleave", () => {
+      dividerPanel.classList.add("hidden");
+    });
+
+    return { dividerTrigger, dividerPanel };
+  };
+
+  const { dividerTrigger, dividerPanel } = createDividerPanel();
+  moreDropdown.appendChild(dividerTrigger);
+  dividerTrigger.appendChild(dividerPanel);
+
   moreDiv.appendChild(moreDropdown);
   moreBtn.onclick = (e) => {
     toggleDropdown("dropdown-more", e);
