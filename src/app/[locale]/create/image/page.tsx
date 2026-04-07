@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
 import { TagSelect } from "@/components/ui/TagSelect";
 import { useImageCompression } from "@/hooks/useImageCompression";
+import { buildUploadMetadata } from "@/lib/file-hash";
 import { useRouter } from "@/i18n/routing";
 import { cn } from "@/lib";
 import { getImageUrls, type ImageInfo } from "@/types/image";
@@ -105,12 +106,15 @@ async function uploadImagesBatch(
 ): Promise<string[]> {
   if (files.length === 0) return [];
 
+  // 先计算压缩前的 hash
+  const metadata = await buildUploadMetadata(files);
+
   // 压缩图片
   const compressionResults = await compressImages(files);
   const compressedFiles = compressionResults.map((r) => r.file);
 
   const { data } = await uploadControllerUploadFile({
-    body: { file: compressedFiles as any },
+    body: { file: compressedFiles as any, metadata },
   });
 
   return (data?.data || [])

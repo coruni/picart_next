@@ -15,6 +15,7 @@ import { ImagePlus, X, Save } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useImageCompression } from "@/hooks/useImageCompression";
+import { buildUploadMetadata } from "@/lib/file-hash";
 import { getDashboardCopy } from "./copy";
 import {
   DashboardErrorView,
@@ -469,10 +470,16 @@ export function DashboardConfigsPage() {
       });
 
       try {
+        // 保存原始文件引用用于计算 hash
+        const originalFile = file;
         const compressedResult = await compressImage(file);
         const compressedFile = compressedResult.file;
+
+        // 计算原始文件的 hash
+        const metadata = await buildUploadMetadata([originalFile]);
+
         const { data } = await uploadControllerUploadFile({
-          body: { file: compressedFile },
+          body: { file: compressedFile, metadata },
         });
         const uploadedUrl = data?.data?.[0]?.url || "";
         if (!uploadedUrl) {

@@ -15,6 +15,7 @@ import { Form, FormDescription, FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
 import { cn } from "@/lib";
+import { buildUploadMetadata } from "@/lib/file-hash";
 import { ImagePlus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -145,9 +146,13 @@ export function CollectionEditDialog({
         type: "image/jpeg",
       });
 
+      // 计算原始选中文件的 hash（裁剪前的原始文件）
+      const metadata = await buildUploadMetadata([selectedImage]);
+
       const { data } = await uploadControllerUploadFile({
         body: {
           file: croppedFile,
+          metadata,
         },
       });
 

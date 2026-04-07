@@ -10579,6 +10579,7 @@ export type UploadControllerGetUploadConfigResponse = UploadControllerGetUploadC
 export type UploadControllerUploadFileData = {
     body: {
         file: Blob | File;
+        metadata?: string;
     };
     headers?: {
         Authorization?: string;

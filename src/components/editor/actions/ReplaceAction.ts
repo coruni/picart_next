@@ -1,6 +1,7 @@
 ﻿import { Action, ToolbarButton } from "@enzedonline/quill-blot-formatter2";
 import type BlotFormatter from "@enzedonline/quill-blot-formatter2";
 import { uploadControllerUploadFile } from "@/api/sdk.gen";
+import { buildUploadMetadata } from "@/lib/file-hash";
 
 export class ReplaceAction extends Action {
   constructor(formatter: BlotFormatter) {
@@ -28,8 +29,11 @@ export class ReplaceAction extends Action {
       if (!file) return;
 
       try {
+        // 计算文件的 hash
+        const metadata = await buildUploadMetadata([file]);
+
         const response = await uploadControllerUploadFile({
-          body: { file },
+          body: { file, metadata },
         });
 
         if (response.data?.data?.[0]?.url) {

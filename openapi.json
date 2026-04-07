@@ -30400,6 +30400,10 @@
                     "format": "binary",
                     "type": "string",
                     "example": ""
+                  },
+                  "metadata": {
+                    "type": "string",
+                    "example": ""
                   }
                 },
                 "required": [

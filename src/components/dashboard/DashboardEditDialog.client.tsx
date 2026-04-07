@@ -21,6 +21,7 @@ import { TimePicker } from "@/components/ui/TimePicker";
 import { useClickOutside } from "@/hooks";
 import { useImageCompression } from "@/hooks/useImageCompression";
 import { cn } from "@/lib";
+import { buildUploadMetadata } from "@/lib/file-hash";
 import { ChevronDown, ImagePlus, Loader2, Search, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -355,13 +356,20 @@ export function DashboardEditDialog({
         setUploadingImage(true);
 
         try {
+          // 保存原始文件引用（用于计算 hash）
+          const originalFile = file;
+
           // 压缩图片
           const compressedResult = await compressImage(file);
           const compressedFile = compressedResult.file;
 
+          // 计算原始文件的 hash
+          const metadata = await buildUploadMetadata([originalFile]);
+
           const { data } = await uploadControllerUploadFile({
             body: {
               file: compressedFile,
+              metadata,
             },
           });
 
@@ -411,9 +419,13 @@ export function DashboardEditDialog({
       const compressedResult = await compressImage(croppedFile);
       const compressedFile = compressedResult.file;
 
+      // 计算原始选中文件的 hash（裁剪前的原始文件）
+      const metadata = await buildUploadMetadata([selectedImage]);
+
       const { data } = await uploadControllerUploadFile({
         body: {
           file: compressedFile,
+          metadata,
         },
       });
 
