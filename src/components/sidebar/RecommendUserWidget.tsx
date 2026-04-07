@@ -67,7 +67,7 @@ export const RecommendUserWidget = async () => {
               key={article.id}
             >
               <Image
-                src={article.cover || article.images?.[0] || ""}
+                src={article.cover || article.images|| ""}
                 fill
                 sizes="96px"
                 className="object-cover rounded-lg"

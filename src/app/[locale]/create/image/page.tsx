@@ -13,7 +13,7 @@ import { Form, FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
 import { TagSelect } from "@/components/ui/TagSelect";
-import { useForm } from "@/hooks/useForm";
+import { useImageCompression } from "@/hooks/useImageCompression";
 import { useRouter } from "@/i18n/routing";
 import { cn } from "@/lib";
 import { getImageUrls, type ImageInfo } from "@/types/image";
@@ -99,11 +99,18 @@ const sanitizeImageUrl = (value: string) =>
 const toNumericTagIds = (value: string[]) =>
   value.map((item) => Number(item)).filter((item) => Number.isFinite(item));
 
-async function uploadImagesBatch(files: File[]): Promise<string[]> {
+async function uploadImagesBatch(
+  files: File[],
+  compressImages: (files: File[]) => Promise<{ file: File }[]>,
+): Promise<string[]> {
   if (files.length === 0) return [];
 
+  // 压缩图片
+  const compressionResults = await compressImages(files);
+  const compressedFiles = compressionResults.map((r) => r.file);
+
   const { data } = await uploadControllerUploadFile({
-    body: { file: (files as any) },
+    body: { file: compressedFiles as any },
   });
 
   return (data?.data || [])
@@ -120,6 +127,7 @@ export default function CreateImagePage() {
   const tPost = useTranslations("createPost");
   const tImage = useTranslations("createImage");
   const tTag = useTranslations("tagSelect");
+  const { compressImages } = useImageCompression();
   // Article loading state for edit mode
   const [articleLoading, setArticleLoading] = useState(isEditMode);
 
@@ -573,12 +581,12 @@ export default function CreateImagePage() {
     }, 300);
   };
 
-  const handleImagesUpload = async (files: File[]) => {
+  const handleImagesUpload = useCallback(async (files: File[]) => {
     if (files.length === 0) return;
 
     setImagesUploading(true);
     try {
-      const uploadedUrls = await uploadImagesBatch(files);
+      const uploadedUrls = await uploadImagesBatch(files, compressImages);
 
       if (uploadedUrls.length > 0) {
         const mergedImages = Array.from(
@@ -593,15 +601,15 @@ export default function CreateImagePage() {
     } finally {
       setImagesUploading(false);
     }
-  };
+  }, [compressImages, values.images, setFieldValues]);
 
-  const handleImagesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImagesChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     await handleImagesUpload(files);
     e.target.value = "";
-  };
+  }, [handleImagesUpload]);
 
-  const handleImageDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+  const handleImageDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setIsImageDropping(false);
@@ -609,7 +617,7 @@ export default function CreateImagePage() {
       file.type.startsWith("image/"),
     );
     await handleImagesUpload(files);
-  };
+  }, [handleImagesUpload]);
 
   const removeImage = (index: number) => {
     const nextImages = values.images.filter(

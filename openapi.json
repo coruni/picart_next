@@ -1614,9 +1614,26 @@
               "schema": {
                 "type": "array",
                 "items": {
-                  "type": "string"
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "key": {
+                      "type": "string"
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "id",
+                    "value"
+                  ]
                 }
-              }
+              },
+              "examples": {}
             }
           },
           "required": true
