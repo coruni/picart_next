@@ -249,7 +249,7 @@ export const ArticleCard = ({
         <div className="flex items-center flex-1 cursor-pointer">
           <Link href={`/account/${article?.author?.id}`} className="shrink-0">
             <Avatar
-              className={cn("size-12")}
+              className={cn("size-10 md:size-12")}
               url={article.author?.avatar}
               frameUrl={
                 article.author?.equippedDecorations?.AVATAR_FRAME?.imageUrl
@@ -354,6 +354,7 @@ export const ArticleCard = ({
         </div>
         <div className="ml-6 flex items-center justify-end">
           <ReactionPanel
+            showReaction={true}
             articleId={article.id!}
             reactionStats={article.reactionStats!}
             userReaction={

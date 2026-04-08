@@ -19,6 +19,7 @@ export default async function HomePage() {
 
   return (
     <ArticleListClient
+      showFollow={false}
       initArticles={articles}
       initTotal={total}
       initPage={2}
