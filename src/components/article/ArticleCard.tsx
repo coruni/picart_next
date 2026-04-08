@@ -247,7 +247,7 @@ export const ArticleCard = ({
     <article className="p-6 border-border border-b">
       <div className="flex items-center">
         <div className="flex items-center flex-1 cursor-pointer">
-          <Link href={`/account/${article?.author?.id}`} className="shrink-0">
+          <Link href={`/account/${article?.author?.id}`} className="shrink-0 flex items-center">
             <Avatar
               className={cn("size-10 md:size-12")}
               url={article.author?.avatar}
