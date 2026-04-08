@@ -64,6 +64,8 @@ export function ImageViewer({
   const onChangeRef = useRef(onChange);
   const resizeFrameRef = useRef<number | null>(null);
   const viewerIdRef = useRef<number>(0);
+  const mobileHistoryTokenRef = useRef<string | null>(null);
+  const isClosingFromPopStateRef = useRef(false);
 
   // Sync pendingIndexRef with initialIndex prop changes
   useEffect(() => {
@@ -110,6 +112,53 @@ export function ImageViewer({
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
+
+  useEffect(() => {
+    if (!visible || !isMobileViewport()) {
+      return;
+    }
+
+    const token =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random()}`;
+
+    mobileHistoryTokenRef.current = token;
+    window.history.pushState(
+      { ...(window.history.state ?? {}), __imageViewerToken: token },
+      "",
+    );
+
+    const handlePopState = () => {
+      if (!mobileHistoryTokenRef.current) {
+        return;
+      }
+
+      mobileHistoryTokenRef.current = null;
+      isClosingFromPopStateRef.current = true;
+      onCloseRef.current();
+
+      window.setTimeout(() => {
+        isClosingFromPopStateRef.current = false;
+      }, 0);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+
+      const tokenInHistory = mobileHistoryTokenRef.current;
+      if (
+        tokenInHistory &&
+        !isClosingFromPopStateRef.current &&
+        window.history.state?.__imageViewerToken === tokenInHistory
+      ) {
+        mobileHistoryTokenRef.current = null;
+        window.history.back();
+      }
+    };
+  }, [visible]);
 
   const getCurrentIndex = useCallback(() => {
     const viewer = viewerRef.current as Viewer & { index?: number };

@@ -371,7 +371,6 @@ export const ArticleCard = ({
           article={article}
           images={viewerUrls}
           initialIndex={viewerIndex}
-          initialPanelExpanded
           visible={viewerVisible}
           onClose={() => setViewerVisible(false)}
         />
