@@ -1,46 +1,19 @@
+import { formatDateYMD, formatMonthDayLabel, formatTimeHM } from "@/lib";
+
 export function getMessageDayKey(value?: string) {
   if (!value) {
     return "unknown";
   }
 
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+  return formatDateYMD(value) || value;
 }
 
 export function getMessageDayLabel(value: string | undefined, locale: string) {
-  if (!value) {
-    return "";
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  return new Intl.DateTimeFormat(locale === "zh" ? "zh-CN" : "en-US", {
-    month: "short",
-    day: "numeric",
-  }).format(date);
+  return formatMonthDayLabel(value, locale);
 }
 
 export function formatMessageClock(value?: string) {
-  if (!value) {
-    return "";
-  }
-
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "";
-  }
-
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  return `${hours}:${minutes}`;
+  return formatTimeHM(value);
 }
 
 function resolvePreviewImageUrls(payload?: Record<string, unknown> | null) {

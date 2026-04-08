@@ -217,6 +217,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             <ArticleAuthor
               author={article?.author}
               createdAt={article?.createdAt}
+              updatedAt={article?.updatedAt}
             />
           </div>
           <div className="px-6">

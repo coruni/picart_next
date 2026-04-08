@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
+import { formatDate } from "@/lib";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "@/i18n/routing";
@@ -122,7 +123,7 @@ export function BlockedUsersClient() {
                   {user.nickname || user.username}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {t("blockedAt")}: {new Date(user.blockedAt).toLocaleDateString()}
+                  {t("blockedAt")}: {formatDate(user.blockedAt)}
                 </p>
               </div>
             </div>

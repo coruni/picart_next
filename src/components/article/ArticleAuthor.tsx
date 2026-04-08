@@ -4,7 +4,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { useIsMobile } from "@/hooks";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { Link } from "@/i18n/routing";
-import { cn, formatRelativeTime } from "@/lib/utils";
+import { cn, formatRelativeTime, toDate } from "@/lib/utils";
 import { useUserStore } from "@/stores";
 import type { ArticleDetail } from "@/types";
 import { useLocale, useTranslations } from "next-intl";
@@ -14,12 +14,14 @@ import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
 type ArticleAuthorProps = {
   author: ArticleDetail["author"];
   createdAt: string;
+  updatedAt?: string;
   onFollow?: () => void;
 };
 
 export function ArticleAuthor({
   author,
   createdAt,
+  updatedAt,
   onFollow,
 }: ArticleAuthorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,6 +36,13 @@ export function ArticleAuthor({
     hysteresis,
   });
   const isSelf = useUserStore((state) => state.user)?.id === author.id || false;
+  const createdDate = toDate(createdAt);
+  const updatedDate = toDate(updatedAt);
+  const isEdited = Boolean(
+    createdDate &&
+      updatedDate &&
+      createdDate.getTime() !== updatedDate.getTime(),
+  );
 
   useEffect(() => {
     const container = containerRef.current;
@@ -139,6 +148,11 @@ export function ArticleAuthor({
           >
             <span className="text-xs text-secondary">
               {formatRelativeTime(createdAt, t, locale)}
+              {isEdited ? (
+                <span className="ml-1">
+                  ({locale.startsWith("zh") ? "已编辑" : "Edited"})
+                </span>
+              ) : null}
             </span>
           </div>
         </div>

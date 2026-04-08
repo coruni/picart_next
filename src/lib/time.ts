@@ -111,6 +111,30 @@ export function formatShortDate(value: DateInput, locale?: TimeLocale) {
   return `${month}/${day}`;
 }
 
+export function formatMonthDayLabel(value: DateInput, locale?: TimeLocale) {
+  const date = toDate(value);
+  if (!date) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat(resolveLocale(locale), {
+    month: "short",
+    day: "numeric",
+  }).format(date);
+}
+
+export function formatTimeHM(value: DateInput, locale?: TimeLocale) {
+  const date = toDate(value);
+  if (!date) {
+    return "";
+  }
+
+  void locale;
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
 export function formatRelativeTime(
   value: DateInput,
   t: TimeTranslator,
