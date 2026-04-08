@@ -24,11 +24,6 @@ function hasUnreadMessage(message: { isRead?: boolean; unreadCount?: number }) {
   return !message.isRead || Number(message.unreadCount || 0) > 0;
 }
 
-function getUnreadBadgeText(message: { unreadCount?: number }) {
-  const count = Number(message.unreadCount || 0);
-  return count > 0 ? String(count) : "•";
-}
-
 function getTabUnreadCount(
   tab: MessageTab,
   summary: { personal?: number; notification?: number; broadcast?: number; total?: number } | null,
@@ -273,31 +268,26 @@ export function MessageDropdown({
                 key={message.id}
                 href={message.href}
                 onClick={() => mobile && setMobileOpen(false)}
-                className={cn(
-                  "mb-1.5 flex items-start gap-3 rounded-md px-3 py-3 text-left transition-all",
-                  hasUnreadMessage(message)
-                    ? "bg-primary/8 hover:bg-primary/12"
-                    : "hover:bg-muted/60",
-                )}
+                className="mb-1.5 flex items-start gap-3 rounded-md px-3 py-3 text-left transition-all hover:bg-muted/60"
               >
-                <div className="relative shrink-0">
+                <div className="shrink-0">
                   <Avatar
                     url={message.avatarUrl}
                     className="size-10"
                     alt={message.title}
                   />
-                  {hasUnreadMessage(message) ? (
-                    <span className="absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-semibold text-foreground">
-                      {getUnreadBadgeText(message)}
-                    </span>
-                  ) : null}
                 </div>
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
-                    <p className="truncate font-semibold text-foreground">
-                      {message.title || tMsg("untitled")}
-                    </p>
+                    <div className="flex min-w-0 items-center gap-2">
+                      {hasUnreadMessage(message) ? (
+                        <span className="size-2 shrink-0 rounded-full bg-red-400" />
+                      ) : null}
+                      <p className="truncate font-semibold text-foreground">
+                        {message.title || tMsg("untitled")}
+                      </p>
+                    </div>
                     <span className="shrink-0 text-xs text-secondary">
                       {formatShortDate(message.createdAt || "", locale) ||
                         formatRelativeTime(message.createdAt || "", tTime, locale)}

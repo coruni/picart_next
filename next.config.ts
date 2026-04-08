@@ -10,7 +10,7 @@ const allowPrivateIpImages = process.env.NEXT_IMAGE_ALLOW_PRIVATE_IP === "true";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-
+  allowedDevOrigins:["192.168.1.7"],
   images: {
     dangerouslyAllowLocalIP: allowPrivateIpImages,
     unoptimized: true,

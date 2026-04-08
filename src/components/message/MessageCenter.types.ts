@@ -19,6 +19,7 @@ export type PrivateHistoryItem = {
   recalledAt?: string;
   recallReason?: string;
   isRecalled?: boolean;
+  pending?: boolean;
 };
 
 export type PrivateRealtimePayload = Pick<

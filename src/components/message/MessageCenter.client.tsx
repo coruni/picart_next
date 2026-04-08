@@ -34,8 +34,8 @@ import {
 } from "@/components/ui/Dialog";
 import { useIsMobile } from "@/hooks";
 import { useImageCompression } from "@/hooks/useImageCompression";
-import { buildUploadMetadata } from "@/lib/file-hash";
 import { usePathname, useRouter } from "@/i18n/routing";
+import { buildUploadMetadata } from "@/lib/file-hash";
 import { messageSocketClient } from "@/lib/message-socket";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useMessageNotificationStore, useUserStore } from "@/stores";
@@ -145,6 +145,50 @@ function normalizePrivateHistoryItem(
   };
 }
 
+function getMessagePayloadUrls(payload?: PrivateMessagePayload): string[] {
+  if (Array.isArray(payload?.urls)) {
+    return payload.urls.filter(
+      (url): url is string => typeof url === "string" && Boolean(url.trim()),
+    );
+  }
+
+  if (typeof payload?.url === "string" && payload.url.trim()) {
+    return [payload.url];
+  }
+
+  if (typeof payload?.imageUrl === "string" && payload.imageUrl.trim()) {
+    return [payload.imageUrl];
+  }
+
+  return [];
+}
+
+function matchesPendingPrivateMessage(
+  pending: PrivateHistoryItem,
+  incoming: PrivateHistoryItem,
+): boolean {
+  if (!pending.pending) {
+    return false;
+  }
+
+  if (
+    Number(pending.senderId || 0) !== Number(incoming.senderId || 0) ||
+    pending.messageKind !== incoming.messageKind ||
+    (pending.content || "") !== (incoming.content || "")
+  ) {
+    return false;
+  }
+
+  const pendingUrls = getMessagePayloadUrls(pending.payload);
+  const incomingUrls = getMessagePayloadUrls(incoming.payload);
+
+  if (pendingUrls.length !== incomingUrls.length) {
+    return false;
+  }
+
+  return pendingUrls.every((url, index) => url === incomingUrls[index]);
+}
+
 export function MessageCenterClient() {
   const tCommon = useTranslations("common");
   const tMsg = useTranslations("messageDropdown");
@@ -199,7 +243,9 @@ export function MessageCenterClient() {
     (state) => state.socketConnected,
   );
   const isLoading = useMessageNotificationStore((state) => state.isLoading);
-  const isSwitchingTab = useMessageNotificationStore((state) => state.isSwitchingTab);
+  const isSwitchingTab = useMessageNotificationStore(
+    (state) => state.isSwitchingTab,
+  );
   const fetchMessages = useMessageNotificationStore(
     (state) => state.fetchMessages,
   );
@@ -238,6 +284,9 @@ export function MessageCenterClient() {
   const [reportSubmitting, setReportSubmitting] = useState(false);
   const [blockSubmitting, setBlockSubmitting] = useState(false);
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
+  const [mobileViewportHeight, setMobileViewportHeight] = useState<
+    number | null
+  >(null);
   const [selectedUserStatus, setSelectedUserStatus] =
     useState<PrivateUserStatus | null>(null);
   const [pendingPrivateTarget, setPendingPrivateTarget] = useState<{
@@ -256,15 +305,14 @@ export function MessageCenterClient() {
     { value: "system", label: tMsg("tabs.system") },
   ];
 
-  const initialTab =
-    queryUserId
-      ? "private"
-      : queryTab === "all" ||
-    queryTab === "notification" ||
-    queryTab === "private" ||
-    queryTab === "system"
-        ? queryTab
-        : "all";
+  const initialTab = queryUserId
+    ? "private"
+    : queryTab === "all" ||
+        queryTab === "notification" ||
+        queryTab === "private" ||
+        queryTab === "system"
+      ? queryTab
+      : "all";
 
   const existingQueryConversation = useMemo(() => {
     if (!queryUserId) {
@@ -497,6 +545,31 @@ export function MessageCenterClient() {
     };
   }, [existingQueryConversation, isAuthenticated, queryUserId, tMsg]);
 
+  useEffect(() => {
+    if (!isMobile || typeof window === "undefined") {
+      setMobileViewportHeight(null);
+      return;
+    }
+
+    const viewport = window.visualViewport;
+    const updateViewportHeight = () => {
+      setMobileViewportHeight(
+        Math.round(viewport?.height ?? window.innerHeight),
+      );
+    };
+
+    updateViewportHeight();
+    viewport?.addEventListener("resize", updateViewportHeight);
+    viewport?.addEventListener("scroll", updateViewportHeight);
+    window.addEventListener("orientationchange", updateViewportHeight);
+
+    return () => {
+      viewport?.removeEventListener("resize", updateViewportHeight);
+      viewport?.removeEventListener("scroll", updateViewportHeight);
+      window.removeEventListener("orientationchange", updateViewportHeight);
+    };
+  }, [isMobile]);
+
   const handleReportSelectedUser = async (payload: {
     category: "SPAM" | "ABUSE" | "INAPPROPRIATE" | "COPYRIGHT" | "OTHER";
     reason: string;
@@ -575,7 +648,7 @@ export function MessageCenterClient() {
       try {
         const restResponse = await messageControllerGetPrivateConversation({
           path: { userId: String(selectedPrivateCounterpartId) },
-          query: { limit: 100 },
+          query: { limit: 50 },
         });
         const nextHistorySource = restResponse?.data?.data?.data || [];
         const nextMeta = restResponse?.data?.data?.meta;
@@ -720,7 +793,7 @@ export function MessageCenterClient() {
         path: { userId: String(selectedPrivateCounterpartId) },
         query: {
           cursor: privateHistoryCursor,
-          limit: 100,
+          limit: 50,
         },
       });
 
@@ -816,8 +889,23 @@ export function MessageCenterClient() {
           isRecalled: payload.isRecalled,
         };
 
-        if (prev.some((item) => item.id === nextItem.id)) {
+        if (prev.some((item) => item.id === nextItem.id && !item.pending)) {
           return prev;
+        }
+
+        const pendingCandidates = prev
+          .map((item, index) => ({ item, index }))
+          .filter(({ item }) => matchesPendingPrivateMessage(item, nextItem))
+          .sort((a, b) => {
+            const aTime = new Date(a.item.createdAt || 0).getTime();
+            const bTime = new Date(b.item.createdAt || 0).getTime();
+            return bTime - aTime;
+          });
+        const pendingIndex = pendingCandidates[0]?.index ?? -1;
+        if (pendingIndex >= 0) {
+          const nextHistory = [...prev];
+          nextHistory[pendingIndex] = nextItem;
+          return nextHistory;
         }
 
         return [...prev, nextItem];
@@ -933,7 +1021,9 @@ export function MessageCenterClient() {
 
         setComposerImages((current) =>
           current.flatMap((item) => {
-            const draftIndex = drafts.findIndex((draft) => draft.id === item.id);
+            const draftIndex = drafts.findIndex(
+              (draft) => draft.id === item.id,
+            );
             if (draftIndex === -1) {
               return [item];
             }
@@ -961,7 +1051,9 @@ export function MessageCenterClient() {
           URL.revokeObjectURL(draft.previewUrl);
         });
         setComposerImages((current) =>
-          current.filter((item) => !drafts.some((draft) => draft.id === item.id)),
+          current.filter(
+            (item) => !drafts.some((draft) => draft.id === item.id),
+          ),
         );
         console.error("Failed to upload private images:", error);
       } finally {
@@ -999,11 +1091,31 @@ export function MessageCenterClient() {
     setIsSending(true);
 
     try {
-      if (readyImages.length > 0) {
-        const uploadedUrls = readyImages
-          .map((item) => item.uploadedUrl)
-          .filter((url): url is string => Boolean(url));
+      const uploadedUrls = readyImages
+        .map((item) => item.uploadedUrl)
+        .filter((url): url is string => Boolean(url));
+      const nowIso = new Date().toISOString();
+      const pendingMessage: PrivateHistoryItem = {
+        id: -Date.now(),
+        senderId: Number(user?.id || 0),
+        receiverId: Number(selectedPrivateCounterpartId),
+        content: content || undefined,
+        createdAt: nowIso,
+        isRead: true,
+        messageKind: uploadedUrls.length > 0 ? "image" : "text",
+        payload:
+          uploadedUrls.length > 0
+            ? {
+                url: uploadedUrls[0],
+                urls: uploadedUrls,
+              }
+            : undefined,
+        pending: true,
+      };
 
+      setPrivateHistory((prev) => [...prev, pendingMessage]);
+
+      if (readyImages.length > 0) {
         socket.emit("sendMessage", {
           toUserId: selectedPrivateCounterpartId,
           type: "private",
@@ -1060,9 +1172,28 @@ export function MessageCenterClient() {
     );
   };
 
+  const mobilePageStyle =
+    isMobile && mobileViewportHeight
+      ? {
+          height: `calc(${mobileViewportHeight}px - var(--header-height,60px))`,
+        }
+      : undefined;
+  const mobileCardStyle =
+    isMobile && mobileViewportHeight
+      ? {
+          height: `calc(${mobileViewportHeight}px - var(--header-height,60px) - 16px)`,
+        }
+      : undefined;
+
   return (
-    <div className="page-container h-[calc(100dvh-var(--header-height,60px))] overflow-hidden pb-0!">
-      <div className="left-container h-[calc(100dvh-var(--header-height,60px)-16px)] min-h-0 overflow-hidden rounded-2xl border border-border/70 bg-card">
+    <div
+      className="page-container h-[calc(100dvh-var(--header-height,60px))] overflow-hidden pb-0! transition-[height] ease-out"
+      style={mobilePageStyle}
+    >
+      <div
+        className="left-container h-[calc(100dvh-var(--header-height,60px)-16px)] min-h-0 overflow-hidden rounded-2xl border border-border/70 bg-card transition-[height] ease-out"
+        style={mobileCardStyle}
+      >
         <div className="grid h-full min-h-0 md:grid-cols-[348px_minmax(0,1fr)]">
           <MessageConversationList
             copy={copy}

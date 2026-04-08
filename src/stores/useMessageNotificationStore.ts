@@ -320,6 +320,7 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
       set({
         isLoading: true,
         isSwitchingTab: isTabSwitch, // 标记是否在切换 tab
+        ...(isTabSwitch ? { centerMessages: [] } : {}),
       });
 
       try {
@@ -346,6 +347,7 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
       set({
         dropdownIsLoading: true,
         dropdownLoadedTab: tab,
+        dropdownMessages: [],
       });
 
       try {

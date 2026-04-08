@@ -33,7 +33,7 @@ const miSans = localFont({
   ],
   variable: "--font-misans",
   display: "swap",
-  preload: true,
+  preload: false,
 });
 
 export default function RootLayout({

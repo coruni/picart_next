@@ -4,6 +4,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { cn, formatRelativeTime, formatShortDate } from "@/lib";
+import { prepareRichTextHtmlForSummary } from "@/lib/rich-text";
 import {
   Bell,
   Inbox,
@@ -128,13 +129,12 @@ export function MessageConversationList({
         )}
 
         {/* 内容区域 - tab 切换时保留旧数据 */}
-        <div
-          className={cn(
-            "transition-opacity duration-200",
-            isSwitchingTab ? "opacity-50" : "opacity-100",
-          )}
-        >
+        <div>
           {isLoading && !isSwitchingTab ? (
+            <div className="px-4 py-10 text-sm text-muted-foreground">
+              {tCommon("loading")}
+            </div>
+          ) : isSwitchingTab ? (
             <div className="px-4 py-10 text-sm text-muted-foreground">
               {tCommon("loading")}
             </div>
@@ -142,6 +142,8 @@ export function MessageConversationList({
             filteredMessages.map((item) => {
               const active = selectedItemId === item.id;
               const previewText = resolveMessagePreviewText(item, copy);
+              const hasUnread =
+                !item.isRead || Number(item.unreadCount || 0) > 0;
 
               return (
                 <Button
@@ -153,46 +155,40 @@ export function MessageConversationList({
                     active && "bg-primary/15",
                   )}
                 >
-                  <div className="relative shrink-0">
+                  <div className="shrink-0">
                     <Avatar
                       url={item.avatarUrl}
                       className="size-10"
                       alt={item.title}
                     />
-                    {!item.isRead && (
-                      <span
-                        className={cn(
-                          "absolute -right-1 -top-1 inline-flex min-w-5 items-center justify-center rounded-full px-1.5 py-0.5 text-[11px] font-semibold",
-                          active
-                            ? "bg-background text-primary"
-                            : "bg-primary text-primary-foreground",
-                        )}
-                      >
-                        {item.unreadCount && item.unreadCount > 0
-                          ? item.unreadCount
-                          : "•"}
-                      </span>
-                    )}
                   </div>
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-3">
-                      <p
+                      <div
                         className={cn(
-                          "truncate font-semibold",
+                          "flex min-w-0 items-center gap-2",
                           active ? "text-primary-foreground" : "text-foreground",
                         )}
                       >
-                        {item.title || tMsg("untitled")}
-                      </p>
+                        {hasUnread ? (
+                          <span className="size-2 shrink-0 rounded-full bg-red-400" />
+                        ) : null}
+                        <p className="truncate font-semibold">
+                          {item.title || tMsg("untitled")}
+                        </p>
+                      </div>
                       <span className="shrink-0 text-xs text-secondary">
                         {formatShortDate(item.createdAt || "", locale) ||
                           formatRelativeTime(item.createdAt || "", tTime, locale)}
                       </span>
                     </div>
-                    <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-                      {previewText}
-                    </p>
+                    <div
+                      className="mt-1 line-clamp-2 text-xs text-muted-foreground"
+                      dangerouslySetInnerHTML={{
+                        __html: prepareRichTextHtmlForSummary(previewText),
+                      }}
+                    />
                   </div>
                 </Button>
               );

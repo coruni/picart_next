@@ -15,6 +15,7 @@ import {
   ArrowLeft,
   Ban,
   ChevronDown,
+  LoaderCircle,
   MessageCircleMore,
   MoreVertical,
   Paperclip,
@@ -202,6 +203,32 @@ export function MessageDetailPane({
   }, [composerValue]);
 
   useEffect(() => {
+    const viewport = window.visualViewport;
+    if (!viewport) {
+      return;
+    }
+
+    const handleViewportChange = () => {
+      if (document.activeElement !== textareaRef.current) {
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        stickToBottom();
+        window.setTimeout(() => stickToBottom(), 80);
+      });
+    };
+
+    viewport.addEventListener("resize", handleViewportChange);
+    viewport.addEventListener("scroll", handleViewportChange);
+
+    return () => {
+      viewport.removeEventListener("resize", handleViewportChange);
+      viewport.removeEventListener("scroll", handleViewportChange);
+    };
+  }, []);
+
+  useEffect(() => {
     const viewport = scrollViewportRef.current;
     if (!viewport) {
       return;
@@ -315,7 +342,9 @@ export function MessageDetailPane({
 
     if (switchedConversation) {
       needsInitialScrollToBottomRef.current = true;
-      stickToBottom();
+      shouldStickToBottomRef.current = true;
+      setShowJumpToBottom(false);
+      setPendingMessageCount(0);
     } else if (messageCountIncreased && shouldStickToBottomRef.current) {
       stickToBottom("smooth");
     } else if (messageCountIncreased) {
@@ -359,11 +388,13 @@ export function MessageDetailPane({
     let frame1 = 0;
     let frame2 = 0;
     let timer = 0;
+    let timer2 = 0;
 
     frame1 = window.requestAnimationFrame(() => {
       frame2 = window.requestAnimationFrame(() => {
         settleToBottom();
         timer = window.setTimeout(settleToBottom, 80);
+        timer2 = window.setTimeout(settleToBottom, 220);
       });
     });
 
@@ -371,6 +402,7 @@ export function MessageDetailPane({
       window.cancelAnimationFrame(frame1);
       window.cancelAnimationFrame(frame2);
       window.clearTimeout(timer);
+      window.clearTimeout(timer2);
     };
   }, [
     detailLoading,
@@ -533,7 +565,7 @@ export function MessageDetailPane({
             <div className="relative min-h-0 min-w-0 flex-1 ">
               <div
                 ref={scrollViewportRef}
-                className="h-full min-h-0 min-w-0 overflow-x-hidden overflow-y-auto py-4 md:border-r md:border-border md:pl-4 md:py-4 md:pr-1"
+                className="h-full min-h-0 min-w-0 overflow-x-hidden overflow-y-auto py-4 md:border-r md:border-border md:pl-4 md:py-4 pb-0! md:pr-1"
                 style={{ scrollbarWidth: "none" }}
               >
                 {detailLoading ? (
@@ -556,7 +588,8 @@ export function MessageDetailPane({
                       ({ item, showDayDivider, dayLabel }) => {
                         const isOwn =
                           Number(item.senderId || 0) === Number(userId || 0);
-                        const canRecall = isOwn && !item.isRecalled;
+                        const canRecall =
+                          isOwn && !item.isRecalled && !item.pending;
                         const imageUrls = resolveMessageImageUrls(item.payload);
                         const hasText = Boolean(item.content?.trim());
                         const isRecalled = Boolean(item.isRecalled);
@@ -573,10 +606,13 @@ export function MessageDetailPane({
 
                             <div
                               className={cn(
-                                "flex min-w-0",
+                                "flex min-w-0 items-end gap-2",
                                 isOwn ? "justify-end" : "justify-start",
                               )}
                             >
+                              {isOwn && item.pending ? (
+                                <LoaderCircle className="mb-2 size-4 shrink-0 animate-spin text-muted-foreground" />
+                              ) : null}
                               <div
                                 role={canRecall ? "button" : undefined}
                                 tabIndex={canRecall ? 0 : undefined}
@@ -867,6 +903,11 @@ export function MessageDetailPane({
                     rows={1}
                     value={composerValue}
                     onChange={(event) => setComposerValue(event.target.value)}
+                    onFocus={() => {
+                      requestAnimationFrame(() => {
+                        stickToBottom();
+                      });
+                    }}
                     onPaste={(event) => {
                       const files = event.clipboardData?.files;
                       if (!files?.length) {
