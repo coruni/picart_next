@@ -38,7 +38,7 @@
     "create": {
       "title": "创作",
       "subtitle": "选择要创作的内容类型",
-      "article": "文章",
+      "article": "帖子",
       "image": "图片",
       "video": "视频"
     },
@@ -144,10 +144,10 @@
   "articleList": {
     "loading": "加载中...",
     "loadMore": "滚动加载更多",
-    "loadFailed": "加载更多文章失败，请重试",
+    "loadFailed": "加载更多帖子失败，请重试",
     "retry": "重试",
-    "allLoaded": "已加载全部文章",
-    "noArticles": "暂无文章"
+    "allLoaded": "已加载全部帖子",
+    "noArticles": "暂无帖子"
   },
   "tagList": {
     "loading": "加载中...",
@@ -242,7 +242,7 @@
     "login": "登录",
     "quickPost": "快来发帖吧",
     "image": "图片",
-    "article": "文章",
+    "article": "帖子",
     "video": "视频",
     "hotTopics": "热门话题",
     "posts": "投稿数",
@@ -251,7 +251,7 @@
     "viewMore": "查看更多",
     "loadError": "加载失败",
     "authorInfo": "作者信息",
-    "collectionArticles": "合集文章",
+    "collectionArticles": "合集帖子",
     "viewMoreArticles": "查看更多",
     "collapse": "收起",
     "expand": "展开"
@@ -411,11 +411,11 @@
       "dividerZigzag": "锯齿",
       "dividerStars": "星链",
       "dividerThick": "粗细",
-      "inlineArticle": "内联文章",
-      "insertArticle": "插入内联文章",
-      "articleUrlPlaceholder": "请输入文章链接",
-      "inlineArticleError": "只能插入同域名文章链接",
-      "inlineArticleInvalid": "无效的文章链接"
+      "inlineArticle": "内联帖子",
+      "insertArticle": "插入内联帖子",
+      "articleUrlPlaceholder": "请输入帖子链接",
+      "inlineArticleError": "只能插入同域名帖子链接",
+      "inlineArticleInvalid": "无效的帖子链接"
     },
     "modal": {
       "insertVideo": "插入视频",
@@ -423,10 +423,10 @@
       "insertLink": "插入链接",
       "linkTextPlaceholder": "链接文字（可选，选中文字时自动填充）",
       "linkUrlPlaceholder": "请输入链接地址",
-      "insertArticle": "插入内联文章",
-      "articleUrlPlaceholder": "请输入文章链接",
-      "inlineArticleError": "只能插入同域名文章链接",
-      "inlineArticleInvalid": "无效的文章链接"
+      "insertArticle": "插入内联帖子",
+      "articleUrlPlaceholder": "请输入帖子链接",
+      "inlineArticleError": "只能插入同域名帖子链接",
+      "inlineArticleInvalid": "无效的帖子链接"
     },
     "upload": {
       "uploading": "上传中...",
@@ -438,8 +438,8 @@
       "selected": "已选({count})",
       "searchPlaceholder": "搜索帖子或输入链接",
       "loading": "加载中...",
-      "noArticles": "暂无文章",
-      "noSelectedArticles": "未选择文章",
+      "noArticles": "暂无帖子",
+      "noSelectedArticles": "未选择帖子",
       "cancel": "取消",
       "insert": "插入 ({count})"
     },
@@ -531,7 +531,7 @@
     "requiredComments": "需{count}条评论",
     "requiredShares": "需{count}次分享",
     "timeRange": "{start} 至 {end}",
-    "viewArticle": "查看文章",
+    "viewArticle": "查看帖子",
     "viewDetails": "查看详情",
     "loading": "加载中...",
     "loadMore": "加载更多",
@@ -698,9 +698,9 @@
   },
   "accountCollectionList": {
     "title": "合集",
-    "subtitle": "整理你的文章内容，集中展示给读者",
+    "subtitle": "整理你的帖子内容，集中展示给读者",
     "createButton": "创建合集",
-    "addArticleButton": "加入文章",
+    "addArticleButton": "加入帖子",
     "editButton": "编辑合集",
     "posts": "帖子",
     "followers": "粉丝",
@@ -715,7 +715,7 @@
     "dialog": {
       "create": {
         "title": "创建合集",
-        "subtitle": "为相关文章建立一个清晰的整理入口",
+        "subtitle": "为相关帖子建立一个清晰的整理入口",
         "submitFailed": "创建合集失败，请稍后重试"
       },
       "edit": {
@@ -753,17 +753,17 @@
       }
     },
     "addArticlesDialog": {
-      "title": "加入文章",
-      "subtitle": "选择你已发布的文章，将它们加入当前合集",
-      "searchPlaceholder": "搜索文章标题",
+      "title": "加入帖子",
+      "subtitle": "选择你已发布的帖子，将它们加入当前合集",
+      "searchPlaceholder": "搜索帖子标题",
       "search": "搜索",
-      "empty": "暂无可加入的文章",
+      "empty": "暂无可加入的帖子",
       "noCover": "无封面",
       "inCollection": "已在合集",
       "loadMore": "加载更多",
       "loading": "加载中",
-      "loadFailed": "文章加载失败，请稍后重试",
-      "updateFailed": "更新合集文章失败，请稍后重试",
+      "loadFailed": "帖子加载失败，请稍后重试",
+      "updateFailed": "更新合集帖子失败，请稍后重试",
       "confirm": "保存变更（新增 {count}，移除 {removeCount}）"
     }
   },

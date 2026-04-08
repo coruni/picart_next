@@ -45,7 +45,7 @@
     "create": {
       "title": "Create",
       "subtitle": "Choose what you want to create",
-      "article": "Article",
+      "article": "Post",
       "image": "Image",
       "video": "Video"
     },
@@ -152,10 +152,10 @@
   "articleList": {
     "loading": "Loading...",
     "loadMore": "Scroll to load more",
-    "loadFailed": "Failed to load more articles, please try again",
+    "loadFailed": "Failed to load more posts, please try again",
     "retry": "Retry",
-    "allLoaded": "All articles loaded",
-    "noArticles": "No articles"
+    "allLoaded": "All posts loaded",
+    "noArticles": "No posts"
   },
   "tagList": {
     "loading": "Loading...",
@@ -250,7 +250,7 @@
     "login": "Login",
     "quickPost": "Create a post",
     "image": "Image",
-    "article": "Article",
+    "article": "Post",
     "video": "Video",
     "hotTopics": "Hot Topics",
     "posts": "posts",
@@ -259,7 +259,7 @@
     "viewMore": "View More",
     "loadError": "Failed to load",
     "authorInfo": "Author Info",
-    "collectionArticles": "Collection Articles",
+    "collectionArticles": "Collection Posts",
     "viewMoreArticles": "View More",
     "collapse": "Collapse",
     "expand": "Expand"
@@ -419,11 +419,11 @@
       "dividerZigzag": "Zigzag",
       "dividerStars": "Stars",
       "dividerThick": "Thick",
-      "inlineArticle": "Inline Article",
-      "insertArticle": "Insert Inline Article",
-      "articleUrlPlaceholder": "Enter article URL",
-      "inlineArticleError": "Only same-origin article links are allowed",
-      "inlineArticleInvalid": "Invalid article URL"
+      "inlineArticle": "Inline Post",
+      "insertArticle": "Insert Inline Post",
+      "articleUrlPlaceholder": "Enter post URL",
+      "inlineArticleError": "Only same-origin post links are allowed",
+      "inlineArticleInvalid": "Invalid post URL"
     },
     "modal": {
       "insertVideo": "Insert Video",
@@ -431,10 +431,10 @@
       "insertLink": "Insert Link",
       "linkTextPlaceholder": "Link text (optional, auto-filled when text is selected)",
       "linkUrlPlaceholder": "Enter link URL",
-      "insertArticle": "Insert Inline Article",
-      "articleUrlPlaceholder": "Enter article URL",
-      "inlineArticleError": "Only same-origin article links are allowed",
-      "inlineArticleInvalid": "Invalid article URL"
+      "insertArticle": "Insert Inline Post",
+      "articleUrlPlaceholder": "Enter post URL",
+      "inlineArticleError": "Only same-origin post links are allowed",
+      "inlineArticleInvalid": "Invalid post URL"
     },
     "upload": {
       "uploading": "Uploading...",
@@ -446,8 +446,8 @@
       "selected": "Selected ({count})",
       "searchPlaceholder": "Search posts or enter link",
       "loading": "Loading...",
-      "noArticles": "No articles",
-      "noSelectedArticles": "No articles selected",
+      "noArticles": "No posts",
+      "noSelectedArticles": "No posts selected",
       "cancel": "Cancel",
       "insert": "Insert ({count})"
     },
@@ -539,7 +539,7 @@
     "requiredComments": "{count} comments required",
     "requiredShares": "{count} shares required",
     "timeRange": "{start} to {end}",
-    "viewArticle": "View Article",
+    "viewArticle": "View Post",
     "viewDetails": "View Details",
     "loading": "Loading...",
     "loadMore": "Load More",
@@ -706,9 +706,9 @@
   },
   "accountCollectionList": {
     "title": "Collections",
-    "subtitle": "Organize your articles into curated groups",
+    "subtitle": "Organize your posts into curated groups",
     "createButton": "Create collection",
-    "addArticleButton": "Add articles",
+    "addArticleButton": "Add posts",
     "editButton": "Edit collection",
     "posts": "Posts",
     "followers": "Followers",
@@ -723,7 +723,7 @@
     "dialog": {
       "create": {
         "title": "Create collection",
-        "subtitle": "Build a dedicated space for related articles",
+        "subtitle": "Build a dedicated space for related posts",
         "submitFailed": "Failed to create collection, please try again"
       },
       "edit": {
@@ -761,17 +761,17 @@
       }
     },
     "addArticlesDialog": {
-      "title": "Add articles",
-      "subtitle": "Choose published articles to add to this collection",
-      "searchPlaceholder": "Search article titles",
+      "title": "Add posts",
+      "subtitle": "Choose published posts to add to this collection",
+      "searchPlaceholder": "Search post titles",
       "search": "Search",
-      "empty": "No articles available to add",
+      "empty": "No posts available to add",
       "noCover": "No cover",
       "inCollection": "In collection",
       "loadMore": "Load more",
       "loading": "Loading",
-      "loadFailed": "Failed to load articles, please try again",
-      "updateFailed": "Failed to update collection articles, please try again",
+      "loadFailed": "Failed to load posts, please try again",
+      "updateFailed": "Failed to update collection posts, please try again",
       "confirm": "Save changes (add {count}, remove {removeCount})"
     }
   },
