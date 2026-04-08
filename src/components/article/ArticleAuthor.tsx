@@ -112,7 +112,7 @@ export function ArticleAuthor({
           <Avatar
             className={cn(
               "transition-[width,height] duration-250 ease-out",
-              !isSticky ? "size-12" : "size-8",
+              !isSticky ? "size-10 md:size-12" : "size-8",
             )}
             url={author?.avatar}
             frameUrl={author?.equippedDecorations?.AVATAR_FRAME?.imageUrl || ""}
