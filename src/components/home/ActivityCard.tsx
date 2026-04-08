@@ -44,6 +44,7 @@ export function ActivityCard({ activity, className }: ActivityCardProps) {
       <Link
         className="flex flex-col md:flex-row items-stretch gap-3 py-4 px-1 border-b border-border last:border-0 last-of-type:border-none"
         href={`/article/${activity?.article?.id}`}
+        prefetch={false}
       >
         {/* 封面图区域 */}
         <div className="relative h-28 md:h-32 md:aspect-4/2 rounded-md bg-muted">

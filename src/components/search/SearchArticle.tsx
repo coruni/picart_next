@@ -61,6 +61,7 @@ export function SearchArticle({
     <article>
       <Link
         href={`/article/${article.id}`}
+        prefetch={false}
         className={cn(
           "flex items-stretch gap-3 py-4 transition-opacity hover:opacity-90",
           border && "border-b border-border",

@@ -450,6 +450,7 @@ export function DashboardClientPage() {
                     <div className="min-w-0">
                       <Link
                         href={`/article/${item.id}`}
+                        prefetch={false}
                         className="line-clamp-2 text-sm font-medium text-foreground hover:text-primary"
                       >
                         {item.title}

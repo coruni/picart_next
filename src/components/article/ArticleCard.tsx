@@ -295,7 +295,7 @@ export const ArticleCard = ({
       </div>
 
       <section>
-        <GuardedLink href={`/article/${article.id}`}>
+        <GuardedLink href={`/article/${article.id}`} prefetch={false}>
           <h3
             data-auto-translate-content
             className="mt-2 font-bold hover:text-primary cursor-pointer"

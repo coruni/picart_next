@@ -99,6 +99,7 @@ export const CollectionListWidget = ({
           <article key={item.id}>
             <Link
               href={`/article/${item.articleId}`}
+              prefetch={false}
               className="group flex items-center gap-3 hover:bg-primary/15 p-2 rounded-md"
             >
               {/* Content */}

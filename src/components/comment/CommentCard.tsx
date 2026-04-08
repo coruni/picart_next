@@ -151,6 +151,7 @@ export function CommentCard({
       <div className="ml-16 mt-3 cursor-pointer pr-4">
         <Link
           href={`/article/${comment?.article?.id}`}
+          prefetch={false}
           className="flex h-12.5 items-center overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-600"
         >
           {(() => {

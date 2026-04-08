@@ -95,6 +95,7 @@ export function DashboardArticlesPage() {
           <div className="min-w-0">
             <Link
               href={`/article/${item.id}`}
+              prefetch={false}
               className="block truncate text-sm font-medium text-foreground hover:text-primary"
             >
               {item.title}

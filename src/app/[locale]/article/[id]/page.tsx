@@ -296,6 +296,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                     : " bg-black/75 hover:bg-primary",
                 )}
                 href={`/article/${article.collection.navigation?.prev?.articleId}`}
+                prefetch={false}
               >
                 <ChevronLeft size={16} />
               </Link>
@@ -320,6 +321,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                     : " bg-black/75 hover:bg-primary",
                 )}
                 href={`/article/${article.collection.navigation?.next?.articleId}`}
+                prefetch={false}
               >
                 <ChevronRight size={16} />
               </Link>
