@@ -33,7 +33,8 @@ export const ImageComment = memo(function ImageComment({
     () => ({
       nickname: article.author.nickname || article.author.username,
       avatar: article.author.avatar,
-      frameUrl: article.author.equippedDecorations.AVATAR_FRAME.imageUrl,
+      frameUrl:
+        article.author.equippedDecorations?.AVATAR_FRAME?.imageUrl || "",
     }),
     [article.author],
   );
@@ -108,6 +109,7 @@ export const ImageComment = memo(function ImageComment({
             key={refreshKey}
             articleId={articleId}
             pageSize={10}
+            commentCount={article.commentCount || 0}
             sortClassName="pb-2!"
             showTopCommentEditor={false}
             stickySort={true}

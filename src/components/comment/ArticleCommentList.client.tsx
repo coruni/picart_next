@@ -31,6 +31,7 @@ const MemoizedCommentItem = memo(CommentItem);
 type ArticleCommentListProps = {
   articleId: string;
   pageSize?: number;
+  commentCount?: number;
   showTopCommentEditor?: boolean;
   stickySort?: boolean;
   sortClassName?: string;
@@ -43,6 +44,7 @@ type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
 export function ArticleCommentList({
   articleId,
   pageSize = 10,
+  commentCount,
   showTopCommentEditor = true,
   stickySort = false,
   sortClassName,
@@ -194,7 +196,7 @@ export function ArticleCommentList({
 
   const currentSortLabel =
     sortKey === "all"
-      ? t("sortWithCount", { count: total })
+      ? t("sortWithCount", { count: commentCount ?? total })
       : t(`sortOptions.${sortKey}`);
 
   const loadMoreComments = useCallback(async () => {

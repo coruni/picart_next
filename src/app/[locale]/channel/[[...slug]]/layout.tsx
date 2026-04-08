@@ -1,4 +1,5 @@
-﻿import { ChannelNav } from "@/components/channel/ChannelNav";
+﻿import emptyPng from "@/assets/images/placeholder/empty.png";
+import { ChannelNav } from "@/components/channel/ChannelNav";
 import { ChannelTabs } from "@/components/channel/ChannelTabs";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Sidebar } from "@/components/sidebar/Sidebar";
@@ -11,7 +12,6 @@ import {
   getPublicConfig,
 } from "@/lib/seo";
 import { ReactNode } from "react";
-import emptyPng from "@/assets/images/placeholder/empty.png";
 
 interface ChannelLayoutProps {
   children: ReactNode;
@@ -103,7 +103,7 @@ export default async function ChannelLayout({
 
   return (
     <>
-      <div className="top-header fixed h-101 w-full z-0">
+      <div className="top-header fixed h-101 w-full">
         <ImageWithFallback
           quality={95}
           src={
@@ -126,7 +126,7 @@ export default async function ChannelLayout({
 
       <ChannelNav channels={categories} currentId={Number(pid)} />
 
-      <div className="relative z-10 mt-60 w-full">
+      <div className="relative mt-60 w-full">
         <div className="page-container">
           <div className="left-container">
             <div className="top-header px-6 h-14 flex items-center border-b border-border sticky bg-card z-5 rounded-t-xl">

@@ -22,6 +22,7 @@ type ImageViewerProps = {
   article?: Article;
   images: string[];
   initialIndex?: number;
+  initialPanelExpanded?: boolean;
   visible: boolean;
   onClose: () => void;
   onChange?: (index: number) => void;
@@ -43,6 +44,7 @@ export function ImageViewer({
   article,
   images,
   initialIndex = 0,
+  initialPanelExpanded = false,
   visible,
   onClose,
   onChange,
@@ -68,7 +70,7 @@ export function ImageViewer({
     pendingIndexRef.current = initialIndex;
   }, [initialIndex]);
 
-  const [panelExpanded, setPanelExpanded] = useState(false);
+  const [panelExpanded, setPanelExpanded] = useState(initialPanelExpanded);
   const [viewerMounted, setViewerMounted] = useState(visible);
   const [panelContentVisible, setPanelContentVisible] = useState(false);
   const totalImages = images.length;
@@ -86,6 +88,13 @@ export function ImageViewer({
   useEffect(() => {
     panelExpandedRef.current = panelExpanded;
   }, [panelExpanded]);
+
+  useEffect(() => {
+    if (!visible) {
+      setPanelExpanded(initialPanelExpanded);
+      panelExpandedRef.current = initialPanelExpanded;
+    }
+  }, [initialPanelExpanded, visible]);
 
   // Defer panel content rendering until panel is expanded
   useEffect(() => {
@@ -305,15 +314,9 @@ export function ImageViewer({
       if (index > -1) {
         viewerStack.splice(index, 1);
       }
-      // Go back in history if this viewer pushed a state (only if not already handling popstate)
-      if (!skipHistoryBack) {
-        const currentState = window.history.state as { imageViewerOpen?: boolean; viewerId?: number } | null;
-        if (currentState?.imageViewerOpen && currentState?.viewerId === viewerIdRef.current) {
-          window.history.back();
-        }
-      }
       viewerIdRef.current = 0;
     }
+    void skipHistoryBack;
     disposeViewerInstance();
     panelExpandedRef.current = false;
     setPanelExpanded(false);
@@ -399,34 +402,10 @@ export function ImageViewer({
   useEffect(() => {
     if (!visible) {
       requestAnimationFrame(() => {
-        // Skip history.back() since this is triggered by visibility change, not back button
-        destroyViewerInstance(true);
+        destroyViewerInstance();
       });
       return;
     }
-
-    // Add history state to capture mobile back button
-    const viewerState = { imageViewerOpen: true, viewerId: viewerIdRef.current };
-    window.history.pushState(viewerState, "", window.location.href);
-
-    const handlePopState = (e: PopStateEvent) => {
-      // Check if this popstate is for our viewer
-      const state = e.state as { imageViewerOpen?: boolean; viewerId?: number } | null;
-      if (state?.imageViewerOpen || viewerStack.includes(viewerIdRef.current)) {
-        // Close the viewer without triggering another history.back()
-        // since the back navigation already happened
-        onCloseRef.current();
-        // Remove this viewer from stack without history back
-        const index = viewerStack.indexOf(viewerIdRef.current);
-        if (index > -1) {
-          viewerStack.splice(index, 1);
-        }
-        // Clean up without history.back since we're already at the popped state
-        disposeViewerInstance();
-      }
-    };
-
-    window.addEventListener("popstate", handlePopState);
 
     if (!containerRef.current || !viewerContainerRef.current) return;
 
@@ -472,7 +451,10 @@ export function ImageViewer({
           viewerIdCounter += 1;
           viewerIdRef.current = viewerIdCounter;
         }
-        viewerStack.push(viewerIdRef.current);
+        const viewerId = viewerIdRef.current;
+        if (viewerStack[viewerStack.length - 1] !== viewerId) {
+          viewerStack.push(viewerId);
+        }
 
         // Defer non-critical UI setup to next frame
         requestAnimationFrame(() => {
@@ -529,9 +511,7 @@ export function ImageViewer({
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown, true);
-      window.removeEventListener("popstate", handlePopState);
-      // Skip history.back() in cleanup since we're unmounting due to visibility change
-      destroyViewerInstance(true);
+      destroyViewerInstance();
     };
   }, [
     visible,
