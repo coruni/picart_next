@@ -7,6 +7,7 @@ import haha from "@/assets/images/reaction/haha.png";
 import like from "@/assets/images/reaction/like.png";
 import love from "@/assets/images/reaction/love.png";
 import sad from "@/assets/images/reaction/sad.png";
+import wow from "@/assets/images/reaction/wow.png";
 import { cn } from "@/lib";
 import Image, { StaticImageData } from "next/image";
 import { useState } from "react";
@@ -16,20 +17,37 @@ interface ReactionStatsProps {
   initialStats: Record<string, number>;
   // 可选：初始用户反应状态
   initialUserReaction?: string;
+  // 外部控制的 stats，用于联动
+  stats?: Record<string, number>;
+  // 外部控制的 userReaction，用于联动
+  userReaction?: string;
+  // 反应变化回调
+  onReactionChange?: (stats: Record<string, number>, userReaction: string | null) => void;
 }
 
 export function ReactionStats({
   articleId,
   initialStats,
   initialUserReaction,
+  stats: externalStats,
+  userReaction: externalUserReaction,
+  onReactionChange,
 }: ReactionStatsProps) {
-  const [reactionStats, setReactionStats] =
+  const isControlled = externalStats !== undefined;
+  const [internalReactionStats, setInternalReactionStats] =
     useState<Record<string, number>>(initialStats);
   const [loading, setLoading] = useState(false);
   // 用户只能有一个反应，所以使用 Set 但最多只包含一个元素
-  const [userReactions, setUserReactions] = useState<Set<string>>(
+  const [internalUserReactions, setInternalUserReactions] = useState<Set<string>>(
     new Set(initialUserReaction ? [initialUserReaction] : []),
   );
+
+  // 使用外部或内部的 stats
+  const reactionStats = isControlled ? externalStats : internalReactionStats;
+  // 使用外部或内部的 userReaction
+  const userReactions = externalUserReaction !== undefined
+    ? new Set(externalUserReaction ? [externalUserReaction] : [])
+    : internalUserReactions;
 
   // 获取最新的反应统计
   // const fetchReactionStats = useCallback(async () => {
@@ -51,7 +69,7 @@ export function ReactionStats({
 
   const emojiImageMap: Record<string, StaticImageData> = {
     haha: haha,
-    wow: haha,
+    wow: wow,
     dislike: dislike,
     like: like,
     angry: angry,
@@ -83,36 +101,34 @@ export function ReactionStats({
       // 从API响应更新状态
       if (data?.code === 200) {
         // 本地更新逻辑：每个用户只能有一个反应
-        setReactionStats((prev) => {
-          const newStats = { ...prev };
+        const newStats = { ...reactionStats };
 
-          if (wasReacted) {
-            // 如果点击的是当前反应，则移除它
-            newStats[emoji] = Math.max(0, (newStats[emoji] || 0) - 1);
-          } else {
-            // 如果用户之前有其他反应，先减少那个反应的计数
-            if (currentReaction && currentReaction !== emoji) {
-              newStats[currentReaction] = Math.max(
-                0,
-                (newStats[currentReaction] || 0) - 1,
-              );
-            }
-            // 增加新反应的计数
-            newStats[emoji] = (newStats[emoji] || 0) + 1;
+        if (wasReacted) {
+          // 如果点击的是当前反应，则移除它
+          newStats[emoji] = Math.max(0, (newStats[emoji] || 0) - 1);
+        } else {
+          // 如果用户之前有其他反应，先减少那个反应的计数
+          if (currentReaction && currentReaction !== emoji) {
+            newStats[currentReaction] = Math.max(
+              0,
+              (newStats[currentReaction] || 0) - 1,
+            );
           }
-
-          return newStats;
-        });
+          // 增加新反应的计数
+          newStats[emoji] = (newStats[emoji] || 0) + 1;
+        }
 
         // 更新用户反应状态：清除所有反应，然后设置新的（如果不是移除操作）
-        setUserReactions(() => {
-          const newSet = new Set<string>();
-          if (!wasReacted) {
-            newSet.add(emoji);
-          }
-          // 如果 wasReacted 为 true，则 newSet 保持为空，表示移除反应
-          return newSet;
-        });
+        const newUserReaction = wasReacted ? null : emoji;
+
+        // 如果不是受控组件，更新内部状态
+        if (!isControlled) {
+          setInternalReactionStats(newStats);
+          setInternalUserReactions(new Set(newUserReaction ? [newUserReaction] : []));
+        }
+
+        // 调用回调通知父组件
+        onReactionChange?.(newStats, newUserReaction);
       }
     } catch (error) {
       console.error("Failed to toggle reaction:", error);

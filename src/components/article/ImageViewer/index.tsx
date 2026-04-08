@@ -298,12 +298,19 @@ export function ImageViewer({
     isShownRef.current = false;
   }, [cleanupCustomUI]);
 
-  const destroyViewerInstance = useCallback(() => {
+  const destroyViewerInstance = useCallback((skipHistoryBack = false) => {
     // Remove this viewer from the stack
     if (viewerIdRef.current > 0) {
       const index = viewerStack.indexOf(viewerIdRef.current);
       if (index > -1) {
         viewerStack.splice(index, 1);
+      }
+      // Go back in history if this viewer pushed a state (only if not already handling popstate)
+      if (!skipHistoryBack) {
+        const currentState = window.history.state as { imageViewerOpen?: boolean; viewerId?: number } | null;
+        if (currentState?.imageViewerOpen && currentState?.viewerId === viewerIdRef.current) {
+          window.history.back();
+        }
       }
       viewerIdRef.current = 0;
     }
@@ -392,10 +399,34 @@ export function ImageViewer({
   useEffect(() => {
     if (!visible) {
       requestAnimationFrame(() => {
-        destroyViewerInstance();
+        // Skip history.back() since this is triggered by visibility change, not back button
+        destroyViewerInstance(true);
       });
       return;
     }
+
+    // Add history state to capture mobile back button
+    const viewerState = { imageViewerOpen: true, viewerId: viewerIdRef.current };
+    window.history.pushState(viewerState, "", window.location.href);
+
+    const handlePopState = (e: PopStateEvent) => {
+      // Check if this popstate is for our viewer
+      const state = e.state as { imageViewerOpen?: boolean; viewerId?: number } | null;
+      if (state?.imageViewerOpen || viewerStack.includes(viewerIdRef.current)) {
+        // Close the viewer without triggering another history.back()
+        // since the back navigation already happened
+        onCloseRef.current();
+        // Remove this viewer from stack without history back
+        const index = viewerStack.indexOf(viewerIdRef.current);
+        if (index > -1) {
+          viewerStack.splice(index, 1);
+        }
+        // Clean up without history.back since we're already at the popped state
+        disposeViewerInstance();
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
 
     if (!containerRef.current || !viewerContainerRef.current) return;
 
@@ -462,7 +493,8 @@ export function ImageViewer({
         if (index > -1) {
           viewerStack.splice(index, 1);
         }
-        destroyViewerInstance();
+        // Skip history.back() since we're already responding to a hide event
+        destroyViewerInstance(true);
       },
 
       view(event) {
@@ -497,7 +529,9 @@ export function ImageViewer({
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown, true);
-      destroyViewerInstance();
+      window.removeEventListener("popstate", handlePopState);
+      // Skip history.back() in cleanup since we're unmounting due to visibility change
+      destroyViewerInstance(true);
     };
   }, [
     visible,

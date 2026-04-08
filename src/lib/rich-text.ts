@@ -526,6 +526,26 @@ export function sanitizeRichTextHtml(html: string): string {
   return sanitizeHtmlForRender(withoutVideoOverlay);
 }
 
+export function hasMeaningfulRichTextContent(html: string): boolean {
+  if (!html.trim()) {
+    return false;
+  }
+
+  const sanitized = sanitizeRichTextHtml(html);
+  const root = parse(sanitized);
+
+  if (
+    root.querySelector("img") ||
+    root.querySelector("video") ||
+    root.querySelector("iframe") ||
+    root.querySelector(".ql-inline-article-list")
+  ) {
+    return true;
+  }
+
+  return root.text.replace(/[\s\u00A0\u200B-\u200D\uFEFF]/g, "").length > 0;
+}
+
 // =========================
 // Editor / Display
 // =========================

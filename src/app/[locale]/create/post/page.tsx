@@ -24,7 +24,12 @@ import { Switch } from "@/components/ui/Switch";
 import { TagSelect } from "@/components/ui/TagSelect";
 import { useForm } from "@/hooks/useForm";
 import { useRouter } from "@/i18n/routing";
-import { cn, prepareRichTextHtmlForDisplay, sanitizeRichTextHtml } from "@/lib";
+import {
+  cn,
+  hasMeaningfulRichTextContent,
+  prepareRichTextHtmlForDisplay,
+  sanitizeRichTextHtml,
+} from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { useUserStore } from "@/stores";
 import { Edit, Loader2, Trash2, X } from "lucide-react";
@@ -74,6 +79,16 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   const currentUser = useUserStore((state) => state.user);
   const editorRef = useRef<Quill | null>(null);
   const latestContentRef = useRef("");
+  const getLatestEditorContent = (value?: string) => {
+    const editorHtml = sanitizeRichTextHtml(
+      editorRef.current?.root.innerHTML || "",
+    );
+
+    return (
+      editorHtml ||
+      sanitizeRichTextHtml(latestContentRef.current || value || "")
+    );
+  };
 
   // Article loading state for edit mode
   const [articleLoading, setArticleLoading] = useState(isEditMode);
@@ -156,20 +171,22 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         minLength: { value: 4, message: t("form.titleMinLength") },
         maxLength: { value: 200, message: t("form.titleMaxLength") },
       },
-      content: { required: t("form.contentRequired") },
+      content: {
+        validate: (value) =>
+          hasMeaningfulRichTextContent(getLatestEditorContent(value))
+            ? true
+            : t("form.contentRequired"),
+      },
       categoryId: { required: t("form.categoryRequired") },
     },
     async onSubmit(values) {
-      const editorHtml = sanitizeRichTextHtml(
-        editorRef.current?.root.innerHTML || "",
-      );
-
-      const latestContent =
-        editorHtml || latestContentRef.current || values.content || "";
+      // 优先使用表单中的 content，因为它通过 onChange 保持同步
+      // fallback 到编辑器实时获取的内容
+      const sanitizedContent = getLatestEditorContent(values.content);
 
       const body = {
         ...values,
-        content: latestContent,
+        content: sanitizedContent,
         categoryId: Number(values.categoryId),
         sort: 0,
         type: "mixed" as const,
@@ -214,13 +231,15 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   useEffect(() => {
     if (!isEditMode || !articleId) return;
 
+    let isCancelled = false;
+
     const fetchArticle = async () => {
       try {
         const response = await articleControllerFindOne({
           path: { id: articleId },
         });
         const article = response.data?.data;
-        if (article) {
+        if (article && !isCancelled) {
           // Set form values
           setFieldValues({
             cover: article.cover || "",
@@ -310,11 +329,17 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       } catch (error) {
         console.error("Failed to fetch article:", error);
       } finally {
-        setArticleLoading(false);
+        if (!isCancelled) {
+          setArticleLoading(false);
+        }
       }
     };
     fetchArticle();
-  }, [isEditMode, articleId, setFieldValues]);
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isEditMode, articleId]);
 
   // Fetch categories on mount
   useEffect(() => {

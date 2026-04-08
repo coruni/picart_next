@@ -12,6 +12,15 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ReactionPanel } from "./ReactionPanel.client";
 
+export type ReactionType =
+    | "like"
+    | "love"
+    | "haha"
+    | "wow"
+    | "sad"
+    | "angry"
+    | "dislike";
+
 type ReactionStats = {
     like: number;
     love: number;
@@ -30,6 +39,8 @@ type ArticleActionsProps = {
     reactionStats: ReactionStats;
     userReaction?: string;
     likes: number;
+    // 反应变化回调，用于联动 ReactionStats
+    onReactionChange?: (stats: ReactionStats, userReaction?: string) => void;
 };
 
 export function ArticleActions({
@@ -37,9 +48,10 @@ export function ArticleActions({
     commentCount,
     favoriteCount,
     initialIsFavorited = false,
-    reactionStats,
-    userReaction,
-    likes,
+    reactionStats: initialReactionStats,
+    userReaction: initialUserReaction,
+    likes: initialLikes,
+    onReactionChange,
 }: ArticleActionsProps) {
     const locale = useLocale();
     const tAccountInfo = useTranslations("accountInfo");
@@ -49,6 +61,11 @@ export function ArticleActions({
         useState(favoriteCount);
     const [favoriteSubmitting, setFavoriteSubmitting] = useState(false);
 
+    // 反应状态和点赞数
+    const [reactionStats, setReactionStats] = useState<ReactionStats>(initialReactionStats);
+    const [userReaction, setUserReaction] = useState<string | undefined>(initialUserReaction);
+    const [likes, setLikes] = useState(initialLikes);
+
     useEffect(() => {
         setIsFavorited(initialIsFavorited);
     }, [initialIsFavorited]);
@@ -56,6 +73,30 @@ export function ArticleActions({
     useEffect(() => {
         setCurrentFavoriteCount(favoriteCount);
     }, [favoriteCount]);
+
+    // 同步外部传入的 reaction stats
+    useEffect(() => {
+        setReactionStats(initialReactionStats);
+    }, [initialReactionStats]);
+
+    useEffect(() => {
+        setUserReaction(initialUserReaction);
+    }, [initialUserReaction]);
+
+    useEffect(() => {
+        setLikes(initialLikes);
+    }, [initialLikes]);
+
+    // 处理反应变化
+    const handleReactionChange = (reactionType: ReactionType, newStats: ReactionStats) => {
+        setReactionStats(newStats);
+        setUserReaction(reactionType);
+        // 计算总点赞数
+        const totalLikes = Object.values(newStats).reduce((sum, count) => sum + count, 0);
+        setLikes(totalLikes);
+        // 调用父组件回调
+        onReactionChange?.(newStats, reactionType);
+    };
 
     const compactNumberLabels = {
         thousand: tAccountInfo("numberUnits.thousand"),
@@ -154,6 +195,7 @@ export function ArticleActions({
                         articleId={articleId}
                         reactionStats={reactionStats}
                         userReaction={userReaction}
+                        onReactionChange={handleReactionChange}
                     />
                 </div>
                 <span className="text-sm text-secondary">

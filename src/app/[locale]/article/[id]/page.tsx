@@ -1,5 +1,4 @@
 import {
-  ArticleActions,
   ArticleAuthor,
   ArticleMenu,
   ArticleRichContent,
@@ -7,8 +6,8 @@ import {
   type ArticleTocItem,
   ArticleTranslateNotice,
   ImageGallery,
-  ReactionStats,
 } from "@/components/article";
+import { ArticleReactionWrapper } from "@/components/article/ArticleReactionWrapper.client";
 import { ArticleCommentList } from "@/components/comment/ArticleCommentList.client";
 import "@/components/editor/inline-article.css";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
@@ -326,18 +325,13 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             </div>
           )}
 
-          <ReactionStats
+          <ArticleReactionWrapper
             articleId={id}
-            initialUserReaction={article.userReaction}
             initialStats={article?.reactionStats || {}}
-          />
-          <ArticleActions
-            articleId={article.id!}
+            initialUserReaction={article.userReaction}
             commentCount={article.commentCount!}
             favoriteCount={article.favoriteCount || 0}
             initialIsFavorited={Boolean(article.isFavorited)}
-            reactionStats={article.reactionStats!}
-            userReaction={article.userReaction}
             likes={article.likes!}
           />
         </div>

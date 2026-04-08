@@ -29,15 +29,13 @@ import { Button } from "../ui/Button";
 import "swiper/css";
 
 // 动态导入 Quill 以减少初始包大小
-let QuillModule: typeof import("quill")["default"] | null = null;
+let QuillModule: (typeof import("quill"))["default"] | null = null;
 let CustomEmojiBlot: unknown = null;
 
 async function loadQuill() {
   if (!QuillModule) {
-    const [{ default: Quill }, { CustomEmojiBlot: emojiBlot }] = await Promise.all([
-      import("quill"),
-      import("@/components/editor"),
-    ]);
+    const [{ default: Quill }, { CustomEmojiBlot: emojiBlot }] =
+      await Promise.all([import("quill"), import("@/components/editor")]);
     QuillModule = Quill;
     CustomEmojiBlot = emojiBlot;
   }
@@ -88,7 +86,11 @@ async function registerCommentQuillModules() {
   const { Quill, CustomEmojiBlot } = await loadQuill();
 
   if (Quill && CustomEmojiBlot) {
-    (Quill as unknown as { register: (path: string, target: unknown, overwrite?: boolean) => void }).register("formats/emoji", CustomEmojiBlot, true);
+    (
+      Quill as unknown as {
+        register: (path: string, target: unknown, overwrite?: boolean) => void;
+      }
+    ).register("formats/emoji", CustomEmojiBlot, true);
   }
 
   if (typeof window !== "undefined") {
@@ -146,7 +148,9 @@ function normalizeEmojiGroups(response: unknown): EmojiGroup[] {
   }, []);
 }
 
-function hasQuillContent(quill: { getText: () => string; root: Element } | null) {
+function hasQuillContent(
+  quill: { getText: () => string; root: Element } | null,
+) {
   if (!quill) {
     return false;
   }
@@ -298,7 +302,9 @@ export function CommentEditor({
     void initQuill();
 
     return () => {
-      const quill = quillRef.current as { off: (event: string, handler: () => void) => void } | null;
+      const quill = quillRef.current as {
+        off: (event: string, handler: () => void) => void;
+      } | null;
       if (quill) {
         quill.off("text-change", () => {});
         quillRef.current = null;
@@ -399,7 +405,12 @@ export function CommentEditor({
     const quill = quillRef.current as {
       getSelection: (focus: boolean) => { index: number } | null;
       getLength: () => number;
-      insertEmbed: (index: number, type: string, value: unknown, source: string) => void;
+      insertEmbed: (
+        index: number,
+        type: string,
+        value: unknown,
+        source: string,
+      ) => void;
       insertText: (index: number, text: string, source: string) => void;
       setSelection: (index: number, length: number, source: string) => void;
     } | null;
@@ -571,7 +582,12 @@ export function CommentEditor({
       (attachment) => attachment.status === "uploaded" && attachment.url,
     );
 
-    if (!hasQuillContent(quill as unknown as { getText: () => string; root: Element }) && uploadedAttachments.length === 0) {
+    if (
+      !hasQuillContent(
+        quill as unknown as { getText: () => string; root: Element },
+      ) &&
+      uploadedAttachments.length === 0
+    ) {
       return;
     }
 
@@ -673,9 +689,7 @@ export function CommentEditor({
               </button>
 
               {emojiOpen && (
-                <div
-                  className="absolute top-full z-10 mb-3 w-max max-w-[min(20rem,calc(100vw-2rem))] min-w-[calc(100vw-64px)] md:min-w-xl overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
-                >
+                <div className="absolute top-full z-10 mb-3 w-max max-w-[calc(100vw-2rem)] min-w-[18rem] md:min-w-[24rem] overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
                   <div className="flex h-10 items-center gap-2 rounded-t-xl border-b border-border bg-border px-2.5">
                     <button
                       type="button"

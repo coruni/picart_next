@@ -49,7 +49,6 @@ type ReactionPanelProps = {
   showCount?: boolean;
   showReaction?: boolean;
   placement?: "top" | "bottom";
-  fixed?: boolean;
   onReactionChange?: (
     reactionType: ReactionType,
     newStats: ReactionStats,
@@ -74,7 +73,6 @@ export const ReactionPanel = ({
   showCount = true,
   showReaction = false,
   placement = "top",
-  fixed = false,
   onReactionChange,
 }: ReactionPanelProps) => {
   const t = useTranslations("reactionPanel");
@@ -186,7 +184,9 @@ export const ReactionPanel = ({
       <div
         className={cn(
           "flex items-center cursor-pointer transition-colors",
-          currentReaction ? "text-primary" : "text-secondary hover:text-primary"
+          currentReaction
+            ? "text-primary"
+            : "text-secondary hover:text-primary",
         )}
         onClick={() => setIsOpen(!isOpen)}
       >

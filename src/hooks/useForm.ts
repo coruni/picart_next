@@ -148,14 +148,32 @@ export function useForm<T extends Record<string, any>>({
   );
 
   // 设置字段值
-  const setValue = useCallback((name: keyof T, value: any) => {
-    setValues((prev) => ({ ...prev, [name]: value }));
-  }, []);
+  const setValue = useCallback(
+    (name: keyof T, value: any) => {
+      setValues((prev) => ({ ...prev, [name]: value }));
+      if (touched[name as string]) {
+        const error = validateField(name, value);
+        setErrors((prev) => ({ ...prev, [name as string]: error }));
+      }
+    },
+    [touched, validateField]
+  );
 
   // 设置多个字段值
-  const setFieldValues = useCallback((newValues: Partial<T>) => {
-    setValues((prev) => ({ ...prev, ...newValues }));
-  }, []);
+  const setFieldValues = useCallback(
+    (newValues: Partial<T>) => {
+      setValues((prev) => ({ ...prev, ...newValues }));
+      const nextErrors: Record<string, string> = {};
+      Object.entries(newValues).forEach(([key, value]) => {
+        if (!touched[key]) return;
+        nextErrors[key] = validateField(key as keyof T, value);
+      });
+      if (Object.keys(nextErrors).length > 0) {
+        setErrors((prev) => ({ ...prev, ...nextErrors }));
+      }
+    },
+    [touched, validateField]
+  );
 
   // 重置表单
   const reset = useCallback(() => {
