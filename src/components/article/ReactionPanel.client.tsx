@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { articleControllerLike } from "@/api";
 import angry from "@/assets/images/reaction/angry.png";
@@ -48,6 +48,8 @@ type ReactionPanelProps = {
   userReaction?: string;
   showCount?: boolean;
   showReaction?: boolean;
+  placement?: "top" | "bottom";
+  fixed?: boolean;
   onReactionChange?: (
     reactionType: ReactionType,
     newStats: ReactionStats,
@@ -71,6 +73,8 @@ export const ReactionPanel = ({
   userReaction,
   showCount = true,
   showReaction = false,
+  placement = "top",
+  fixed = false,
   onReactionChange,
 }: ReactionPanelProps) => {
   const t = useTranslations("reactionPanel");
@@ -85,7 +89,7 @@ export const ReactionPanel = ({
 
   useClickOutside(panelRef, () => setIsOpen(false));
 
-  // Get top 2 reactions with highest counts (excluding current user's reaction)
+  // Get top 2 reactions with highest counts (excluding current user'"'"'s reaction)
   const topReactions = useMemo(() => {
     if (!stats) return [];
     return Object.entries(stats)
@@ -177,26 +181,18 @@ export const ReactionPanel = ({
     0,
   );
 
-  const CurrentReactionIcon = currentReaction
-    ? REACTIONS.find((r) => r.type === currentReaction)?.icon
-    : ThumbsUp;
-
-  const currentReactionColor = currentReaction
-    ? REACTIONS.find((r) => r.type === currentReaction)?.color
-    : undefined;
-
   return (
     <div className="relative" ref={panelRef}>
       <div
         className={cn(
-          "flex items-center cursor-pointer text-secondary hover:text-primary transition-colors",
-          currentReaction && currentReactionColor,
+          "flex items-center cursor-pointer transition-colors",
+          currentReaction ? "text-primary" : "text-secondary hover:text-primary"
         )}
         onClick={() => setIsOpen(!isOpen)}
       >
         {/* Main reaction icon with stacked top reactions on the right */}
         <div className="relative flex items-center">
-          {CurrentReactionIcon && <CurrentReactionIcon size={20} />}
+          <ThumbsUp size={20} />
         </div>
         {showCount && (
           <span className="ml-2 text-xs mr-2">{totalReactions}</span>
@@ -234,14 +230,18 @@ export const ReactionPanel = ({
 
       <div
         className={cn(
-          "absolute bottom-full right-0 mb-2 bg-card rounded-xl shadow-lg py-2 px-3 z-10 min-w-92 max-w-100 w-full border border-border",
+          "absolute mb-2 bg-card rounded-xl shadow-lg py-2 px-3 z-10 border border-border",
+          "w-max ",
+          // 根据 placement 决定位置
+          placement === "top"
+            ? "bottom-full -right-3"
+            : "top-full right-0 mt-2 sm:-translate-x-1/2",
           isOpen ? "block" : "hidden",
         )}
       >
-        <div className="grid grid-cols-5 gap-2 flex-wrap">
+        <div className="grid grid-cols-4 sm:grid-cols-5 gap-1 sm:gap-2">
           {REACTIONS.map((reaction) => {
             const imgSrc = reactionImageMap[reaction.type];
-            const count = stats[reaction.type];
             const isActive = currentReaction === reaction.type;
 
             return (
@@ -251,7 +251,7 @@ export const ReactionPanel = ({
                 disabled={isLoading}
                 title={reaction.type}
                 className={cn(
-                  "cursor-pointer flex flex-col items-center justify-center p-2 rounded-lg transition-all size-16",
+                  "cursor-pointer flex flex-col items-center justify-center p-1.5 sm:p-2 rounded-lg transition-all size-12 sm:size-16",
                   "hover:bg-primary/10 hover:scale-110",
                   isActive && "bg-primary/15 ring-2 ring-primary/30",
                   isLoading && "opacity-50 cursor-not-allowed",
@@ -264,7 +264,7 @@ export const ReactionPanel = ({
                     width={24}
                     height={24}
                     className={cn(
-                      "size-12 object-cover",
+                      "size-8 sm:size-12 object-cover",
                       isActive ? "opacity-100" : "opacity-70",
                     )}
                   />

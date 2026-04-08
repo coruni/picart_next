@@ -674,11 +674,7 @@ export function CommentEditor({
 
               {emojiOpen && (
                 <div
-                  className="absolute top-full  z-30 mb-3 overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
-                  style={{
-                    width: "min(20rem, calc(100vw - 20rem))",
-                    minWidth: "16rem",
-                  }}
+                  className="absolute top-full z-10 mb-3 w-max max-w-[min(20rem,calc(100vw-2rem))] min-w-[calc(100vw-64px)] md:min-w-xl overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
                 >
                   <div className="flex h-10 items-center gap-2 rounded-t-xl border-b border-border bg-border px-2.5">
                     <button

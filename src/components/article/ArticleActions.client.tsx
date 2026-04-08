@@ -106,7 +106,7 @@ export function ArticleActions({
     };
 
     return (
-        <div className="mt-4 flex items-center justify-evenly py-6">
+        <div className="mt-4 flex items-center justify-evenly py-6 relative">
             <div className="group flex cursor-pointer flex-col items-center justify-center">
                 <div className="rounded-full p-1 group-hover:bg-primary/15">
                     <MessageCircleMore className="text-secondary" />
@@ -147,9 +147,10 @@ export function ArticleActions({
             </button>
 
             <div className="group flex cursor-pointer flex-col items-center justify-center">
-                <div className="rounded-full p-1 group-hover:bg-primary/15">
+                <div className="rounded-full p-1 group-hover:bg-primary/15 relative">
                     <ReactionPanel
                         showCount={false}
+                        placement="top"
                         articleId={articleId}
                         reactionStats={reactionStats}
                         userReaction={userReaction}
