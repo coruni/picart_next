@@ -1,7 +1,8 @@
 const RETRYABLE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const RETRYABLE_STATUS_CODES = new Set([408, 425, 429, 500, 502, 503, 504]);
 
-const DEFAULT_TIMEOUT_MS = 8_000;
+const DEFAULT_TIMEOUT_MS = 60_000;
+const DEFAULT_UPLOAD_TIMEOUT_MS = 600_000;
 const DEFAULT_RETRY_COUNT = 2;
 const RETRY_DELAY_MS = 400;
 
@@ -93,6 +94,14 @@ function createTimeoutController(
   };
 }
 
+function getTimeoutMs(init?: RequestInit) {
+  if (init?.body instanceof FormData) {
+    return DEFAULT_UPLOAD_TIMEOUT_MS;
+  }
+
+  return DEFAULT_TIMEOUT_MS;
+}
+
 async function sleep(ms: number, signal?: AbortSignal | null) {
   if (ms <= 0) {
     return;
@@ -147,7 +156,10 @@ export async function resilientFetch(
   let lastError: unknown;
 
   for (let attempt = 0; attempt <= DEFAULT_RETRY_COUNT; attempt += 1) {
-    const timeoutController = createTimeoutController(init?.signal);
+    const timeoutController = createTimeoutController(
+      init?.signal,
+      getTimeoutMs(init),
+    );
 
     try {
       const response = await fetch(input, {

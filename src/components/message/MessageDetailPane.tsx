@@ -867,6 +867,22 @@ export function MessageDetailPane({
                     rows={1}
                     value={composerValue}
                     onChange={(event) => setComposerValue(event.target.value)}
+                    onPaste={(event) => {
+                      const files = event.clipboardData?.files;
+                      if (!files?.length) {
+                        return;
+                      }
+
+                      const hasImage = Array.from(files).some((file) =>
+                        file.type.startsWith("image/"),
+                      );
+                      if (!hasImage) {
+                        return;
+                      }
+
+                      event.preventDefault();
+                      onPickComposerImages(files);
+                    }}
                     onKeyDown={(event) => {
                       if (
                         event.key === "Enter" &&

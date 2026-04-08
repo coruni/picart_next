@@ -885,13 +885,9 @@ export function MessageCenterClient() {
     setIsUploadingImages(true);
 
     void (async () => {
-      // 保存原始文件引用（用于计算 hash）
       const originalFiles = nextFiles;
-
-      // 压缩图片
       const compressionResults = await compressImages(nextFiles);
 
-      // 验证压缩后的文件大小
       const validation = validateFiles(
         compressionResults.map((r) => r.file),
         true,
@@ -908,7 +904,7 @@ export function MessageCenterClient() {
             ? crypto.randomUUID()
             : `${Date.now()}-${Math.random()}`,
         file: result.file,
-        originalFile: originalFiles[index], // 保存原始文件用于计算 hash
+        originalFile: originalFiles[index],
         previewUrl: URL.createObjectURL(result.file),
       }));
 
@@ -923,45 +919,56 @@ export function MessageCenterClient() {
       ]);
 
       try {
-        for (const draft of drafts) {
-          try {
-            // 计算原始文件的 hash
-            const metadata = await buildUploadMetadata([draft.originalFile]);
+        const metadata = await buildUploadMetadata(
+          drafts.map((draft) => draft.originalFile),
+        );
 
-            const response = await uploadControllerUploadFile({
-              body: { file: draft.file, metadata },
-            });
-            const uploadedUrl = response?.data?.data?.[0]?.url;
+        const response = await uploadControllerUploadFile({
+          body: {
+            file: drafts.map((draft) => draft.file) as any,
+            metadata,
+          },
+        });
+        const uploadedItems = response?.data?.data || [];
 
-            if (!uploadedUrl) {
-              throw new Error("Missing uploaded file url");
+        setComposerImages((current) =>
+          current.flatMap((item) => {
+            const draftIndex = drafts.findIndex((draft) => draft.id === item.id);
+            if (draftIndex === -1) {
+              return [item];
             }
 
-            setComposerImages((current) =>
-              current.map((item) =>
-                item.id === draft.id
-                  ? {
-                      ...item,
-                      uploadedUrl,
-                      uploading: false,
-                    }
-                  : item,
-              ),
-            );
-          } catch (error) {
-            URL.revokeObjectURL(draft.previewUrl);
-            setComposerImages((current) =>
-              current.filter((item) => item.id !== draft.id),
-            );
-            console.error("Failed to upload private image:", error);
-          }
-        }
+            const uploadedUrl = uploadedItems[draftIndex]?.url;
+            if (!uploadedUrl) {
+              URL.revokeObjectURL(item.previewUrl);
+              console.error(
+                "Failed to upload private image: Missing uploaded file url",
+              );
+              return [];
+            }
+
+            return [
+              {
+                ...item,
+                uploadedUrl,
+                uploading: false,
+              },
+            ];
+          }),
+        );
+      } catch (error) {
+        drafts.forEach((draft) => {
+          URL.revokeObjectURL(draft.previewUrl);
+        });
+        setComposerImages((current) =>
+          current.filter((item) => !drafts.some((draft) => draft.id === item.id)),
+        );
+        console.error("Failed to upload private images:", error);
       } finally {
         setIsUploadingImages(false);
       }
     })();
   };
-
   const handleRemoveComposerImage = (id: string) => {
     setComposerImages((current) => {
       const target = current.find((item) => item.id === id);

@@ -87,14 +87,14 @@ export const ReactionPanel = ({
 
   useClickOutside(panelRef, () => setIsOpen(false));
 
-  // Get top 2 reactions with highest counts (excluding current user'"'"'s reaction)
+  // Get top 2 reactions with highest counts
   const topReactions = useMemo(() => {
     if (!stats) return [];
     return Object.entries(stats)
-      .filter(([type, count]) => count > 0 && type !== currentReaction)
+      .filter(([, count]) => count > 0)
       .sort(([, a], [, b]) => b - a)
       .slice(0, 2);
-  }, [stats, currentReaction]);
+  }, [stats]);
 
   const REACTIONS = [
     {
