@@ -543,15 +543,46 @@ export function ImageViewer({
 
     openViewerInstance(pendingIndexRef.current);
 
-    // Custom ESC key handler - only close if this viewer is at the top of the stack
+    // Custom keyboard handler - only react if this viewer is at the top of the stack
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (viewerStack[viewerStack.length - 1] !== viewerIdRef.current) {
+        return;
+      }
+
       if (e.key === "Escape") {
-        // Only handle ESC if this viewer is the topmost one
-        if (viewerStack[viewerStack.length - 1] === viewerIdRef.current) {
-          e.stopPropagation();
-          e.preventDefault();
-          onCloseRef.current();
-        }
+        e.stopPropagation();
+        e.preventDefault();
+        onCloseRef.current();
+        return;
+      }
+
+      if (e.key === "ArrowLeft") {
+        e.stopPropagation();
+        e.preventDefault();
+        const currentIndex = getCurrentIndex();
+        viewerRef.current?.view(currentIndex <= 0 ? totalImages - 1 : currentIndex - 1);
+        return;
+      }
+
+      if (e.key === "ArrowRight") {
+        e.stopPropagation();
+        e.preventDefault();
+        const currentIndex = getCurrentIndex();
+        viewerRef.current?.view(currentIndex >= totalImages - 1 ? 0 : currentIndex + 1);
+        return;
+      }
+
+      if (e.key === "ArrowUp") {
+        e.stopPropagation();
+        e.preventDefault();
+        viewerRef.current?.zoom(0.1);
+        return;
+      }
+
+      if (e.key === "ArrowDown") {
+        e.stopPropagation();
+        e.preventDefault();
+        viewerRef.current?.zoom(-0.1);
       }
     };
 
@@ -572,7 +603,9 @@ export function ImageViewer({
     destroyViewerInstance,
     applyCanvasLayout,
     getSafeIndex,
+    getCurrentIndex,
     syncToolbarState,
+    totalImages,
     updateIndexDisplay,
   ]);
 
