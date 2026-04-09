@@ -13493,99 +13493,6 @@ export type DecorationControllerCleanExpiredResponses = {
 
 export type DecorationControllerCleanExpiredResponse = DecorationControllerCleanExpiredResponses[keyof DecorationControllerCleanExpiredResponses];
 
-export type PointsControllerAddPointsData = {
-    body: AddPointsDto;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/points/add';
-};
-
-export type PointsControllerAddPointsErrors = {
-    /**
-     * 请求参数错误
-     */
-    400: unknown;
-    /**
-     * 未授权
-     */
-    401: unknown;
-    /**
-     * 权限不足
-     */
-    403: unknown;
-};
-
-export type PointsControllerAddPointsResponses = {
-    /**
-     * 积分增加成功
-     */
-    201: unknown;
-};
-
-export type PointsControllerSpendPointsData = {
-    body: SpendPointsDto;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/points/spend';
-};
-
-export type PointsControllerSpendPointsErrors = {
-    /**
-     * 积分不足或请求参数错误
-     */
-    400: unknown;
-    /**
-     * 未授权
-     */
-    401: unknown;
-};
-
-export type PointsControllerSpendPointsResponses = {
-    /**
-     * 积分消费成功
-     */
-    201: unknown;
-};
-
-export type PointsControllerGetBalanceData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/points/balance';
-};
-
-export type PointsControllerGetBalanceErrors = {
-    /**
-     * 未授权
-     */
-    401: unknown;
-};
-
-export type PointsControllerGetBalanceResponses = {
-    /**
-     * 获取成功
-     */
-    200: unknown;
-};
-
 export type PointsControllerGetTransactionsData = {
     body?: never;
     headers?: {
@@ -13650,8 +13557,31 @@ export type PointsControllerFindAllActivitiesResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: Array<{
+            id: number;
+            code: string;
+            name: string;
+            description: string;
+            type: string;
+            rewardPoints: number;
+            targetCount: number;
+            dailyLimit: number;
+            totalLimit: number;
+            validDays: number;
+            icon: string;
+            link: string | null;
+            isActive: boolean;
+            sort: number;
+            createdAt: string;
+            updatedAt: string;
+        }>;
+    };
 };
+
+export type PointsControllerFindAllActivitiesResponse = PointsControllerFindAllActivitiesResponses[keyof PointsControllerFindAllActivitiesResponses];
 
 export type PointsControllerCreateActivityData = {
     body: CreatePointsActivityDto;
@@ -13751,8 +13681,31 @@ export type PointsControllerFindOneActivityResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            code: string;
+            name: string;
+            description: string;
+            type: string;
+            rewardPoints: number;
+            targetCount: number;
+            dailyLimit: number;
+            totalLimit: number;
+            validDays: number;
+            icon: string;
+            link: unknown;
+            isActive: boolean;
+            sort: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
 };
+
+export type PointsControllerFindOneActivityResponse = PointsControllerFindOneActivityResponses[keyof PointsControllerFindOneActivityResponses];
 
 export type PointsControllerUpdateActivityData = {
     body: UpdatePointsActivityDto;
@@ -13793,43 +13746,6 @@ export type PointsControllerUpdateActivityResponses = {
      * 活动更新成功
      */
     200: unknown;
-};
-
-export type PointsControllerClaimTaskRewardData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/points/activities/{id}/claim';
-};
-
-export type PointsControllerClaimTaskRewardErrors = {
-    /**
-     * 任务未完成或已领取
-     */
-    400: unknown;
-    /**
-     * 未授权
-     */
-    401: unknown;
-    /**
-     * 任务记录不存在
-     */
-    404: unknown;
-};
-
-export type PointsControllerClaimTaskRewardResponses = {
-    /**
-     * 奖励领取成功
-     */
-    201: unknown;
 };
 
 export type PointsControllerGetMyTasksData = {
@@ -13968,8 +13884,39 @@ export type PointsControllerGetStatisticsResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            transactions: {
+                total: number;
+                earned: number;
+                spent: number;
+            };
+            points: {
+                totalEarned: number;
+                totalSpent: number;
+            };
+            users: {
+                activeUsers: number;
+            };
+            activities: {
+                total: number;
+                active: number;
+            };
+            tasks: {
+                totalRecords: number;
+                completed: number;
+                claimed: number;
+                completionRate: string;
+                claimRate: string;
+            };
+            bySource: Array<string>;
+        };
+    };
 };
+
+export type PointsControllerGetStatisticsResponse = PointsControllerGetStatisticsResponses[keyof PointsControllerGetStatisticsResponses];
 
 export type PointsControllerGetUserTransactionsData = {
     body?: never;
@@ -14051,7 +13998,146 @@ export type PointsControllerGetUserBalanceResponses = {
     /**
      * 获取成功
      */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            points: number;
+            userId: number;
+        };
+    };
+};
+
+export type PointsControllerGetUserBalanceResponse = PointsControllerGetUserBalanceResponses[keyof PointsControllerGetUserBalanceResponses];
+
+export type PointsControllerGetBalanceData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/points/balance';
+};
+
+export type PointsControllerGetBalanceErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+};
+
+export type PointsControllerGetBalanceResponses = {
+    /**
+     * 获取成功
+     */
     200: unknown;
+};
+
+export type PointsControllerAddPointsData = {
+    body: AddPointsDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/points/add';
+};
+
+export type PointsControllerAddPointsErrors = {
+    /**
+     * 请求参数错误
+     */
+    400: unknown;
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 权限不足
+     */
+    403: unknown;
+};
+
+export type PointsControllerAddPointsResponses = {
+    /**
+     * 积分增加成功
+     */
+    201: unknown;
+};
+
+export type PointsControllerSpendPointsData = {
+    body: SpendPointsDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/points/spend';
+};
+
+export type PointsControllerSpendPointsErrors = {
+    /**
+     * 积分不足或请求参数错误
+     */
+    400: unknown;
+    /**
+     * 未授权
+     */
+    401: unknown;
+};
+
+export type PointsControllerSpendPointsResponses = {
+    /**
+     * 积分消费成功
+     */
+    201: unknown;
+};
+
+export type PointsControllerClaimTaskRewardData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/points/activities/{id}/claim';
+};
+
+export type PointsControllerClaimTaskRewardErrors = {
+    /**
+     * 任务未完成或已领取
+     */
+    400: unknown;
+    /**
+     * 未授权
+     */
+    401: unknown;
+    /**
+     * 任务记录不存在
+     */
+    404: unknown;
+};
+
+export type PointsControllerClaimTaskRewardResponses = {
+    /**
+     * 奖励领取成功
+     */
+    201: unknown;
 };
 
 export type EmojiControllerFindAllData = {

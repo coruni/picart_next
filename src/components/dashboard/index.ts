@@ -10,6 +10,7 @@ export { DashboardDecorationsPage } from "./DashboardDecorationsPage.client";
 export { DashboardEmojisPage } from "./DashboardEmojisPage.client";
 export { DashboardOrdersPage } from "./DashboardOrdersPage.client";
 export { DashboardPermissionsPage } from "./DashboardPermissionsPage.client";
+export { DashboardPointsPage } from "./DashboardPointsPage.client";
 export { DashboardReportsPage } from "./DashboardReportsPage.client";
 export { DashboardRolesPage } from "./DashboardRolesPage.client";
 export { DashboardShell } from "./DashboardShell.client";

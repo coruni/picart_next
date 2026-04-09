@@ -40761,248 +40761,6 @@
         ]
       }
     },
-    "/points/add": {
-      "post": {
-        "summary": "增加积分",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_addPoints",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddPointsDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "积分增加成功",
-            "headers": {}
-          },
-          "400": {
-            "description": "请求参数错误",
-            "headers": {}
-          },
-          "401": {
-            "description": "未授权",
-            "headers": {}
-          },
-          "403": {
-            "description": "权限不足",
-            "headers": {}
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/points/spend": {
-      "post": {
-        "summary": "消费积分",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_spendPoints",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/SpendPointsDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "积分消费成功",
-            "headers": {}
-          },
-          "400": {
-            "description": "积分不足或请求参数错误",
-            "headers": {}
-          },
-          "401": {
-            "description": "未授权",
-            "headers": {}
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/points/balance": {
-      "get": {
-        "summary": "获取积分余额",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_getBalance",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "获取成功",
-            "headers": {}
-          },
-          "401": {
-            "description": "未授权",
-            "headers": {}
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
     "/points/transactions": {
       "get": {
         "summary": "获取积分交易记录",
@@ -41119,6 +40877,179 @@
       }
     },
     "/points/activities": {
+      "get": {
+        "summary": "获取积分活动列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_findAllActivities",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "rewardPoints": {
+                            "type": "integer"
+                          },
+                          "targetCount": {
+                            "type": "integer"
+                          },
+                          "dailyLimit": {
+                            "type": "integer"
+                          },
+                          "totalLimit": {
+                            "type": "integer"
+                          },
+                          "validDays": {
+                            "type": "integer"
+                          },
+                          "icon": {
+                            "type": "string"
+                          },
+                          "link": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "isActive": {
+                            "type": "boolean"
+                          },
+                          "sort": {
+                            "type": "integer"
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "code",
+                          "name",
+                          "description",
+                          "type",
+                          "rewardPoints",
+                          "targetCount",
+                          "dailyLimit",
+                          "totalLimit",
+                          "validDays",
+                          "icon",
+                          "link",
+                          "isActive",
+                          "sort",
+                          "createdAt",
+                          "updatedAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
       "post": {
         "summary": "创建积分活动",
         "deprecated": false,
@@ -41204,84 +41135,6 @@
             "bearer": []
           }
         ]
-      },
-      "get": {
-        "summary": "获取积分活动列表",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_findAllActivities",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "type",
-            "in": "query",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "keyword",
-            "in": "query",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "获取成功",
-            "headers": {}
-          }
-        },
-        "security": []
       }
     },
     "/points/activities/{id}": {
@@ -41350,6 +41203,97 @@
         "responses": {
           "200": {
             "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "rewardPoints": {
+                          "type": "integer"
+                        },
+                        "targetCount": {
+                          "type": "integer"
+                        },
+                        "dailyLimit": {
+                          "type": "integer"
+                        },
+                        "totalLimit": {
+                          "type": "integer"
+                        },
+                        "validDays": {
+                          "type": "integer"
+                        },
+                        "icon": {
+                          "type": "string"
+                        },
+                        "link": {
+                          "type": "null"
+                        },
+                        "isActive": {
+                          "type": "boolean"
+                        },
+                        "sort": {
+                          "type": "integer"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "code",
+                        "name",
+                        "description",
+                        "type",
+                        "rewardPoints",
+                        "targetCount",
+                        "dailyLimit",
+                        "totalLimit",
+                        "validDays",
+                        "icon",
+                        "link",
+                        "isActive",
+                        "sort",
+                        "createdAt",
+                        "updatedAt"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           },
           "404": {
@@ -41536,94 +41480,6 @@
           },
           "404": {
             "description": "活动不存在",
-            "headers": {}
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/points/activities/{id}/claim": {
-      "post": {
-        "summary": "领取任务奖励",
-        "deprecated": false,
-        "description": "",
-        "operationId": "PointsController_claimTaskReward",
-        "tags": [
-          "积分管理"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "example": "",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "奖励领取成功",
-            "headers": {}
-          },
-          "400": {
-            "description": "任务未完成或已领取",
-            "headers": {}
-          },
-          "401": {
-            "description": "未授权",
-            "headers": {}
-          },
-          "404": {
-            "description": "任务记录不存在",
             "headers": {}
           }
         },
@@ -41963,6 +41819,132 @@
         "responses": {
           "200": {
             "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "transactions": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "earned": {
+                              "type": "integer"
+                            },
+                            "spent": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "total",
+                            "earned",
+                            "spent"
+                          ]
+                        },
+                        "points": {
+                          "type": "object",
+                          "properties": {
+                            "totalEarned": {
+                              "type": "integer"
+                            },
+                            "totalSpent": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "totalEarned",
+                            "totalSpent"
+                          ]
+                        },
+                        "users": {
+                          "type": "object",
+                          "properties": {
+                            "activeUsers": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "activeUsers"
+                          ]
+                        },
+                        "activities": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "active": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "total",
+                            "active"
+                          ]
+                        },
+                        "tasks": {
+                          "type": "object",
+                          "properties": {
+                            "totalRecords": {
+                              "type": "integer"
+                            },
+                            "completed": {
+                              "type": "integer"
+                            },
+                            "claimed": {
+                              "type": "integer"
+                            },
+                            "completionRate": {
+                              "type": "string"
+                            },
+                            "claimRate": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "totalRecords",
+                            "completed",
+                            "claimed",
+                            "completionRate",
+                            "claimRate"
+                          ]
+                        },
+                        "bySource": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [
+                        "transactions",
+                        "points",
+                        "users",
+                        "activities",
+                        "tasks",
+                        "bySource"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           },
           "401": {
@@ -42176,6 +42158,41 @@
         "responses": {
           "200": {
             "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "points": {
+                          "type": "integer"
+                        },
+                        "userId": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "points",
+                        "userId"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           },
           "401": {
@@ -42184,6 +42201,336 @@
           },
           "403": {
             "description": "权限不足",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/points/balance": {
+      "get": {
+        "summary": "获取积分余额",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_getBalance",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/points/add": {
+      "post": {
+        "summary": "增加积分",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_addPoints",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddPointsDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "积分增加成功",
+            "headers": {}
+          },
+          "400": {
+            "description": "请求参数错误",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          },
+          "403": {
+            "description": "权限不足",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/points/spend": {
+      "post": {
+        "summary": "消费积分",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_spendPoints",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpendPointsDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "积分消费成功",
+            "headers": {}
+          },
+          "400": {
+            "description": "积分不足或请求参数错误",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/points/activities/{id}/claim": {
+      "post": {
+        "summary": "领取任务奖励",
+        "deprecated": false,
+        "description": "",
+        "operationId": "PointsController_claimTaskReward",
+        "tags": [
+          "积分管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "奖励领取成功",
+            "headers": {}
+          },
+          "400": {
+            "description": "任务未完成或已领取",
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          },
+          "404": {
+            "description": "任务记录不存在",
             "headers": {}
           }
         },
@@ -43576,6 +43923,198 @@
       }
     },
     "/achievement": {
+      "get": {
+        "summary": "获取成就列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "AchievementController_findAll",
+        "tags": [
+          "成就管理"
+        ],
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "关键词搜索（成就名称）",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "icon": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "rarity": {
+                            "type": "string"
+                          },
+                          "condition": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string"
+                              },
+                              "event": {
+                                "type": "string"
+                              },
+                              "target": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "event",
+                              "target"
+                            ]
+                          },
+                          "rewardPoints": {
+                            "type": "integer"
+                          },
+                          "rewardExp": {
+                            "type": "integer"
+                          },
+                          "rewardDecorationId": {
+                            "type": "integer"
+                          },
+                          "hidden": {
+                            "type": "boolean"
+                          },
+                          "sort": {
+                            "type": "integer"
+                          },
+                          "enabled": {
+                            "type": "boolean"
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "type": "string"
+                          },
+                          "progress": {
+                            "type": "integer"
+                          },
+                          "completed": {
+                            "type": "boolean"
+                          },
+                          "claimed": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
       "post": {
         "summary": "创建成就（管理员）",
         "deprecated": false,
@@ -43754,198 +44293,6 @@
                         "message",
                         "data"
                       ]
-                    }
-                  },
-                  "required": [
-                    "code",
-                    "message",
-                    "data"
-                  ]
-                }
-              }
-            },
-            "headers": {}
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      },
-      "get": {
-        "summary": "获取成就列表",
-        "deprecated": false,
-        "description": "",
-        "operationId": "AchievementController_findAll",
-        "tags": [
-          "成就管理"
-        ],
-        "parameters": [
-          {
-            "name": "keyword",
-            "in": "query",
-            "description": "关键词搜索（成就名称）",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "sortBy",
-            "in": "query",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "sortOrder",
-            "in": "query",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "获取成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "code": {
-                      "type": "integer"
-                    },
-                    "message": {
-                      "type": "string"
-                    },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "id": {
-                            "type": "integer"
-                          },
-                          "code": {
-                            "type": "string"
-                          },
-                          "name": {
-                            "type": "string"
-                          },
-                          "description": {
-                            "type": "string"
-                          },
-                          "icon": {
-                            "type": "string"
-                          },
-                          "type": {
-                            "type": "string"
-                          },
-                          "rarity": {
-                            "type": "string"
-                          },
-                          "condition": {
-                            "type": "object",
-                            "properties": {
-                              "type": {
-                                "type": "string"
-                              },
-                              "event": {
-                                "type": "string"
-                              },
-                              "target": {
-                                "type": "integer"
-                              }
-                            },
-                            "required": [
-                              "type",
-                              "event",
-                              "target"
-                            ]
-                          },
-                          "rewardPoints": {
-                            "type": "integer"
-                          },
-                          "rewardExp": {
-                            "type": "integer"
-                          },
-                          "rewardDecorationId": {
-                            "type": "integer"
-                          },
-                          "hidden": {
-                            "type": "boolean"
-                          },
-                          "sort": {
-                            "type": "integer"
-                          },
-                          "enabled": {
-                            "type": "boolean"
-                          },
-                          "createdAt": {
-                            "type": "string"
-                          },
-                          "updatedAt": {
-                            "type": "string"
-                          },
-                          "progress": {
-                            "type": "integer"
-                          },
-                          "completed": {
-                            "type": "boolean"
-                          },
-                          "claimed": {
-                            "type": "boolean"
-                          }
-                        }
-                      }
                     }
                   },
                   "required": [

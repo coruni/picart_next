@@ -413,13 +413,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 await new Promise((resolve) => setTimeout(resolve, 50));
 
                 // 找到刚插入的图片
-                const wrappers = quill.root.querySelectorAll(
-                  "div.ql-image-wrapper",
-                );
+                const wrappers = Array.from(
+                  quill.root.querySelectorAll("div.ql-image-wrapper"),
+                ) as HTMLDivElement[];
                 let targetWrapper: HTMLDivElement | null = null;
                 let targetImg: HTMLImageElement | null = null;
 
-                for (const wrapper of Array.from(wrappers)) {
+                for (const wrapper of wrappers) {
                   const img = wrapper.querySelector(
                     "img.ql-image",
                   ) as HTMLImageElement | null;

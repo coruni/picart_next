@@ -12,6 +12,7 @@ import {
   Images,
   KeyRound,
   LayoutDashboard,
+  Medal,
   Menu,
   MessageSquareText,
   ReceiptText,
@@ -70,6 +71,12 @@ export function DashboardShell({ children }: DashboardShellProps) {
       label: copy.nav.comments,
       description: copy.pages.comments.description,
       icon: MessageSquareText,
+    },
+    {
+      href: "/dashboard/points",
+      label: copy.nav.points,
+      description: copy.pages.points.description,
+      icon: Medal,
     },
     {
       href: "/dashboard/tags",

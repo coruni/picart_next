@@ -1924,41 +1924,6 @@ export const decorationControllerCleanExpired = <ThrowOnError extends boolean = 
 });
 
 /**
- * 增加积分
- */
-export const pointsControllerAddPoints = <ThrowOnError extends boolean = false>(options: Options<PointsControllerAddPointsData, ThrowOnError>) => (options.client ?? client).post<PointsControllerAddPointsResponses, PointsControllerAddPointsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/points/add',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * 消费积分
- */
-export const pointsControllerSpendPoints = <ThrowOnError extends boolean = false>(options: Options<PointsControllerSpendPointsData, ThrowOnError>) => (options.client ?? client).post<PointsControllerSpendPointsResponses, PointsControllerSpendPointsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/points/spend',
-    ...options,
-    headers: {
-        'Content-Type': 'application/json',
-        ...options.headers
-    }
-});
-
-/**
- * 获取积分余额
- */
-export const pointsControllerGetBalance = <ThrowOnError extends boolean = false>(options?: Options<PointsControllerGetBalanceData, ThrowOnError>) => (options?.client ?? client).get<PointsControllerGetBalanceResponses, PointsControllerGetBalanceErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/points/balance',
-    ...options
-});
-
-/**
  * 获取积分交易记录
  */
 export const pointsControllerGetTransactions = <ThrowOnError extends boolean = false>(options?: Options<PointsControllerGetTransactionsData, ThrowOnError>) => (options?.client ?? client).get<PointsControllerGetTransactionsResponses, PointsControllerGetTransactionsErrors, ThrowOnError>({
@@ -2013,15 +1978,6 @@ export const pointsControllerUpdateActivity = <ThrowOnError extends boolean = fa
 });
 
 /**
- * 领取任务奖励
- */
-export const pointsControllerClaimTaskReward = <ThrowOnError extends boolean = false>(options: Options<PointsControllerClaimTaskRewardData, ThrowOnError>) => (options.client ?? client).post<PointsControllerClaimTaskRewardResponses, PointsControllerClaimTaskRewardErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/points/activities/{id}/claim',
-    ...options
-});
-
-/**
  * 获取我的任务记录
  */
 export const pointsControllerGetMyTasks = <ThrowOnError extends boolean = false>(options?: Options<PointsControllerGetMyTasksData, ThrowOnError>) => (options?.client ?? client).get<PointsControllerGetMyTasksResponses, PointsControllerGetMyTasksErrors, ThrowOnError>({
@@ -2072,6 +2028,50 @@ export const pointsControllerGetUserTransactions = <ThrowOnError extends boolean
 export const pointsControllerGetUserBalance = <ThrowOnError extends boolean = false>(options: Options<PointsControllerGetUserBalanceData, ThrowOnError>) => (options.client ?? client).get<PointsControllerGetUserBalanceResponses, PointsControllerGetUserBalanceErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/points/users/{userId}/balance',
+    ...options
+});
+
+/**
+ * 获取积分余额
+ */
+export const pointsControllerGetBalance = <ThrowOnError extends boolean = false>(options?: Options<PointsControllerGetBalanceData, ThrowOnError>) => (options?.client ?? client).get<PointsControllerGetBalanceResponses, PointsControllerGetBalanceErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/points/balance',
+    ...options
+});
+
+/**
+ * 增加积分
+ */
+export const pointsControllerAddPoints = <ThrowOnError extends boolean = false>(options: Options<PointsControllerAddPointsData, ThrowOnError>) => (options.client ?? client).post<PointsControllerAddPointsResponses, PointsControllerAddPointsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/points/add',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * 消费积分
+ */
+export const pointsControllerSpendPoints = <ThrowOnError extends boolean = false>(options: Options<PointsControllerSpendPointsData, ThrowOnError>) => (options.client ?? client).post<PointsControllerSpendPointsResponses, PointsControllerSpendPointsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/points/spend',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * 领取任务奖励
+ */
+export const pointsControllerClaimTaskReward = <ThrowOnError extends boolean = false>(options: Options<PointsControllerClaimTaskRewardData, ThrowOnError>) => (options.client ?? client).post<PointsControllerClaimTaskRewardResponses, PointsControllerClaimTaskRewardErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/points/activities/{id}/claim',
     ...options
 });
 

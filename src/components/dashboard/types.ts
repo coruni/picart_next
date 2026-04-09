@@ -6,6 +6,7 @@ import type {
   ConfigControllerGetPublicConfigsResponse,
   OrderControllerGetAllOrdersResponse,
   PermissionControllerFindAllResponse,
+  PointsControllerFindAllActivitiesResponse,
 } from "@/api";
 import type {
   ArticleList,
@@ -36,6 +37,8 @@ export type DashboardDecorationItem = DecorationList[number];
 export type DashboardReportItem = Record<string, unknown>;
 export type DashboardAchievementItem =
   NonNullable<AchievementControllerFindAllResponse["data"]>[number];
+export type DashboardPointsActivityItem =
+  PointsControllerFindAllActivitiesResponse["data"][number];
 export type DashboardPublicConfig = NonNullable<
   ConfigControllerGetPublicConfigsResponse["data"]
 >;

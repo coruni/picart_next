@@ -20,6 +20,7 @@ import {
   FileText,
   Images,
   KeyRound,
+  Medal,
   MessageSquareText,
   ReceiptText,
   ShieldUser,
@@ -282,6 +283,12 @@ export function DashboardClientPage() {
                   text: copy.shortcuts.comments,
                   value: data.summary.commentsTotal,
                   icon: MessageSquareText,
+                },
+                {
+                  href: "/dashboard/points",
+                  label: copy.nav.points,
+                  text: copy.shortcuts.points,
+                  icon: Medal,
                 },
                 {
                   href: "/dashboard/orders",
