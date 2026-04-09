@@ -860,7 +860,11 @@
   },
   "channelPage": {
     "noChannels": "No channels yet",
-    "noSubchannels": "This channel has no sub-categories"
+    "noSubchannels": "This channel has no sub-categories",
+    "sortOptions": {
+      "popular": "Popular",
+      "latest": "Latest"
+    }
   },
   "accountInfo": {
     "posts": "Posts",

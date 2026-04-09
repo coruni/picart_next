@@ -6,11 +6,15 @@ import { getTranslations } from "next-intl/server";
 
 export default async function ChannelPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug?: string[]; locale: string }>;
+  searchParams: Promise<{ sort?: string }>;
 }) {
   const { slug, locale } = await params;
+  const { sort } = await searchParams;
   const t = await getTranslations("channelPage");
+  const sortType = sort === "latest" ? "latest" : "popular";
 
   const channels = await getPublicCategories();
 
@@ -93,6 +97,7 @@ export default async function ChannelPage({
       page: 1,
       limit: 10,
       categoryId: Number(childId),
+      type: sortType,
     },
   });
 
@@ -105,6 +110,7 @@ export default async function ChannelPage({
       initPage={2}
       initTotal={total}
       categoryId={childId}
+      sortType={sortType}
       showFollow={true}
     />
   );

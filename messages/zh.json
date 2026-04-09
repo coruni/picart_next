@@ -852,7 +852,11 @@
   },
   "channelPage": {
     "noChannels": "暂无频道",
-    "noSubchannels": "该频道暂无子分类"
+    "noSubchannels": "该频道暂无子分类",
+    "sortOptions": {
+      "popular": "热门",
+      "latest": "最新"
+    }
   },
   "accountInfo": {
     "numberUnits": {

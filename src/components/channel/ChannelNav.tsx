@@ -97,19 +97,6 @@ export function ChannelNav({ channels, currentId }: ChannelNavProps) {
             {/* 左滑 */}
             <div
               className={`h-full top-0 -left-6 absolute items-center z-10 transition-opacity duration-200 ${
-                canScrollLeft ? "flex opacity-100" : "pointer-events-none hidden opacity-0"
-              }`}
-            >
-              <button
-                onClick={() => scroll("left")}
-                className="flex items-center outline-0 focus:none border-2 border-white text-white rounded-md hover:bg-white/10 transition-colors cursor-pointer"
-              >
-                <ChevronLeft size={20} />
-              </button>
-            </div>
-            {/* 右滑 */}
-            <div
-              className={`h-full top-0 -right-6 absolute items-center z-10 transition-opacity duration-200 ${
                 canScrollRight ? "flex opacity-100" : "pointer-events-none hidden opacity-0"
               }`}
             >
@@ -118,6 +105,19 @@ export function ChannelNav({ channels, currentId }: ChannelNavProps) {
                 className="flex items-center outline-0 focus:none border-2 border-white text-white rounded-md hover:bg-white/10 transition-colors cursor-pointer"
               >
                 <ChevronRight size={20} />
+              </button>
+            </div>
+            {/* 右滑 */}
+            <div
+              className={`h-full top-0 -right-6 absolute items-center z-10 transition-opacity duration-200 ${
+                canScrollLeft ? "flex opacity-100" : "pointer-events-none hidden opacity-0"
+              }`}
+            >
+              <button
+                onClick={() => scroll("left")}
+                className="flex items-center outline-0 focus:none border-2 border-white text-white rounded-md hover:bg-white/10 transition-colors cursor-pointer"
+              >
+                <ChevronLeft size={20} />
               </button>
             </div>
 

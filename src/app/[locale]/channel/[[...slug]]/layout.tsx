@@ -1,5 +1,6 @@
 ﻿import emptyPng from "@/assets/images/placeholder/empty.png";
 import { ChannelNav } from "@/components/channel/ChannelNav";
+import { ChannelSort } from "@/components/channel/ChannelSort.client";
 import { ChannelTabs } from "@/components/channel/ChannelTabs";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Sidebar } from "@/components/sidebar/Sidebar";
@@ -129,8 +130,9 @@ export default async function ChannelLayout({
       <div className="relative mt-60 w-full">
         <div className="page-container">
           <div className="left-container">
-            <div className="top-header px-6 h-14 flex items-center border-b border-border sticky bg-card z-5 rounded-t-xl">
+            <div className="top-header px-6 h-14 flex items-center gap-4 border-b border-border sticky bg-card z-5 rounded-t-xl">
               <ChannelTabs parentId={pid}>{currentChannel.children}</ChannelTabs>
+              <ChannelSort />
             </div>
             {children}
           </div>
