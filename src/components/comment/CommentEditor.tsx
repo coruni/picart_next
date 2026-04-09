@@ -756,7 +756,7 @@ export function CommentEditor({
                         <button
                           key={emoji.id}
                           type="button"
-                          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent p-1 transition-all hover:border-border hover:bg-accent"
+                          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent p-1 transition-all hover:border-border hover:bg-primary/15"
                           onClick={() => void handleEmojiSelect(emoji)}
                           title={emoji.name}
                         >

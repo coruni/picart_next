@@ -262,7 +262,7 @@ export const renderToolbar = ({
     // 第一个是取消/移除颜色
     const removeBtn = document.createElement("button");
     removeBtn.className =
-      "w-5! h-5! flex-none rounded flex items-center justify-center bg-muted hover:bg-accent border! border-border!";
+      "w-5! h-5! flex-none rounded flex items-center justify-center bg-muted hover:bg-primary/15 border! border-border!";
     removeBtn.innerHTML = renderIcon(X);
     removeBtn.onclick = () => {
       onSelect(false);
@@ -388,7 +388,7 @@ export const renderToolbar = ({
         const item = document.createElement("button");
         item.type = "button";
         item.className =
-          "emoji-panel-item flex h-12! w-12! items-center justify-center rounded-xl border border-transparent bg-transparent p-1 transition-all hover:border-border hover:bg-accent";
+          "emoji-panel-item flex h-12! w-12! items-center justify-center rounded-xl border border-transparent bg-transparent p-1 transition-all hover:border-border hover:bg-primary/15";
         item.title = emoji.name;
         item.innerHTML = `<img src="${emoji.url}" alt="${emoji.name}" class="max-h-full max-w-full object-contain" loading="lazy" />`;
         item.onclick = async () => {
@@ -664,7 +664,7 @@ export const renderToolbar = ({
     dividerStyles.forEach(({ name, preview }) => {
       const item = document.createElement("button");
       item.className =
-        "flex items-center gap-2 p-3 rounded-lg hover:bg-accent transition-colors border border-border bg-card";
+        "flex items-center gap-2 p-3 rounded-lg hover:bg-primary/15 transition-colors border border-border bg-card";
       item.type = "button";
 
       // 预览区域
@@ -754,7 +754,7 @@ export const renderToolbar = ({
   sizeDiv.className = "relative inline-flex tooltip-wrapper";
   const sizeTrigger = document.createElement("button");
   sizeTrigger.className =
-    "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-accent relative";
+    "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-primary/15 relative";
   sizeTrigger.type = "button";
   sizeTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(Type)}</span><span class="flex items-center absolute top-full -right-1 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
   sizeDiv.appendChild(sizeTrigger);
@@ -851,7 +851,7 @@ export const renderToolbar = ({
   alignDiv.className = "relative inline-flex tooltip-wrapper";
   const alignTrigger = document.createElement("button");
   alignTrigger.className =
-    "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-accent relative";
+    "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-primary/15 relative";
   alignTrigger.type = "button";
   alignTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(AlignLeft)}</span><span class="flex items-center absolute top-full -right-1 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
   alignDiv.appendChild(alignTrigger);
@@ -902,7 +902,7 @@ export const renderToolbar = ({
   listDiv.className = "relative inline-flex tooltip-wrapper";
   const listTrigger = document.createElement("button");
   listTrigger.className =
-    "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-accent relative";
+    "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-primary/15 relative";
   listTrigger.type = "button";
   listTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(List)}</span><span class="flex items-center absolute top-full -right-1 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
   listDiv.appendChild(listTrigger);
@@ -943,7 +943,7 @@ export const renderToolbar = ({
   headerDiv.className = "relative inline-flex tooltip-wrapper";
   const headerTrigger = document.createElement("button");
   headerTrigger.className =
-    "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-accent relative";
+    "flex items-center justify-between px-2 rounded border bg-background text-sm hover:bg-primary/15 relative";
   headerTrigger.type = "button";
   headerTrigger.innerHTML = `<span class="flex items-center gap-1">${renderIcon(icons.Heading1)}</span><span class="flex items-center absolute top-full -right-1 -translate-y-full -rotate-45 text-secondary">${renderIcon(ChevronDown, "w-3! h-3!", 12)}</span>`;
   headerDiv.appendChild(headerTrigger);
