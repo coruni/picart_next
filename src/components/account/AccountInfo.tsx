@@ -305,6 +305,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                 />
                 <FollowButtonWithStatus
                   author={user}
+                  forceShow
                   className="h-8 min-w-18 bg-[#e0e6ff] px-4 text-xs md:h-9 md:px-6 md:text-sm"
                   onFollowChange={setIsFollowed}
                 />

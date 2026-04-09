@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image, { StaticImageData } from "next/image";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 
 type ReactionType =
   | "like"
@@ -86,6 +86,16 @@ export const ReactionPanel = ({
   const panelRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(panelRef, () => setIsOpen(false));
+
+  // Sync with external userReaction prop changes
+  useEffect(() => {
+    setCurrentReaction(userReaction);
+  }, [userReaction]);
+
+  // Sync with external reactionStats prop changes
+  useEffect(() => {
+    setStats(reactionStats);
+  }, [reactionStats]);
 
   // Get top 2 reactions with highest counts
   const topReactions = useMemo(() => {

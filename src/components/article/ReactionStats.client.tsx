@@ -22,7 +22,10 @@ interface ReactionStatsProps {
   // 外部控制的 userReaction，用于联动
   userReaction?: string;
   // 反应变化回调
-  onReactionChange?: (stats: Record<string, number>, userReaction: string | null) => void;
+  onReactionChange?: (
+    stats: Record<string, number>,
+    userReaction: string | null,
+  ) => void;
 }
 
 export function ReactionStats({
@@ -38,16 +41,17 @@ export function ReactionStats({
     useState<Record<string, number>>(initialStats);
   const [loading, setLoading] = useState(false);
   // 用户只能有一个反应，所以使用 Set 但最多只包含一个元素
-  const [internalUserReactions, setInternalUserReactions] = useState<Set<string>>(
-    new Set(initialUserReaction ? [initialUserReaction] : []),
-  );
+  const [internalUserReactions, setInternalUserReactions] = useState<
+    Set<string>
+  >(new Set(initialUserReaction ? [initialUserReaction] : []));
 
   // 使用外部或内部的 stats
   const reactionStats = isControlled ? externalStats : internalReactionStats;
   // 使用外部或内部的 userReaction
-  const userReactions = externalUserReaction !== undefined
-    ? new Set(externalUserReaction ? [externalUserReaction] : [])
-    : internalUserReactions;
+  const userReactions =
+    externalUserReaction !== undefined
+      ? new Set(externalUserReaction ? [externalUserReaction] : [])
+      : internalUserReactions;
 
   // 获取最新的反应统计
   // const fetchReactionStats = useCallback(async () => {
@@ -124,7 +128,9 @@ export function ReactionStats({
         // 如果不是受控组件，更新内部状态
         if (!isControlled) {
           setInternalReactionStats(newStats);
-          setInternalUserReactions(new Set(newUserReaction ? [newUserReaction] : []));
+          setInternalUserReactions(
+            new Set(newUserReaction ? [newUserReaction] : []),
+          );
         }
 
         // 调用回调通知父组件
@@ -155,7 +161,7 @@ export function ReactionStats({
             className={cn(
               "flex items-center h-6 px-1.5 py-0.5 rounded-lg cursor-pointer transition-colors disabled:opacity-50 gap-1",
               isReacted
-                ? "bg-primary/15 text-primary"
+                ? "bg-primary text-white"
                 : "bg-[#F5F7FA] dark:bg-gray-700 hover:bg-[#E8ECEF] dark:hover:bg-gray-600",
             )}
           >

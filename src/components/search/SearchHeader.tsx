@@ -22,6 +22,7 @@ export function SearchHeader({ categories, className }: SearchHeaderProps) {
       defaultValue={keyword}
       defaultCategoryId={category}
       syncSearchStore
+      alwaysVisible
       className={className || "w-full"}
     />
   );

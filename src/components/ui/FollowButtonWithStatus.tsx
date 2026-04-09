@@ -138,7 +138,7 @@ export const FollowButtonWithStatus = ({
       variant={isFollowed ? "outline" : "default"}
       className={cn(
         "ml-2 rounded-full overflow-hidden transition-all duration-500 ease-in-out",
-        isAnimating && !isHiding && "h-10! w-10! px-3!",
+        isAnimating && !isHiding && "w-10! px-3!",
         isHiding && "translate-x-8 scale-0 opacity-0",
         !isAnimating && !isHiding && "px-6",
         isFollowed && "bg-muted text-muted-foreground border-muted hover:bg-muted/80 hover:text-muted-foreground",

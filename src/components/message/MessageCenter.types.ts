@@ -101,7 +101,7 @@ export type MessageConversationListProps = {
   selectedTab: MessageTab;
   onTabChange: (tab: MessageTab) => void;
   setSearch: (value: string) => void;
-  setSelectedItemId: (value: number | null) => void;
+  onSelectItem: (itemId: number, itemHref?: string) => void;
   socketConnected: boolean;
   tabs: MessageCenterTabItem[];
   tCommon: (key: string) => string;

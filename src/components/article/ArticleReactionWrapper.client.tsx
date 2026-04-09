@@ -4,16 +4,6 @@ import { useState } from "react";
 import { ArticleActions } from "./ArticleActions.client";
 import { ReactionStats } from "./ReactionStats.client";
 
-type ReactionStatsType = {
-  like: number;
-  love: number;
-  haha: number;
-  wow: number;
-  sad: number;
-  angry: number;
-  dislike: number;
-};
-
 interface ArticleReactionWrapperProps {
   articleId: string;
   initialStats: Record<string, number>;
@@ -37,19 +27,10 @@ export function ArticleReactionWrapper({
   const [userReaction, setUserReaction] = useState<string | undefined>(initialUserReaction);
   const [likes, setLikes] = useState(initialLikes);
 
-  const handleReactionChange = (newStats: ReactionStatsType, newUserReaction?: string) => {
-    const statsRecord: Record<string, number> = {
-      like: newStats.like || 0,
-      love: newStats.love || 0,
-      haha: newStats.haha || 0,
-      wow: newStats.wow || 0,
-      sad: newStats.sad || 0,
-      angry: newStats.angry || 0,
-      dislike: newStats.dislike || 0,
-    };
-    setReactionStats(statsRecord);
-    setUserReaction(newUserReaction);
-    const totalLikes = Object.values(statsRecord).reduce((sum, count) => sum + count, 0);
+  const handleReactionChange = (newStats: Record<string, number>, newUserReaction?: string | null) => {
+    setReactionStats(newStats);
+    setUserReaction(newUserReaction || undefined);
+    const totalLikes = Object.values(newStats).reduce((sum, count) => sum + count, 0);
     setLikes(totalLikes);
   };
 
@@ -61,6 +42,7 @@ export function ArticleReactionWrapper({
         initialStats={initialStats}
         stats={reactionStats}
         userReaction={userReaction}
+        onReactionChange={handleReactionChange}
       />
       <ArticleActions
         articleId={Number(articleId)}

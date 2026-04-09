@@ -531,10 +531,11 @@ export function MessageDetailPane({
               <p className="text-xs text-muted-foreground">{statusLabel}</p>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center">
             {selectedItem.type === "private" ? (
               <DropdownMenu
                 title={tMenu("moreActions")}
+                className="mr-2"
                 items={userMenuItems}
                 trigger={({ isOpen }) => (
                   <Button

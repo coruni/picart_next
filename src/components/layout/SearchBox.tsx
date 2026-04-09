@@ -47,6 +47,7 @@ interface SearchBoxProps {
   placeholder?: string;
   className?: string;
   mobileVisible?: boolean;
+  alwaysVisible?: boolean;
   block?: boolean;
   defaultValue?: string;
   defaultCategoryId?: string | number;
@@ -60,6 +61,7 @@ export function SearchBox({
   placeholder,
   className,
   mobileVisible = false,
+  alwaysVisible = false,
   block = false,
   defaultValue = "",
   defaultCategoryId,
@@ -342,7 +344,11 @@ export function SearchBox({
     <div
       className={cn(
         "flex-1 items-center justify-center",
-        mobileVisible ? "flex md:hidden" : "hidden md:flex",
+        alwaysVisible
+          ? "flex"
+          : mobileVisible
+            ? "flex md:hidden"
+            : "hidden md:flex",
         className,
       )}
     >

@@ -434,13 +434,16 @@ export function MessageCenterClient() {
 
   const handleBackToList = () => {
     setSelectedItemId(null);
+    // 回退到列表（清除 item 和 userId 参数）
+    router.back();
+  };
 
-    const nextParams = new URLSearchParams(searchParams.toString());
-    nextParams.delete("item");
-    nextParams.delete("userId");
-
-    const nextQuery = nextParams.toString();
-    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname);
+  const handleSelectItem = (itemId: number, itemHref?: string) => {
+    setSelectedItemId(itemId);
+    // 移动端：用 push 更新 URL，让返回时能回到列表
+    if (isMobile && itemHref) {
+      router.push(itemHref);
+    }
   };
 
   const requireAuth = () => {
@@ -1207,7 +1210,7 @@ export function MessageCenterClient() {
             selectedItemId={selectedItemId}
             selectedTab={selectedTab}
             setSearch={setSearch}
-            setSelectedItemId={setSelectedItemId}
+            onSelectItem={handleSelectItem}
             socketConnected={socketConnected}
             tabs={tabs}
             tCommon={tCommon}

@@ -449,6 +449,8 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
 
       const handleConnect = () => {
         set({ socketConnected: true });
+        // 连接成功后刷新未读数
+        void get().fetchUnreadCount();
       };
 
       const handleDisconnect = () => {
@@ -458,6 +460,8 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
       const handleConnected = (_payload: MessageSocketConnectedPayload) => {
         set({ socketConnected: true });
         socket.emit("getUnreadCount");
+        // 连接成功后刷新消息列表
+        void get().fetchMessages();
       };
 
       const handleError = (payload: MessageSocketErrorPayload) => {

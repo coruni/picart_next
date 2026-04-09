@@ -34,7 +34,7 @@ export function MessageConversationList({
   selectedItemId,
   selectedTab,
   setSearch,
-  setSelectedItemId,
+  onSelectItem,
   socketConnected: _socketConnected,
   tabs,
   tCommon,
@@ -148,7 +148,7 @@ export function MessageConversationList({
               return (
                 <Button
                   key={`${item.type}-${item.id}`}
-                  onClick={() => setSelectedItemId(item.id)}
+                  onClick={() => onSelectItem(item.id, item.href)}
                   variant="ghost"
                   className={cn(
                     "mb-1.5 flex h-auto w-full items-start justify-start gap-3 rounded-md px-3 py-3 text-left transition-all",

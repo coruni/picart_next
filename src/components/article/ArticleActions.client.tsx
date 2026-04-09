@@ -40,7 +40,7 @@ type ArticleActionsProps = {
     userReaction?: string;
     likes: number;
     // 反应变化回调，用于联动 ReactionStats
-    onReactionChange?: (stats: ReactionStats, userReaction?: string) => void;
+    onReactionChange?: (stats: Record<string, number>, userReaction?: string | null) => void;
 };
 
 export function ArticleActions({

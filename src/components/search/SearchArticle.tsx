@@ -83,9 +83,9 @@ export function SearchArticle({
               />
             )}
           </div>
-          <div className="mt-auto">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center flex-1">
+          <div className="mt-4">
+            <div className="flex items-center justify-between gap-2 min-w-0">
+              <div className="flex items-center flex-1 min-w-0">
                 <Avatar
                   url={article.author?.avatar}
                   alt={article.author?.nickname || article.author.username}
@@ -94,7 +94,7 @@ export function SearchArticle({
                   }
                   className="size-6"
                 />
-                <span className="ml-2 text-xs font-medium text-muted-foreground">
+                <span className="ml-2 text-xs font-medium text-muted-foreground truncate max-w-25">
                   {article.author?.nickname || article.author?.username}
                 </span>
               </div>
@@ -112,7 +112,7 @@ export function SearchArticle({
         </div>
         {article.cover ||
           (article?.images.length > 0 && (
-            <div className="w-full max-w-56 aspect-5/3 overflow-hidden relative rounded-lg shrink-0">
+            <div className="w-28 sm:w-full sm:max-w-56 aspect-5/3 overflow-hidden relative rounded-lg shrink-0">
               <ImageWithFallback
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover rounded-lg"
