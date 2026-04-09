@@ -65,6 +65,7 @@ export function ImageViewer({
   const resizeFrameRef = useRef<number | null>(null);
   const viewerIdRef = useRef<number>(0);
   const mobileHistoryTokenRef = useRef<string | null>(null);
+  const mobilePopStateHandlerRef = useRef<(() => void) | null>(null);
   const isClosingFromPopStateRef = useRef(false);
 
   // Sync pendingIndexRef with initialIndex prop changes
@@ -114,39 +115,47 @@ export function ImageViewer({
   }, [onChange]);
 
   useEffect(() => {
-    if (!visible || !isMobileViewport()) {
+    if (!isMobileViewport()) {
       return;
     }
 
-    const token =
-      typeof crypto !== "undefined" && "randomUUID" in crypto
-        ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random()}`;
+    if (visible && !mobileHistoryTokenRef.current) {
+      const token =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random()}`;
 
-    mobileHistoryTokenRef.current = token;
-    window.history.pushState(
-      { ...(window.history.state ?? {}), __imageViewerToken: token },
-      "",
-    );
+      mobileHistoryTokenRef.current = token;
+      window.history.pushState(
+        { ...(window.history.state ?? {}), __imageViewerToken: token },
+        "",
+      );
 
-    const handlePopState = () => {
-      if (!mobileHistoryTokenRef.current) {
-        return;
+      const handlePopState = () => {
+        if (!mobileHistoryTokenRef.current) {
+          return;
+        }
+
+        mobileHistoryTokenRef.current = null;
+        isClosingFromPopStateRef.current = true;
+        onCloseRef.current();
+
+        window.setTimeout(() => {
+          isClosingFromPopStateRef.current = false;
+        }, 0);
+      };
+
+      mobilePopStateHandlerRef.current = handlePopState;
+      window.addEventListener("popstate", handlePopState);
+      return;
+    }
+
+    if (!visible && mobileHistoryTokenRef.current) {
+      const handlePopState = mobilePopStateHandlerRef.current;
+      if (handlePopState) {
+        window.removeEventListener("popstate", handlePopState);
+        mobilePopStateHandlerRef.current = null;
       }
-
-      mobileHistoryTokenRef.current = null;
-      isClosingFromPopStateRef.current = true;
-      onCloseRef.current();
-
-      window.setTimeout(() => {
-        isClosingFromPopStateRef.current = false;
-      }, 0);
-    };
-
-    window.addEventListener("popstate", handlePopState);
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
 
       const tokenInHistory = mobileHistoryTokenRef.current;
       if (
@@ -156,6 +165,16 @@ export function ImageViewer({
       ) {
         mobileHistoryTokenRef.current = null;
         window.history.back();
+      }
+
+      return;
+    }
+
+    return () => {
+      const handlePopState = mobilePopStateHandlerRef.current;
+      if (handlePopState) {
+        window.removeEventListener("popstate", handlePopState);
+        mobilePopStateHandlerRef.current = null;
       }
     };
   }, [visible]);
