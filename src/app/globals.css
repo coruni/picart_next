@@ -685,6 +685,16 @@ body.viewer-open .fixed {
   background: transparent;
 }
 
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 
 /* Divider animations */
 @keyframes grow-x {

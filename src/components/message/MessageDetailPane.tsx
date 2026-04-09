@@ -842,11 +842,14 @@ export function MessageDetailPane({
 
             <div className="min-w-0 border-t border-border bg-background/92 md:px-3 py-3 backdrop-blur">
               {composerImages.length > 0 ? (
-                <div className="mb-3 flex flex-wrap gap-2">
+                <div
+                  className="mb-3 flex gap-2 overflow-x-auto"
+                  style={{ scrollbarWidth: "none" }}
+                >
                   {composerImages.map((item) => (
                     <div
                       key={item.id}
-                      className="relative overflow-hidden rounded-2xl border border-border bg-card"
+                      className="relative shrink-0 overflow-hidden rounded-2xl border border-border bg-card"
                     >
                       <img
                         src={item.previewUrl}
