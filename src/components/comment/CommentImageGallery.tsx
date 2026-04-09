@@ -2,13 +2,13 @@
 
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { cn } from "@/lib";
+import { getImageUrl, type ImageInfo } from "@/types/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import type { Swiper as SwiperType } from "swiper";
 import { FreeMode } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { getImageUrl, type ImageInfo } from "@/types/image";
 
 import "swiper/css";
 
@@ -112,10 +112,10 @@ export function CommentImageGallery({
       >
         {imageUrls.map((imageUrl, index) => (
           <SwiperSlide key={`${imageAltPrefix}-${index}`} className="w-auto!">
-            <div className="overflow-hidden rounded-xl bg-muted">
+            <div className="overflow-hidden rounded-xl bg-muted h-45">
               <button
                 type="button"
-                className="block cursor-pointer"
+                className="block cursor-pointer h-full"
                 onClick={() => onOpenImageViewer(originalUrls, index)}
               >
                 <ImageWithFallback
@@ -123,9 +123,9 @@ export function CommentImageGallery({
                   alt={`${imageAltPrefix} ${index + 1}`}
                   width={320}
                   height={180}
-                  wrapperClassName="relative block"
+                  wrapperClassName="relative block h-full"
                   className={cn(
-                    "block h-auto max-h-45 w-auto max-w-none object-contain",
+                  "block h-full! max-h-45 w-auto max-w-none object-contain",
                     multiImageClassName,
                   )}
                 />

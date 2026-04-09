@@ -700,7 +700,7 @@ export function ImageViewer({
 
       <div
         className={cn(
-          "custom-viewer-wrapper fixed inset-0 z-100 flex h-full w-full transition-opacity",
+          "custom-viewer-wrapper fixed inset-0 z-200 flex h-full w-full transition-opacity",
           viewerMounted
             ? "visible opacity-100"
             : "invisible opacity-0",

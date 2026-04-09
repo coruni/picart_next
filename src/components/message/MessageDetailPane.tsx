@@ -25,12 +25,23 @@ import {
   X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import type {
   MessageDetailPaneProps,
+  PrivateHistoryItem,
   PrivateMessagePayload,
 } from "./MessageCenter.types";
-import { formatMessageClock } from "./MessageCenter.utils";
+import {
+  formatMessageClock,
+  resolveMessagePreviewText,
+} from "./MessageCenter.utils";
 
 function resolveMessageImageUrl(
   payload?: PrivateMessagePayload,
@@ -69,6 +80,186 @@ function resolveMessageImageUrls(payload?: PrivateMessagePayload): string[] {
   const singleUrl = resolveMessageImageUrl(payload);
   return singleUrl ? [singleUrl] : [];
 }
+
+type PrivateMessageRowProps = {
+  item: PrivateHistoryItem;
+  showDayDivider: boolean;
+  dayLabel?: string;
+  userId?: number | string;
+  copy: MessageDetailPaneProps["copy"];
+  onRecall: (messageId: number, target: HTMLElement) => void;
+  onOpenImageViewer: (images: string[], index: number) => void;
+  scheduleStickToBottomAfterRender: (
+    behavior?: ScrollBehavior,
+    delayMs?: number,
+    settlePasses?: number,
+  ) => void;
+};
+
+const PrivateMessageRow = memo(function PrivateMessageRow({
+  item,
+  showDayDivider,
+  dayLabel,
+  userId,
+  copy,
+  onRecall,
+  onOpenImageViewer,
+  scheduleStickToBottomAfterRender,
+}: PrivateMessageRowProps) {
+  const isOwn = Number(item.senderId || 0) === Number(userId || 0);
+  const canRecall = isOwn && !item.isRecalled && !item.pending;
+  const imageUrls = resolveMessageImageUrls(item.payload);
+  const hasText = Boolean(item.content?.trim());
+  const isRecalled = Boolean(item.isRecalled);
+
+  return (
+    <div>
+      {showDayDivider && dayLabel ? (
+        <div className="mb-3 flex justify-center">
+          <span className="rounded-full bg-muted px-3 py-1 text-xs text-foreground/70 backdrop-blur-sm">
+            {dayLabel}
+          </span>
+        </div>
+      ) : null}
+
+      <div
+        className={cn(
+          "flex min-w-0 items-end gap-2",
+          isOwn ? "justify-end" : "justify-start",
+        )}
+      >
+        {isOwn && item.pending ? (
+          <LoaderCircle className="mb-2 size-4 shrink-0 animate-spin text-muted-foreground" />
+        ) : null}
+        <div
+          role={canRecall ? "button" : undefined}
+          tabIndex={canRecall ? 0 : undefined}
+          onContextMenu={(event) => {
+            if (!canRecall) {
+              return;
+            }
+
+            event.preventDefault();
+            onRecall(item.id, event.currentTarget);
+          }}
+          onTouchStart={(event) => {
+            if (!canRecall) {
+              return;
+            }
+
+            const touch = event.touches[0];
+            if (!touch) {
+              return;
+            }
+
+            window.setTimeout(() => {
+              onRecall(item.id, event.currentTarget);
+            }, 420);
+          }}
+          onKeyDown={(event) => {
+            if (!canRecall) {
+              return;
+            }
+
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              onRecall(item.id, event.currentTarget);
+            }
+          }}
+          className={cn(
+            "min-w-0 max-w-[82%] rounded-2xl p-2 md:max-w-[78%]",
+            canRecall &&
+              "cursor-context-menu outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
+            isOwn
+              ? "rounded-br-md bg-primary/90 text-white/90 dark:bg-card"
+              : "rounded-bl-md bg-white dark:bg-card",
+          )}
+        >
+          {!isRecalled && imageUrls.length > 0 ? (
+            <div
+              className={cn(
+                "grid gap-1.5 overflow-hidden rounded-xl",
+                imageUrls.length === 1 ? "grid-cols-1" : "grid-cols-2",
+              )}
+            >
+              {imageUrls.map((url, index) => (
+                <img
+                  key={`${item.id}-${url}-${index}`}
+                  src={url}
+                  alt={copy.imageMessage}
+                  loading="lazy"
+                  decoding="async"
+                  fetchPriority="low"
+                  onLoad={() => {
+                    scheduleStickToBottomAfterRender();
+                  }}
+                  onClick={() => {
+                    onOpenImageViewer(imageUrls, index);
+                  }}
+                  className={cn(
+                    "block w-full rounded-xl object-cover cursor-pointer",
+                    imageUrls.length === 1
+                      ? "max-h-80"
+                      : "aspect-square max-h-44",
+                  )}
+                />
+              ))}
+            </div>
+          ) : null}
+
+          {isRecalled ? (
+            <div className="relative min-w-0 pr-8">
+              <p
+                className={cn(
+                  "whitespace-pre-wrap text-sm italic leading-6",
+                  isOwn ? "text-white/75" : "text-muted-foreground",
+                )}
+              >
+                {isOwn ? copy.recalledMessage : copy.recalledMessageByOther}
+              </p>
+              <div
+                className={cn(
+                  "pointer-events-none absolute bottom-0 right-0 flex items-center justify-end gap-1 text-[10px] dark:text-secondary",
+                  isOwn ? "text-white/80" : "text-secondary",
+                )}
+              >
+                <span>{formatMessageClock(item.createdAt)}</span>
+              </div>
+            </div>
+          ) : hasText ? (
+            <div
+              className={cn(
+                "relative min-w-0 pr-8",
+                imageUrls.length > 0 ? "mt-2" : "",
+              )}
+            >
+              <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6">
+                {item.content}
+              </p>
+              <div
+                className={cn(
+                  "pointer-events-none absolute bottom-0 right-0 flex items-center justify-end gap-1 text-[10px] dark:text-secondary",
+                  isOwn ? "text-white/80" : "text-secondary",
+                )}
+              >
+                <span>{formatMessageClock(item.createdAt)}</span>
+              </div>
+            </div>
+          ) : (
+            <div
+              className={cn(
+                "mt-1 flex justify-end text-[10px] dark:text-secondary",
+                isOwn ? "text-white/80" : "text-secondary",
+              )}
+            >
+              <span>{formatMessageClock(item.createdAt)}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});
 
 export function MessageDetailPane({
   blockSubmitting,
@@ -111,7 +302,6 @@ export function MessageDetailPane({
   const topLoadTriggerRef = useRef<HTMLDivElement | null>(null);
   const bottomAnchorRef = useRef<HTMLDivElement | null>(null);
   const messageMenuRef = useRef<HTMLDivElement | null>(null);
-  const longPressTimerRef = useRef<number | null>(null);
   const scheduledStickTimerRef = useRef<number | null>(null);
   const scheduledStickFrameRef = useRef<number | null>(null);
   const shouldStickToBottomRef = useRef(true);
@@ -155,6 +345,19 @@ export function MessageDetailPane({
             })
           : copy.lastSeenRecently;
   const reportReasons = createDefaultReportReasons(tMenu);
+  const detailSummaryText =
+    selectedTab === "all" && selectedItem
+      ? resolveMessagePreviewText(
+          {
+            content: selectedItem.content,
+            messageKind: selectedItem.messageKind,
+            payload: selectedItem.payload,
+            recalledAt: selectedItem.recalledAt,
+            isRecalled: selectedItem.isRecalled,
+          },
+          copy,
+        )
+      : selectedItem?.content || copy.detailPlaceholder;
   const userMenuItems: MenuItem[] =
     selectedItem?.type === "private"
       ? [
@@ -195,6 +398,19 @@ export function MessageDetailPane({
     setPendingMessageCount(0);
   }, []);
 
+  const stickToBottomImmediately = useCallback(() => {
+    const viewport = scrollViewportRef.current;
+    if (!viewport) {
+      return;
+    }
+
+    viewport.scrollTop = viewport.scrollHeight;
+    bottomAnchorRef.current?.scrollIntoView({ block: "end" });
+    shouldStickToBottomRef.current = true;
+    setShowJumpToBottom(false);
+    setPendingMessageCount(0);
+  }, []);
+
   const cancelScheduledStickToBottom = useCallback(() => {
     if (scheduledStickTimerRef.current != null) {
       window.clearTimeout(scheduledStickTimerRef.current);
@@ -207,23 +423,51 @@ export function MessageDetailPane({
     }
   }, []);
 
-  const scheduleStickToBottomAfterRender = useCallback((
-    behavior: ScrollBehavior = "auto",
-    delayMs = 96,
-  ) => {
-    cancelScheduledStickToBottom();
+  const scheduleStickToBottomAfterRender = useCallback(
+    (
+      behavior: ScrollBehavior = "auto",
+      delayMs = 96,
+      settlePasses = 4,
+    ) => {
+      cancelScheduledStickToBottom();
 
-    scheduledStickTimerRef.current = window.setTimeout(() => {
-      scheduledStickFrameRef.current = window.requestAnimationFrame(() => {
-        scheduledStickFrameRef.current = window.requestAnimationFrame(() => {
-          stickToBottom(behavior);
-          needsInitialScrollToBottomRef.current = false;
-          scheduledStickFrameRef.current = null;
-        });
-      });
-      scheduledStickTimerRef.current = null;
-    }, delayMs);
-  }, [cancelScheduledStickToBottom, stickToBottom]);
+      scheduledStickTimerRef.current = window.setTimeout(() => {
+        let remainingPasses = settlePasses;
+
+        const runStickPass = (nextBehavior: ScrollBehavior) => {
+          scheduledStickFrameRef.current = window.requestAnimationFrame(() => {
+            scheduledStickFrameRef.current = window.requestAnimationFrame(() => {
+              const viewport = scrollViewportRef.current;
+              if (!viewport) {
+                scheduledStickFrameRef.current = null;
+                return;
+              }
+
+              stickToBottom(nextBehavior);
+
+              const distanceToBottom =
+                viewport.scrollHeight -
+                viewport.scrollTop -
+                viewport.clientHeight;
+
+              if (distanceToBottom <= 2 || remainingPasses <= 0) {
+                needsInitialScrollToBottomRef.current = false;
+                scheduledStickFrameRef.current = null;
+                return;
+              }
+
+              remainingPasses -= 1;
+              runStickPass("auto");
+            });
+          });
+        };
+
+        runStickPass(behavior);
+        scheduledStickTimerRef.current = null;
+      }, delayMs);
+    },
+    [cancelScheduledStickToBottom, stickToBottom],
+  );
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -400,6 +644,7 @@ export function MessageDetailPane({
       shouldStickToBottomRef.current = true;
       setShowJumpToBottom(false);
       setPendingMessageCount(0);
+      stickToBottomImmediately();
     } else if (messageCountIncreased && shouldStickToBottomRef.current) {
       scheduleStickToBottomAfterRender();
     } else if (messageCountIncreased) {
@@ -417,6 +662,7 @@ export function MessageDetailPane({
   }, [
     groupedPrivateHistory.length,
     isLoadingOlderHistory,
+    stickToBottomImmediately,
     scheduleStickToBottomAfterRender,
     selectedItem?.id,
     selectedItem?.type,
@@ -494,14 +740,7 @@ export function MessageDetailPane({
   }, [messageMenu]);
 
   const handleJumpToBottom = () => {
-    stickToBottom("smooth");
-  };
-
-  const clearLongPressTimer = () => {
-    if (longPressTimerRef.current != null) {
-      window.clearTimeout(longPressTimerRef.current);
-      longPressTimerRef.current = null;
-    }
+    scheduleStickToBottomAfterRender("smooth", 0, 6);
   };
 
   const openMessageMenu = (messageId: number, x: number, y: number) => {
@@ -521,6 +760,23 @@ export function MessageDetailPane({
       ),
     });
   };
+
+  const handleOpenImageViewer = useCallback(
+    (images: string[], index: number) => {
+      setImageViewerImages(images);
+      setImageViewerIndex(index);
+      setImageViewerOpen(true);
+    },
+    [],
+  );
+
+  const handleOpenRecallMenu = useCallback(
+    (messageId: number, target: HTMLElement) => {
+      const rect = target.getBoundingClientRect();
+      openMessageMenu(messageId, rect.right - 16, rect.top + 12);
+    },
+    [],
+  );
 
   if (!selectedItem) {
     return (
@@ -553,7 +809,7 @@ export function MessageDetailPane({
           isMobileDetailOpen ? "flex" : "hidden",
         )}
       >
-        <div className="flex min-w-0 shrink-0 items-center justify-between border-b border-card md:pl-4 pt-4 pb-1 md:pr-1 bg-card">
+        <div className="flex min-w-0 shrink-0 items-center justify-between border-b border-card bg-card px-4 py-2">
           <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
             <Button
               variant="ghost"
@@ -631,208 +887,21 @@ export function MessageDetailPane({
                     ) : null}
 
                     {groupedPrivateHistory.map(
-                      ({ item, showDayDivider, dayLabel }) => {
-                        const isOwn =
-                          Number(item.senderId || 0) === Number(userId || 0);
-                        const canRecall =
-                          isOwn && !item.isRecalled && !item.pending;
-                        const imageUrls = resolveMessageImageUrls(item.payload);
-                        const hasText = Boolean(item.content?.trim());
-                        const isRecalled = Boolean(item.isRecalled);
-
-                        return (
-                          <div key={item.id}>
-                            {showDayDivider && dayLabel ? (
-                              <div className="mb-3 flex justify-center">
-                                <span className="rounded-full bg-muted px-3 py-1 text-xs text-foreground/70 backdrop-blur-sm">
-                                  {dayLabel}
-                                </span>
-                              </div>
-                            ) : null}
-
-                            <div
-                              className={cn(
-                                "flex min-w-0 items-end gap-2",
-                                isOwn ? "justify-end" : "justify-start",
-                              )}
-                            >
-                              {isOwn && item.pending ? (
-                                <LoaderCircle className="mb-2 size-4 shrink-0 animate-spin text-muted-foreground" />
-                              ) : null}
-                              <div
-                                role={canRecall ? "button" : undefined}
-                                tabIndex={canRecall ? 0 : undefined}
-                                onContextMenu={(event) => {
-                                  if (!canRecall) {
-                                    return;
-                                  }
-
-                                  event.preventDefault();
-                                  openMessageMenu(
-                                    item.id,
-                                    event.clientX,
-                                    event.clientY,
-                                  );
-                                }}
-                                onTouchStart={(event) => {
-                                  if (!canRecall) {
-                                    return;
-                                  }
-
-                                  const touch = event.touches[0];
-                                  if (!touch) {
-                                    return;
-                                  }
-
-                                  clearLongPressTimer();
-                                  longPressTimerRef.current = window.setTimeout(
-                                    () => {
-                                      openMessageMenu(
-                                        item.id,
-                                        touch.clientX,
-                                        touch.clientY,
-                                      );
-                                    },
-                                    420,
-                                  );
-                                }}
-                                onTouchEnd={clearLongPressTimer}
-                                onTouchMove={clearLongPressTimer}
-                                onTouchCancel={clearLongPressTimer}
-                                onKeyDown={(event) => {
-                                  if (!canRecall) {
-                                    return;
-                                  }
-
-                                  if (
-                                    event.key === "Enter" ||
-                                    event.key === " "
-                                  ) {
-                                    event.preventDefault();
-                                    const rect =
-                                      event.currentTarget.getBoundingClientRect();
-                                    openMessageMenu(
-                                      item.id,
-                                      rect.right - 16,
-                                      rect.top + 12,
-                                    );
-                                  }
-                                }}
-                                className={cn(
-                                  "min-w-0 max-w-[82%] rounded-2xl p-2 md:max-w-[78%]",
-                                  canRecall &&
-                                    "cursor-context-menu outline-none focus-visible:ring-2 focus-visible:ring-primary/30",
-                                  isOwn
-                                    ? "rounded-br-md bg-primary/90 text-white/90 dark:bg-card"
-                                    : "rounded-bl-md bg-white dark:bg-card",
-                                )}
-                              >
-                                {!isRecalled && imageUrls.length > 0 ? (
-                                  <div
-                                    className={cn(
-                                      "grid gap-1.5 overflow-hidden rounded-xl",
-                                      imageUrls.length === 1
-                                        ? "grid-cols-1"
-                                        : "grid-cols-2",
-                                    )}
-                                  >
-                                    {imageUrls.map((url, index) => (
-                                      <img
-                                        key={`${item.id}-${url}-${index}`}
-                                        src={url}
-                                        alt={copy.imageMessage}
-                                        onLoad={() => {
-                                          if (
-                                            needsInitialScrollToBottomRef.current
-                                          ) {
-                                            scheduleStickToBottomAfterRender();
-                                          }
-                                        }}
-                                        onClick={() => {
-                                          setImageViewerImages(imageUrls);
-                                          setImageViewerIndex(index);
-                                          setImageViewerOpen(true);
-                                        }}
-                                        className={cn(
-                                          "block w-full rounded-xl object-cover cursor-pointer",
-                                          imageUrls.length === 1
-                                            ? "max-h-80"
-                                            : "aspect-square max-h-44",
-                                        )}
-                                      />
-                                    ))}
-                                  </div>
-                                ) : null}
-
-                                {isRecalled ? (
-                                  <div className="relative min-w-0 pr-8">
-                                    <p
-                                      className={cn(
-                                        "whitespace-pre-wrap text-sm italic leading-6",
-                                        isOwn
-                                          ? "text-white/75"
-                                          : "text-muted-foreground",
-                                      )}
-                                    >
-                                      {isOwn
-                                        ? copy.recalledMessage
-                                        : copy.recalledMessageByOther}
-                                    </p>
-                                    <div
-                                      className={cn(
-                                        "pointer-events-none absolute bottom-0 right-0 flex items-center justify-end gap-1 text-[10px] dark:text-secondary",
-                                        isOwn
-                                          ? "text-white/80"
-                                          : "text-secondary",
-                                      )}
-                                    >
-                                      <span>
-                                        {formatMessageClock(item.createdAt)}
-                                      </span>
-                                    </div>
-                                  </div>
-                                ) : hasText ? (
-                                  <div
-                                    className={cn(
-                                      "relative min-w-0 pr-8",
-                                      imageUrls.length > 0 ? "mt-2" : "",
-                                    )}
-                                  >
-                                    <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6">
-                                      {item.content}
-                                    </p>
-                                    <div
-                                      className={cn(
-                                        "pointer-events-none absolute bottom-0 right-0 flex items-center justify-end gap-1 text-[10px] dark:text-secondary",
-                                        isOwn
-                                          ? "text-white/80"
-                                          : "text-secondary",
-                                      )}
-                                    >
-                                      <span>
-                                        {formatMessageClock(item.createdAt)}
-                                      </span>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div
-                                    className={cn(
-                                      "mt-1 flex justify-end text-[10px] dark:text-secondary",
-                                      isOwn
-                                        ? "text-white/80"
-                                        : "text-secondary",
-                                    )}
-                                  >
-                                    <span>
-                                      {formatMessageClock(item.createdAt)}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      },
+                      ({ item, showDayDivider, dayLabel }) => (
+                        <PrivateMessageRow
+                          key={item.id}
+                          item={item}
+                          showDayDivider={showDayDivider}
+                          dayLabel={dayLabel}
+                          userId={userId}
+                          copy={copy}
+                          onRecall={handleOpenRecallMenu}
+                          onOpenImageViewer={handleOpenImageViewer}
+                          scheduleStickToBottomAfterRender={
+                            scheduleStickToBottomAfterRender
+                          }
+                        />
+                      ),
                     )}
                     <div
                       ref={bottomAnchorRef}
@@ -1029,7 +1098,7 @@ export function MessageDetailPane({
               </h3>
 
               <div className="mt-2 whitespace-pre-wrap wrap-break-word text-sm leading-7 text-secondary">
-                {selectedItem.content || copy.detailPlaceholder}
+                {detailSummaryText}
               </div>
             </div>
           </div>

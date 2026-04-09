@@ -20,6 +20,7 @@ import type {
 import {
   getMessageDayKey,
   getMessageDayLabel,
+  resolveMessagePreviewText,
 } from "@/components/message/MessageCenter.utils";
 import { MessageConversationList } from "@/components/message/MessageConversationList";
 import { MessageDetailPane } from "@/components/message/MessageDetailPane";
@@ -38,6 +39,7 @@ import { usePathname, useRouter } from "@/i18n/routing";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { messageSocketClient } from "@/lib/message-socket";
 import { openLoginDialog } from "@/lib/modal-helpers";
+import type { MessageDropdownItem } from "@/stores/useMessageNotificationStore";
 import { useMessageNotificationStore, useUserStore } from "@/stores";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -197,38 +199,41 @@ export function MessageCenterClient() {
   const isMobile = useIsMobile();
   const router = useRouter();
   const pathname = usePathname();
-  const copy: MessageCenterCopy = {
-    title: tMsg("center.title"),
-    subtitle: tMsg("center.subtitle"),
-    searchPlaceholder: tMsg("center.searchPlaceholder"),
-    chatList: tMsg("center.chatList"),
-    detailPlaceholder: tMsg("center.detailPlaceholder"),
-    privatePlaceholder: tMsg("center.privatePlaceholder"),
-    noConversation: tMsg("center.noConversation"),
-    noMessages: tMsg("center.noMessages"),
-    noResults: tMsg("center.noResults"),
-    markAll: tMsg("center.markAll"),
-    privateHeader: tMsg("center.privateHeader"),
-    notificationHeader: tMsg("center.notificationHeader"),
-    realtime: tMsg("center.realtime"),
-    emptyThread: tMsg("center.emptyThread"),
-    lastSeenRecently: tMsg("center.lastSeenRecently"),
-    composerPlaceholder: tMsg("center.composerPlaceholder"),
-    unreadSuffix: tMsg("center.unreadSuffix"),
-    uploadImage: tMsg("center.uploadImage"),
-    removeImage: tMsg("center.removeImage"),
-    uploadingImage: tMsg("center.uploadingImage"),
-    imageMessage: tMsg("center.imageMessage"),
-    jumpToLatest: tMsg("center.jumpToLatest"),
-    newMessagesSuffix: tMsg("center.newMessagesSuffix"),
-    online: tMsg("center.online"),
-    recall: tMsg("center.recall"),
-    recalledMessage: tMsg("center.recalledMessage"),
-    recalledMessageByOther: tMsg("center.recalledMessageByOther"),
-    recalledPreview: tMsg("center.recalledPreview"),
-    recallReasonDefault: tMsg("center.recallReasonDefault"),
-    imageOnlyPreview: tMsg("center.imageOnlyPreview"),
-  };
+  const copy = useMemo<MessageCenterCopy>(
+    () => ({
+      title: tMsg("center.title"),
+      subtitle: tMsg("center.subtitle"),
+      searchPlaceholder: tMsg("center.searchPlaceholder"),
+      chatList: tMsg("center.chatList"),
+      detailPlaceholder: tMsg("center.detailPlaceholder"),
+      privatePlaceholder: tMsg("center.privatePlaceholder"),
+      noConversation: tMsg("center.noConversation"),
+      noMessages: tMsg("center.noMessages"),
+      noResults: tMsg("center.noResults"),
+      markAll: tMsg("center.markAll"),
+      privateHeader: tMsg("center.privateHeader"),
+      notificationHeader: tMsg("center.notificationHeader"),
+      realtime: tMsg("center.realtime"),
+      emptyThread: tMsg("center.emptyThread"),
+      lastSeenRecently: tMsg("center.lastSeenRecently"),
+      composerPlaceholder: tMsg("center.composerPlaceholder"),
+      unreadSuffix: tMsg("center.unreadSuffix"),
+      uploadImage: tMsg("center.uploadImage"),
+      removeImage: tMsg("center.removeImage"),
+      uploadingImage: tMsg("center.uploadingImage"),
+      imageMessage: tMsg("center.imageMessage"),
+      jumpToLatest: tMsg("center.jumpToLatest"),
+      newMessagesSuffix: tMsg("center.newMessagesSuffix"),
+      online: tMsg("center.online"),
+      recall: tMsg("center.recall"),
+      recalledMessage: tMsg("center.recalledMessage"),
+      recalledMessageByOther: tMsg("center.recalledMessageByOther"),
+      recalledPreview: tMsg("center.recalledPreview"),
+      recallReasonDefault: tMsg("center.recallReasonDefault"),
+      imageOnlyPreview: tMsg("center.imageOnlyPreview"),
+    }),
+    [tMsg],
+  );
   const searchParams = useSearchParams();
   const queryTab = searchParams.get("tab");
   const queryItemId = Number(searchParams.get("item"));
@@ -328,7 +333,7 @@ export function MessageCenterClient() {
     );
   }, [messages, queryUserId]);
 
-  const pendingPrivateItem = useMemo(() => {
+  const pendingPrivateItem = useMemo<MessageDropdownItem | null>(() => {
     if (!pendingPrivateTarget) {
       return null;
     }
@@ -344,6 +349,10 @@ export function MessageCenterClient() {
       avatarUrl: pendingPrivateTarget.avatarUrl,
       counterpartId: pendingPrivateTarget.counterpartId,
       unreadCount: 0,
+      messageKind: undefined,
+      payload: null,
+      recalledAt: undefined,
+      isRecalled: false,
     };
   }, [pendingPrivateTarget]);
 
@@ -393,9 +402,30 @@ export function MessageCenterClient() {
     );
   }, [deferredSearch, displayedMessages]);
 
+  const summarizedMessages = useMemo(() => {
+    if (selectedTab !== "all") {
+      return filteredMessages;
+    }
+
+    return filteredMessages.map((item) => ({
+      ...item,
+      content: resolveMessagePreviewText(
+        {
+          content: item.content,
+          messageKind: item.messageKind,
+          payload: item.payload as PrivateMessagePayload | undefined,
+          recalledAt: item.recalledAt,
+          isRecalled: item.isRecalled,
+        },
+        copy,
+      ),
+    }));
+  }, [copy, filteredMessages, selectedTab]);
+
   const selectedItem = useMemo(() => {
-    return displayedMessages.find((item) => item.id === selectedItemId) || null;
-  }, [displayedMessages, selectedItemId]);
+    const source = selectedTab === "all" ? summarizedMessages : displayedMessages;
+    return source.find((item) => item.id === selectedItemId) || null;
+  }, [displayedMessages, selectedItemId, selectedTab, summarizedMessages]);
 
   const selectedPrivateCounterpartId =
     selectedItem?.type === "private"
@@ -434,8 +464,13 @@ export function MessageCenterClient() {
 
   const handleBackToList = () => {
     setSelectedItemId(null);
-    // 回退到列表（清除 item 和 userId 参数）
-    router.back();
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.set("tab", selectedTab);
+    nextParams.delete("item");
+    nextParams.delete("userId");
+
+    const nextQuery = nextParams.toString();
+    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname);
   };
 
   const handleSelectItem = (itemId: number, itemHref?: string) => {
@@ -1200,7 +1235,7 @@ export function MessageCenterClient() {
         <div className="grid h-full min-h-0 md:grid-cols-[348px_minmax(0,1fr)]">
           <MessageConversationList
             copy={copy}
-            filteredMessages={filteredMessages}
+            filteredMessages={summarizedMessages}
             isLoading={isLoading}
             isSwitchingTab={isSwitchingTab}
             isMobileDetailOpen={isMobileDetailOpen}
