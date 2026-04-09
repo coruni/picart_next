@@ -25,7 +25,7 @@ import {
   X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type {
   MessageDetailPaneProps,
   PrivateMessagePayload,
@@ -107,10 +107,13 @@ export function MessageDetailPane({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const scrollViewportRef = useRef<HTMLDivElement | null>(null);
+  const messageContentRef = useRef<HTMLDivElement | null>(null);
   const topLoadTriggerRef = useRef<HTMLDivElement | null>(null);
   const bottomAnchorRef = useRef<HTMLDivElement | null>(null);
   const messageMenuRef = useRef<HTMLDivElement | null>(null);
   const longPressTimerRef = useRef<number | null>(null);
+  const scheduledStickTimerRef = useRef<number | null>(null);
+  const scheduledStickFrameRef = useRef<number | null>(null);
   const shouldStickToBottomRef = useRef(true);
   const previousMessageCountRef = useRef(0);
   const previousSelectedItemIdRef = useRef<number | null>(null);
@@ -171,7 +174,7 @@ export function MessageDetailPane({
         ]
       : [];
 
-  function stickToBottom(behavior: ScrollBehavior = "auto") {
+  const stickToBottom = useCallback((behavior: ScrollBehavior = "auto") => {
     const viewport = scrollViewportRef.current;
     if (!viewport) {
       return;
@@ -190,7 +193,37 @@ export function MessageDetailPane({
     shouldStickToBottomRef.current = true;
     setShowJumpToBottom(false);
     setPendingMessageCount(0);
-  }
+  }, []);
+
+  const cancelScheduledStickToBottom = useCallback(() => {
+    if (scheduledStickTimerRef.current != null) {
+      window.clearTimeout(scheduledStickTimerRef.current);
+      scheduledStickTimerRef.current = null;
+    }
+
+    if (scheduledStickFrameRef.current != null) {
+      window.cancelAnimationFrame(scheduledStickFrameRef.current);
+      scheduledStickFrameRef.current = null;
+    }
+  }, []);
+
+  const scheduleStickToBottomAfterRender = useCallback((
+    behavior: ScrollBehavior = "auto",
+    delayMs = 96,
+  ) => {
+    cancelScheduledStickToBottom();
+
+    scheduledStickTimerRef.current = window.setTimeout(() => {
+      scheduledStickFrameRef.current = window.requestAnimationFrame(() => {
+        scheduledStickFrameRef.current = window.requestAnimationFrame(() => {
+          stickToBottom(behavior);
+          needsInitialScrollToBottomRef.current = false;
+          scheduledStickFrameRef.current = null;
+        });
+      });
+      scheduledStickTimerRef.current = null;
+    }, delayMs);
+  }, [cancelScheduledStickToBottom, stickToBottom]);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -214,8 +247,7 @@ export function MessageDetailPane({
       }
 
       requestAnimationFrame(() => {
-        stickToBottom();
-        window.setTimeout(() => stickToBottom(), 80);
+        scheduleStickToBottomAfterRender();
       });
     };
 
@@ -226,7 +258,30 @@ export function MessageDetailPane({
       viewport.removeEventListener("resize", handleViewportChange);
       viewport.removeEventListener("scroll", handleViewportChange);
     };
-  }, []);
+  }, [scheduleStickToBottomAfterRender]);
+
+  useEffect(() => {
+    if (selectedItem?.type !== "private" || !messageContentRef.current) {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      if (
+        !needsInitialScrollToBottomRef.current &&
+        !shouldStickToBottomRef.current
+      ) {
+        return;
+      }
+
+      scheduleStickToBottomAfterRender();
+    });
+
+    observer.observe(messageContentRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [scheduleStickToBottomAfterRender, selectedItem?.id, selectedItem?.type]);
 
   useEffect(() => {
     const viewport = scrollViewportRef.current;
@@ -346,7 +401,7 @@ export function MessageDetailPane({
       setShowJumpToBottom(false);
       setPendingMessageCount(0);
     } else if (messageCountIncreased && shouldStickToBottomRef.current) {
-      stickToBottom("smooth");
+      scheduleStickToBottomAfterRender();
     } else if (messageCountIncreased) {
       setPendingMessageCount((prev) => {
         return (
@@ -362,6 +417,7 @@ export function MessageDetailPane({
   }, [
     groupedPrivateHistory.length,
     isLoadingOlderHistory,
+    scheduleStickToBottomAfterRender,
     selectedItem?.id,
     selectedItem?.type,
   ]);
@@ -380,35 +436,18 @@ export function MessageDetailPane({
       return;
     }
 
-    const settleToBottom = () => {
-      stickToBottom();
-      needsInitialScrollToBottomRef.current = false;
-    };
-
-    let frame1 = 0;
-    let frame2 = 0;
-    let timer = 0;
-    let timer2 = 0;
-
-    frame1 = window.requestAnimationFrame(() => {
-      frame2 = window.requestAnimationFrame(() => {
-        settleToBottom();
-        timer = window.setTimeout(settleToBottom, 80);
-        timer2 = window.setTimeout(settleToBottom, 220);
-      });
-    });
+    scheduleStickToBottomAfterRender();
 
     return () => {
-      window.cancelAnimationFrame(frame1);
-      window.cancelAnimationFrame(frame2);
-      window.clearTimeout(timer);
-      window.clearTimeout(timer2);
+      cancelScheduledStickToBottom();
     };
   }, [
     detailLoading,
     groupedPrivateHistory.length,
+    scheduleStickToBottomAfterRender,
     selectedItem?.id,
     selectedItem?.type,
+    cancelScheduledStickToBottom,
   ]);
 
   useEffect(() => {
@@ -418,6 +457,12 @@ export function MessageDetailPane({
     setMessageMenu(null);
     setShowReportDialog(false);
   }, [selectedItem?.id]);
+
+  useEffect(() => {
+    return () => {
+      cancelScheduledStickToBottom();
+    };
+  }, [cancelScheduledStickToBottom]);
 
   useEffect(() => {
     if (!messageMenu) {
@@ -574,7 +619,7 @@ export function MessageDetailPane({
                     {tCommon("loading")}
                   </div>
                 ) : groupedPrivateHistory.length > 0 ? (
-                  <div className="flex flex-col gap-3">
+                  <div ref={messageContentRef} className="flex flex-col gap-3">
                     <div
                       ref={topLoadTriggerRef}
                       className="h-px w-full shrink-0"
@@ -700,7 +745,7 @@ export function MessageDetailPane({
                                           if (
                                             needsInitialScrollToBottomRef.current
                                           ) {
-                                            stickToBottom();
+                                            scheduleStickToBottomAfterRender();
                                           }
                                         }}
                                         onClick={() => {

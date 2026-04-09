@@ -42,6 +42,12 @@ type CreateImageFormData = {
   type: "image";
 };
 
+type ImageUploadDraft = {
+  id: string;
+  previewUrl: string;
+  fileName: string;
+};
+
 const normalizeImageList = (value: unknown): string[] => {
   // 处理 ImageInfo 对象数组（新格式）
   if (Array.isArray(value) && value.length > 0) {
@@ -137,6 +143,9 @@ export default function CreateImagePage() {
   const [articleLoading, setArticleLoading] = useState(isEditMode);
 
   const [imagesUploading, setImagesUploading] = useState(false);
+  const [imageUploadDrafts, setImageUploadDrafts] = useState<ImageUploadDraft[]>(
+    [],
+  );
   const [isImageDropping, setIsImageDropping] = useState(false);
   const [draggingImageIndex, setDraggingImageIndex] = useState<number | null>(
     null,
@@ -172,6 +181,7 @@ export default function CreateImagePage() {
   const lastChildQueryRef = useRef<string | null>(null);
   const parentSearchAbortControllerRef = useRef<AbortController | null>(null);
   const childSearchAbortControllerRef = useRef<AbortController | null>(null);
+  const imageUploadDraftsRef = useRef<ImageUploadDraft[]>([]);
 
   // Debounce timers for search，用 ref 避免闭包问题
 
@@ -398,9 +408,16 @@ export default function CreateImagePage() {
   }, []);
 
   useEffect(() => {
+    imageUploadDraftsRef.current = imageUploadDrafts;
+  }, [imageUploadDrafts]);
+
+  useEffect(() => {
     return () => {
       parentSearchAbortControllerRef.current?.abort();
       childSearchAbortControllerRef.current?.abort();
+      imageUploadDraftsRef.current.forEach((draft) => {
+        URL.revokeObjectURL(draft.previewUrl);
+      });
       if (parentSearchTimerRef.current) {
         clearTimeout(parentSearchTimerRef.current);
       }
@@ -587,8 +604,18 @@ export default function CreateImagePage() {
   };
 
   const handleImagesUpload = useCallback(async (files: File[]) => {
-    if (files.length === 0) return;
+    if (files.length === 0 || imagesUploading) return;
 
+    const drafts = files.map((file, index) => ({
+      id:
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `${Date.now()}-${index}-${Math.random()}`,
+      previewUrl: URL.createObjectURL(file),
+      fileName: file.name,
+    }));
+
+    setImageUploadDrafts((current) => [...current, ...drafts]);
     setImagesUploading(true);
     try {
       const uploadedUrls = await uploadImagesBatch(files, compressImages);
@@ -603,9 +630,15 @@ export default function CreateImagePage() {
     } catch (error) {
       console.error("Failed to upload images:", error);
     } finally {
+      drafts.forEach((draft) => {
+        URL.revokeObjectURL(draft.previewUrl);
+      });
+      setImageUploadDrafts((current) =>
+        current.filter((item) => !drafts.some((draft) => draft.id === item.id)),
+      );
       setImagesUploading(false);
     }
-  }, [compressImages, values.images, setFieldValues]);
+  }, [compressImages, imagesUploading, setFieldValues, values.images]);
 
   const handleImagesChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -789,16 +822,30 @@ export default function CreateImagePage() {
                               </button>
                             </div>
                           ))}
-                        {imagesUploading && (
-                          <div className="relative aspect-square overflow-hidden rounded-xl border border-border bg-muted/40">
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/70 backdrop-blur-[1px]">
+                        {imageUploadDrafts.map((draft, index) => (
+                          <div
+                            key={draft.id}
+                            className="relative aspect-square overflow-hidden rounded-xl border border-border bg-muted/40"
+                          >
+                            <Image
+                              src={draft.previewUrl}
+                              alt={`${draft.fileName} ${index + 1}`}
+                              fill
+                              sizes="(max-width: 768px) 50vw, 33vw"
+                              className="object-cover opacity-70"
+                              unoptimized
+                            />
+                            <div className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white">
+                              #{values.images.length + index + 1}
+                            </div>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/55 backdrop-blur-[2px]">
                               <Loader2 className="size-5 animate-spin text-primary" />
-                              <span className="text-xs text-secondary">
-                                {tPost("loading")}
+                              <span className="max-w-[80%] truncate text-xs text-secondary">
+                                {draft.fileName}
                               </span>
                             </div>
                           </div>
-                        )}
+                        ))}
                         <label
                           htmlFor="image-upload"
                           className={cn(

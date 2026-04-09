@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  achievementControllerCreate,
   achievementControllerFindAll,
   achievementControllerRemove,
   achievementControllerUpdate,
@@ -8,11 +9,15 @@ import {
 } from "@/api";
 import { DropdownMenu } from "@/components/shared";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
-import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { MoreHorizontal, PencilLine, Plus, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
-import { DashboardEditDialog, type DashboardEditField } from "./DashboardEditDialog.client";
+import {
+  DashboardEditDialog,
+  type DashboardEditField,
+} from "./DashboardEditDialog.client";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
@@ -23,24 +28,108 @@ import type { DashboardAchievementItem } from "./types";
 import { useDashboardGuard } from "./useDashboardGuard";
 import { formatDashboardDate } from "./utils";
 
+const ACHIEVEMENT_CODE_OPTIONS = [
+  { value: "FIRST_ARTICLE", label: "FIRST_ARTICLE" },
+  { value: "ARTICLE_10", label: "ARTICLE_10" },
+  { value: "ARTICLE_50", label: "ARTICLE_50" },
+  { value: "ARTICLE_100", label: "ARTICLE_100" },
+  { value: "FIRST_LIKE", label: "FIRST_LIKE" },
+  { value: "LIKE_100", label: "LIKE_100" },
+  { value: "LIKE_1000", label: "LIKE_1000" },
+  { value: "FIRST_COMMENT", label: "FIRST_COMMENT" },
+  { value: "COMMENT_100", label: "COMMENT_100" },
+  { value: "FIRST_FOLLOW", label: "FIRST_FOLLOW" },
+  { value: "FOLLOW_10", label: "FOLLOW_10" },
+  { value: "FIRST_FOLLOWER", label: "FIRST_FOLLOWER" },
+  { value: "FOLLOWER_100", label: "FOLLOWER_100" },
+  { value: "FOLLOWER_1000", label: "FOLLOWER_1000" },
+  { value: "LOGIN_7_DAYS", label: "LOGIN_7_DAYS" },
+  { value: "LOGIN_30_DAYS", label: "LOGIN_30_DAYS" },
+  { value: "LEVEL_10", label: "LEVEL_10" },
+  { value: "LEVEL_30", label: "LEVEL_30" },
+  { value: "LEVEL_50", label: "LEVEL_50" },
+  { value: "BECOME_MEMBER", label: "BECOME_MEMBER" },
+  { value: "PROFILE_COMPLETED", label: "PROFILE_COMPLETED" },
+] as const;
+
 export function DashboardAchievementsPage() {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
-  const [editingItem, setEditingItem] = useState<DashboardAchievementItem | null>(null);
-  const [deletingItem, setDeletingItem] = useState<DashboardAchievementItem | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [editingItem, setEditingItem] =
+    useState<DashboardAchievementItem | null>(null);
+  const [deletingItem, setDeletingItem] =
+    useState<DashboardAchievementItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const achievementCopy = copy.pages.achievements;
+  const achievementCodeOptions = useMemo(
+    () =>
+      editingItem?.code &&
+      !ACHIEVEMENT_CODE_OPTIONS.some(
+        (option) => option.value === editingItem.code,
+      )
+        ? [{ value: editingItem.code, label: editingItem.code }, ...ACHIEVEMENT_CODE_OPTIONS]
+        : [...ACHIEVEMENT_CODE_OPTIONS],
+    [editingItem?.code],
+  );
+
+  const stringifyAchievementCondition = (condition: unknown) => {
+    if (!condition || typeof condition !== "object") {
+      return JSON.stringify(
+        { type: "count", event: "article_publish", target: 1 },
+        null,
+        2,
+      );
+    }
+
+    try {
+      return JSON.stringify(condition, null, 2);
+    } catch {
+      return JSON.stringify(
+        { type: "count", event: "article_publish", target: 1 },
+        null,
+        2,
+      );
+    }
+  };
+
+  const parseAchievementCondition = (value: unknown) => {
+    if (typeof value !== "string" || !value.trim()) {
+      return {};
+    }
+
+    try {
+      const parsed = JSON.parse(value);
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (error) {
+      console.error("Invalid achievement condition JSON:", error);
+      return {};
+    }
+  };
 
   const editFields = useMemo<DashboardEditField[]>(
     () => [
-      { name: "code", label: copy.columns.code },
+      {
+        name: "code",
+        label: copy.columns.code,
+        type: "select",
+        options: achievementCodeOptions as unknown as Array<{
+          value: string;
+          label: string;
+        }>,
+      },
       { name: "name", label: copy.columns.name },
-      { name: "description", label: copy.columns.description, type: "textarea" },
+      {
+        name: "description",
+        label: copy.columns.description,
+        type: "textarea",
+      },
       {
         name: "icon",
-        label: "Icon",
+        label: achievementCopy.fields.icon,
         type: "image",
         imagePreviewClassName: "aspect-square h-auto w-full max-w-52",
         imageObjectFit: "contain",
@@ -50,11 +139,11 @@ export function DashboardAchievementsPage() {
         label: copy.columns.type,
         type: "select",
         options: [
-          { value: "ARTICLE", label: "ARTICLE" },
-          { value: "COMMENT", label: "COMMENT" },
-          { value: "SOCIAL", label: "SOCIAL" },
-          { value: "LEVEL", label: "LEVEL" },
-          { value: "SPECIAL", label: "SPECIAL" },
+          { value: "ARTICLE", label: achievementCopy.typeOptions.ARTICLE },
+          { value: "COMMENT", label: achievementCopy.typeOptions.COMMENT },
+          { value: "SOCIAL", label: achievementCopy.typeOptions.SOCIAL },
+          { value: "LEVEL", label: achievementCopy.typeOptions.LEVEL },
+          { value: "SPECIAL", label: achievementCopy.typeOptions.SPECIAL },
         ],
       },
       {
@@ -62,17 +151,36 @@ export function DashboardAchievementsPage() {
         label: copy.columns.rarity,
         type: "select",
         options: [
-          { value: "COMMON", label: "COMMON" },
-          { value: "RARE", label: "RARE" },
-          { value: "EPIC", label: "EPIC" },
-          { value: "LEGENDARY", label: "LEGENDARY" },
+          { value: "COMMON", label: achievementCopy.rarityOptions.COMMON },
+          { value: "RARE", label: achievementCopy.rarityOptions.RARE },
+          { value: "EPIC", label: achievementCopy.rarityOptions.EPIC },
+          {
+            value: "LEGENDARY",
+            label: achievementCopy.rarityOptions.LEGENDARY,
+          },
         ],
       },
-      { name: "rewardPoints", label: "Reward Points", type: "number", step: 1 },
-      { name: "rewardExp", label: "Reward Exp", type: "number", step: 1 },
+      {
+        name: "condition",
+        label: achievementCopy.fields.condition,
+        type: "textarea",
+        placeholder: achievementCopy.fields.conditionPlaceholder,
+      },
+      {
+        name: "rewardPoints",
+        label: achievementCopy.fields.rewardPoints,
+        type: "number",
+        step: 1,
+      },
+      {
+        name: "rewardExp",
+        label: achievementCopy.fields.rewardExp,
+        type: "number",
+        step: 1,
+      },
       {
         name: "rewardDecorationId",
-        label: "Reward Decoration ID",
+        label: achievementCopy.fields.rewardDecorationId,
         type: "select",
         searchable: true,
         searchPlaceholder: copy.filters.decorationPlaceholder,
@@ -107,11 +215,11 @@ export function DashboardAchievementsPage() {
           ];
         },
       },
-      { name: "hidden", label: "Hidden", type: "switch" },
+      { name: "hidden", label: achievementCopy.fields.hidden, type: "switch" },
       { name: "sort", label: copy.columns.sort, type: "number", step: 1 },
       { name: "enabled", label: copy.columns.enabled, type: "switch" },
     ],
-    [copy, editingItem?.rewardDecorationId],
+    [achievementCodeOptions, achievementCopy, copy, editingItem?.rewardDecorationId],
   );
 
   const columns = useMemo<DashboardTableColumn<DashboardAchievementItem>[]>(
@@ -150,8 +258,20 @@ export function DashboardAchievementsPage() {
         hideInSearch: true,
         render: (item) => (
           <div className="space-y-1 text-sm text-foreground">
-            <div>{item.type || "-"}</div>
-            <div className="text-muted-foreground">{item.rarity || "-"}</div>
+            <div>
+              {item.type
+                ? achievementCopy.typeOptions[
+                    item.type as keyof typeof achievementCopy.typeOptions
+                  ] || item.type
+                : "-"}
+            </div>
+            <div className="text-muted-foreground">
+              {item.rarity
+                ? achievementCopy.rarityOptions[
+                    item.rarity as keyof typeof achievementCopy.rarityOptions
+                  ] || item.rarity
+                : "-"}
+            </div>
           </div>
         ),
       },
@@ -161,8 +281,12 @@ export function DashboardAchievementsPage() {
         hideInSearch: true,
         render: (item) => (
           <div className="space-y-1 text-sm text-foreground">
-            <div>Points: {item.rewardPoints ?? 0}</div>
-            <div className="text-muted-foreground">Exp: {item.rewardExp ?? 0}</div>
+            <div>
+              {achievementCopy.fields.pointsLabel}: {item.rewardPoints ?? 0}
+            </div>
+            <div className="text-muted-foreground">
+              {achievementCopy.fields.expLabel}: {item.rewardExp ?? 0}
+            </div>
           </div>
         ),
       },
@@ -172,7 +296,9 @@ export function DashboardAchievementsPage() {
         hideInSearch: true,
         render: (item) => (
           <div className="space-y-1">
-            <DashboardStatusBadge value={item.enabled ? "active" : "inactive"} />
+            <DashboardStatusBadge
+              value={item.enabled ? "active" : "inactive"}
+            />
             <div className="text-xs text-muted-foreground">
               {formatDashboardDate(item.updatedAt)}
             </div>
@@ -216,7 +342,7 @@ export function DashboardAchievementsPage() {
           ),
       },
     ],
-    [copy],
+    [achievementCopy, copy],
   );
 
   const handleDelete = async () => {
@@ -234,6 +360,95 @@ export function DashboardAchievementsPage() {
     }
   };
 
+  const buildAchievementPayload = (values: Record<string, unknown>) => ({
+    code: values.code as string | undefined,
+    name: values.name as string | undefined,
+    description: values.description as string | undefined,
+    icon: values.icon as string | undefined,
+    type: values.type as
+      | "ARTICLE"
+      | "COMMENT"
+      | "SOCIAL"
+      | "LEVEL"
+      | "SPECIAL"
+      | undefined,
+    rarity: values.rarity as
+      | "COMMON"
+      | "RARE"
+      | "EPIC"
+      | "LEGENDARY"
+      | undefined,
+    condition: parseAchievementCondition(values.condition),
+    rewardPoints: values.rewardPoints as number | undefined,
+    rewardExp: values.rewardExp as number | undefined,
+    rewardDecorationId:
+      typeof values.rewardDecorationId === "string" && values.rewardDecorationId
+        ? Number(values.rewardDecorationId)
+        : undefined,
+    hidden: values.hidden as boolean | undefined,
+    sort: values.sort as number | undefined,
+    enabled: values.enabled as boolean | undefined,
+  });
+
+  const handleCreate = async (values: Record<string, unknown>) => {
+    setSubmitting(true);
+
+    try {
+      await achievementControllerCreate({
+        body: {
+          code: (values.code as string) || "",
+          name: (values.name as string) || "",
+          description: (values.description as string) || "",
+          icon: values.icon as string | undefined,
+          type:
+            (values.type as
+              | "ARTICLE"
+              | "COMMENT"
+              | "SOCIAL"
+              | "LEVEL"
+              | "SPECIAL") || "SPECIAL",
+          rarity:
+            (values.rarity as "COMMON" | "RARE" | "EPIC" | "LEGENDARY") ||
+            "COMMON",
+          condition: parseAchievementCondition(values.condition),
+          rewardPoints: (values.rewardPoints as number | undefined) ?? 0,
+          rewardExp: (values.rewardExp as number | undefined) ?? 0,
+          rewardDecorationId:
+            typeof values.rewardDecorationId === "string" &&
+            values.rewardDecorationId
+              ? Number(values.rewardDecorationId)
+              : undefined,
+          hidden: (values.hidden as boolean | undefined) ?? false,
+          sort: (values.sort as number | undefined) ?? 0,
+          enabled: (values.enabled as boolean | undefined) ?? true,
+        },
+      });
+      setCreating(false);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleUpdate = async (values: Record<string, unknown>) => {
+    if (!editingItem?.id) {
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      await achievementControllerUpdate({
+        path: { id: String(editingItem.id) },
+        body: buildAchievementPayload(values),
+      });
+      setEditingItem(null);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
   }
@@ -243,11 +458,22 @@ export function DashboardAchievementsPage() {
       <DashboardProTable
         key={refreshKey}
         title={copy.pages.achievements.title}
+        action={
+          <Button
+            variant="primary"
+            className="h-9 rounded-full px-4"
+            onClick={() => setCreating(true)}
+          >
+            <Plus className="mr-2 size-4" />
+            {copy.common.create}
+          </Button>
+        }
         columns={columns}
         request={async ({ current, pageSize, keyword }) => {
           const response = await achievementControllerFindAll({
             query: {
-              keyword: typeof keyword === "string" && keyword ? keyword : undefined,
+              keyword:
+                typeof keyword === "string" && keyword ? keyword : undefined,
               sortBy: "sort",
               sortOrder: "DESC",
             },
@@ -263,10 +489,39 @@ export function DashboardAchievementsPage() {
           };
         }}
         getRowKey={(item) =>
-          item.id || item.code || `${item.name || "achievement"}-${item.type || "default"}`
+          item.id ||
+          item.code ||
+          `${item.name || "achievement"}-${item.type || "default"}`
         }
         emptyText={copy.empty.achievements}
         className="h-full"
+      />
+      <DashboardEditDialog
+        open={creating}
+        title={`${copy.common.create} · ${copy.pages.achievements.title}`}
+        fields={editFields}
+        initialValues={{
+          code: "FIRST_ARTICLE",
+          name: "",
+          description: "",
+          condition: stringifyAchievementCondition(null),
+          icon: "",
+          type: "SPECIAL",
+          rarity: "COMMON",
+          rewardPoints: 0,
+          rewardExp: 0,
+          rewardDecorationId: "",
+          hidden: false,
+          sort: 0,
+          enabled: true,
+        }}
+        loading={submitting}
+        onOpenChange={(open) => {
+          if (!open) {
+            setCreating(false);
+          }
+        }}
+        onSubmit={handleCreate}
       />
       <DashboardEditDialog
         open={Boolean(editingItem)}
@@ -276,6 +531,7 @@ export function DashboardAchievementsPage() {
           code: editingItem?.code,
           name: editingItem?.name,
           description: editingItem?.description,
+          condition: stringifyAchievementCondition(editingItem?.condition),
           icon: editingItem?.icon,
           type: editingItem?.type,
           rarity: editingItem?.rarity,
@@ -299,47 +555,7 @@ export function DashboardAchievementsPage() {
           if (!editingItem?.id) {
             return;
           }
-
-          setSubmitting(true);
-
-          try {
-            await achievementControllerUpdate({
-              path: { id: String(editingItem.id) },
-              body: {
-                code: values.code as string | undefined,
-                name: values.name as string | undefined,
-                description: values.description as string | undefined,
-                icon: values.icon as string | undefined,
-                type: values.type as
-                  | "ARTICLE"
-                  | "COMMENT"
-                  | "SOCIAL"
-                  | "LEVEL"
-                  | "SPECIAL"
-                  | undefined,
-                rarity: values.rarity as
-                  | "COMMON"
-                  | "RARE"
-                  | "EPIC"
-                  | "LEGENDARY"
-                  | undefined,
-                rewardPoints: values.rewardPoints as number | undefined,
-                rewardExp: values.rewardExp as number | undefined,
-                rewardDecorationId:
-                  typeof values.rewardDecorationId === "string" &&
-                  values.rewardDecorationId
-                    ? Number(values.rewardDecorationId)
-                    : undefined,
-                hidden: values.hidden as boolean | undefined,
-                sort: values.sort as number | undefined,
-                enabled: values.enabled as boolean | undefined,
-              },
-            });
-            setEditingItem(null);
-            setRefreshKey((current) => current + 1);
-          } finally {
-            setSubmitting(false);
-          }
+          await handleUpdate(values);
         }}
       />
       <DeleteConfirmDialog

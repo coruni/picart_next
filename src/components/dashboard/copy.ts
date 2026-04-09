@@ -124,6 +124,16 @@ const copy = {
       points: {
         title: "积分管理",
         description: "管理积分活动、每日任务奖励和启用状态。",
+        activityCodes: {
+          PUBLISH_ARTICLE: "发布文章",
+          LIKE_ARTICLE: "点赞文章",
+          PUBLISH_COMMENT: "发表评论",
+          LIKE_COMMENT: "点赞评论",
+          DAILY_LOGIN: "每日登录",
+          ARTICLE_RECEIVED_LIKE: "文章被他人点赞",
+          COMMENT_RECEIVED_LIKE: "评论被他人点赞",
+          ARTICLE_RECEIVED_COMMENT: "文章被他人评论",
+        },
       },
       orders: {
         title: "订单管理",
@@ -198,6 +208,31 @@ const copy = {
       achievements: {
         title: "成就管理",
         description: "查看成就基础信息、类型、稀有度和启用状态。",
+        fields: {
+          icon: "图标",
+          rewardPoints: "奖励积分",
+          rewardExp: "奖励经验",
+          rewardDecorationId: "奖励装饰品",
+          hidden: "隐藏",
+          condition: "条件",
+          conditionPlaceholder:
+            '{\n  "type": "count",\n  "event": "article_publish",\n  "target": 1\n}',
+          pointsLabel: "积分",
+          expLabel: "经验",
+        },
+        typeOptions: {
+          ARTICLE: "文章",
+          COMMENT: "评论",
+          SOCIAL: "社交",
+          LEVEL: "等级",
+          SPECIAL: "特殊",
+        },
+        rarityOptions: {
+          COMMON: "普通",
+          RARE: "稀有",
+          EPIC: "史诗",
+          LEGENDARY: "传说",
+        },
       },
       search: {
         title: "搜索管理",
@@ -484,6 +519,16 @@ const copy = {
         title: "Points Management",
         description:
           "Manage points activities, recurring task rewards, and active states.",
+        activityCodes: {
+          PUBLISH_ARTICLE: "Publish Article",
+          LIKE_ARTICLE: "Like Article",
+          PUBLISH_COMMENT: "Publish Comment",
+          LIKE_COMMENT: "Like Comment",
+          DAILY_LOGIN: "Daily Login",
+          ARTICLE_RECEIVED_LIKE: "Article Received Like",
+          COMMENT_RECEIVED_LIKE: "Comment Received Like",
+          ARTICLE_RECEIVED_COMMENT: "Article Received Comment",
+        },
       },
       orders: {
         title: "Order Management",
@@ -562,6 +607,31 @@ const copy = {
         title: "Achievement Management",
         description:
           "Review achievement basics, type, rarity, and enabled state.",
+        fields: {
+          icon: "Icon",
+          rewardPoints: "Reward Points",
+          rewardExp: "Reward Exp",
+          rewardDecorationId: "Reward Decoration",
+          hidden: "Hidden",
+          condition: "Condition",
+          conditionPlaceholder:
+            '{\n  "type": "count",\n  "event": "article_publish",\n  "target": 1\n}',
+          pointsLabel: "Points",
+          expLabel: "Exp",
+        },
+        typeOptions: {
+          ARTICLE: "Article",
+          COMMENT: "Comment",
+          SOCIAL: "Social",
+          LEVEL: "Level",
+          SPECIAL: "Special",
+        },
+        rarityOptions: {
+          COMMON: "Common",
+          RARE: "Rare",
+          EPIC: "Epic",
+          LEGENDARY: "Legendary",
+        },
       },
       search: {
         title: "Search Management",

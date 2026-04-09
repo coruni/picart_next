@@ -35,6 +35,17 @@ const ACTIVITY_TYPE_OPTIONS = [
   { value: "ONCE", label: "ONCE" },
 ] as const;
 
+const ACTIVITY_CODE_OPTIONS = [
+  { value: "PUBLISH_ARTICLE", copyKey: "PUBLISH_ARTICLE" },
+  { value: "LIKE_ARTICLE", copyKey: "LIKE_ARTICLE" },
+  { value: "PUBLISH_COMMENT", copyKey: "PUBLISH_COMMENT" },
+  { value: "LIKE_COMMENT", copyKey: "LIKE_COMMENT" },
+  { value: "DAILY_LOGIN", copyKey: "DAILY_LOGIN" },
+  { value: "ARTICLE_RECEIVED_LIKE", copyKey: "ARTICLE_RECEIVED_LIKE" },
+  { value: "COMMENT_RECEIVED_LIKE", copyKey: "COMMENT_RECEIVED_LIKE" },
+  { value: "ARTICLE_RECEIVED_COMMENT", copyKey: "ARTICLE_RECEIVED_COMMENT" },
+] as const;
+
 function sortActivities(items: DashboardPointsActivityItem[]) {
   return [...items].sort((left, right) => {
     const sortDiff = (left.sort ?? 0) - (right.sort ?? 0);
@@ -61,9 +72,36 @@ export function DashboardPointsPage() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
+  const activityCodeOptions = useMemo(
+    () =>
+      ACTIVITY_CODE_OPTIONS.map((option) => ({
+        value: option.value,
+        label: copy.pages.points.activityCodes[option.copyKey],
+      })),
+    [copy],
+  );
+
   const editFields = useMemo<DashboardEditField[]>(
     () => [
-      { name: "code", label: copy.columns.code },
+      {
+        name: "code",
+        label: copy.columns.code,
+        type: "select",
+        options: (() => {
+          if (!editingItem?.code) {
+            return activityCodeOptions;
+          }
+
+          return activityCodeOptions.some(
+            (option) => option.value === editingItem.code,
+          )
+            ? activityCodeOptions
+            : [
+                { value: editingItem.code, label: editingItem.code },
+                ...activityCodeOptions,
+              ];
+        })(),
+      },
       { name: "name", label: copy.columns.name },
       {
         name: "description",
@@ -122,7 +160,7 @@ export function DashboardPointsPage() {
       { name: "isActive", label: copy.columns.enabled, type: "switch" },
       { name: "sort", label: copy.columns.sort, type: "number", step: 1 },
     ],
-    [copy],
+    [activityCodeOptions, copy, editingItem?.code],
   );
 
   const typeValueEnum: DashboardValueEnum = {
@@ -416,7 +454,7 @@ export function DashboardPointsPage() {
         title={`${copy.common.create} · ${copy.pages.points.title}`}
         fields={editFields}
         initialValues={{
-          code: "",
+          code: "PUBLISH_ARTICLE",
           name: "",
           description: "",
           type: "DAILY",

@@ -1,13 +1,15 @@
 "use client";
 
 import {
+  decorationControllerCreate,
   decorationControllerFindAll,
   decorationControllerRemove,
   decorationControllerUpdate,
 } from "@/api";
 import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
-import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { MoreHorizontal, PencilLine, Plus, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
@@ -26,6 +28,7 @@ export function DashboardDecorationsPage() {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
+  const [creating, setCreating] = useState(false);
   const [editingItem, setEditingItem] = useState<DashboardDecorationItem | null>(null);
   const [deletingItem, setDeletingItem] = useState<DashboardDecorationItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -200,6 +203,94 @@ export function DashboardDecorationsPage() {
     }
   };
 
+  const buildDecorationPayload = (values: Record<string, unknown>) => ({
+    name: values.name as string | undefined,
+    type: values.type as "AVATAR_FRAME" | "COMMENT_BUBBLE" | undefined,
+    description: values.description as string | undefined,
+    imageUrl: values.imageUrl as string | undefined,
+    previewUrl: values.previewUrl as string | undefined,
+    rarity: values.rarity as
+      | "COMMON"
+      | "RARE"
+      | "EPIC"
+      | "LEGENDARY"
+      | undefined,
+    obtainMethod: values.obtainMethod as
+      | "PURCHASE"
+      | "ACTIVITY"
+      | "GIFT"
+      | "ACHIEVEMENT"
+      | "DEFAULT"
+      | undefined,
+    isPurchasable: values.isPurchasable as boolean | undefined,
+    price: values.price as number | undefined,
+    isPermanent: values.isPermanent as boolean | undefined,
+    validDays: values.validDays as number | undefined,
+    sort: values.sort as number | undefined,
+    requiredLikes: values.requiredLikes as number | undefined,
+    requiredComments: values.requiredComments as number | undefined,
+  });
+
+  const handleCreate = async (values: Record<string, unknown>) => {
+    setSubmitting(true);
+    try {
+      await decorationControllerCreate({
+        body: {
+          name: (values.name as string) || "",
+          type:
+            (values.type as "AVATAR_FRAME" | "COMMENT_BUBBLE") ||
+            "AVATAR_FRAME",
+          description: values.description as string | undefined,
+          imageUrl: (values.imageUrl as string) || "",
+          previewUrl: values.previewUrl as string | undefined,
+          rarity: values.rarity as
+            | "COMMON"
+            | "RARE"
+            | "EPIC"
+            | "LEGENDARY"
+            | undefined,
+          obtainMethod:
+            (values.obtainMethod as
+              | "PURCHASE"
+              | "ACTIVITY"
+              | "GIFT"
+              | "ACHIEVEMENT"
+              | "DEFAULT") || "DEFAULT",
+          isPurchasable: values.isPurchasable as boolean | undefined,
+          price: values.price as number | undefined,
+          isPermanent: values.isPermanent as boolean | undefined,
+          validDays: values.validDays as number | undefined,
+          sort: values.sort as number | undefined,
+          requiredLikes: values.requiredLikes as number | undefined,
+          requiredComments: values.requiredComments as number | undefined,
+        },
+      });
+      setCreating(false);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleUpdate = async (values: Record<string, unknown>) => {
+    if (!editingItem?.id) {
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      await decorationControllerUpdate({
+        path: { id: String(editingItem.id) },
+        body: buildDecorationPayload(values),
+      });
+      setEditingItem(null);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
   }
@@ -209,6 +300,16 @@ export function DashboardDecorationsPage() {
       <DashboardProTable
         key={refreshKey}
         title={copy.pages.decorations.title}
+        action={
+          <Button
+            variant="primary"
+            className="h-9 rounded-full px-4"
+            onClick={() => setCreating(true)}
+          >
+            <Plus className="mr-2 size-4" />
+            {copy.common.create}
+          </Button>
+        }
         columns={columns}
         request={async ({ current, pageSize, keyword, status }) => {
           const response = await decorationControllerFindAll({
@@ -229,6 +330,34 @@ export function DashboardDecorationsPage() {
         getRowKey={(item) => item.id}
         emptyText={copy.empty.decorations}
         className="h-full"
+      />
+      <DashboardEditDialog
+        open={creating}
+        title={`${copy.common.create} · ${copy.pages.decorations.title}`}
+        fields={editFields}
+        initialValues={{
+          name: "",
+          type: "AVATAR_FRAME",
+          description: "",
+          imageUrl: "",
+          previewUrl: "",
+          rarity: "COMMON",
+          obtainMethod: "DEFAULT",
+          isPurchasable: false,
+          price: 0,
+          isPermanent: true,
+          validDays: 999,
+          sort: 0,
+          requiredLikes: 0,
+          requiredComments: 0,
+        }}
+        loading={submitting}
+        onOpenChange={(open) => {
+          if (!open) {
+            setCreating(false);
+          }
+        }}
+        onSubmit={handleCreate}
       />
       <DashboardEditDialog
         open={Boolean(editingItem)}
@@ -260,45 +389,7 @@ export function DashboardDecorationsPage() {
           if (!editingItem) {
             return;
           }
-
-          setSubmitting(true);
-
-          try {
-            await decorationControllerUpdate({
-              path: { id: String(editingItem.id) },
-              body: {
-                name: values.name as string | undefined,
-                type: values.type as "AVATAR_FRAME" | "COMMENT_BUBBLE" | undefined,
-                description: values.description as string | undefined,
-                imageUrl: values.imageUrl as string | undefined,
-                previewUrl: values.previewUrl as string | undefined,
-                rarity: values.rarity as
-                  | "COMMON"
-                  | "RARE"
-                  | "EPIC"
-                  | "LEGENDARY"
-                  | undefined,
-                obtainMethod: values.obtainMethod as
-                  | "PURCHASE"
-                  | "ACTIVITY"
-                  | "GIFT"
-                  | "ACHIEVEMENT"
-                  | "DEFAULT"
-                  | undefined,
-                isPurchasable: values.isPurchasable as boolean | undefined,
-                price: values.price as number | undefined,
-                isPermanent: values.isPermanent as boolean | undefined,
-                validDays: values.validDays as number | undefined,
-                sort: values.sort as number | undefined,
-                requiredLikes: values.requiredLikes as number | undefined,
-                requiredComments: values.requiredComments as number | undefined,
-              },
-            });
-            setEditingItem(null);
-            setRefreshKey((current) => current + 1);
-          } finally {
-            setSubmitting(false);
-          }
+          await handleUpdate(values);
         }}
       />
       <DeleteConfirmDialog
