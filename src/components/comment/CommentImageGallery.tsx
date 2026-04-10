@@ -59,10 +59,10 @@ export function CommentImageGallery({
 
   if (imageUrls.length === 1) {
     return (
-      <div className={className}>
+      <div className={cn("pl-17", className)}>
         <button
           type="button"
-          className="inline-block max-w-full cursor-pointer overflow-hidden rounded-xl bg-muted"
+          className="inline-block max-w-full cursor-pointer overflow-hidden rounded-xl bg-muted "
           onClick={() => onOpenImageViewer(originalUrls, 0)}
         >
           <ImageWithFallback
@@ -113,7 +113,7 @@ export function CommentImageGallery({
         {imageUrls.map((imageUrl, index) => (
           <SwiperSlide
             key={`${imageAltPrefix}-${index}`}
-            className="w-auto! pl-17 md:pl-0"
+            className={cn("w-auto!", index === 0 && "pl-17 md:pl-0")}
           >
             <div className="overflow-hidden rounded-xl bg-muted h-45 max-w-80 ">
               <button
