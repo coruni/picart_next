@@ -5,14 +5,13 @@ import { ArticleDetail } from "@/types";
 import { getImageUrl, type ImageInfo } from "@/types/image";
 import { ChevronLeft, ChevronRight, Fullscreen } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Swiper as SwiperType } from "swiper";
-import { FreeMode, Thumbs } from "swiper/modules";
+import { FreeMode } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { ImageViewer } from "./ImageViewer";
 
 import "swiper/css";
-import "swiper/css/thumbs";
 
 type ImageGalleryProps = {
   images: (string | ImageInfo)[];
@@ -27,12 +26,15 @@ export function ImageGallery({
 }: ImageGalleryProps) {
   const t = useTranslations("imageGallery");
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
+  const [mainSwiper, setMainSwiper] = useState<SwiperType | null>(null);
   const [viewerVisible, setViewerVisible] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [thumbCanScrollPrev, setThumbCanScrollPrev] = useState(false);
   const [thumbCanScrollNext, setThumbCanScrollNext] = useState(false);
   const [thumbHasOverflow, setThumbHasOverflow] = useState(false);
   const [overflowingIndexes, setOverflowingIndexes] = useState<number[]>([]);
+  const galleryRef = useRef<HTMLDivElement | null>(null);
+  const pendingScrollAdjustTopRef = useRef<number | null>(null);
 
   // Convert images to URLs for display
   const imageUrls = images.map((img) =>
@@ -77,6 +79,38 @@ export function ImageGallery({
     setOverflowingIndexes([]);
   }, [images]);
 
+  const captureGalleryViewportTop = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    pendingScrollAdjustTopRef.current =
+      galleryRef.current?.getBoundingClientRect().top ?? null;
+  };
+
+  const restoreGalleryViewportTop = () => {
+    if (
+      typeof window === "undefined" ||
+      pendingScrollAdjustTopRef.current === null
+    ) {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      const nextTop = galleryRef.current?.getBoundingClientRect().top;
+
+      if (typeof nextTop === "number") {
+        const delta = nextTop - pendingScrollAdjustTopRef.current!;
+
+        if (Math.abs(delta) > 1) {
+          window.scrollBy({ top: delta, left: 0, behavior: "auto" });
+        }
+      }
+
+      pendingScrollAdjustTopRef.current = null;
+    });
+  };
+
   if (!images || !Array.isArray(images) || images.length === 0) return null;
 
   if (images.length === 1) {
@@ -88,7 +122,7 @@ export function ImageGallery({
     return (
       <>
         <div
-          className="relative w-full cursor-pointer overflow-hidden rounded-xl group"
+          className="relative w-full cursor-pointer overflow-hidden rounded-xl group [overflow-anchor:none]"
           onClick={() => {
             setActiveIndex(0);
             setViewerVisible(true);
@@ -127,7 +161,10 @@ export function ImageGallery({
 
   return (
     <>
-      <div className="w-full min-w-0 space-y-2">
+      <div
+        ref={galleryRef}
+        className="w-full min-w-0 space-y-2 [overflow-anchor:none]"
+      >
         <div className="relative mx-auto w-full min-w-0 overflow-hidden">
           {thumbHasOverflow && thumbCanScrollPrev ? (
             <button
@@ -144,10 +181,16 @@ export function ImageGallery({
               setThumbsSwiper(swiper);
               syncThumbNavState(swiper);
             }}
-            modules={[FreeMode, Thumbs]}
+            modules={[FreeMode]}
             spaceBetween={8}
             slidesPerView="auto"
-            freeMode
+            freeMode={{
+              enabled: true,
+              momentum: false,
+              momentumBounce: false,
+              sticky: false,
+            }}
+            resistanceRatio={0}
             watchSlidesProgress
             onSlideChange={syncThumbNavState}
             onReachBeginning={syncThumbNavState}
@@ -158,10 +201,12 @@ export function ImageGallery({
             {thumbnailUrls.map((imageUrl, index) => (
               <SwiperSlide
                 key={`thumb-${index}`}
-                style={{ width: "128px", height: "128px" }}
-                className="shrink-0"
+                className="shrink-0 size-26! md:size-32!"
               >
-                <div className="relative h-full w-full cursor-pointer overflow-hidden rounded-lg border-2 border-gray-200 transition-colors hover:border-primary">
+                <div
+                  className="relative h-full w-full cursor-pointer overflow-hidden rounded-lg border-2 border-gray-200 transition-colors hover:border-primary"
+                  onClick={() => mainSwiper?.slideTo(index)}
+                >
                   <ImageWithFallback
                     src={imageUrl}
                     fill
@@ -189,14 +234,18 @@ export function ImageGallery({
 
         <div className="w-full min-w-0 overflow-hidden rounded-xl">
           <Swiper
-            modules={[Thumbs]}
-            thumbs={{
-              swiper:
-                thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
-            }}
             autoHeight
             className="main-swiper w-full"
-            onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+            onSwiper={setMainSwiper}
+            onBeforeTransitionStart={captureGalleryViewportTop}
+            onSlideChange={(swiper) => {
+              setActiveIndex(swiper.activeIndex);
+              if (thumbsSwiper && !thumbsSwiper.destroyed) {
+                thumbsSwiper.slideTo(swiper.activeIndex);
+                syncThumbNavState(thumbsSwiper);
+              }
+            }}
+            onSlideChangeTransitionEnd={restoreGalleryViewportTop}
           >
             {imageUrls.map((imageUrl, index) => (
               <SwiperSlide

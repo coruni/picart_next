@@ -1,7 +1,7 @@
 "use client";
 
+import { isContentMatchingLocale, TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
 import { useTranslateStore } from "@/stores";
-import { TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -12,6 +12,19 @@ const DEBOUNCE_DELAY = 150;
 function getTranslateApi() {
   if (typeof window === "undefined") return null;
   return window.translate ?? null;
+}
+
+function getArticleDetailText(): string {
+  if (typeof document === "undefined") {
+    return "";
+  }
+
+  return Array.from(
+    document.querySelectorAll<HTMLElement>(DETAIL_TRANSLATE_SCOPE_SELECTOR),
+  )
+    .map((element) => element.innerText || element.textContent || "")
+    .join(" ")
+    .trim();
 }
 
 function getCurrentDisplayedLanguage(translate: typeof window.translate): string | undefined {
@@ -43,6 +56,7 @@ export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }
   const autoTranslateContent = useTranslateStore((state) => state.autoTranslateContent);
 
   const [showOriginal, setShowOriginal] = useState(true);
+  const [shouldHideNotice, setShouldHideNotice] = useState(false);
   const debounceTimerRef = useRef<number | null>(null);
   const isUserTogglingRef = useRef(false);
 
@@ -63,13 +77,25 @@ export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }
       }
 
       const translate = getTranslateApi();
+      const articleText = getArticleDetailText();
+      const matchesLocale = articleText
+        ? isContentMatchingLocale(articleText, locale)
+        : false;
+      setShouldHideNotice(matchesLocale);
+
+      if (matchesLocale) {
+        setShowOriginal(true);
+        debounceTimerRef.current = null;
+        return;
+      }
+
       const isTranslated = translate && targetLanguage && autoTranslateContent
         ? isTranslatedToTarget(translate, targetLanguage)
         : false;
       setShowOriginal(!isTranslated);
       debounceTimerRef.current = null;
     }, DEBOUNCE_DELAY);
-  }, [targetLanguage, autoTranslateContent]);
+  }, [targetLanguage, autoTranslateContent, locale]);
 
   useEffect(() => {
     if (!enabled || !isVisible) return;
@@ -157,7 +183,7 @@ export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }
     }, 200);
   }, [showOriginal, targetLanguage]);
 
-  if (!enabled || !isVisible) {
+  if (!enabled || !isVisible || shouldHideNotice) {
     return null;
   }
 
