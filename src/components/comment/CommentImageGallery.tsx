@@ -111,8 +111,11 @@ export function CommentImageGallery({
         }}
       >
         {imageUrls.map((imageUrl, index) => (
-          <SwiperSlide key={`${imageAltPrefix}-${index}`} className="w-auto!">
-            <div className="overflow-hidden rounded-xl bg-muted h-45">
+          <SwiperSlide
+            key={`${imageAltPrefix}-${index}`}
+            className="w-auto! pl-17 md:pl-0"
+          >
+            <div className="overflow-hidden rounded-xl bg-muted h-45 max-w-80 ">
               <button
                 type="button"
                 className="block cursor-pointer h-full"
@@ -125,7 +128,7 @@ export function CommentImageGallery({
                   height={180}
                   wrapperClassName="relative block h-full"
                   className={cn(
-                  "block h-full! max-h-45 w-auto max-w-none object-contain",
+                    "block h-full! max-h-45 w-auto max-w-none object-contain",
                     multiImageClassName,
                   )}
                 />

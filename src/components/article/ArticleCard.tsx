@@ -167,7 +167,7 @@ export const ArticleCard = ({
                 tabIndex={0}
                 data-guarded-link-ignore="true"
                 className={cn(
-                  "overflow-hidden relative cursor-zoom-in aspect-square md:w-31/100 md:pt-[31%]",
+                  "overflow-hidden md:rounded-xl relative cursor-zoom-in aspect-square md:w-31/100 md:pt-[31%]",
                   idx === 0 && "rounded-l-xl",
                   idx === 1 && "rounded-r-xl",
                 )}
@@ -212,7 +212,7 @@ export const ArticleCard = ({
               tabIndex={0}
               data-guarded-link-ignore="true"
               className={cn(
-                "overflow-hidden relative cursor-zoom-in aspect-square md:w-1/5 md:pt-[20%]",
+                "overflow-hidden md:rounded-xl relative cursor-zoom-in aspect-square md:w-1/5 md:pt-[20%]",
                 idx === 0 && "rounded-l-xl ",
                 idx === 2 && "rounded-r-xl",
               )}
