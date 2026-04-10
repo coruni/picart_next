@@ -470,9 +470,10 @@ export function CommentReplyList({
                 <CommentImageGallery
                   images={data.images || []}
                   imageAltPrefix={`Comment image ${data.id}`}
-                  className="mt-3"
                   onOpenImageViewer={onOpenImageViewer}
                   compact={compact}
+                  edgePadding={false}
+                  contentOffset={false}
                 />
               </div>
               <div className="mt-2 flex items-center justify-between text-sm text-secondary">

@@ -229,6 +229,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
               images={reply.images}
               imageAltPrefix={`Comment reply image ${reply.id}`}
               className="mt-3"
+              contentOffset={false}
               onOpenImageViewer={(images, index) =>
                 onOpenImageViewer(images, index)
               }

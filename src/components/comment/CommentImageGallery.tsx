@@ -21,6 +21,8 @@ type CommentImageGalleryProps = {
   prevButtonClassName?: string;
   onOpenImageViewer: (images: string[], index?: number) => void;
   compact?: boolean;
+  edgePadding?: boolean;
+  contentOffset?: boolean;
 };
 
 export function CommentImageGallery({
@@ -32,6 +34,8 @@ export function CommentImageGallery({
   prevButtonClassName,
   onOpenImageViewer,
   compact = false,
+  edgePadding = true,
+  contentOffset = true,
 }: CommentImageGalleryProps) {
   const tImageViewer = useTranslations("imageViewer");
   const swiperRef = useRef<SwiperType | null>(null);
@@ -61,7 +65,7 @@ export function CommentImageGallery({
 
   if (imageUrls.length === 1) {
     return (
-      <div className={cn(!compact && "pl-17", className)}>
+      <div className={cn(contentOffset && !compact && "pl-17", className)}>
         <button
           type="button"
           className="inline-block max-w-full cursor-pointer overflow-hidden rounded-xl bg-muted "
@@ -86,7 +90,7 @@ export function CommentImageGallery({
   return (
     <div className={cn("group relative", className)}>
       <Swiper
-        className={cn(compact && "px-4")}
+        className={cn(compact && edgePadding && "px-4")}
         modules={[FreeMode]}
         onSwiper={(swiper) => {
           swiperRef.current = swiper;
@@ -118,7 +122,7 @@ export function CommentImageGallery({
             key={`${imageAltPrefix}-${index}`}
             className={cn(
               "w-auto!",
-              index === 0 && compact && "pl-17 md:pl-0",
+              index === 0 && contentOffset && !compact && "pl-17 md:pl-0",
             )}
           >
             <div className="overflow-hidden rounded-xl bg-muted h-45 max-w-80 ">
