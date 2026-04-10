@@ -864,7 +864,7 @@ export function MessageDetailPane({
 
         {selectedItem.type === "private" ? (
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <div className="relative min-h-0 min-w-0 flex-1 ">
+            <div className="relative min-h-0 min-w-0 flex-1 px-2 md:px-0">
               <div
                 ref={scrollViewportRef}
                 className="h-full min-h-0 min-w-0 overflow-x-hidden overflow-y-auto py-4 md:border-r md:border-border md:pl-4 md:py-4 pb-0! md:pr-1"
@@ -954,7 +954,7 @@ export function MessageDetailPane({
               ) : null}
             </div>
 
-            <div className="min-w-0 border-t border-border bg-background/92 md:px-3 py-3 backdrop-blur">
+            <div className="min-w-0 border-t border-border bg-background/92 md:px-3 py-3 backdrop-blur md:pr-0">
               {composerImages.length > 0 ? (
                 <div
                   className="mb-3 flex gap-2 overflow-x-auto"

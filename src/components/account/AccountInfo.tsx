@@ -11,6 +11,7 @@ import {
 import { useIsMobile } from "@/hooks";
 import { useAuthNavigation } from "@/hooks/useAuthNavigation";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
+import { buildMessageCenterHref } from "@/lib/message-routes";
 import { cn, formatCompactNumber } from "@/lib";
 import { isAccountSectionHidden } from "@/lib/account-privacy";
 import { openLoginDialog } from "@/lib/modal-helpers";
@@ -91,7 +92,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
       return;
     }
 
-    router.push(`/message?tab=private&userId=${user.id}`);
+    router.push(buildMessageCenterHref("private", user.id));
   };
 
   const handleOpenReportDialog = () => {

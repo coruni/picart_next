@@ -11,7 +11,6 @@ import {
 import type {
   ComposerImageItem,
   MessageCenterCopy,
-  MessageCenterTabItem,
   PrivateHistoryItem,
   PrivateMessagePayload,
   PrivateRealtimePayload,
@@ -20,37 +19,26 @@ import type {
 import {
   getMessageDayKey,
   getMessageDayLabel,
-  resolveMessagePreviewText,
 } from "@/components/message/MessageCenter.utils";
-import { MessageConversationList } from "@/components/message/MessageConversationList";
 import { MessageDetailPane } from "@/components/message/MessageDetailPane";
-import { Button } from "@/components/ui/Button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/Dialog";
 import { useIsMobile } from "@/hooks";
 import { useImageCompression } from "@/hooks/useImageCompression";
-import { usePathname, useRouter } from "@/i18n/routing";
+import { useRouter } from "@/i18n/routing";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { messageSocketClient } from "@/lib/message-socket";
+import {
+  buildMessageHrefFromItem,
+  resolveMessageRouteType,
+} from "@/lib/message-routes";
 import { openLoginDialog } from "@/lib/modal-helpers";
-import type { MessageDropdownItem } from "@/stores/useMessageNotificationStore";
+import type {
+  MessageDropdownItem,
+  MessageTab,
+} from "@/stores/useMessageNotificationStore";
 import { useMessageNotificationStore, useUserStore } from "@/stores";
 import { useLocale, useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
-import {
-  useDeferredValue,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useParams, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type PrivateHistorySourceItem = {
   id?: number;
@@ -66,9 +54,7 @@ type PrivateHistorySourceItem = {
   isRecalled?: boolean;
 };
 
-function resolveMessageImageUrl(
-  payload?: PrivateMessagePayload,
-): string | null {
+function resolveMessageImageUrl(payload?: PrivateMessagePayload): string | null {
   if (
     Array.isArray(payload?.urls) &&
     payload.urls.length > 0 &&
@@ -198,14 +184,36 @@ function matchesPendingPrivateMessage(
   return pendingUrls.every((url, index) => url === incomingUrls[index]);
 }
 
-export function MessageCenterClient() {
+function resolveInitialTab(
+  queryTab: string | null,
+  routeType: MessageTab | null,
+): MessageTab {
+  if (
+    queryTab === "all" ||
+    queryTab === "notification" ||
+    queryTab === "private" ||
+    queryTab === "system"
+  ) {
+    return queryTab;
+  }
+
+  return routeType ?? "all";
+}
+
+export function MessageCenterDetailRouteClient() {
   const tCommon = useTranslations("common");
   const tMsg = useTranslations("messageDropdown");
   const tTime = useTranslations("time");
   const locale = useLocale();
   const isMobile = useIsMobile();
   const router = useRouter();
-  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const params = useParams<{ type?: string | string[]; id?: string | string[] }>();
+  const routeType = resolveMessageRouteType(
+    typeof params.type === "string" ? params.type : null,
+  );
+  const routeId = Number(typeof params.id === "string" ? params.id : 0);
+  const selectedTab = resolveInitialTab(searchParams.get("tab"), routeType);
   const copy = useMemo<MessageCenterCopy>(
     () => ({
       title: tMsg("center.title"),
@@ -241,48 +249,19 @@ export function MessageCenterClient() {
     }),
     [tMsg],
   );
-  const searchParams = useSearchParams();
-  const queryTab = searchParams.get("tab");
-  const queryItemId = Number(searchParams.get("item"));
-  const queryUserId = Number(searchParams.get("userId"));
   const user = useUserStore((state) => state.user);
-  const token = useUserStore((state) => state.token);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const messages = useMessageNotificationStore((state) => state.centerMessages);
-  const selectedTab = useMessageNotificationStore((state) => state.selectedTab);
   const unreadCount = useMessageNotificationStore((state) => state.unreadCount);
   const socketConnected = useMessageNotificationStore(
     (state) => state.socketConnected,
   );
-  const isLoading = useMessageNotificationStore((state) => state.isLoading);
-  const isSwitchingTab = useMessageNotificationStore(
-    (state) => state.isSwitchingTab,
-  );
-  const fetchMessages = useMessageNotificationStore(
-    (state) => state.fetchMessages,
-  );
+  const markAllAsRead = useMessageNotificationStore((state) => state.markAllAsRead);
   const fetchUnreadCount = useMessageNotificationStore(
     (state) => state.fetchUnreadCount,
   );
-  const markAllAsRead = useMessageNotificationStore(
-    (state) => state.markAllAsRead,
-  );
-  const setSelectedTab = useMessageNotificationStore(
-    (state) => state.setSelectedTab,
-  );
-  const initializeSocket = useMessageNotificationStore(
-    (state) => state.initializeSocket,
-  );
-  const resetNotifications = useMessageNotificationStore(
-    (state) => state.reset,
-  );
 
-  const [search, setSearch] = useState("");
-  const deferredSearch = useDeferredValue(search);
-  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
-  const [privateHistory, setPrivateHistory] = useState<PrivateHistoryItem[]>(
-    [],
-  );
+  const [privateHistory, setPrivateHistory] = useState<PrivateHistoryItem[]>([]);
   const [detailLoading, setDetailLoading] = useState(false);
   const [privateHistoryCursor, setPrivateHistoryCursor] = useState<
     string | null
@@ -295,10 +274,6 @@ export function MessageCenterClient() {
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [reportSubmitting, setReportSubmitting] = useState(false);
   const [blockSubmitting, setBlockSubmitting] = useState(false);
-  const [blockDialogOpen, setBlockDialogOpen] = useState(false);
-  const [mobileViewportHeight, setMobileViewportHeight] = useState<
-    number | null
-  >(null);
   const [selectedUserStatus, setSelectedUserStatus] =
     useState<PrivateUserStatus | null>(null);
   const [pendingPrivateTarget, setPendingPrivateTarget] = useState<{
@@ -310,49 +285,26 @@ export function MessageCenterClient() {
   const composerImagesRef = useRef<ComposerImageItem[]>([]);
   const { compressImages, validateFiles } = useImageCompression();
 
-  const tabs: MessageCenterTabItem[] = [
-    { value: "all", label: tMsg("tabs.all") },
-    { value: "notification", label: tMsg("tabs.notification") },
-    { value: "private", label: tMsg("tabs.private") },
-    { value: "system", label: tMsg("tabs.system") },
-  ];
-
-  const initialTab = queryUserId
-    ? "private"
-    : queryTab === "all" ||
-        queryTab === "notification" ||
-        queryTab === "private" ||
-        queryTab === "system"
-      ? queryTab
-      : "all";
-
-  const existingQueryConversation = useMemo(() => {
-    if (!queryUserId) {
-      return null;
-    }
-
-    return (
-      messages.find(
-        (item) =>
-          item.type === "private" &&
-          Number(item.counterpartId || 0) === Number(queryUserId),
-      ) || null
-    );
-  }, [messages, queryUserId]);
-
   const pendingPrivateItem = useMemo<MessageDropdownItem | null>(() => {
     if (!pendingPrivateTarget) {
       return null;
     }
 
     return {
-      id: pendingPrivateTarget.id,
-      type: "private" as const,
+      id: -pendingPrivateTarget.counterpartId,
+      type: "private",
       title: pendingPrivateTarget.title,
       content: "",
       createdAt: "",
       isRead: true,
-      href: `/message?tab=private&userId=${pendingPrivateTarget.counterpartId}`,
+      href: buildMessageHrefFromItem(
+        {
+          id: -pendingPrivateTarget.counterpartId,
+          type: "private",
+          counterpartId: pendingPrivateTarget.counterpartId,
+        },
+        "private",
+      ),
       avatarUrl: pendingPrivateTarget.avatarUrl,
       counterpartId: pendingPrivateTarget.counterpartId,
       unreadCount: 0,
@@ -363,205 +315,18 @@ export function MessageCenterClient() {
     };
   }, [pendingPrivateTarget]);
 
-  const displayedMessages = useMemo(() => {
-    if (
-      !pendingPrivateItem ||
-      existingQueryConversation ||
-      messages.some((item) => item.id === pendingPrivateItem.id)
-    ) {
-      return messages;
-    }
-
-    return [pendingPrivateItem, ...messages];
-  }, [existingQueryConversation, messages, pendingPrivateItem]);
-
   useEffect(() => {
-    if (!isAuthenticated || !token) {
-      resetNotifications();
-      return;
-    }
-
-    initializeSocket(token);
-    void fetchUnreadCount();
-    setSelectedTab(initialTab);
-    void fetchMessages(initialTab);
-  }, [
-    fetchMessages,
-    fetchUnreadCount,
-    initialTab,
-    initializeSocket,
-    isAuthenticated,
-    resetNotifications,
-    setSelectedTab,
-    token,
-  ]);
-
-  const filteredMessages = useMemo(() => {
-    const keyword = deferredSearch.trim().toLowerCase();
-    if (!keyword) {
-      return displayedMessages;
-    }
-
-    return displayedMessages.filter((item) =>
-      [item.title, item.content].some((value) =>
-        value?.toLowerCase().includes(keyword),
-      ),
-    );
-  }, [deferredSearch, displayedMessages]);
-
-  const summarizedMessages = useMemo(() => {
-    if (selectedTab !== "all") {
-      return filteredMessages;
-    }
-
-    return filteredMessages.map((item) => ({
-      ...item,
-      content: resolveMessagePreviewText(
-        {
-          content: item.content,
-          messageKind: item.messageKind,
-          payload: item.payload as PrivateMessagePayload | undefined,
-          recalledAt: item.recalledAt,
-          isRecalled: item.isRecalled,
-        },
-        copy,
-      ),
-    }));
-  }, [copy, filteredMessages, selectedTab]);
-
-  const selectedItem = useMemo(() => {
-    const source = selectedTab === "all" ? summarizedMessages : displayedMessages;
-    return source.find((item) => item.id === selectedItemId) || null;
-  }, [displayedMessages, selectedItemId, selectedTab, summarizedMessages]);
-
-  const selectedPrivateCounterpartId =
-    selectedItem?.type === "private"
-      ? (selectedItem.counterpartId ?? null)
-      : null;
-
-  useEffect(() => {
-    if (queryItemId) {
-      setSelectedItemId(queryItemId);
-      return;
-    }
-
-    if (existingQueryConversation) {
-      setSelectedItemId(existingQueryConversation.id);
-      return;
-    }
-
-    if (pendingPrivateItem) {
-      setSelectedItemId(pendingPrivateItem.id);
-      return;
-    }
-
-    if (!isMobile && !selectedItemId && filteredMessages.length > 0) {
-      setSelectedItemId(filteredMessages[0].id);
-    }
-  }, [
-    existingQueryConversation,
-    filteredMessages,
-    isMobile,
-    pendingPrivateItem,
-    queryItemId,
-    selectedItemId,
-  ]);
-
-  useLayoutEffect(() => {
-    if (!isMobile) {
-      return;
-    }
-
-    if (!queryItemId && !queryUserId) {
-      setSelectedItemId(null);
-    }
-  }, [isMobile, queryItemId, queryUserId]);
-
-  const isMobileDetailOpen = isMobile && Boolean(selectedItem);
-
-  const handleBackToList = () => {
-    setSelectedItemId(null);
-    const nextParams = new URLSearchParams(searchParams.toString());
-    nextParams.set("tab", selectedTab);
-    nextParams.delete("item");
-    nextParams.delete("userId");
-
-    const nextQuery = nextParams.toString();
-    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname);
-  };
-
-  const handleSelectItem = (itemId: number, itemHref?: string) => {
-    setSelectedItemId(itemId);
-    // 移动端：用 push 更新 URL，让返回时能回到列表
-    if (isMobile && itemHref) {
-      router.push(itemHref);
-    }
-  };
-
-  const requireAuth = () => {
-    if (isAuthenticated) {
-      return true;
-    }
-
-    openLoginDialog();
-    return false;
-  };
-
-  const removeSelectedPrivateConversation = () => {
-    if (!selectedItem || selectedItem.type !== "private") {
-      return;
-    }
-
-    const selectedConversationId = selectedItem.id;
-    const selectedCounterpartId = Number(selectedItem.counterpartId || 0);
-
-    useMessageNotificationStore.setState((state) => ({
-      centerMessages: state.centerMessages.filter((message) => {
-        if (message.type !== "private") {
-          return true;
-        }
-
-        return (
-          message.id !== selectedConversationId &&
-          Number(message.counterpartId || 0) !== selectedCounterpartId
-        );
-      }),
-      dropdownMessages: state.dropdownMessages.filter((message) => {
-        if (message.type !== "private") {
-          return true;
-        }
-
-        return (
-          message.id !== selectedConversationId &&
-          Number(message.counterpartId || 0) !== selectedCounterpartId
-        );
-      }),
-    }));
-
-    handleBackToList();
-  };
-
-  const handleTabChange = (tab: MessageCenterTabItem["value"]) => {
-    setSelectedTab(tab);
-    setSelectedItemId(null);
-    void fetchMessages(tab);
-
-    const nextParams = new URLSearchParams(searchParams.toString());
-    nextParams.set("tab", tab);
-    nextParams.delete("item");
-    nextParams.delete("userId");
-
-    const nextQuery = nextParams.toString();
-    router.replace(nextQuery ? `${pathname}?${nextQuery}` : pathname);
-  };
-
-  useEffect(() => {
-    if (!queryUserId || !isAuthenticated) {
+    if (routeType !== "private" || !routeId || !isAuthenticated) {
       setPendingPrivateTarget(null);
       return;
     }
 
-    if (existingQueryConversation) {
+    const existingConversation = messages.find(
+      (item) =>
+        item.type === "private" &&
+        Number(item.counterpartId || 0) === Number(routeId),
+    );
+    if (existingConversation) {
       setPendingPrivateTarget(null);
       return;
     }
@@ -571,7 +336,7 @@ export function MessageCenterClient() {
     const loadTargetUser = async () => {
       try {
         const response = await userControllerFindOne({
-          path: { id: String(queryUserId) },
+          path: { id: String(routeId) },
         });
         const targetUser = response?.data?.data;
 
@@ -598,89 +363,49 @@ export function MessageCenterClient() {
     return () => {
       cancelled = true;
     };
-  }, [existingQueryConversation, isAuthenticated, queryUserId, tMsg]);
+  }, [isAuthenticated, messages, routeId, routeType, tMsg]);
 
-  useEffect(() => {
-    if (!isMobile || typeof window === "undefined") {
-      setMobileViewportHeight(null);
-      return;
+  const selectedItem = useMemo(() => {
+    if (!routeType || !routeId) {
+      return null;
     }
 
-    const viewport = window.visualViewport;
-    const updateViewportHeight = () => {
-      setMobileViewportHeight(
-        Math.round(viewport?.height ?? window.innerHeight),
+    if (routeType === "private") {
+      return (
+        messages.find(
+          (item) =>
+            item.type === "private" &&
+            Number(item.counterpartId || 0) === Number(routeId),
+        ) ||
+        pendingPrivateItem ||
+        null
       );
-    };
-
-    updateViewportHeight();
-    viewport?.addEventListener("resize", updateViewportHeight);
-    viewport?.addEventListener("scroll", updateViewportHeight);
-    window.addEventListener("orientationchange", updateViewportHeight);
-
-    return () => {
-      viewport?.removeEventListener("resize", updateViewportHeight);
-      viewport?.removeEventListener("scroll", updateViewportHeight);
-      window.removeEventListener("orientationchange", updateViewportHeight);
-    };
-  }, [isMobile]);
-
-  const handleReportSelectedUser = async (payload: {
-    category: "SPAM" | "ABUSE" | "INAPPROPRIATE" | "COPYRIGHT" | "OTHER";
-    reason: string;
-  }) => {
-    if (!selectedPrivateCounterpartId || !requireAuth()) {
-      return;
     }
 
-    setReportSubmitting(true);
-    try {
-      await reportControllerCreate({
-        body: {
-          type: "USER",
-          category: payload.category,
-          reason: payload.reason,
-          reportedUserId: Number(selectedPrivateCounterpartId),
-        },
-      });
-    } catch (error) {
-      console.error("Failed to report private user:", error);
-      throw error;
-    } finally {
-      setReportSubmitting(false);
-    }
-  };
+    return (
+      messages.find(
+        (item) => item.type === routeType && Number(item.id) === Number(routeId),
+      ) || null
+    );
+  }, [messages, pendingPrivateItem, routeId, routeType]);
 
-  const handleBlockSelectedUser = async () => {
-    if (!selectedPrivateCounterpartId || !requireAuth() || blockSubmitting) {
-      return;
-    }
-
-    setBlockSubmitting(true);
-    try {
-      await messageControllerBlockPrivateUser({
-        path: { userId: String(selectedPrivateCounterpartId) },
-      });
-      setBlockDialogOpen(false);
-      removeSelectedPrivateConversation();
-      void fetchUnreadCount();
-    } catch (error) {
-      console.error("Failed to block private user:", error);
-    } finally {
-      setBlockSubmitting(false);
-    }
-  };
-
-  const openBlockDialog = () => {
-    if (!selectedPrivateCounterpartId || !requireAuth()) {
-      return;
-    }
-    setBlockDialogOpen(true);
-  };
+  const selectedPrivateCounterpartId =
+    selectedItem?.type === "private"
+      ? (selectedItem.counterpartId ?? null)
+      : null;
+  const isMobileDetailOpen = isMobile && Boolean(selectedItem);
 
   useEffect(() => {
     composerImagesRef.current = composerImages;
   }, [composerImages]);
+
+  useEffect(() => {
+    return () => {
+      composerImagesRef.current.forEach((item) => {
+        URL.revokeObjectURL(item.previewUrl);
+      });
+    };
+  }, []);
 
   useEffect(() => {
     if (!selectedPrivateCounterpartId) {
@@ -751,7 +476,9 @@ export function MessageCenterClient() {
 
           useMessageNotificationStore.setState((state) => ({
             centerMessages: state.centerMessages.map((message) =>
-              message.id === selectedItemId
+              message.type === "private" &&
+              Number(message.counterpartId || 0) ===
+                Number(selectedPrivateCounterpartId)
                 ? { ...message, isRead: true, unreadCount: 0 }
                 : message,
             ),
@@ -776,20 +503,7 @@ export function MessageCenterClient() {
     return () => {
       cancelled = true;
     };
-  }, [
-    fetchUnreadCount,
-    selectedItemId,
-    selectedPrivateCounterpartId,
-    user?.id,
-  ]);
-
-  useEffect(() => {
-    return () => {
-      composerImagesRef.current.forEach((item) => {
-        URL.revokeObjectURL(item.previewUrl);
-      });
-    };
-  }, []);
+  }, [fetchUnreadCount, selectedPrivateCounterpartId, user?.id]);
 
   useEffect(() => {
     if (!selectedPrivateCounterpartId) {
@@ -830,6 +544,123 @@ export function MessageCenterClient() {
       socket.off("userStatusChanged", handleUserStatus);
     };
   }, [selectedPrivateCounterpartId, socketConnected]);
+
+  useEffect(() => {
+    if (!selectedPrivateCounterpartId) {
+      return;
+    }
+
+    const socket = messageSocketClient.instance;
+    if (!socket) {
+      return;
+    }
+
+    const handlePrivateMessage = (payload: PrivateRealtimePayload) => {
+      const senderId = Number(payload.senderId || 0);
+      const receiverId = Number(payload.receiverId || 0);
+      const counterpartId = Number(selectedPrivateCounterpartId || 0);
+      const viewerId = Number(user?.id || 0);
+      const matched =
+        (senderId === counterpartId && receiverId === viewerId) ||
+        (senderId === viewerId && receiverId === counterpartId);
+
+      const imageUrl = resolveMessageImageUrl(payload.payload);
+
+      if (
+        !matched ||
+        !payload.id ||
+        (!payload.content && !imageUrl && !payload.isRecalled)
+      ) {
+        return;
+      }
+
+      setPrivateHistory((prev) => {
+        const nextItem: PrivateHistoryItem = {
+          id: payload.id,
+          senderId,
+          receiverId,
+          content: payload.content,
+          messageKind: payload.messageKind,
+          payload: payload.payload,
+          createdAt: payload.createdAt,
+          isRead: payload.isRead,
+          recalledAt: payload.recalledAt,
+          recallReason: payload.recallReason,
+          isRecalled: payload.isRecalled,
+        };
+
+        if (prev.some((item) => item.id === nextItem.id && !item.pending)) {
+          return prev;
+        }
+
+        const pendingCandidates = prev
+          .map((item, index) => ({ item, index }))
+          .filter(({ item }) => matchesPendingPrivateMessage(item, nextItem))
+          .sort((a, b) => {
+            const aTime = new Date(a.item.createdAt || 0).getTime();
+            const bTime = new Date(b.item.createdAt || 0).getTime();
+            return bTime - aTime;
+          });
+        const pendingIndex = pendingCandidates[0]?.index ?? -1;
+
+        if (pendingIndex >= 0) {
+          const nextHistory = [...prev];
+          nextHistory[pendingIndex] = nextItem;
+          return nextHistory;
+        }
+
+        return [...prev, nextItem];
+      });
+    };
+
+    const handlePrivateMessageRecalled = (payload: {
+      id?: number;
+      recalledAt?: string;
+      recallReason?: string;
+      isRecalled?: boolean;
+    }) => {
+      if (!payload.id) {
+        return;
+      }
+
+      setPrivateHistory((prev) =>
+        prev.map((item) =>
+          item.id === payload.id
+            ? {
+                ...item,
+                isRecalled: true,
+                recalledAt: payload.recalledAt ?? item.recalledAt,
+                recallReason: payload.recallReason ?? item.recallReason,
+              }
+            : item,
+        ),
+      );
+    };
+
+    socket.on("privateMessage", handlePrivateMessage);
+    socket.on("privateMessageRecalled", handlePrivateMessageRecalled);
+
+    return () => {
+      socket.off("privateMessage", handlePrivateMessage);
+      socket.off("privateMessageRecalled", handlePrivateMessageRecalled);
+    };
+  }, [selectedPrivateCounterpartId, user?.id]);
+
+  const groupedPrivateHistory = useMemo(
+    () =>
+      privateHistory.map((item, index) => {
+        const previousItem = privateHistory[index - 1];
+        const dayKey = getMessageDayKey(item.createdAt);
+        const previousDayKey = getMessageDayKey(previousItem?.createdAt);
+
+        return {
+          item,
+          showDayDivider: index === 0 || dayKey !== previousDayKey,
+          dayLabel: getMessageDayLabel(item.createdAt, locale),
+        };
+      }),
+    [locale, privateHistory],
+  );
 
   const handleLoadOlderHistory = async () => {
     if (
@@ -900,119 +731,6 @@ export function MessageCenterClient() {
     }
   };
 
-  useEffect(() => {
-    if (!selectedPrivateCounterpartId) {
-      return;
-    }
-
-    const socket = messageSocketClient.instance;
-    if (!socket) {
-      return;
-    }
-
-    const handlePrivateMessage = (payload: PrivateRealtimePayload) => {
-      const senderId = Number(payload.senderId || 0);
-      const receiverId = Number(payload.receiverId || 0);
-      const counterpartId = Number(selectedPrivateCounterpartId || 0);
-      const viewerId = Number(user?.id || 0);
-      const matched =
-        (senderId === counterpartId && receiverId === viewerId) ||
-        (senderId === viewerId && receiverId === counterpartId);
-
-      const imageUrl = resolveMessageImageUrl(payload.payload);
-
-      if (
-        !matched ||
-        !payload.id ||
-        (!payload.content && !imageUrl && !payload.isRecalled)
-      ) {
-        return;
-      }
-
-      setPrivateHistory((prev) => {
-        const nextItem: PrivateHistoryItem = {
-          id: payload.id,
-          senderId,
-          receiverId,
-          content: payload.content,
-          messageKind: payload.messageKind,
-          payload: payload.payload,
-          createdAt: payload.createdAt,
-          isRead: payload.isRead,
-          recalledAt: payload.recalledAt,
-          recallReason: payload.recallReason,
-          isRecalled: payload.isRecalled,
-        };
-
-        if (prev.some((item) => item.id === nextItem.id && !item.pending)) {
-          return prev;
-        }
-
-        const pendingCandidates = prev
-          .map((item, index) => ({ item, index }))
-          .filter(({ item }) => matchesPendingPrivateMessage(item, nextItem))
-          .sort((a, b) => {
-            const aTime = new Date(a.item.createdAt || 0).getTime();
-            const bTime = new Date(b.item.createdAt || 0).getTime();
-            return bTime - aTime;
-          });
-        const pendingIndex = pendingCandidates[0]?.index ?? -1;
-        if (pendingIndex >= 0) {
-          const nextHistory = [...prev];
-          nextHistory[pendingIndex] = nextItem;
-          return nextHistory;
-        }
-
-        return [...prev, nextItem];
-      });
-    };
-
-    const handlePrivateMessageRecalled = (payload: {
-      id?: number;
-      recalledAt?: string;
-      recallReason?: string;
-      isRecalled?: boolean;
-    }) => {
-      if (!payload.id) {
-        return;
-      }
-
-      setPrivateHistory((prev) =>
-        prev.map((item) =>
-          item.id === payload.id
-            ? {
-                ...item,
-                isRecalled: true,
-                recalledAt: payload.recalledAt ?? item.recalledAt,
-                recallReason: payload.recallReason ?? item.recallReason,
-              }
-            : item,
-        ),
-      );
-    };
-
-    socket.on("privateMessage", handlePrivateMessage);
-    socket.on("privateMessageRecalled", handlePrivateMessageRecalled);
-    return () => {
-      socket.off("privateMessage", handlePrivateMessage);
-      socket.off("privateMessageRecalled", handlePrivateMessageRecalled);
-    };
-  }, [selectedPrivateCounterpartId, user?.id]);
-
-  const groupedPrivateHistory = useMemo(() => {
-    return privateHistory.map((item, index) => {
-      const previousItem = privateHistory[index - 1];
-      const dayKey = getMessageDayKey(item.createdAt);
-      const previousDayKey = getMessageDayKey(previousItem?.createdAt);
-
-      return {
-        item,
-        showDayDivider: index === 0 || dayKey !== previousDayKey,
-        dayLabel: getMessageDayLabel(item.createdAt, locale),
-      };
-    });
-  }, [locale, privateHistory]);
-
   const handlePickComposerImages = (files: FileList | null) => {
     if (!files?.length) {
       return;
@@ -1032,7 +750,7 @@ export function MessageCenterClient() {
       const compressionResults = await compressImages(nextFiles);
 
       const validation = validateFiles(
-        compressionResults.map((r) => r.file),
+        compressionResults.map((result) => result.file),
         true,
       );
       if (!validation.valid) {
@@ -1068,7 +786,7 @@ export function MessageCenterClient() {
 
         const response = await uploadControllerUploadFile({
           body: {
-            file: drafts.map((draft) => draft.file) as any,
+            file: drafts.map((draft) => draft.file) as unknown as File[],
             metadata,
           },
         });
@@ -1076,9 +794,7 @@ export function MessageCenterClient() {
 
         setComposerImages((current) =>
           current.flatMap((item) => {
-            const draftIndex = drafts.findIndex(
-              (draft) => draft.id === item.id,
-            );
+            const draftIndex = drafts.findIndex((draft) => draft.id === item.id);
             if (draftIndex === -1) {
               return [item];
             }
@@ -1106,9 +822,7 @@ export function MessageCenterClient() {
           URL.revokeObjectURL(draft.previewUrl);
         });
         setComposerImages((current) =>
-          current.filter(
-            (item) => !drafts.some((draft) => draft.id === item.id),
-          ),
+          current.filter((item) => !drafts.some((draft) => draft.id === item.id)),
         );
         console.error("Failed to upload private images:", error);
       } finally {
@@ -1116,6 +830,7 @@ export function MessageCenterClient() {
       }
     })();
   };
+
   const handleRemoveComposerImage = (id: string) => {
     setComposerImages((current) => {
       const target = current.find((item) => item.id === id);
@@ -1227,113 +942,135 @@ export function MessageCenterClient() {
     );
   };
 
-  const mobilePageStyle =
-    isMobile && mobileViewportHeight
-      ? {
-          height: `calc(${mobileViewportHeight}px - var(--header-height,60px))`,
-        }
-      : undefined;
-  const mobileCardStyle =
-    isMobile && mobileViewportHeight
-      ? {
-          height: `calc(${mobileViewportHeight}px - var(--header-height,60px) - 16px)`,
-        }
-      : undefined;
+  const requireAuth = () => {
+    if (isAuthenticated) {
+      return true;
+    }
+
+    openLoginDialog();
+    return false;
+  };
+
+  const handleReportSelectedUser = async (payload: {
+    category: "SPAM" | "ABUSE" | "INAPPROPRIATE" | "COPYRIGHT" | "OTHER";
+    reason: string;
+  }) => {
+    if (!selectedPrivateCounterpartId || !requireAuth()) {
+      return;
+    }
+
+    setReportSubmitting(true);
+    try {
+      await reportControllerCreate({
+        body: {
+          type: "USER",
+          category: payload.category,
+          reason: payload.reason,
+          reportedUserId: Number(selectedPrivateCounterpartId),
+        },
+      });
+    } catch (error) {
+      console.error("Failed to report private user:", error);
+      throw error;
+    } finally {
+      setReportSubmitting(false);
+    }
+  };
+
+  const handleBackToList = () => {
+    const nextParams = new URLSearchParams(searchParams.toString());
+    if (selectedTab === "all") {
+      nextParams.delete("tab");
+    } else {
+      nextParams.set("tab", selectedTab);
+    }
+
+    const nextQuery = nextParams.toString();
+    router.replace(nextQuery ? `/message?${nextQuery}` : "/message");
+  };
+
+  const handleBlockSelectedUser = async () => {
+    if (!selectedPrivateCounterpartId || !requireAuth() || blockSubmitting) {
+      return;
+    }
+
+    setBlockSubmitting(true);
+    try {
+      await messageControllerBlockPrivateUser({
+        path: { userId: String(selectedPrivateCounterpartId) },
+      });
+
+      useMessageNotificationStore.setState((state) => {
+        const filterPrivateMessages = (items: MessageDropdownItem[]) =>
+          items.filter((message) => {
+            if (message.type !== "private") {
+              return true;
+            }
+
+            return (
+              Number(message.counterpartId || 0) !==
+              Number(selectedPrivateCounterpartId)
+            );
+          });
+
+        return {
+          centerMessages: filterPrivateMessages(state.centerMessages),
+          dropdownMessages: filterPrivateMessages(state.dropdownMessages),
+          dropdownMessagesByTab: {
+            all: filterPrivateMessages(state.dropdownMessagesByTab.all),
+            notification: state.dropdownMessagesByTab.notification,
+            private: filterPrivateMessages(state.dropdownMessagesByTab.private),
+            system: state.dropdownMessagesByTab.system,
+          },
+        };
+      });
+
+      void fetchUnreadCount();
+      handleBackToList();
+    } catch (error) {
+      console.error("Failed to block private user:", error);
+    } finally {
+      setBlockSubmitting(false);
+    }
+  };
+
+  if (!selectedItem && routeType && routeId) {
+    return null;
+  }
 
   return (
-    <div
-      className="page-container h-[calc(100dvh-var(--header-height,60px))] overflow-hidden pb-0! transition-[height] ease-out"
-      style={mobilePageStyle}
-    >
-      <div
-        className="left-container h-[calc(100dvh-var(--header-height,60px)-16px)] min-h-0 overflow-hidden rounded-2xl border border-border/70 bg-card transition-[height] ease-out"
-        style={mobileCardStyle}
-      >
-        <div className="grid h-full min-h-0 md:grid-cols-[348px_minmax(0,1fr)]">
-          <MessageConversationList
-            copy={copy}
-            filteredMessages={summarizedMessages}
-            isLoading={isLoading}
-            isSwitchingTab={isSwitchingTab}
-            isMobileDetailOpen={isMobileDetailOpen}
-            locale={locale}
-            onTabChange={handleTabChange}
-            search={search}
-            selectedItemId={selectedItemId}
-            selectedTab={selectedTab}
-            setSearch={setSearch}
-            onSelectItem={handleSelectItem}
-            socketConnected={socketConnected}
-            tabs={tabs}
-            tCommon={tCommon}
-            tMsg={tMsg}
-            tTime={tTime}
-          />
-          <MessageDetailPane
-            blockSubmitting={blockSubmitting}
-            composerValue={composerValue}
-            composerImages={composerImages}
-            copy={copy}
-            detailLoading={detailLoading}
-            hasMoreHistory={hasMorePrivateHistory}
-            isMobileDetailOpen={isMobileDetailOpen}
-            groupedPrivateHistory={groupedPrivateHistory}
-            handleRecallPrivateMessage={handleRecallPrivateMessage}
-            handleSendPrivateMessage={handleSendPrivateMessage}
-            isLoadingOlderHistory={isLoadingOlderHistory}
-            isSending={isSending}
-            isUploadingImages={isUploadingImages}
-            locale={locale}
-            markAllAsRead={markAllAsRead}
-            onBlockSelectedUser={openBlockDialog}
-            onPickComposerImages={handlePickComposerImages}
-            onLoadOlderHistory={handleLoadOlderHistory}
-            onRemoveComposerImage={handleRemoveComposerImage}
-            onReportSelectedUser={handleReportSelectedUser}
-            onBackToList={handleBackToList}
-            reportSubmitting={reportSubmitting}
-            selectedItem={selectedItem}
-            selectedUserStatus={selectedUserStatus}
-            selectedTab={selectedTab}
-            setComposerValue={setComposerValue}
-            tCommon={tCommon}
-            tMsg={tMsg}
-            tTime={tTime}
-            unreadCount={unreadCount}
-            userId={user?.id}
-          />
-        </div>
-      </div>
-
-      {/* 拉黑确认 Dialog */}
-      <Dialog open={blockDialogOpen} onOpenChange={setBlockDialogOpen}>
-        <DialogContent className="max-w-sm rounded-2xl p-6" showClose={false}>
-          <DialogHeader className="mb-0 space-y-2 text-center sm:text-center">
-            <DialogTitle>{tMsg("blockConfirmTitle")}</DialogTitle>
-            <DialogDescription>
-              {tMsg("blockConfirmDescription")}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="mt-6 flex-row justify-center gap-6! sm:justify-center">
-            <Button
-              variant="outline"
-              className="h-8 rounded-full px-6 min-w-20"
-              onClick={() => setBlockDialogOpen(false)}
-              disabled={blockSubmitting}
-            >
-              {tCommon("cancel")}
-            </Button>
-            <Button
-              className="h-8 rounded-full px-6 min-w-20"
-              onClick={handleBlockSelectedUser}
-              loading={blockSubmitting}
-              disabled={blockSubmitting}
-            >
-              {tMsg("blockUser")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+    <MessageDetailPane
+      blockSubmitting={blockSubmitting}
+      composerValue={composerValue}
+      composerImages={composerImages}
+      copy={copy}
+      detailLoading={detailLoading}
+      hasMoreHistory={hasMorePrivateHistory}
+      isMobileDetailOpen={isMobileDetailOpen}
+      groupedPrivateHistory={groupedPrivateHistory}
+      handleRecallPrivateMessage={handleRecallPrivateMessage}
+      handleSendPrivateMessage={handleSendPrivateMessage}
+      isLoadingOlderHistory={isLoadingOlderHistory}
+      isSending={isSending}
+      isUploadingImages={isUploadingImages}
+      locale={locale}
+      markAllAsRead={markAllAsRead}
+      onBlockSelectedUser={handleBlockSelectedUser}
+      onPickComposerImages={handlePickComposerImages}
+      onLoadOlderHistory={handleLoadOlderHistory}
+      onRemoveComposerImage={handleRemoveComposerImage}
+      onReportSelectedUser={handleReportSelectedUser}
+      onBackToList={handleBackToList}
+      reportSubmitting={reportSubmitting}
+      selectedItem={selectedItem}
+      selectedUserStatus={selectedUserStatus}
+      selectedTab={selectedTab}
+      setComposerValue={setComposerValue}
+      tCommon={tCommon}
+      tMsg={tMsg}
+      tTime={tTime}
+      unreadCount={unreadCount}
+      userId={user?.id}
+    />
   );
 }

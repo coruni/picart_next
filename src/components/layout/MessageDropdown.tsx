@@ -64,15 +64,17 @@ export function MessageDropdown({
   const [dropdownTab, setDropdownTab] = useState<MessageTab>("all");
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const token = useUserStore((state) => state.token);
-  const messages = useMessageNotificationStore((state) => state.dropdownMessages);
   const unreadCount = useMessageNotificationStore((state) => state.unreadCount);
   const unreadSummary = useMessageNotificationStore((state) => state.unreadSummary);
   const isLoading = useMessageNotificationStore((state) => state.dropdownIsLoading);
   const hasLoadedDropdownMessages = useMessageNotificationStore(
     (state) => state.hasLoadedDropdownMessages,
   );
-  const dropdownLoadedTab = useMessageNotificationStore(
-    (state) => state.dropdownLoadedTab,
+  const loadedDropdownTabs = useMessageNotificationStore(
+    (state) => state.loadedDropdownTabs,
+  );
+  const dropdownMessagesByTab = useMessageNotificationStore(
+    (state) => state.dropdownMessagesByTab,
   );
   const fetchDropdownMessages = useMessageNotificationStore(
     (state) => state.fetchDropdownMessages,
@@ -137,11 +139,14 @@ export function MessageDropdown({
     mobileSheetHeightRef.current = mobileSheetHeight;
   }, [mobileSheetHeight]);
 
-  const filteredMessages = messages;
+  const filteredMessages = dropdownMessagesByTab[dropdownTab];
+  const hasCachedMessages = filteredMessages.length > 0;
+  const isInitialLoading = isLoading && !hasCachedMessages;
+  const isRefreshing = isLoading && hasCachedMessages;
   const shouldFetchDropdownData =
     isAuthenticated &&
     !isLoading &&
-    (!hasLoadedDropdownMessages || dropdownLoadedTab !== dropdownTab);
+    (!hasLoadedDropdownMessages || !loadedDropdownTabs[dropdownTab]);
 
   const handleMouseEnter = () => {
     if (!isMobile && shouldFetchDropdownData) {
@@ -255,7 +260,7 @@ export function MessageDropdown({
             : undefined
         }
       >
-        {isLoading ? (
+        {isInitialLoading ? (
           <div className="px-4 py-8 text-center text-sm text-muted-foreground">
             {tCommon("loading")}
           </div>
@@ -318,24 +323,31 @@ export function MessageDropdown({
         <h3 className="flex-1 font-semibold text-foreground">
           {tHeader("messages")}
         </h3>
-        {isAuthenticated && (
-          <div className="flex items-center gap-6 text-secondary">
-            <button
-              className="cursor-pointer"
-              onClick={handleCleanMessage}
-              title={tMsg("cleanMessages")}
-            >
-              <BrushCleaning size={18} />
-            </button>
-            <GuardedLink
-              href="/setting/notification"
-              title={tMsg("notificationSettings")}
-              onClick={() => mobile && setMobileOpen(false)}
-            >
-              <Settings size={18} />
-            </GuardedLink>
-          </div>
-        )}
+        <div className="flex items-center gap-4">
+          {isRefreshing ? (
+            <span className="text-xs text-muted-foreground">
+              {tCommon("loading")}
+            </span>
+          ) : null}
+          {isAuthenticated && (
+            <div className="flex items-center gap-6 text-secondary">
+              <button
+                className="cursor-pointer"
+                onClick={handleCleanMessage}
+                title={tMsg("cleanMessages")}
+              >
+                <BrushCleaning size={18} />
+              </button>
+              <GuardedLink
+                href="/setting/notification"
+                title={tMsg("notificationSettings")}
+                onClick={() => mobile && setMobileOpen(false)}
+              >
+                <Settings size={18} />
+              </GuardedLink>
+            </div>
+          )}
+        </div>
       </div>
       <div className="shrink-0 border-b border-border bg-card/95 px-4 backdrop-blur">
         <div className="flex items-center gap-5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">

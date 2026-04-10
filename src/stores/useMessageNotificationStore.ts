@@ -17,16 +17,17 @@ import {
   type MessageSocketListItem,
   type MessageSocketUnreadPayload,
 } from "@/lib/message-socket";
+import { buildMessageCenterHref } from "@/lib/message-routes";
 import type { UnreadCount } from "@/types";
 import { create } from "zustand";
 import { useUserStore } from "./useUserStore";
 
 export type MessageTab = "all" | "notification" | "private" | "system";
+type MessageTabCache = Record<MessageTab, MessageDropdownItem[]>;
+type LoadedMessageTabMap = Record<MessageTab, boolean>;
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 10;
-const MESSAGE_CENTER_PATH = "/message";
-
 type SearchMessageList = NonNullable<
   NonNullable<MessageControllerSearchResponse["data"]>["data"]
 >;
@@ -59,6 +60,7 @@ let socketToken: string | null = null;
 interface MessageNotificationState {
   centerMessages: MessageDropdownItem[];
   dropdownMessages: MessageDropdownItem[];
+  dropdownMessagesByTab: MessageTabCache;
   selectedTab: MessageTab;
   dropdownLoadedTab: MessageTab;
   unreadCount: number;
@@ -69,6 +71,7 @@ interface MessageNotificationState {
   isUnreadLoading: boolean;
   hasLoadedMessages: boolean;
   hasLoadedDropdownMessages: boolean;
+  loadedDropdownTabs: LoadedMessageTabMap;
   socketConnected: boolean;
   fetchMessages: (tab?: MessageTab) => Promise<void>;
   fetchDropdownMessages: (tab: MessageTab) => Promise<void>;
@@ -78,6 +81,35 @@ interface MessageNotificationState {
   initializeSocket: (token: string | null) => void;
   teardownSocket: () => void;
   reset: () => void;
+}
+
+function createEmptyDropdownCache(): MessageTabCache {
+  return {
+    all: [],
+    notification: [],
+    private: [],
+    system: [],
+  };
+}
+
+function createEmptyLoadedDropdownTabs(): LoadedMessageTabMap {
+  return {
+    all: false,
+    notification: false,
+    private: false,
+    system: false,
+  };
+}
+
+function updateDropdownCache(
+  cache: MessageTabCache,
+  tab: MessageTab,
+  messages: MessageDropdownItem[],
+): MessageTabCache {
+  return {
+    ...cache,
+    [tab]: messages,
+  };
 }
 
 function markMessagesAsRead(
@@ -172,7 +204,10 @@ function normalizeSocketPrivateConversation(
     content: latestMessage?.content || "",
     createdAt: conversation.lastMessageAt || latestMessage?.createdAt || "",
     isRead: (conversation.unreadCount || 0) <= 0,
-    href: getMessageCenterHref("private", itemId),
+    href: buildMessageCenterHref(
+      "private",
+      conversation.counterpart?.id || itemId,
+    ),
     avatarUrl: conversation.counterpart?.avatar,
     counterpartId: conversation.counterpart?.id,
     unreadCount: conversation.unreadCount || 0,
@@ -187,10 +222,6 @@ function cleanupSocketListeners() {
   removeSocketListeners?.();
   removeSocketListeners = null;
   socketToken = null;
-}
-
-function getMessageCenterHref(type: Exclude<MessageTab, "all">, id: number) {
-  return `${MESSAGE_CENTER_PATH}?tab=${type}&item=${id}`;
 }
 
 function normalizeMessageItem(
@@ -210,7 +241,7 @@ function normalizeMessageItem(
     content: message.content || "",
     createdAt: message.createdAt || "",
     isRead: Boolean(message.isRead),
-    href: getMessageCenterHref(type, message.id),
+    href: buildMessageCenterHref(type, message.id),
     messageKind: "messageKind" in message ? message.messageKind : undefined,
     payload:
       "payload" in message
@@ -244,7 +275,10 @@ function normalizePrivateConversation(
     content: latestMessage?.content || "",
     createdAt: conversation.lastMessageAt || latestMessage?.createdAt || "",
     isRead: (conversation.unreadCount || 0) <= 0,
-    href: getMessageCenterHref("private", itemId),
+    href: buildMessageCenterHref(
+      "private",
+      conversation.counterpart?.id || itemId,
+    ),
     avatarUrl: conversation.counterpart?.avatar,
     counterpartId: conversation.counterpart?.id,
     unreadCount: conversation.unreadCount || 0,
@@ -298,6 +332,7 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
   (set, get) => ({
     centerMessages: [],
     dropdownMessages: [],
+    dropdownMessagesByTab: createEmptyDropdownCache(),
     selectedTab: "all",
     dropdownLoadedTab: "all",
     unreadCount: 0,
@@ -308,6 +343,7 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
     isUnreadLoading: false,
     hasLoadedMessages: false,
     hasLoadedDropdownMessages: false,
+    loadedDropdownTabs: createEmptyLoadedDropdownTabs(),
     socketConnected: false,
 
     fetchMessages: async (tab = get().selectedTab) => {
@@ -347,14 +383,23 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
       set({
         dropdownIsLoading: true,
         dropdownLoadedTab: tab,
-        dropdownMessages: [],
+        dropdownMessages: get().dropdownMessagesByTab[tab] || [],
       });
 
       try {
         const messages = await fetchMessageList(tab);
         set({
+          dropdownMessagesByTab: updateDropdownCache(
+            get().dropdownMessagesByTab,
+            tab,
+            messages,
+          ),
           dropdownMessages: messages,
           hasLoadedDropdownMessages: true,
+          loadedDropdownTabs: {
+            ...get().loadedDropdownTabs,
+            [tab]: true,
+          },
         });
       } catch (error) {
         console.error("Failed to fetch dropdown messages:", error);
@@ -409,6 +454,14 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
         set((state) => ({
           centerMessages: markMessagesAsRead(state.centerMessages, tab),
           dropdownMessages: markMessagesAsRead(state.dropdownMessages, tab),
+          dropdownMessagesByTab: Object.fromEntries(
+            (Object.entries(state.dropdownMessagesByTab) as Array<
+              [MessageTab, MessageDropdownItem[]]
+            >).map(([cacheTab, messages]) => [
+              cacheTab,
+              markMessagesAsRead(messages, tab),
+            ]),
+          ) as MessageTabCache,
         }));
 
         void get().fetchUnreadCount();
@@ -498,10 +551,18 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
             state.dropdownLoadedTab === "private" &&
             state.hasLoadedDropdownMessages
           ) {
-            nextState.dropdownMessages = [
+            const nextPrivateMessages = [
               normalized,
-              ...state.dropdownMessages.filter((item) => item.id !== normalized.id),
+              ...state.dropdownMessagesByTab.private.filter(
+                (item) => item.id !== normalized.id,
+              ),
             ].slice(0, DEFAULT_LIMIT);
+            nextState.dropdownMessagesByTab = updateDropdownCache(
+              state.dropdownMessagesByTab,
+              "private",
+              nextPrivateMessages,
+            );
+            nextState.dropdownMessages = nextPrivateMessages;
             changed = true;
           }
 
@@ -520,7 +581,7 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
           hasLoadedMessages,
           hasLoadedDropdownMessages,
           centerMessages,
-          dropdownMessages,
+          dropdownMessagesByTab,
           selectedTab,
           dropdownLoadedTab,
         } = get();
@@ -564,11 +625,19 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
           (dropdownLoadedTab === "all" || type === dropdownLoadedTab)
         ) {
           const normalized = normalizeMessageItem(message);
+          const nextDropdownMessages = [
+            normalized,
+            ...dropdownMessagesByTab[dropdownLoadedTab].filter(
+              (item) => item.id !== normalized.id,
+            ),
+          ].slice(0, DEFAULT_LIMIT);
           set({
-            dropdownMessages: [
-              normalized,
-              ...dropdownMessages.filter((item) => item.id !== normalized.id),
-            ].slice(0, DEFAULT_LIMIT),
+            dropdownMessagesByTab: updateDropdownCache(
+              dropdownMessagesByTab,
+              dropdownLoadedTab,
+              nextDropdownMessages,
+            ),
+            dropdownMessages: nextDropdownMessages,
           });
         }
 
@@ -578,13 +647,20 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
           type === "private"
         ) {
           const nextDropdownMessages = applyPrivateMessagePreview(
-            dropdownMessages,
+            dropdownMessagesByTab.private,
             message,
             currentUserId,
           );
 
           if (nextDropdownMessages) {
-            set({ dropdownMessages: nextDropdownMessages });
+            set({
+              dropdownMessagesByTab: updateDropdownCache(
+                dropdownMessagesByTab,
+                "private",
+                nextDropdownMessages,
+              ),
+              dropdownMessages: nextDropdownMessages,
+            });
           } else {
             void get().fetchDropdownMessages("private");
           }
@@ -625,6 +701,7 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
       set({
         centerMessages: [],
         dropdownMessages: [],
+        dropdownMessagesByTab: createEmptyDropdownCache(),
         selectedTab: "all",
         dropdownLoadedTab: "all",
         unreadCount: 0,
@@ -634,6 +711,7 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
         isUnreadLoading: false,
         hasLoadedMessages: false,
         hasLoadedDropdownMessages: false,
+        loadedDropdownTabs: createEmptyLoadedDropdownTabs(),
       });
     },
   }),
