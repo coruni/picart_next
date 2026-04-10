@@ -6,15 +6,35 @@ import { cn } from "@/lib";
 import type { StaticImageData } from "next/image";
 import Image, { type ImageProps } from "next/image";
 import { useEffect, useRef, useState } from "react";
+
 const DEFAULT_PLACEHOLDER = imagePlaceholder;
 const DEFAULT_ERROR = imageError;
 const UNOPTIMIZED_HOSTS = new Set(["cf-s3.coslark.org"]);
+
+// 全局图片缓存 - 存储已加载成功的图片URL
+const imageCache = new Map<string, "loaded" | "error">();
+
+// 预加载图片并返回Promise
+const preloadImage = (src: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const img = new window.Image();
+    img.onload = () => resolve();
+    img.onerror = () => reject();
+    img.src = src;
+  });
+};
 
 type ImageWithFallbackProps = Omit<ImageProps, "onError"> & {
   wrapperClassName?: string;
   placeholderSrc?: string | StaticImageData;
   errorSrc?: string | StaticImageData;
   onError?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
+  /** 是否启用懒加载（当图片进入视口时才加载） */
+  lazy?: boolean;
+  /** 懒加载的根边距 */
+  lazyRootMargin?: string;
+  /** 懒加载的阈值 */
+  lazyThreshold?: number;
 };
 
 export function ImageWithFallback({
@@ -30,45 +50,89 @@ export function ImageWithFallback({
   width,
   height,
   style,
+  lazy = false,
+  lazyRootMargin = "50px",
+  lazyThreshold = 0,
   ...rest
 }: ImageWithFallbackProps) {
+  const srcString = typeof src === "string" ? src : src?.toString() || "";
+
+  // 从缓存获取初始状态
+  const cachedStatus = imageCache.get(srcString);
   const [status, setStatus] = useState<"loading" | "loaded" | "error">(
-    "loading",
+    cachedStatus || "loading",
   );
+  const [shouldLoad, setShouldLoad] = useState(!lazy);
   const wrapperRef = useRef<HTMLSpanElement | null>(null);
 
+  // 懒加载：使用 Intersection Observer
   useEffect(() => {
-    setStatus("loading");
-  }, [src]);
+    if (!lazy) return;
+    if (shouldLoad) return;
 
-  useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper) return;
 
-    const rafId = requestAnimationFrame(() => {
-      const img = wrapper.querySelector("img") as HTMLImageElement | null;
-      if (img?.complete && img.naturalWidth > 0) {
-        setStatus("loaded");
-      }
-    });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setShouldLoad(true);
+          observer.disconnect();
+        }
+      },
+      {
+        rootMargin: lazyRootMargin,
+        threshold: lazyThreshold,
+      },
+    );
+
+    observer.observe(wrapper);
 
     return () => {
-      cancelAnimationFrame(rafId);
+      observer.disconnect();
     };
-  }, [src]);
+  }, [lazy, shouldLoad, lazyRootMargin, lazyThreshold]);
+
+  // 图片加载逻辑
+  useEffect(() => {
+    if (!shouldLoad) return;
+
+    // 如果已有缓存，直接使用缓存状态
+    if (imageCache.has(srcString)) {
+      setStatus(imageCache.get(srcString)!);
+      return;
+    }
+
+    // 重置为加载中状态
+    setStatus("loading");
+
+    // 预加载图片并更新缓存
+    preloadImage(srcString)
+      .then(() => {
+        imageCache.set(srcString, "loaded");
+        setStatus("loaded");
+      })
+      .catch(() => {
+        imageCache.set(srcString, "error");
+        setStatus("error");
+      });
+  }, [srcString, shouldLoad]);
 
   const handleLoad: ImageProps["onLoad"] = (event) => {
+    imageCache.set(srcString, "loaded");
     setStatus("loaded");
     onLoad?.(event);
   };
 
   const handleError: ImageProps["onError"] = (event) => {
+    imageCache.set(srcString, "error");
     setStatus("error");
     onError?.(event);
   };
 
   const fallbackSrc = status === "error" ? errorSrc : placeholderSrc;
   const imageClassName = cn(className, status === "loaded" ? "" : "opacity-0");
+
   const shouldDisableOptimization =
     typeof src === "string" &&
     (() => {
@@ -82,6 +146,28 @@ export function ImageWithFallback({
         return false;
       }
     })();
+
+  // 未开始加载时显示占位符
+  if (!shouldLoad) {
+    return (
+      <span
+        ref={wrapperRef}
+        className={cn(
+          fill
+            ? "absolute inset-0 block overflow-hidden"
+            : "relative block w-full overflow-hidden",
+          wrapperClassName,
+        )}
+        style={fill ? undefined : { aspectRatio: width && height ? `${width}/${height}` : undefined }}
+      >
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-0 block select-none bg-cover bg-center"
+          style={{ backgroundImage: `url(${placeholderSrc})` }}
+        />
+      </span>
+    );
+  }
 
   // fill 模式：wrapper 使用 absolute 定位覆盖父元素
   if (fill) {
@@ -185,4 +271,28 @@ export function ImageWithFallback({
       )}
     </span>
   );
+}
+
+// 导出缓存工具函数，供外部使用
+export function clearImageCache(src?: string): void {
+  if (src) {
+    imageCache.delete(src);
+  } else {
+    imageCache.clear();
+  }
+}
+
+export function getImageCacheStatus(src: string): "loaded" | "error" | undefined {
+  return imageCache.get(src);
+}
+
+export function preloadImageToCache(src: string): Promise<void> {
+  if (imageCache.get(src) === "loaded") {
+    return Promise.resolve();
+  }
+  return preloadImage(src).then(() => {
+    imageCache.set(src, "loaded");
+  }).catch(() => {
+    imageCache.set(src, "error");
+  });
 }
