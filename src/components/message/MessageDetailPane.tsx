@@ -87,7 +87,7 @@ type PrivateMessageRowProps = {
   dayLabel?: string;
   userId?: number | string;
   copy: MessageDetailPaneProps["copy"];
-  onRecall: (messageId: number, target: HTMLElement) => void;
+  onRecall: (messageId: number, x: number, y: number) => void;
   onOpenImageViewer: (images: string[], index: number) => void;
   scheduleStickToBottomAfterRender: (
     behavior?: ScrollBehavior,
@@ -140,7 +140,7 @@ const PrivateMessageRow = memo(function PrivateMessageRow({
             }
 
             event.preventDefault();
-            onRecall(item.id, event.currentTarget);
+            onRecall(item.id, event.clientX, event.clientY);
           }}
           onTouchStart={(event) => {
             if (!canRecall) {
@@ -153,7 +153,7 @@ const PrivateMessageRow = memo(function PrivateMessageRow({
             }
 
             window.setTimeout(() => {
-              onRecall(item.id, event.currentTarget);
+              onRecall(item.id, touch.clientX, touch.clientY);
             }, 420);
           }}
           onKeyDown={(event) => {
@@ -163,7 +163,8 @@ const PrivateMessageRow = memo(function PrivateMessageRow({
 
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
-              onRecall(item.id, event.currentTarget);
+              const rect = event.currentTarget.getBoundingClientRect();
+              onRecall(item.id, rect.left + rect.width / 2, rect.top);
             }
           }}
           className={cn(
@@ -771,9 +772,8 @@ export function MessageDetailPane({
   );
 
   const handleOpenRecallMenu = useCallback(
-    (messageId: number, target: HTMLElement) => {
-      const rect = target.getBoundingClientRect();
-      openMessageMenu(messageId, rect.right - 16, rect.top + 12);
+    (messageId: number, x: number, y: number) => {
+      openMessageMenu(messageId, x, y);
     },
     [],
   );
