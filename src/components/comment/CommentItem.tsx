@@ -214,6 +214,7 @@ export const CommentItem = memo(function CommentItem({
         <Link
           href={`/account/${data.author.id}`}
           className="flex items-center justify-center"
+          onClick={(e) => e.stopPropagation()}
         >
           <Avatar
             className={commentAvatarClassName}
@@ -227,6 +228,7 @@ export const CommentItem = memo(function CommentItem({
           <Link
             className="flex items-center"
             href={`/account/${commentState.author.id}`}
+            onClick={(e) => e.stopPropagation()}
           >
             <span className="text-sm leading-5 font-semibold">
               {commentState.author.nickname || commentState.author.username}
@@ -248,7 +250,10 @@ export const CommentItem = memo(function CommentItem({
                 isTranslated && "text-primary bg-muted",
                 isTranslating && "pointer-events-none opacity-70",
               )}
-              onClick={toggleTranslate}
+              onClick={(e) => {
+                e.stopPropagation();
+                void toggleTranslate();
+              }}
             >
               {isTranslating ? (
                 <LoaderCircle size={18} className="animate-spin" />
@@ -303,7 +308,10 @@ export const CommentItem = memo(function CommentItem({
                 "flex items-center space-x-1 focus:outline-0 focus:border-0 border-0 outline-0",
                 "cursor-pointer py-1 hover:text-primary",
               )}
-              onClick={() => toggleReplyEditor(commentState.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleReplyEditor(commentState.id);
+              }}
             >
               <MessageCircleMore size={20} />
               <span className="text-xs">{tComment("reply")}</span>
@@ -315,7 +323,10 @@ export const CommentItem = memo(function CommentItem({
                 "cursor-pointer py-1 hover:text-primary",
                 commentState.isLiked && "text-primary",
               )}
-              onClick={() => void handleToggleLike(commentState.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                void handleToggleLike(commentState.id);
+              }}
             >
               <ThumbsUp size={20} />
               <span className="text-xs">

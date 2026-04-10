@@ -401,7 +401,7 @@ export function CommentReplyList({
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogOverlay className="z-400!" />
 
-        <DialogContent className="w-[calc(100vw-2rem)] max-w-3xl rounded-xl p-0 z-401!">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-2xl rounded-xl p-0 z-401!">
           <DialogHeader className="px-6 py-4 mb-0!">
             <DialogTitle className="text-sm font-semibold text-left">
               {tComment.has("viewCommentTitle")
@@ -443,7 +443,10 @@ export function CommentReplyList({
                         isModalTranslated && "bg-muted text-primary",
                         isModalTranslating && "pointer-events-none opacity-70",
                       )}
-                      onClick={toggleModalTranslate}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleModalTranslate();
+                      }}
                     >
                       {isModalTranslating ? (
                         <LoaderCircle size={18} className="animate-spin" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { isContentMatchingLocale, TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
+import { TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
 import { useTranslateStore } from "@/stores";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -12,19 +12,6 @@ const DEBOUNCE_DELAY = 150;
 function getTranslateApi() {
   if (typeof window === "undefined") return null;
   return window.translate ?? null;
-}
-
-function getArticleDetailText(): string {
-  if (typeof document === "undefined") {
-    return "";
-  }
-
-  return Array.from(
-    document.querySelectorAll<HTMLElement>(DETAIL_TRANSLATE_SCOPE_SELECTOR),
-  )
-    .map((element) => element.innerText || element.textContent || "")
-    .join(" ")
-    .trim();
 }
 
 function getCurrentDisplayedLanguage(translate: typeof window.translate): string | undefined {
@@ -50,7 +37,13 @@ function isTranslatedToTarget(
   );
 }
 
-export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }) {
+export function ArticleTranslateNotice({
+  enabled = true,
+  originalLanguage,
+}: {
+  enabled?: boolean;
+  originalLanguage?: string | null;
+}) {
   const t = useTranslations("articleDetail");
   const locale = useLocale();
   const autoTranslateContent = useTranslateStore((state) => state.autoTranslateContent);
@@ -63,6 +56,13 @@ export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }
   const targetLanguage = TRANSLATE_LANGUAGE_MAP[locale];
   const isVisible = !!targetLanguage;
   const providerLabel = useMemo(() => "translate.js", []);
+
+  // Determine if content matches locale based on original language (passed from server)
+  // This avoids dynamic DOM text detection which can be unreliable after translation
+  const contentMatchesLocale = useMemo(() => {
+    if (!originalLanguage) return false;
+    return originalLanguage === locale;
+  }, [originalLanguage, locale]);
 
   // Debounced state update to avoid excessive re-renders during translation
   const debouncedUpdateState = useCallback(() => {
@@ -80,13 +80,11 @@ export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }
       const isTranslated = translate && targetLanguage && autoTranslateContent
         ? isTranslatedToTarget(translate, targetLanguage)
         : false;
-      const articleText = getArticleDetailText();
-      const matchesLocale = articleText
-        ? isContentMatchingLocale(articleText, locale)
-        : false;
-      setShouldHideNotice(matchesLocale && !isTranslated);
 
-      if (matchesLocale && !isTranslated) {
+      // Hide notice if original content already matches user's locale
+      setShouldHideNotice(contentMatchesLocale);
+
+      if (contentMatchesLocale) {
         setShowOriginal(true);
         debounceTimerRef.current = null;
         return;
@@ -95,7 +93,7 @@ export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }
       setShowOriginal(!isTranslated);
       debounceTimerRef.current = null;
     }, DEBOUNCE_DELAY);
-  }, [targetLanguage, autoTranslateContent, locale]);
+  }, [targetLanguage, autoTranslateContent, contentMatchesLocale]);
 
   useEffect(() => {
     if (!enabled || !isVisible) return;

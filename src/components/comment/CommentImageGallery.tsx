@@ -73,7 +73,10 @@ export function CommentImageGallery({
         <button
           type="button"
           className="inline-block max-w-full cursor-pointer overflow-hidden rounded-xl bg-muted "
-          onClick={() => onOpenImageViewer(originalUrls, 0)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenImageViewer(originalUrls, 0);
+          }}
         >
           <ImageWithFallback
             src={imageUrls[0]}
@@ -133,7 +136,10 @@ export function CommentImageGallery({
               <button
                 type="button"
                 className="block cursor-pointer h-full"
-                onClick={() => onOpenImageViewer(originalUrls, index)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenImageViewer(originalUrls, index);
+                }}
               >
                 <ImageWithFallback
                   src={imageUrl}
@@ -158,7 +164,10 @@ export function CommentImageGallery({
             "absolute left-2 top-1/2 z-8 hidden size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/70 md:group-hover:flex md:group-hover:opacity-100",
             prevButtonClassName,
           )}
-          onClick={() => swiperRef.current?.slidePrev()}
+          onClick={(e) => {
+            e.stopPropagation();
+            swiperRef.current?.slidePrev();
+          }}
           aria-label={tImageViewer("prev")}
         >
           <ChevronLeft className="size-4" />
@@ -168,7 +177,10 @@ export function CommentImageGallery({
         <button
           type="button"
           className="absolute right-2 top-1/2 z-8 hidden size-8 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/70 md:group-hover:flex md:group-hover:opacity-100"
-          onClick={() => swiperRef.current?.slideNext()}
+          onClick={(e) => {
+            e.stopPropagation();
+            swiperRef.current?.slideNext();
+          }}
           aria-label={tImageViewer("next")}
         >
           <ChevronRight className="size-4" />

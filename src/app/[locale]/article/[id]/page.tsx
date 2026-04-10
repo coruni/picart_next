@@ -15,6 +15,7 @@ import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Link } from "@/i18n/routing";
 import {
   cn,
+  detectContentLanguage,
   generateArticleMetadata,
   isContentMatchingLocale,
   prepareRichTextHtmlForDisplay,
@@ -150,10 +151,14 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
   const { html: contentWithTocMarkup, items: tocItems } =
     buildArticleToc(rawContent);
   const content = prepareRichTextHtmlForDisplay(contentWithTocMarkup, locale);
+
+  // Detect original content language once on server side
+  const articleTextForDetection = [article?.title, stripHtmlTags(article?.content || "")]
+    .filter(Boolean)
+    .join(" ");
+  const originalLanguage = detectContentLanguage(articleTextForDetection);
   const shouldTranslateArticleDetail = !isContentMatchingLocale(
-    [article?.title, stripHtmlTags(article?.content || "")]
-      .filter(Boolean)
-      .join(" "),
+    articleTextForDetection,
     locale,
   );
 
@@ -223,7 +228,10 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             />
           </div>
           <div className="px-6">
-            <ArticleTranslateNotice enabled={shouldTranslateArticleDetail} />
+            <ArticleTranslateNotice
+              enabled={shouldTranslateArticleDetail}
+              originalLanguage={originalLanguage}
+            />
           </div>
           <div className="mt-4 px-4 md:px-6">
             {article?.type === "image" && (
