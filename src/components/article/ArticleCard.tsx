@@ -94,7 +94,7 @@ export const ArticleCard = ({
 
       return (
         <div
-          className="mt-3 rounded-xl overflow-hidden w-62/100 min-w-56 min-h-32.5 relative"
+          className="mt-3 rounded-xl overflow-hidden md:w-62/100 md:min-w-56 md:min-h-32.5 relative w-full h-50"
           style={{ paddingTop: "35%" }}
         >
           <ImageWithFallback
