@@ -10,6 +10,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
+  DialogOverlay,
   DialogTitle,
 } from "@/components/ui/Dialog";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
@@ -59,7 +60,11 @@ type CommentReplyListProps = {
   onToggleReplyEditor: (parentId: number | undefined) => void;
   onToggleLike: (commentId: number | undefined) => void | Promise<void>;
   onReplySubmitted: () => void | Promise<void>;
-  onOpenImageViewer: (images: string[], index?: number) => void;
+  onOpenImageViewer: (
+    images: string[],
+    index?: number,
+    zIndexClassName?: string,
+  ) => void;
   onReplyClick?: (commentId: number) => void;
   commentAvatarClassName?: string;
   replyAvatarClassName?: string;
@@ -361,12 +366,7 @@ export function CommentReplyList({
 
   return (
     <>
-      <div
-        className={cn(
-          "mt-3 ml-17 pr-4",
-          !compact && "md:ml-19 md:pr-6",
-        )}
-      >
+      <div className={cn("mt-3 ml-17 pr-4", !compact && "md:ml-19 md:pr-6")}>
         <div className="pl-3 border-l-3 border-muted text-sm space-y-6">
           {visibleReplies.map((reply) => (
             <CommentReplyItem
@@ -399,7 +399,9 @@ export function CommentReplyList({
       </div>
 
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="w-[calc(100vw-2rem)] max-w-3xl rounded-xl p-0">
+        <DialogOverlay className="z-400!" />
+
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-3xl rounded-xl p-0 z-401!">
           <DialogHeader className="px-6 py-4 mb-0!">
             <DialogTitle className="text-sm font-semibold text-left">
               {tComment.has("viewCommentTitle")
@@ -470,7 +472,9 @@ export function CommentReplyList({
                 <CommentImageGallery
                   images={data.images || []}
                   imageAltPrefix={`Comment image ${data.id}`}
-                  onOpenImageViewer={onOpenImageViewer}
+                  onOpenImageViewer={(images, index) =>
+                    onOpenImageViewer(images, index, "z-500!")
+                  }
                   compact={compact}
                   edgePadding={false}
                   contentOffset={false}
@@ -556,7 +560,9 @@ export function CommentReplyList({
                       onToggleReplyEditor={onToggleReplyEditor}
                       onToggleLike={handleToggleLike}
                       onReplySubmitted={handleReplySubmitted}
-                      onOpenImageViewer={onOpenImageViewer}
+                      onOpenImageViewer={(images, index) =>
+                        onOpenImageViewer(images, index, "z-500!")
+                      }
                       imageDisplayMode="gallery"
                       showTranslateButton
                       onReplyClick={onReplyClick}

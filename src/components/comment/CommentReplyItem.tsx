@@ -33,7 +33,11 @@ type CommentReplyItemProps = {
   onToggleReplyEditor: (parentId: number | undefined) => void;
   onToggleLike: (commentId: number | undefined) => void | Promise<void>;
   onReplySubmitted: () => void | Promise<void>;
-  onOpenImageViewer: (images: string[], index?: number) => void;
+  onOpenImageViewer: (
+    images: string[],
+    index?: number,
+    zIndexClassName?: string,
+  ) => void;
   onOpenModal?: (reply: CommentReply) => void;
   onReplyClick?: (commentId: number) => void;
   imageDisplayMode?: "link" | "gallery";

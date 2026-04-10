@@ -19,7 +19,11 @@ type CommentImageGalleryProps = {
   singleImageClassName?: string;
   multiImageClassName?: string;
   prevButtonClassName?: string;
-  onOpenImageViewer: (images: string[], index?: number) => void;
+  onOpenImageViewer: (
+    images: string[],
+    index?: number,
+    zIndexClassName?: string,
+  ) => void;
   compact?: boolean;
   edgePadding?: boolean;
   contentOffset?: boolean;

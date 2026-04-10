@@ -28,6 +28,7 @@ type ImageViewerProps = {
   onChange?: (index: number) => void;
   alt?: string;
   enableSidePanel?: boolean;
+  zIndexClassName?: string;
 };
 
 const renderIcon = (
@@ -50,6 +51,7 @@ export function ImageViewer({
   onChange,
   alt = "Image",
   enableSidePanel = true,
+  zIndexClassName = "z-300!",
 }: ImageViewerProps) {
   const t = useTranslations("imageViewer");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -722,7 +724,8 @@ export function ImageViewer({
 
       <div
         className={cn(
-          "custom-viewer-wrapper fixed inset-0 z-200 flex h-full w-full transition-opacity",
+          "custom-viewer-wrapper fixed inset-0 flex h-full w-full transition-opacity",
+          zIndexClassName,
           viewerMounted
             ? "visible opacity-100"
             : "invisible opacity-0",
@@ -738,14 +741,15 @@ export function ImageViewer({
           <div
             ref={panelRef}
             className={cn(
-              "custom-panel relative flex h-screen shrink-0 flex-col overflow-hidden bg-card transition-[width] duration-300 pointer-events-auto z-200",
+              "custom-panel relative flex h-screen shrink-0 flex-col overflow-hidden bg-card transition-[width] duration-300 pointer-events-auto",
+              zIndexClassName,
               panelExpanded ? "w-97.5" : "w-0",
             )}
             id="right-panel"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
           >
-            {panelContentVisible && <ImageComment article={article} commentAvatarClassName="size-8"/>}
+            {panelContentVisible && <ImageComment article={article} commentAvatarClassName="size-8" />}
           </div>
         )}
       </div>

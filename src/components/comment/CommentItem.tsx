@@ -67,6 +67,8 @@ export const CommentItem = memo(function CommentItem({
   const [viewerVisible, setViewerVisible] = useState(false);
   const [viewerImages, setViewerImages] = useState<string[]>([]);
   const [viewerIndex, setViewerIndex] = useState(0);
+  const [viewerZIndexClassName, setViewerZIndexClassName] =
+    useState("z-300!");
   const [activeReplyParentId, setActiveReplyParentId] = useState<number | null>(
     null,
   );
@@ -94,15 +96,23 @@ export const CommentItem = memo(function CommentItem({
     setCommentState(data);
   }, [data]);
 
-  const openImageViewer = useCallback((images: string[], index: number = 0) => {
-    if (!images.length) {
-      return;
-    }
+  const openImageViewer = useCallback(
+      (
+        images: string[],
+        index: number = 0,
+        zIndexClassName: string = "z-300!",
+      ) => {
+      if (!images.length) {
+        return;
+      }
 
-    setViewerImages(images);
-    setViewerIndex(index);
-    setViewerVisible(true);
-  }, []);
+        setViewerImages(images);
+        setViewerIndex(index);
+        setViewerZIndexClassName(zIndexClassName);
+        setViewerVisible(true);
+    },
+    [],
+  );
 
   const toggleReplyEditor = useCallback(
     (parentId: number | undefined) => {
@@ -353,6 +363,7 @@ export const CommentItem = memo(function CommentItem({
           onClose={() => setViewerVisible(false)}
           onChange={setViewerIndex}
           enableSidePanel={false}
+          zIndexClassName={viewerZIndexClassName}
         />
       )}
     </article>
