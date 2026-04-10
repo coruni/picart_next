@@ -33,6 +33,9 @@ type CommentItemProps = {
   data: CommentList[number] & { images?: (string | ImageInfo)[] };
   onSubmitted?: () => void | Promise<void>;
   onReplyClick?: (commentId: number) => void;
+  commentAvatarClassName?: string;
+  replyAvatarClassName?: string;
+  compact?: boolean;
 };
 
 // 使用 memo 优化性能
@@ -41,6 +44,9 @@ export const CommentItem = memo(function CommentItem({
   data,
   onSubmitted,
   onReplyClick,
+  commentAvatarClassName = "size-10",
+  replyAvatarClassName = "size-5",
+  compact = false,
 }: CommentItemProps) {
   const tComment = useTranslations("commentList");
   const tAccountInfo = useTranslations("accountInfo");
@@ -188,10 +194,15 @@ export const CommentItem = memo(function CommentItem({
   return (
     <article>
       {/* User Info element */}
-      <div className="px-4 md:px-6 py-1 flex items-center space-x-3">
-        <Link href={`/account/${data.author.id}`}>
+      <div
+        className={cn(
+          "px-4 py-1 flex items-center space-x-3",
+          !compact && "md:px-6",
+        )}
+      >
+        <Link href={`/account/${data.author.id}`} className="flex items-center justify-center">
           <Avatar
-            className="size-10"
+            className={commentAvatarClassName}
             alt={data.author.nickname || data.author.username}
             url={data.author.avatar}
             frameUrl={data.author?.equippedDecorations?.AVATAR_FRAME?.imageUrl}
@@ -246,7 +257,12 @@ export const CommentItem = memo(function CommentItem({
 
       {/* Comment Content element */}
       <div className="py-2">
-        <div className="pl-17 pr-4 md:pl-19 md:pr-6">
+        <div
+          className={cn(
+            "pl-17 pr-4",
+            !compact && "md:pl-19 md:pr-6",
+          )}
+        >
           <div
             key={renderKey}
             className="whitespace-pre-wrap text-sm"
@@ -259,13 +275,19 @@ export const CommentItem = memo(function CommentItem({
         <CommentImageGallery
           images={commentState.images || []}
           imageAltPrefix={`Comment image ${commentState.id}`}
-          className="mt-3 pr-4 md:pl-19 md:pr-6"
+          className={cn("mt-3 pr-4 pl-17", !compact && "md:pl-19 md:pr-6")}
           prevButtonClassName="left-21"
           onOpenImageViewer={openImageViewer}
+          compact={compact}
         />
       </div>
       {/* Comment Actions element */}
-      <div className="pl-17 pr-4 md:pl-19 md:pr-6">
+      <div
+        className={cn(
+          "pl-17 pr-4",
+          !compact && "md:pl-19 md:pr-6",
+        )}
+      >
         <div className="flex items-center justify-between text-secondary text-sm mt-2">
           <span className="text-xs">
             {formatRelativeTime(commentState.createdAt, tTime)}
@@ -320,6 +342,9 @@ export const CommentItem = memo(function CommentItem({
         onReplySubmitted={handleReplySubmitted}
         onOpenImageViewer={openImageViewer}
         onReplyClick={onReplyClick}
+        commentAvatarClassName={commentAvatarClassName}
+        replyAvatarClassName={replyAvatarClassName}
+        compact={compact}
       />
       {viewerVisible && viewerImages.length > 0 && (
         <ImageViewer

@@ -61,6 +61,9 @@ type CommentReplyListProps = {
   onReplySubmitted: () => void | Promise<void>;
   onOpenImageViewer: (images: string[], index?: number) => void;
   onReplyClick?: (commentId: number) => void;
+  commentAvatarClassName?: string;
+  replyAvatarClassName?: string;
+  compact?: boolean;
 };
 
 type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
@@ -74,6 +77,9 @@ export function CommentReplyList({
   onReplySubmitted,
   onOpenImageViewer,
   onReplyClick,
+  commentAvatarClassName = "size-10",
+  replyAvatarClassName = "size-5",
+  compact = false,
 }: CommentReplyListProps) {
   const tComment = useTranslations("commentList");
   const tAccountInfo = useTranslations("accountInfo");
@@ -355,7 +361,12 @@ export function CommentReplyList({
 
   return (
     <>
-      <div className="mt-3 md:ml-19 md:pr-6 ml-17 pr-4">
+      <div
+        className={cn(
+          "mt-3 ml-17 pr-4",
+          !compact && "md:ml-19 md:pr-6",
+        )}
+      >
         <div className="pl-3 border-l-3 border-muted text-sm space-y-6">
           {visibleReplies.map((reply) => (
             <CommentReplyItem
@@ -370,6 +381,8 @@ export function CommentReplyList({
               onOpenImageViewer={onOpenImageViewer}
               onOpenModal={openReplyModal}
               onReplyClick={onReplyClick}
+              avatarClassName={replyAvatarClassName}
+              compact={compact}
             />
           ))}
         </div>
@@ -395,10 +408,10 @@ export function CommentReplyList({
             </DialogTitle>
           </DialogHeader>
           <div ref={scrollRootRef} className="max-h-[80vh] overflow-y-auto">
-            <article className="md:px-6 md:py-5 px-4 py-3">
+            <article className={cn("px-4 py-3", !compact && "md:px-6 md:py-5")}>
               <div className="flex items-center space-x-3">
                 <Avatar
-                  className="size-10"
+                  className={commentAvatarClassName}
                   alt={data.author.nickname || data.author.username}
                   url={data.author.avatar}
                   frameUrl={
@@ -459,6 +472,7 @@ export function CommentReplyList({
                   imageAltPrefix={`Comment image ${data.id}`}
                   className="mt-3"
                   onOpenImageViewer={onOpenImageViewer}
+                  compact={compact}
                 />
               </div>
               <div className="mt-2 flex items-center justify-between text-sm text-secondary">
@@ -502,7 +516,12 @@ export function CommentReplyList({
               ) : null}
             </article>
 
-            <div className="mb-2 border-b border-border py-4 min-w-min px-4 md:px-6">
+            <div
+              className={cn(
+                "mb-2 border-b border-border py-4 min-w-min px-4",
+                !compact && "md:px-6",
+              )}
+            >
               <DropdownMenu
                 className="w-fit text-sm"
                 position="left"
@@ -521,7 +540,7 @@ export function CommentReplyList({
                 menuClassName="top-9 min-w-0 rounded-xl border border-border bg-card drop-shadow-lg"
               />
             </div>
-            <div className="md:px-6 md:py-5 px-4 py-3">
+            <div className={cn("px-4 py-3", !compact && "md:px-6 md:py-5")}>
               {isSortChanging || (loading && modalReplies.length === 0) ? (
                 <CommentListSkeleton count={4} className="space-y-6" />
               ) : (
@@ -540,6 +559,8 @@ export function CommentReplyList({
                       imageDisplayMode="gallery"
                       showTranslateButton
                       onReplyClick={onReplyClick}
+                      avatarClassName={replyAvatarClassName}
+                      compact={compact}
                     />
                   ))}
                 </div>

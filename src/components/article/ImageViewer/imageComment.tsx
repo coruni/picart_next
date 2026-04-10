@@ -18,12 +18,18 @@ type ImageCommentProps = {
   article: Article;
   minHeight?: string;
   isExpanded?: boolean;
+  authorAvatarClassName?: string;
+  commentAvatarClassName?: string;
+  replyAvatarClassName?: string;
 };
 
 // 使用 memo 优化组件重渲染
 export const ImageComment = memo(function ImageComment({
   article,
   minHeight = "auto",
+  authorAvatarClassName = "size-9",
+  commentAvatarClassName = "size-9",
+  replyAvatarClassName = "size-4",
 }: ImageCommentProps) {
   const t = useTranslations("commentEditor");
   const articleId = String(article.id);
@@ -81,7 +87,7 @@ export const ImageComment = memo(function ImageComment({
             <Avatar
               url={authorInfo.avatar}
               frameUrl={authorInfo.frameUrl}
-              className="size-10"
+              className={authorAvatarClassName}
             />
             <div className="flex grow">
               <span className="font-semibold text-sm">
@@ -114,6 +120,9 @@ export const ImageComment = memo(function ImageComment({
             showTopCommentEditor={false}
             stickySort={true}
             onReplyClick={handleReplyClick}
+            commentAvatarClassName={commentAvatarClassName}
+            replyAvatarClassName={replyAvatarClassName}
+            compact
           />
         </div>
       </div>

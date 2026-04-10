@@ -56,7 +56,10 @@ export default async function AccountLayout({
 
         <div className="page-container pt-3! md:px-0 md:pt-4!">
           <div className="left-container">
-            <div className="top-header-tabs sticky z-5 flex h-12 items-center overflow-x-auto rounded-t-xl border-b border-border bg-card px-4  md:px-6">
+            <div
+              className="top-header-tabs sticky z-5 flex h-14 items-center overflow-x-auto rounded-t-xl border-b border-border bg-card px-4 md:px-6"
+              style={{ scrollbarWidth: "none" }}
+            >
               <AccountTabs user={user} viewerId={viewerId} />
             </div>
             {children}

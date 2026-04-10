@@ -364,55 +364,29 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
               // 保存原始文件引用（用于计算 hash）
               const originalFiles = Array.from(files);
-
-              // 压缩图片
-              const compressionResults = await compressImages(originalFiles);
-
-              // 验证压缩后的文件大小
-              const validation = validateFiles(
-                compressionResults.map((r) => r.file),
-                true,
-              );
-              if (!validation.valid) {
-                console.error(validation.error);
-                return;
-              }
-
-              // 计算原始文件的 hash 并构建 metadata
-              const metadata = await buildUploadMetadata(originalFiles);
-
-              // Store upload info for each file
               const uploadItems: {
                 file: File;
+                originalFile: File;
                 index: number;
-                base64: string;
+                previewUrl: string;
                 wrapper: HTMLDivElement | null;
                 img: HTMLImageElement | null;
                 overlay: HTMLDivElement | null;
                 progressText: HTMLSpanElement | null;
               }[] = [];
 
-              // Create all placeholders first
-              for (let i = 0; i < compressionResults.length; i++) {
-                const result = compressionResults[i];
-                const file = result.file;
+              // 先创建所有占位，避免压缩阶段出现空窗
+              for (let i = 0; i < originalFiles.length; i++) {
+                const originalFile = originalFiles[i];
                 const currentIndex = startIndex + i;
+                const previewUrl = URL.createObjectURL(originalFile);
 
-                // 转换为 base64 占位
-                const base64 = await new Promise<string>((resolve) => {
-                  const reader = new FileReader();
-                  reader.onload = (e) => resolve(e.target?.result as string);
-                  reader.readAsDataURL(file);
-                });
-
-                // 插入带有上传状态的图片
-                quill.insertEmbed(currentIndex, "image", base64);
+                quill.insertEmbed(currentIndex, "image", previewUrl);
                 quill.setSelection(currentIndex + 1, 0);
 
                 // 等待 DOM 更新
                 await new Promise((resolve) => setTimeout(resolve, 50));
 
-                // 找到刚插入的图片
                 const wrappers = Array.from(
                   quill.root.querySelectorAll("div.ql-image-wrapper"),
                 ) as HTMLDivElement[];
@@ -423,7 +397,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                   const img = wrapper.querySelector(
                     "img.ql-image",
                   ) as HTMLImageElement | null;
-                  if (img && img.src === base64 && !img.dataset.uploaded) {
+                  if (img && img.src === previewUrl && !img.dataset.uploaded) {
                     targetWrapper = wrapper as HTMLDivElement;
                     targetImg = img;
                     break;
@@ -431,11 +405,9 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 }
 
                 if (targetWrapper && targetImg) {
-                  // 设置 wrapper 为相对定位
                   targetWrapper.style.position = "relative";
                   targetWrapper.style.display = "inline-block";
 
-                  // 创建遮罩
                   const overlay = document.createElement("div");
                   overlay.className = "image-upload-overlay";
                   overlay.innerHTML = `
@@ -450,42 +422,78 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     </div>
                   `;
 
-                  // 将遮罩添加到 wrapper 中
                   targetWrapper.appendChild(overlay);
 
                   const progressText = overlay.querySelector(
                     ".progress-text",
                   ) as HTMLSpanElement;
+                  progressText.textContent = "0%";
 
-                  // Store references
                   uploadItems.push({
-                    file,
+                    file: originalFile,
+                    originalFile,
                     index: currentIndex,
-                    base64,
+                    previewUrl,
                     wrapper: targetWrapper,
                     img: targetImg,
                     overlay,
                     progressText,
                   });
 
-                  // 取消按钮
                   const cancelBtn = overlay.querySelector(
                     ".cancel-btn",
                   ) as HTMLButtonElement;
                   cancelBtn.onclick = () => {
-                    // Mark this item as cancelled
                     const item = uploadItems.find(
                       (u) => u.index === currentIndex,
                     );
                     if (item) {
+                      if (item.previewUrl.startsWith("blob:")) {
+                        URL.revokeObjectURL(item.previewUrl);
+                      }
                       item.wrapper = null;
                       item.img = null;
                     }
                     overlay.remove();
                     quill.deleteText(currentIndex, 1);
                   };
+                } else {
+                  URL.revokeObjectURL(previewUrl);
                 }
               }
+
+              // 压缩图片
+              const compressionResults = await compressImages(originalFiles);
+
+              // 验证压缩后的文件大小
+              const validation = validateFiles(
+                compressionResults.map((r) => r.file),
+                true,
+              );
+              if (!validation.valid) {
+                console.error(validation.error);
+                uploadItems.forEach((item) => {
+                  item.overlay?.remove();
+                  if (item.previewUrl.startsWith("blob:")) {
+                    URL.revokeObjectURL(item.previewUrl);
+                  }
+                  if (item.wrapper) {
+                    quill.deleteText(item.index, 1);
+                  }
+                });
+                return;
+              }
+
+              // 计算原始文件的 hash 并构建 metadata
+              const metadata = await buildUploadMetadata(originalFiles);
+              compressionResults.forEach((result, index) => {
+                const item = uploadItems[index];
+                if (!item) return;
+                item.file = result.file;
+                if (item.progressText) {
+                  item.progressText.textContent = "0%";
+                }
+              });
 
               // Batch upload all compressed files
               const abortController = new AbortController();
@@ -508,6 +516,9 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                   if (uploadedUrl) {
                     item.img.src = uploadedUrl;
                     item.img.dataset.uploaded = "true";
+                    if (item.previewUrl.startsWith("blob:")) {
+                      URL.revokeObjectURL(item.previewUrl);
+                    }
                     if (item.progressText) {
                       item.progressText.textContent = "100%";
                     }
@@ -523,6 +534,9 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 // Remove all overlays and delete placeholders on error
                 uploadItems.forEach((item) => {
                   item.overlay?.remove();
+                  if (item.previewUrl.startsWith("blob:")) {
+                    URL.revokeObjectURL(item.previewUrl);
+                  }
                   if (item.wrapper) {
                     quill.deleteText(item.index, 1);
                   }

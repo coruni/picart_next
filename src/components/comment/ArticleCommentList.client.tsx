@@ -37,6 +37,9 @@ type ArticleCommentListProps = {
   sortClassName?: string;
   onSubmitted?: () => void;
   onReplyClick?: (commentId: number) => void;
+  commentAvatarClassName?: string;
+  replyAvatarClassName?: string;
+  compact?: boolean;
 };
 
 type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
@@ -50,6 +53,9 @@ export function ArticleCommentList({
   sortClassName,
   onSubmitted,
   onReplyClick,
+  commentAvatarClassName,
+  replyAvatarClassName,
+  compact = false,
 }: ArticleCommentListProps) {
   const t = useTranslations("commentList");
   const observerRef = useRef<HTMLDivElement>(null);
@@ -247,6 +253,7 @@ export function ArticleCommentList({
         <div
           className={cn(
             "border-b border-border px-6 pb-4",
+            compact && "px-4",
             stickySort && "sticky top-0 z-10 bg-card",
           )}
         >
@@ -281,7 +288,8 @@ export function ArticleCommentList({
 
       <div
         className={cn(
-          "border-b border-border px-4 mmd:px-6 pb-4 min-w-min",
+          "border-b border-border px-4 pb-4 min-w-min",
+          !compact && "mmd:px-6",
           stickySort && "sticky top-0 z-10 bg-card",
           sortClassName,
         )}
@@ -316,6 +324,9 @@ export function ArticleCommentList({
               key={comment.id}
               onSubmitted={refreshComments}
               onReplyClick={onReplyClick}
+              commentAvatarClassName={commentAvatarClassName}
+              replyAvatarClassName={replyAvatarClassName}
+              compact={compact}
             />
           ))}
 

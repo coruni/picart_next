@@ -4,7 +4,7 @@
 
 import { cn } from "@/lib";
 import { ArticleDetail, ArticleList } from "@/types";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ComponentType, useCallback, useEffect, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
@@ -348,8 +348,11 @@ export function ImageViewer({
     if (!panelToggleBtn) return;
 
     panelToggleBtn.innerHTML = renderIcon(
-      panelExpandedRef.current ? ChevronLeft : ChevronRight,
-      "",
+      ChevronLeft,
+      cn(
+        "transition-transform ease-out",
+        panelExpandedRef.current && "rotate-180",
+      ),
       18,
     );
     panelToggleBtn.setAttribute(
@@ -742,7 +745,7 @@ export function ImageViewer({
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
           >
-            {panelContentVisible && <ImageComment article={article} />}
+            {panelContentVisible && <ImageComment article={article} commentAvatarClassName="size-8"/>}
           </div>
         )}
       </div>

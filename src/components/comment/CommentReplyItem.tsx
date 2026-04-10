@@ -38,6 +38,8 @@ type CommentReplyItemProps = {
   onReplyClick?: (commentId: number) => void;
   imageDisplayMode?: "link" | "gallery";
   showTranslateButton?: boolean;
+  avatarClassName?: string;
+  compact?: boolean;
 };
 
 export const CommentReplyItem = memo(function CommentReplyItem({
@@ -53,6 +55,8 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   onReplyClick,
   imageDisplayMode = "link",
   showTranslateButton = false,
+  avatarClassName = "size-5",
+  compact = false,
 }: CommentReplyItemProps) {
   const tComment = useTranslations("commentList");
   const tAccountInfo = useTranslations("accountInfo");
@@ -154,7 +158,10 @@ export const CommentReplyItem = memo(function CommentReplyItem({
               href={`/account/${reply.author.id}`}
               onClick={(e) => e.stopPropagation()}
             >
-              <Avatar url={reply.author?.avatar} className="size-5 shrink-0" />
+              <Avatar
+                url={reply.author?.avatar}
+                className={cn(avatarClassName, "shrink-0")}
+              />
             </GuardedLink>
             <span className="font-semibold text-foreground">
               {reply.author?.nickname || reply.author?.username}
@@ -179,7 +186,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
             </button>
           ) : null}
         </div>
-        <div className="mt-1.5 text-sm">
+        <div className={cn("text-sm", compact ? "mt-1" : "mt-1.5")}>
           {replyTarget?.id && replyTarget.name ? (
             <p className="whitespace-pre-wrap text-sm py-1">
               <span className="text-secondary">
@@ -225,6 +232,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
               onOpenImageViewer={(images, index) =>
                 onOpenImageViewer(images, index)
               }
+              compact={compact}
             />
           ) : null}
           {reply.images?.length && imageDisplayMode === "link" ? (
