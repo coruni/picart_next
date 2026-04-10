@@ -29,6 +29,7 @@ type ArticleListClientProps = {
    * 是否显示关注按钮
    */
   showFollow?: boolean;
+  showProfilePinLabel?: boolean;
 
   /**
    * 缓存 key，用于区分不同列表
@@ -44,6 +45,7 @@ export const ArticleListClient = ({
   fetchParams = {},
   pageSize = 10,
   showFollow = true,
+  showProfilePinLabel = false,
   cacheKey,
 }: ArticleListClientProps) => {
   const t = useTranslations("articleList");
@@ -251,6 +253,7 @@ export const ArticleListClient = ({
           article={article}
           key={`${article.id}_${index}`}
           showFollow={showFollow}
+          showProfilePinLabel={showProfilePinLabel}
         />
       ))}
 

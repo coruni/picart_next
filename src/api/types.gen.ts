@@ -551,6 +551,14 @@ export type CreateArticleDto = {
      * 下载资源列表
      */
     downloads?: Array<DownloadDto>;
+    /**
+     * 是否设为精华，仅管理员可设置
+     */
+    isFeatured?: boolean;
+    /**
+     * 是否在个人主页置顶，作者或管理员可设置
+     */
+    isPinnedOnProfile?: boolean;
 };
 
 export type UpdateArticleDto = {
@@ -630,6 +638,14 @@ export type UpdateArticleDto = {
      * 下载资源列表
      */
     downloads?: Array<DownloadDto>;
+    /**
+     * 是否设为精华，仅管理员可设置
+     */
+    isFeatured?: boolean;
+    /**
+     * 是否在个人主页置顶，作者或管理员可设置
+     */
+    isPinnedOnProfile?: boolean;
 };
 
 export type ArticleLikeDto = {
@@ -1069,6 +1085,10 @@ export type UpdateCommentDto = {
      * 评论图片列表（最多9张）
      */
     images?: Array<string>;
+    /**
+     * 是否置顶，仅文章作者或管理员可设置
+     */
+    isPinned?: boolean;
 };
 
 export type CreateCategoryDto = {
@@ -1925,6 +1945,27 @@ export type UpdateActivityDto = {
      * 结束时间
      */
     endTime?: string;
+};
+
+export type SetArticleFeaturedDto = {
+    /**
+     * 是否设为精华
+     */
+    isFeatured: boolean;
+};
+
+export type SetArticleProfilePinDto = {
+    /**
+     * 是否在个人主页置顶
+     */
+    isPinned: boolean;
+};
+
+export type SetCommentPinDto = {
+    /**
+     * 是否置顶评论
+     */
+    isPinned: boolean;
 };
 
 export type AppControllerGetHelloData = {
@@ -4774,6 +4815,11 @@ export type ArticleControllerFindAllResponses = {
                 };
                 isFavorited: boolean;
                 userReaction: string;
+                isPinnedOnProfile: boolean;
+                pinnedAt: string;
+                isHot: boolean;
+                hotScore: number;
+                isFeatured: boolean;
             }>;
             meta: {
                 total: number;
@@ -5050,6 +5096,11 @@ export type ArticleControllerFindOneResponses = {
                 };
             };
             isFavorited: boolean;
+            isPinnedOnProfile: boolean;
+            pinnedAt: string;
+            isHot: boolean;
+            hotScore: number;
+            isFeatured: boolean;
         };
     };
 };
@@ -5353,6 +5404,11 @@ export type ArticleControllerSearchResponses = {
                 };
                 isFavorited: boolean;
                 userReaction: string;
+                isPinnedOnProfile: boolean;
+                pinnedAt: string;
+                isHot: boolean;
+                hotScore: number;
+                isFeatured: boolean;
             }>;
             meta: {
                 total: number;
@@ -5400,7 +5456,19 @@ export type ArticleControllerFindRecommendationsResponses = {
                 viewPrice: string;
                 type: string;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 sort: number;
                 summary: string;
                 views: number;
@@ -5509,6 +5577,11 @@ export type ArticleControllerFindRecommendationsResponses = {
                 };
                 isFavorited: boolean;
                 userReaction: string;
+                isPinnedOnProfile: boolean;
+                pinnedAt: string;
+                isHot: boolean;
+                hotScore: number;
+                isFeatured: boolean;
             }>;
             meta: {
                 total: number;
@@ -5689,6 +5762,11 @@ export type ArticleControllerFindByAuthorResponses = {
                 };
                 isFavorited: boolean;
                 userReaction: string;
+                isPinnedOnProfile: boolean;
+                pinnedAt: string;
+                isHot: boolean;
+                hotScore: number;
+                isFeatured: boolean;
             }>;
             meta: {
                 total: number;
@@ -5772,7 +5850,19 @@ export type ArticleControllerGetLikedArticlesResponses = {
                 viewPrice: string;
                 type: string;
                 content: string;
-                images: Array<string>;
+                images: Array<string & {
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
                 sort: number;
                 summary: string;
                 views: number;
@@ -5881,6 +5971,11 @@ export type ArticleControllerGetLikedArticlesResponses = {
                 };
                 isFavorited: boolean;
                 userReaction: string;
+                isPinnedOnProfile: boolean;
+                pinnedAt: string;
+                isHot: boolean;
+                hotScore: number;
+                isFeatured: boolean;
             }>;
             meta: {
                 total: number;
@@ -6542,6 +6637,43 @@ export type ArticleControllerFindHotSearchResponses = {
 
 export type ArticleControllerFindHotSearchResponse = ArticleControllerFindHotSearchResponses[keyof ArticleControllerFindHotSearchResponses];
 
+export type ArticleControllerCheckFavoriteStatusData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/article/{id}/favorite/status';
+};
+
+export type ArticleControllerCheckFavoriteStatusErrors = {
+    /**
+     * 未授权
+     */
+    401: unknown;
+};
+
+export type ArticleControllerCheckFavoriteStatusResponses = {
+    /**
+     * 获取成功
+     */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            isFavorited: boolean;
+        };
+    };
+};
+
+export type ArticleControllerCheckFavoriteStatusResponse = ArticleControllerCheckFavoriteStatusResponses[keyof ArticleControllerCheckFavoriteStatusResponses];
+
 export type ArticleControllerUpdateBrowseProgressData = {
     body: RecordBrowseHistoryDto;
     headers?: {
@@ -6708,8 +6840,8 @@ export type ArticleControllerClearBrowseHistoryResponses = {
     200: unknown;
 };
 
-export type ArticleControllerCheckFavoriteStatusData = {
-    body?: never;
+export type ArticleControllerSetFeaturedData = {
+    body: SetArticleFeaturedDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -6720,30 +6852,31 @@ export type ArticleControllerCheckFavoriteStatusData = {
         id: string;
     };
     query?: never;
-    url: '/article/{id}/favorite/status';
+    url: '/article/{id}/featured';
 };
 
-export type ArticleControllerCheckFavoriteStatusErrors = {
-    /**
-     * 未授权
-     */
-    401: unknown;
+export type ArticleControllerSetFeaturedResponses = {
+    200: unknown;
 };
 
-export type ArticleControllerCheckFavoriteStatusResponses = {
-    /**
-     * 获取成功
-     */
-    200: {
-        code: number;
-        message: string;
-        data: {
-            isFavorited: boolean;
-        };
+export type ArticleControllerSetProfilePinData = {
+    body: SetArticleProfilePinDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
     };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/article/{id}/profile-pin';
 };
 
-export type ArticleControllerCheckFavoriteStatusResponse = ArticleControllerCheckFavoriteStatusResponses[keyof ArticleControllerCheckFavoriteStatusResponses];
+export type ArticleControllerSetProfilePinResponses = {
+    200: unknown;
+};
 
 export type CommentControllerFindAllData = {
     body?: never;
@@ -7173,6 +7306,9 @@ export type CommentControllerFindAllResponses = {
                 updatedAt: string;
                 parentId: number;
                 isLiked: boolean;
+                isAuthorLiked: boolean;
+                pinnedAt: string;
+                isPinned: boolean;
             }>;
             meta: {
                 total: number;
@@ -7658,6 +7794,9 @@ export type CommentControllerFindOneResponses = {
                 updatedAt: string;
                 parentId: number;
                 isLiked: boolean;
+                isAuthorLiked: boolean;
+                pinnedAt: string;
+                isPinned: boolean;
             }>;
             meta: {
                 total: number;
@@ -8216,6 +8355,9 @@ export type CommentControllerFindAllCommentsResponses = {
                 updatedAt: string;
                 parentId: number;
                 isLiked: boolean;
+                isAuthorLiked: boolean;
+                pinnedAt: string;
+                isPinned: boolean;
             }>;
             meta: {
                 total: number;
@@ -8725,6 +8867,9 @@ export type CommentControllerGetUserCommentsResponses = {
                 updatedAt: string;
                 parentId: number;
                 isLiked: boolean;
+                isAuthorLiked: boolean;
+                pinnedAt: string;
+                isPinned: boolean;
             }>;
             meta: {
                 total: number;
@@ -8796,6 +8941,25 @@ export type CommentControllerLikeResponses = {
     /**
      * 点赞成功
      */
+    200: unknown;
+};
+
+export type CommentControllerSetPinData = {
+    body: SetCommentPinDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/comment/{id}/pin';
+};
+
+export type CommentControllerSetPinResponses = {
     200: unknown;
 };
 

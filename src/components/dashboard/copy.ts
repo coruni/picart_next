@@ -30,6 +30,8 @@ const copy = {
       reject: "拒绝",
       auditReason: "审核原因",
       auditReasonPlaceholder: "输入审核原因（可选）",
+      featured: "精华",
+      featuredDescription: "开启后，文章会在前台以精华内容展示。",
       filters: "筛选条件",
       queryTable: "查询表格",
       expand: "展开",
@@ -419,6 +421,9 @@ const copy = {
       reject: "Reject",
       auditReason: "Audit Reason",
       auditReasonPlaceholder: "Enter audit reason (optional)",
+      featured: "Featured",
+      featuredDescription:
+        "When enabled, the article will be highlighted as featured content on the front end.",
       filters: "Filters",
       queryTable: "Query Table",
       expand: "Expand",

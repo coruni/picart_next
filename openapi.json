@@ -9597,6 +9597,21 @@
                               },
                               "userReaction": {
                                 "type": "string"
+                              },
+                              "isPinnedOnProfile": {
+                                "type": "boolean"
+                              },
+                              "pinnedAt": {
+                                "type": "string"
+                              },
+                              "isHot": {
+                                "type": "boolean"
+                              },
+                              "hotScore": {
+                                "type": "number"
+                              },
+                              "isFeatured": {
+                                "type": "boolean"
                               }
                             },
                             "required": [
@@ -9632,7 +9647,12 @@
                               "imageCount",
                               "reactionStats",
                               "isFavorited",
-                              "userReaction"
+                              "userReaction",
+                              "isPinnedOnProfile",
+                              "pinnedAt",
+                              "isHot",
+                              "hotScore",
+                              "isFeatured"
                             ]
                           }
                         },
@@ -10510,6 +10530,21 @@
                         },
                         "isFavorited": {
                           "type": "boolean"
+                        },
+                        "isPinnedOnProfile": {
+                          "type": "boolean"
+                        },
+                        "pinnedAt": {
+                          "type": "string"
+                        },
+                        "isHot": {
+                          "type": "boolean"
+                        },
+                        "hotScore": {
+                          "type": "number"
+                        },
+                        "isFeatured": {
+                          "type": "boolean"
                         }
                       },
                       "required": [
@@ -10546,7 +10581,12 @@
                         "reactionStats",
                         "userReaction",
                         "collection",
-                        "isFavorited"
+                        "isFavorited",
+                        "isPinnedOnProfile",
+                        "pinnedAt",
+                        "isHot",
+                        "hotScore",
+                        "isFeatured"
                       ]
                     }
                   },
@@ -11611,6 +11651,21 @@
                               },
                               "userReaction": {
                                 "type": "string"
+                              },
+                              "isPinnedOnProfile": {
+                                "type": "boolean"
+                              },
+                              "pinnedAt": {
+                                "type": "string"
+                              },
+                              "isHot": {
+                                "type": "boolean"
+                              },
+                              "hotScore": {
+                                "type": "number"
+                              },
+                              "isFeatured": {
+                                "type": "boolean"
                               }
                             },
                             "required": [
@@ -11646,7 +11701,12 @@
                               "imageCount",
                               "reactionStats",
                               "isFavorited",
-                              "userReaction"
+                              "userReaction",
+                              "isPinnedOnProfile",
+                              "pinnedAt",
+                              "isHot",
+                              "hotScore",
+                              "isFeatured"
                             ]
                           }
                         },
@@ -11828,7 +11888,60 @@
                               "images": {
                                 "type": "array",
                                 "items": {
-                                  "type": "string"
+                                  "type": "object",
+                                  "properties": {
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "width": {
+                                      "type": "integer"
+                                    },
+                                    "height": {
+                                      "type": "integer"
+                                    },
+                                    "size": {
+                                      "type": "integer"
+                                    },
+                                    "original": {
+                                      "type": "string"
+                                    },
+                                    "thumbnails": {
+                                      "type": "object",
+                                      "properties": {
+                                        "thumb": {
+                                          "type": "string"
+                                        },
+                                        "small": {
+                                          "type": "string"
+                                        },
+                                        "medium": {
+                                          "type": "string"
+                                        },
+                                        "large": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "thumb",
+                                        "small",
+                                        "medium",
+                                        "large"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "url",
+                                    "size",
+                                    "width",
+                                    "height",
+                                    "original",
+                                    "thumbnails"
+                                  ],
+                                  "oneOf": [
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
                                 }
                               },
                               "sort": {
@@ -12246,6 +12359,21 @@
                               },
                               "userReaction": {
                                 "type": "string"
+                              },
+                              "isPinnedOnProfile": {
+                                "type": "boolean"
+                              },
+                              "pinnedAt": {
+                                "type": "string"
+                              },
+                              "isHot": {
+                                "type": "boolean"
+                              },
+                              "hotScore": {
+                                "type": "number"
+                              },
+                              "isFeatured": {
+                                "type": "boolean"
                               }
                             },
                             "required": [
@@ -12281,7 +12409,12 @@
                               "imageCount",
                               "reactionStats",
                               "isFavorited",
-                              "userReaction"
+                              "userReaction",
+                              "isPinnedOnProfile",
+                              "pinnedAt",
+                              "isHot",
+                              "hotScore",
+                              "isFeatured"
                             ]
                           }
                         },
@@ -12972,6 +13105,21 @@
                               },
                               "userReaction": {
                                 "type": "string"
+                              },
+                              "isPinnedOnProfile": {
+                                "type": "boolean"
+                              },
+                              "pinnedAt": {
+                                "type": "string"
+                              },
+                              "isHot": {
+                                "type": "boolean"
+                              },
+                              "hotScore": {
+                                "type": "number"
+                              },
+                              "isFeatured": {
+                                "type": "boolean"
                               }
                             },
                             "required": [
@@ -13007,7 +13155,12 @@
                               "imageCount",
                               "reactionStats",
                               "isFavorited",
-                              "userReaction"
+                              "userReaction",
+                              "isPinnedOnProfile",
+                              "pinnedAt",
+                              "isHot",
+                              "hotScore",
+                              "isFeatured"
                             ]
                           }
                         },
@@ -13294,7 +13447,60 @@
                               "images": {
                                 "type": "array",
                                 "items": {
-                                  "type": "string"
+                                  "type": "object",
+                                  "properties": {
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "width": {
+                                      "type": "integer"
+                                    },
+                                    "height": {
+                                      "type": "integer"
+                                    },
+                                    "size": {
+                                      "type": "integer"
+                                    },
+                                    "original": {
+                                      "type": "string"
+                                    },
+                                    "thumbnails": {
+                                      "type": "object",
+                                      "properties": {
+                                        "thumb": {
+                                          "type": "string"
+                                        },
+                                        "small": {
+                                          "type": "string"
+                                        },
+                                        "medium": {
+                                          "type": "string"
+                                        },
+                                        "large": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "thumb",
+                                        "small",
+                                        "medium",
+                                        "large"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "url",
+                                    "size",
+                                    "width",
+                                    "height",
+                                    "original",
+                                    "thumbnails"
+                                  ],
+                                  "oneOf": [
+                                    {
+                                      "type": "string"
+                                    }
+                                  ]
                                 }
                               },
                               "sort": {
@@ -13712,6 +13918,21 @@
                               },
                               "userReaction": {
                                 "type": "string"
+                              },
+                              "isPinnedOnProfile": {
+                                "type": "boolean"
+                              },
+                              "pinnedAt": {
+                                "type": "string"
+                              },
+                              "isHot": {
+                                "type": "boolean"
+                              },
+                              "hotScore": {
+                                "type": "number"
+                              },
+                              "isFeatured": {
+                                "type": "boolean"
                               }
                             },
                             "required": [
@@ -13747,7 +13968,12 @@
                               "imageCount",
                               "reactionStats",
                               "isFavorited",
-                              "userReaction"
+                              "userReaction",
+                              "isPinnedOnProfile",
+                              "pinnedAt",
+                              "isHot",
+                              "hotScore",
+                              "isFeatured"
                             ]
                           }
                         },
@@ -16290,6 +16516,117 @@
         "security": []
       }
     },
+    "/article/{id}/favorite/status": {
+      "get": {
+        "summary": "检查文章是否已收藏",
+        "deprecated": false,
+        "description": "",
+        "operationId": "ArticleController_checkFavoriteStatus",
+        "tags": [
+          "文章管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "isFavorited": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "isFavorited"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          },
+          "401": {
+            "description": "未授权",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/article/{id}/browse/progress": {
       "post": {
         "summary": "更新文章浏览进度",
@@ -16834,12 +17171,12 @@
         ]
       }
     },
-    "/article/{id}/favorite/status": {
-      "get": {
-        "summary": "检查文章是否已收藏",
+    "/article/{id}/featured": {
+      "patch": {
+        "summary": "设置文章精华状态",
         "deprecated": false,
         "description": "",
-        "operationId": "ArticleController_checkFavoriteStatus",
+        "operationId": "ArticleController_setFeatured",
         "tags": [
           "文章管理"
         ],
@@ -16897,44 +17234,105 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetArticleFeaturedDto"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
-            "description": "获取成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "code": {
-                      "type": "integer"
-                    },
-                    "message": {
-                      "type": "string"
-                    },
-                    "data": {
-                      "type": "object",
-                      "properties": {
-                        "isFavorited": {
-                          "type": "boolean"
-                        }
-                      },
-                      "required": [
-                        "isFavorited"
-                      ]
-                    }
-                  },
-                  "required": [
-                    "code",
-                    "message",
-                    "data"
-                  ]
-                }
-              }
-            },
+            "description": "",
             "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/article/{id}/profile-pin": {
+      "patch": {
+        "summary": "设置文章个人主页置顶状态",
+        "deprecated": false,
+        "description": "",
+        "operationId": "ArticleController_setProfilePin",
+        "tags": [
+          "文章管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
           },
-          "401": {
-            "description": "未授权",
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetArticleProfilePinDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
             "headers": {}
           }
         },
@@ -18620,6 +19018,15 @@
                               },
                               "isLiked": {
                                 "type": "boolean"
+                              },
+                              "isAuthorLiked": {
+                                "type": "boolean"
+                              },
+                              "pinnedAt": {
+                                "type": "string"
+                              },
+                              "isPinned": {
+                                "type": "boolean"
                               }
                             },
                             "required": [
@@ -18636,7 +19043,10 @@
                               "images",
                               "replies",
                               "parentId",
-                              "isLiked"
+                              "isLiked",
+                              "isAuthorLiked",
+                              "pinnedAt",
+                              "isPinned"
                             ]
                           }
                         },
@@ -20362,6 +20772,15 @@
                               },
                               "isLiked": {
                                 "type": "boolean"
+                              },
+                              "isAuthorLiked": {
+                                "type": "boolean"
+                              },
+                              "pinnedAt": {
+                                "type": "string"
+                              },
+                              "isPinned": {
+                                "type": "boolean"
                               }
                             },
                             "required": [
@@ -20378,7 +20797,10 @@
                               "images",
                               "replies",
                               "parentId",
-                              "isLiked"
+                              "isLiked",
+                              "isAuthorLiked",
+                              "pinnedAt",
+                              "isPinned"
                             ]
                           }
                         },
@@ -22622,6 +23044,15 @@
                               },
                               "isLiked": {
                                 "type": "boolean"
+                              },
+                              "isAuthorLiked": {
+                                "type": "boolean"
+                              },
+                              "pinnedAt": {
+                                "type": "string"
+                              },
+                              "isPinned": {
+                                "type": "boolean"
                               }
                             },
                             "required": [
@@ -22638,7 +23069,10 @@
                               "images",
                               "replies",
                               "parentId",
-                              "isLiked"
+                              "isLiked",
+                              "isAuthorLiked",
+                              "pinnedAt",
+                              "isPinned"
                             ]
                           }
                         },
@@ -24531,6 +24965,15 @@
                               },
                               "isLiked": {
                                 "type": "boolean"
+                              },
+                              "isAuthorLiked": {
+                                "type": "boolean"
+                              },
+                              "pinnedAt": {
+                                "type": "string"
+                              },
+                              "isPinned": {
+                                "type": "boolean"
                               }
                             },
                             "required": [
@@ -24547,7 +24990,10 @@
                               "images",
                               "replies",
                               "parentId",
-                              "isLiked"
+                              "isLiked",
+                              "isAuthorLiked",
+                              "pinnedAt",
+                              "isPinned"
                             ]
                           }
                         },
@@ -24772,6 +25218,92 @@
           },
           "404": {
             "description": "评论不存在",
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/comment/{id}/pin": {
+      "patch": {
+        "summary": "设置评论置顶状态",
+        "deprecated": false,
+        "description": "",
+        "operationId": "CommentController_setPin",
+        "tags": [
+          "评论管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetCommentPinDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "",
             "headers": {}
           }
         },
@@ -48702,6 +49234,16 @@
             "items": {
               "$ref": "#/components/schemas/DownloadDto"
             }
+          },
+          "isFeatured": {
+            "type": "boolean",
+            "description": "是否设为精华，仅管理员可设置",
+            "default": false
+          },
+          "isPinnedOnProfile": {
+            "type": "boolean",
+            "description": "是否在个人主页置顶，作者或管理员可设置",
+            "default": false
           }
         },
         "required": [
@@ -48854,6 +49396,16 @@
             "items": {
               "$ref": "#/components/schemas/DownloadDto"
             }
+          },
+          "isFeatured": {
+            "type": "boolean",
+            "description": "是否设为精华，仅管理员可设置",
+            "default": false
+          },
+          "isPinnedOnProfile": {
+            "type": "boolean",
+            "description": "是否在个人主页置顶，作者或管理员可设置",
+            "default": false
           }
         }
       },
@@ -49506,6 +50058,11 @@
               "https://example.com/image1.jpg",
               "https://example.com/image2.jpg"
             ]
+          },
+          "isPinned": {
+            "type": "boolean",
+            "description": "是否置顶，仅文章作者或管理员可设置",
+            "default": false
           }
         }
       },
@@ -50747,6 +51304,45 @@
             "description": "结束时间"
           }
         }
+      },
+      "SetArticleFeaturedDto": {
+        "type": "object",
+        "properties": {
+          "isFeatured": {
+            "type": "boolean",
+            "description": "是否设为精华",
+            "example": true
+          }
+        },
+        "required": [
+          "isFeatured"
+        ]
+      },
+      "SetArticleProfilePinDto": {
+        "type": "object",
+        "properties": {
+          "isPinned": {
+            "type": "boolean",
+            "description": "是否在个人主页置顶",
+            "example": true
+          }
+        },
+        "required": [
+          "isPinned"
+        ]
+      },
+      "SetCommentPinDto": {
+        "type": "object",
+        "properties": {
+          "isPinned": {
+            "type": "boolean",
+            "description": "是否置顶评论",
+            "example": true
+          }
+        },
+        "required": [
+          "isPinned"
+        ]
       }
     },
     "responses": {},

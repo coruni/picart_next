@@ -17,6 +17,7 @@ export const ArticleListClient = (props: ArticleListClientProps) => {
         <SharedArticleListClient
             initArticles={props.initArticles}
             showFollow={props.showFollow}
+            showProfilePinLabel
             initPage={props.initPage}
             initTotal={props.initTotal}
             fetchArticles={articleControllerFindByAuthor}

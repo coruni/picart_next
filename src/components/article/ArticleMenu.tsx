@@ -1,6 +1,12 @@
 "use client";
 
-import { messageControllerBlockPrivateUser, reportControllerCreate } from "@/api";
+import {
+  articleControllerRemove,
+  articleControllerSetFeatured,
+  articleControllerSetProfilePin,
+  messageControllerBlockPrivateUser,
+  reportControllerCreate,
+} from "@/api";
 import {
   createDefaultReportReasons,
   DropdownMenu,
@@ -16,7 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
-import { useRouter } from "@/i18n/routing";
+import { usePathname, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
@@ -25,7 +31,10 @@ import {
   HeartOff,
   MoreHorizontal,
   PencilLine,
+  Pin,
   ShieldAlert,
+  Sparkles,
+  Trash2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -35,6 +44,8 @@ type ArticleMenuProps = {
   authorId: string;
   articleType?: string;
   isOwner?: boolean;
+  isFeatured?: boolean;
+  isPinnedOnProfile?: boolean;
 };
 
 export function ArticleMenu({
@@ -42,9 +53,12 @@ export function ArticleMenu({
   authorId,
   articleType,
   isOwner: isOwnerProp = false,
+  isFeatured = false,
+  isPinnedOnProfile = false,
 }: ArticleMenuProps) {
   const t = useTranslations("articleMenu");
   const router = useRouter();
+  const pathname = usePathname();
   const currentUser = useUserStore((state) => state.user);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
 
@@ -52,6 +66,14 @@ export function ArticleMenu({
   const [reportSubmitting, setReportSubmitting] = useState(false);
   const [blockDialogOpen, setBlockDialogOpen] = useState(false);
   const [blockSubmitting, setBlockSubmitting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteSubmitting, setDeleteSubmitting] = useState(false);
+  const [featureSubmitting, setFeatureSubmitting] = useState(false);
+  const [pinSubmitting, setPinSubmitting] = useState(false);
+  const [featuredState, setFeaturedState] = useState(Boolean(isFeatured));
+  const [profilePinnedState, setProfilePinnedState] = useState(
+    Boolean(isPinnedOnProfile),
+  );
   const reportReasons = createDefaultReportReasons(t);
 
   const isOwner =
@@ -67,6 +89,10 @@ export function ArticleMenu({
 
   // 可以编辑的条件：是作者或有管理权限
   const canEdit = isOwner || hasManagePermission;
+  const canDelete = canEdit;
+  const canManageFeature = hasManagePermission;
+  const canManageProfilePin = isOwner;
+  const isAccountArticleRoute = pathname === `/account/${authorId}`;
 
   const requireAuth = () => {
     if (isAuthenticated) return true;
@@ -135,6 +161,67 @@ export function ArticleMenu({
     router.push(editPath);
   };
 
+  const handleToggleFeatured = async () => {
+    if (!canManageFeature || featureSubmitting) return;
+
+    const nextFeatured = !featuredState;
+    setFeatureSubmitting(true);
+    try {
+      await articleControllerSetFeatured({
+        path: { id: articleId },
+        body: { isFeatured: nextFeatured },
+      });
+      setFeaturedState(nextFeatured);
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to update article featured state:", error);
+    } finally {
+      setFeatureSubmitting(false);
+    }
+  };
+
+  const handleToggleProfilePin = async () => {
+    if (!canManageProfilePin || pinSubmitting || !isAccountArticleRoute) return;
+
+    const nextPinned = !profilePinnedState;
+    setPinSubmitting(true);
+    try {
+      await articleControllerSetProfilePin({
+        path: { id: articleId },
+        body: { isPinned: nextPinned },
+      });
+      setProfilePinnedState(nextPinned);
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to update article profile pin state:", error);
+    } finally {
+      setPinSubmitting(false);
+    }
+  };
+
+  const handleDeleteArticle = async () => {
+    if (!canDelete || deleteSubmitting) return;
+
+    setDeleteSubmitting(true);
+    try {
+      await articleControllerRemove({
+        path: { id: articleId },
+      });
+      setDeleteDialogOpen(false);
+
+      if (pathname.startsWith("/article/")) {
+        router.replace("/");
+        return;
+      }
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Failed to delete article:", error);
+    } finally {
+      setDeleteSubmitting(false);
+    }
+  };
+
   // 基础操作项（举报、拉黑、不喜欢）- 给非作者用户
   const baseMenuItems: MenuItem[] = isOwner
     ? []
@@ -164,9 +251,63 @@ export function ArticleMenu({
     onClick: handleEditArticle,
   };
 
+  const manageMenuItems: MenuItem[] = [];
+
+  if (canManageFeature) {
+    manageMenuItems.push({
+      label: featuredState ? t("unsetFeatured") : t("setFeatured"),
+      icon: <Sparkles size={18} />,
+      onClick: handleToggleFeatured,
+      disabled: featureSubmitting,
+      confirmDialog: {
+        enabled: true,
+        title: featuredState
+          ? t("unsetFeaturedConfirmTitle")
+          : t("setFeaturedConfirmTitle"),
+        description: featuredState
+          ? t("unsetFeaturedConfirmDescription")
+          : t("setFeaturedConfirmDescription"),
+        confirmText: featuredState ? t("unsetFeatured") : t("setFeatured"),
+        cancelText: t("cancel"),
+      },
+    });
+  }
+
+  if (canManageProfilePin && isAccountArticleRoute) {
+    manageMenuItems.push({
+      label: profilePinnedState ? t("unsetProfilePin") : t("setProfilePin"),
+      icon: <Pin size={18} />,
+      onClick: handleToggleProfilePin,
+      disabled: pinSubmitting,
+      confirmDialog: {
+        enabled: true,
+        title: profilePinnedState
+          ? t("unsetProfilePinConfirmTitle")
+          : t("setProfilePinConfirmTitle"),
+        description: profilePinnedState
+          ? t("unsetProfilePinConfirmDescription")
+          : t("setProfilePinConfirmDescription"),
+        confirmText: profilePinnedState
+          ? t("unsetProfilePin")
+          : t("setProfilePin"),
+        cancelText: t("cancel"),
+      },
+    });
+  }
+
+  if (canDelete) {
+    manageMenuItems.push({
+      label: t("deletePost"),
+      icon: <Trash2 size={18} />,
+      onClick: () => setDeleteDialogOpen(true),
+      className: "text-red-400",
+      disabled: deleteSubmitting,
+    });
+  }
+
   // 最终菜单项：有编辑权限则添加编辑项，再加上基础操作项
   const menuItems: MenuItem[] = canEdit
-    ? [editMenuItem, ...baseMenuItems]
+    ? [editMenuItem, ...manageMenuItems, ...baseMenuItems]
     : baseMenuItems;
 
   return (
@@ -227,6 +368,35 @@ export function ArticleMenu({
               disabled={blockSubmitting}
             >
               {t("blockUser")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="max-w-sm rounded-2xl p-6" showClose={false}>
+          <DialogHeader className="mb-0 space-y-2 text-center sm:text-center">
+            <DialogTitle>{t("deleteConfirmTitle")}</DialogTitle>
+            <DialogDescription>
+              {t("deleteConfirmDescription")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-6 flex-row justify-center gap-6! sm:justify-center">
+            <Button
+              variant="outline"
+              className="h-8 min-w-20 rounded-full px-6"
+              onClick={() => setDeleteDialogOpen(false)}
+              disabled={deleteSubmitting}
+            >
+              {t("cancel")}
+            </Button>
+            <Button
+              className="h-8 min-w-20 rounded-full px-6"
+              onClick={handleDeleteArticle}
+              loading={deleteSubmitting}
+              disabled={deleteSubmitting}
+            >
+              {t("deletePost")}
             </Button>
           </DialogFooter>
         </DialogContent>

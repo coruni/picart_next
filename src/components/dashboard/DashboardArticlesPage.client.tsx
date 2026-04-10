@@ -14,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
+import { Switch } from "@/components/ui/Switch";
 import { Textarea } from "@/components/ui/Textarea";
 import { Link, useRouter } from "@/i18n/routing";
 import {
@@ -49,6 +50,7 @@ export function DashboardArticlesPage() {
   const [deletingItem, setDeletingItem] = useState<DashboardArticleItem | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [auditReason, setAuditReason] = useState("");
+  const [auditIsFeatured, setAuditIsFeatured] = useState(false);
   const [auditSubmitting, setAuditSubmitting] = useState(false);
 
   const statusValueEnum = useMemo(
@@ -72,10 +74,12 @@ export function DashboardArticlesPage() {
         path: { id: String(auditingItem.id) },
         body: {
           status: status === "APPROVED" ? "PUBLISHED" : "DRAFT",
+          isFeatured: auditIsFeatured,
         },
       });
       setAuditingItem(null);
       setAuditReason("");
+      setAuditIsFeatured(false);
       setRefreshKey((current) => current + 1);
     } finally {
       setAuditSubmitting(false);
@@ -174,6 +178,7 @@ export function DashboardArticlesPage() {
               onClick: () => {
                 setAuditingItem(item);
                 setAuditReason("");
+                setAuditIsFeatured(Boolean(item.isFeatured));
               },
             },
             {
@@ -255,7 +260,13 @@ export function DashboardArticlesPage() {
       <Dialog
         open={Boolean(auditingItem)}
         onOpenChange={(open) =>
-          !auditSubmitting && !open && setAuditingItem(null)
+          !auditSubmitting &&
+          !open &&
+          (() => {
+            setAuditingItem(null);
+            setAuditReason("");
+            setAuditIsFeatured(false);
+          })()
         }
       >
         <DialogContent className="max-w-lg p-0!">
@@ -289,6 +300,21 @@ export function DashboardArticlesPage() {
                 onChange={(e) => setAuditReason(e.target.value)}
                 placeholder={copy.common.auditReasonPlaceholder}
                 className="min-h-25"
+              />
+            </div>
+            <div className="mt-4 flex items-center justify-between rounded-lg border border-border/70 bg-muted/30 px-4 py-3">
+              <div className="pr-4">
+                <div className="text-sm font-medium text-foreground">
+                  {copy.common.featured}
+                </div>
+                <div className="mt-1 text-xs text-muted-foreground">
+                  {copy.common.featuredDescription}
+                </div>
+              </div>
+              <Switch
+                checked={auditIsFeatured}
+                onCheckedChange={setAuditIsFeatured}
+                disabled={auditSubmitting}
               />
             </div>
           </div>

@@ -68,11 +68,19 @@ export function Form({
   touched = {},
   children,
   className,
+  action,
   ...props
 }: FormProps) {
+  const resolvedAction =
+    typeof action === "function" ? undefined : action;
+
   return (
     <FormContext.Provider value={{ errors, touched }}>
-      <form className={cn("space-y-4", className)} {...props}>
+      <form
+        className={cn("space-y-4", className)}
+        action={resolvedAction}
+        {...props}
+      >
         {children}
       </form>
     </FormContext.Provider>

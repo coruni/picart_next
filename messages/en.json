@@ -214,6 +214,7 @@
     "viewCommentTitle": "View comments {count}",
     "viewImages": "View images",
     "like": "Like",
+    "authorLiked": "Liked by author",
     "sortOptions": {
       "all": "All comments",
       "hot": "Most liked",
@@ -635,7 +636,10 @@
   },
   "articleCard": {
     "dislikeContent": "I dislike this content",
-    "more": "More"
+    "more": "More",
+    "featured": "Featured",
+    "hot": "Hot",
+    "pinned": "Pinned"
   },
   "articleMenu": {
     "reportReason": "Post content requires review",
@@ -651,6 +655,21 @@
     "blockConfirmDescription": "After blocking, this user will no longer be able to send you private messages. Are you sure you want to block this user?",
     "cancel": "Cancel",
     "dislikeType": "I dislike this type of content",
+    "setFeatured": "Set Featured",
+    "unsetFeatured": "Unset Featured",
+    "setFeaturedConfirmTitle": "Set this post as featured?",
+    "setFeaturedConfirmDescription": "After confirming, this post will be highlighted as featured content.",
+    "unsetFeaturedConfirmTitle": "Remove featured status?",
+    "unsetFeaturedConfirmDescription": "After confirming, this post will no longer be highlighted as featured content.",
+    "setProfilePin": "Pin",
+    "unsetProfilePin": "Unpin",
+    "setProfilePinConfirmTitle": "Pin this post?",
+    "setProfilePinConfirmDescription": "After confirming, this post will be pinned near the top.",
+    "unsetProfilePinConfirmTitle": "Remove pin?",
+    "unsetProfilePinConfirmDescription": "After confirming, this post will return to the normal order.",
+    "deletePost": "Delete Post",
+    "deleteConfirmTitle": "Delete this post?",
+    "deleteConfirmDescription": "This action cannot be undone. Do you want to continue?",
     "moreActions": "More Actions",
     "reportDialog": {
       "title": "Select a reason",
@@ -903,7 +922,11 @@
     "dislike": "Dislike"
   },
   "dropdownMenu": {
-    "more": "More"
+    "more": "More",
+    "confirmTitle": "Confirm Action",
+    "confirmDescription": "Are you sure you want to continue?",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   },
   "searchBox": {
     "hotSearches": ["Check in", "Genshin", "Honkai", "Star Rail", "ZZZ"]

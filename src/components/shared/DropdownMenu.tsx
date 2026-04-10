@@ -1,8 +1,15 @@
 "use client";
 
-
-
 import { useClickOutside } from "@/hooks";
+import { Button } from "@/components/ui/Button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/Dialog";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { ReactNode, useMemo, useRef, useState } from "react";
@@ -122,52 +129,89 @@ export function DropdownMenu({
           {resolvedTrigger}
         </div>
 
-      <div
-        className={cn(
-          "absolute top-8 z-10 min-w-50 w-max rounded-xl border border-border/70 bg-card shadow-lg",
-          position === "right"
-            ? "right-0 origin-top-right"
-            : "left-0 origin-top-left",
-          isOpen
-            ? "opacity-100"
-            : "pointer-events-none opacity-0",
-          menuClassName,
-        )}
-        role="menu"
-        aria-hidden={!isOpen}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-      >
-        <div className="p-2 text-sm">
-          {(title ?? t("more")) && (
-            <div className="mb-1 px-2 font-medium text-foreground/80">
-              <span>{title ?? t("more")}</span>
-            </div>
+        <div
+          className={cn(
+            "absolute top-8 z-10 min-w-50 w-max rounded-xl border border-border/70 bg-card shadow-lg",
+            position === "right"
+              ? "right-0 origin-top-right"
+              : "left-0 origin-top-left",
+            isOpen ? "opacity-100" : "pointer-events-none opacity-0",
+            menuClassName,
           )}
+          role="menu"
+          aria-hidden={!isOpen}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
+          <div className="p-2 text-sm">
+            {(title ?? t("more")) && (
+              <div className="mb-1 px-2 font-medium text-foreground/80">
+                <span>{title ?? t("more")}</span>
+              </div>
+            )}
 
-          {items.map((item, index) => (
-            <div
-              key={index}
-              role="menuitem"
-              aria-disabled={item.disabled}
-              className={cn(
-                "flex items-center gap-2 rounded-xl p-2 text-sm whitespace-nowrap",
-                item.disabled
-                  ? "cursor-not-allowed opacity-50"
-                  : "group cursor-pointer text-black/75 hover:bg-primary/12 hover:text-primary dark:text-white/75",
-                item.className,
-              )}
-              onClick={() => handleItemClick(item)}
-            >
-              {item.icon && <span>{item.icon}</span>}
-              <span className="whitespace-nowrap">{item.label}</span>
-            </div>
-          ))}
+            {items.map((item, index) => (
+              <div
+                key={index}
+                role="menuitem"
+                aria-disabled={item.disabled}
+                className={cn(
+                  "flex items-center gap-2 rounded-xl p-2 text-sm whitespace-nowrap",
+                  item.disabled
+                    ? "cursor-not-allowed opacity-50"
+                    : "group cursor-pointer text-black/75 hover:bg-primary/12 hover:text-primary dark:text-white/75",
+                  item.className,
+                )}
+                onClick={() => handleItemClick(item)}
+              >
+                {item.icon && <span>{item.icon}</span>}
+                <span className="whitespace-nowrap">{item.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
-  </>
+
+      <Dialog
+        open={Boolean(confirmingItem)}
+        onOpenChange={(open) => {
+          if (!open && !confirming) {
+            setConfirmingItem(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-sm rounded-2xl p-6" showClose={false}>
+          <DialogHeader className="mb-0 space-y-2 text-center sm:text-center">
+            <DialogTitle>
+              {confirmingItem?.confirmDialog?.title ?? t("confirmTitle")}
+            </DialogTitle>
+            <DialogDescription>
+              {confirmingItem?.confirmDialog?.description ??
+                t("confirmDescription")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="mt-6 flex-row justify-center gap-6! sm:justify-center">
+            <Button
+              variant="outline"
+              className="h-8 min-w-20 rounded-full px-6"
+              onClick={() => setConfirmingItem(null)}
+              disabled={confirming}
+            >
+              {confirmingItem?.confirmDialog?.cancelText ?? t("cancel")}
+            </Button>
+            <Button
+              className="h-8 min-w-20 rounded-full px-6"
+              onClick={handleConfirm}
+              loading={confirming}
+              disabled={confirming}
+            >
+              {confirmingItem?.confirmDialog?.confirmText ?? t("confirm")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

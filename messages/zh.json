@@ -206,6 +206,7 @@
     "viewCommentTitle": "查看评论 {count}",
     "viewImages": "查看图片",
     "like": "点赞",
+    "authorLiked": "作者赞过",
     "sortOptions": {
       "all": "全部评论",
       "hot": "点赞最多",
@@ -627,7 +628,10 @@
   },
   "articleCard": {
     "dislikeContent": "我不喜欢这类内容",
-    "more": "更多"
+    "more": "更多",
+    "featured": "精华",
+    "hot": "热门",
+    "pinned": "置顶"
   },
   "articleMenu": {
     "reportReason": "帖子内容需要审核",
@@ -643,6 +647,21 @@
     "blockConfirmDescription": "拉黑后，对方将无法再给您发送私信。确定要拉黑该用户吗？",
     "cancel": "取消",
     "dislikeType": "我不喜欢这类内容",
+    "setFeatured": "设为精华",
+    "unsetFeatured": "取消精华",
+    "setFeaturedConfirmTitle": "确认设为精华",
+    "setFeaturedConfirmDescription": "设置后，这篇帖子会以精华内容展示。确定继续吗？",
+    "unsetFeaturedConfirmTitle": "确认取消精华",
+    "unsetFeaturedConfirmDescription": "取消后，这篇帖子将不再以精华内容展示。确定继续吗？",
+    "setProfilePin": "置顶",
+    "unsetProfilePin": "取消置顶",
+    "setProfilePinConfirmTitle": "确认置顶",
+    "setProfilePinConfirmDescription": "设置后，这篇帖子会固定展示在较前位置。确定继续吗？",
+    "unsetProfilePinConfirmTitle": "确认取消置顶",
+    "unsetProfilePinConfirmDescription": "取消后，这篇帖子将恢复正常排序展示。确定继续吗？",
+    "deletePost": "删除帖子",
+    "deleteConfirmTitle": "确认删除帖子",
+    "deleteConfirmDescription": "删除后将无法恢复，确定要继续吗？",
     "moreActions": "更多操作",
     "reportDialog": {
       "title": "选择原因",
@@ -895,7 +914,11 @@
     "dislike": "踩"
   },
   "dropdownMenu": {
-    "more": "更多"
+    "more": "更多",
+    "confirmTitle": "确认操作",
+    "confirmDescription": "确定要继续执行这项操作吗？",
+    "cancel": "取消",
+    "confirm": "确认"
   },
   "searchBox": {
     "hotSearches": [

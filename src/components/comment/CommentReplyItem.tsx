@@ -283,7 +283,6 @@ export const CommentReplyItem = memo(function CommentReplyItem({
           </button>
         </div>
       </div>
-
       {isReplyEditorOpen ? (
         <CommentEditor
           articleId={articleId}

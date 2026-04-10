@@ -1,5 +1,3 @@
-"use server";
-
 import recommendUserLeft from "@/assets/images/sidebar/recommend/recommend_user_left.png";
 import recommendUserRight from "@/assets/images/sidebar/recommend/recommend_user_right.png";
 import { Link } from "@/i18n/routing";

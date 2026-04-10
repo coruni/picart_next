@@ -70,6 +70,7 @@ export const CommentItem = memo(function CommentItem({
   const [activeReplyParentId, setActiveReplyParentId] = useState<number | null>(
     null,
   );
+  const authorLikedComment = Boolean(commentState.isAuthorLiked);
 
   // 使用 useMemo 缓存内容处理结果
   const contentHtml = useMemo(
@@ -200,7 +201,10 @@ export const CommentItem = memo(function CommentItem({
           !compact && "md:px-6",
         )}
       >
-        <Link href={`/account/${data.author.id}`} className="flex items-center justify-center">
+        <Link
+          href={`/account/${data.author.id}`}
+          className="flex items-center justify-center"
+        >
           <Avatar
             className={commentAvatarClassName}
             alt={data.author.nickname || data.author.username}
@@ -257,12 +261,7 @@ export const CommentItem = memo(function CommentItem({
 
       {/* Comment Content element */}
       <div className="py-2">
-        <div
-          className={cn(
-            "pl-17 pr-4",
-            !compact && "md:pl-19 md:pr-6",
-          )}
-        >
+        <div className={cn("pl-17 pr-4", !compact && "md:pl-19 md:pr-6")}>
           <div
             key={renderKey}
             className="whitespace-pre-wrap text-sm"
@@ -282,12 +281,7 @@ export const CommentItem = memo(function CommentItem({
         />
       </div>
       {/* Comment Actions element */}
-      <div
-        className={cn(
-          "pl-17 pr-4",
-          !compact && "md:pl-19 md:pr-6",
-        )}
-      >
+      <div className={cn("pl-17 pr-4", !compact && "md:pl-19 md:pr-6")}>
         <div className="flex items-center justify-between text-secondary text-sm mt-2">
           <span className="text-xs">
             {formatRelativeTime(commentState.createdAt, tTime)}
@@ -323,6 +317,11 @@ export const CommentItem = memo(function CommentItem({
             </button>
           </div>
         </div>
+        {authorLikedComment ? (
+          <span className="inline-flex rounded-md bg-[#FF6B6B]/15 px-2 py-1 text-xs text-[#FF6B6B]">
+            {tComment("authorLiked")}
+          </span>
+        ) : null}
         {activeReplyParentId === commentState.id ? (
           <CommentEditor
             articleId={articleId}

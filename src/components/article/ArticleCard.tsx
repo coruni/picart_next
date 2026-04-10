@@ -15,6 +15,7 @@ import { useUserStore } from "@/stores";
 import type { ArticleDetail, ArticleList } from "@/types";
 import { getImageUrl, getImageUrls, type ImageInfo } from "@/types/image";
 import {
+  ChevronUp,
   Eye,
   FileImage,
   GalleryHorizontalEnd,
@@ -31,14 +32,17 @@ type Article = ArticleList[number] | ArticleDetail;
 type ArticleCardProps = {
   article: Article;
   showFollow: boolean;
+  showProfilePinLabel?: boolean;
 };
 
 export const ArticleCard = ({
   article,
   showFollow = true,
+  showProfilePinLabel = false,
 }: ArticleCardProps) => {
   const currentUser = useUserStore((state) => state.user);
   const t = useTranslations("time");
+  const tArticleCard = useTranslations("articleCard");
   const tAccountInfo = useTranslations("accountInfo");
   const locale = useLocale();
   const [viewerVisible, setViewerVisible] = useState(false);
@@ -301,6 +305,8 @@ export const ArticleCard = ({
             authorId={String(article?.author?.id || "")}
             articleType={article?.type}
             isOwner={isOwner}
+            isFeatured={Boolean(article?.isFeatured)}
+            isPinnedOnProfile={Boolean(article?.isPinnedOnProfile)}
           />
         </div>
       </div>
@@ -309,10 +315,37 @@ export const ArticleCard = ({
         <GuardedLink href={`/article/${article.id}`} prefetch={false}>
           <h3
             data-auto-translate-content
-            className="mt-2 font-bold hover:text-primary cursor-pointer"
+            className="mt-2 font-bold hover:text-primary cursor-pointer wrap-break-word leading-8"
           >
-            {article?.title}
+            {showProfilePinLabel && Boolean(article?.isPinnedOnProfile) && (
+              <span
+                aria-label="isPinnedOnProfile"
+                className="mr-1 inline-flex items-center gap-0.5 rounded-md bg-[#5FD6C8] px-1 py-1 text-xs font-semibold leading-none text-white align-middle"
+              >
+                <ChevronUp size={12} />
+                {tArticleCard("pinned")}
+              </span>
+            )}
+            {article.isFeatured && (
+              <span
+                aria-label="isFeatured"
+                className="mr-1 inline-flex rounded-md bg-primary px-1 py-1 text-xs font-semibold leading-none text-white align-middle"
+              >
+                {tArticleCard("featured")}
+              </span>
+            )}
+            {article.isHot && (
+              <span
+                aria-label="isHot"
+                className="mr-1 inline-flex rounded-md bg-[#FF6B6B] px-1 py-1 text-xs font-semibold leading-none text-white align-middle"
+              >
+                {tArticleCard("hot")}
+              </span>
+            )}
+
+            <span>{article?.title}</span>
           </h3>
+
           {summaryHtml && (
             <p
               data-auto-translate-content

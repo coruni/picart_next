@@ -1,5 +1,3 @@
-"use server";
-
 import { tagControllerFindAll } from "@/api";
 import { Link } from "@/i18n/routing";
 import { formatCompactNumber } from "@/lib";

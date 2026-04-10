@@ -187,6 +187,8 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               articleId={id}
               authorId={article?.author?.id?.toString() || ""}
               articleType={article?.type}
+              isFeatured={Boolean(article?.isFeatured)}
+              isPinnedOnProfile={Boolean(article?.isPinnedOnProfile)}
             />
           </div>
         </div>
