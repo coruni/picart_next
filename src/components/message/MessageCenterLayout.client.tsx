@@ -91,14 +91,19 @@ export function MessageCenterLayoutClient({
   );
   const token = useUserStore((state) => state.token);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
-  const messages = useMessageNotificationStore((state) => state.centerMessages);
   const selectedTab = useMessageNotificationStore((state) => state.selectedTab);
+  const messages = useMessageNotificationStore(
+    (state) => state.centerMessagesByTab[selectedTab],
+  );
   const socketConnected = useMessageNotificationStore(
     (state) => state.socketConnected,
   );
   const isLoading = useMessageNotificationStore((state) => state.isLoading);
-  const isSwitchingTab = useMessageNotificationStore(
-    (state) => state.isSwitchingTab,
+  const hasLoadedMessages = useMessageNotificationStore(
+    (state) => state.hasLoadedMessages,
+  );
+  const loadedCenterTabs = useMessageNotificationStore(
+    (state) => state.loadedCenterTabs,
   );
   const fetchMessages = useMessageNotificationStore((state) => state.fetchMessages);
   const fetchUnreadCount = useMessageNotificationStore(
@@ -186,6 +191,9 @@ export function MessageCenterLayoutClient({
 
     return [pendingPrivateItem, ...messages];
   }, [existingPrivateConversation, messages, pendingPrivateItem]);
+  const hasCachedMessages = messages.length > 0;
+  const isInitialLoading = isLoading && !hasCachedMessages;
+  const isRefreshing = isLoading && hasCachedMessages;
 
   useEffect(() => {
     if (!isAuthenticated || !token) {
@@ -209,11 +217,7 @@ export function MessageCenterLayoutClient({
   ]);
 
   useEffect(() => {
-    if (
-      selectedTab === initialTab ||
-      isSwitchingTab ||
-      !isAuthenticated
-    ) {
+    if (selectedTab === initialTab || !isAuthenticated) {
       return;
     }
 
@@ -223,7 +227,6 @@ export function MessageCenterLayoutClient({
     fetchMessages,
     initialTab,
     isAuthenticated,
-    isSwitchingTab,
     selectedTab,
     setSelectedTab,
   ]);
@@ -355,6 +358,10 @@ export function MessageCenterLayoutClient({
   }, [displayedMessages, routeId, routeType]);
 
   const isMobileDetailOpen = isMobile && Boolean(routeType && routeId);
+  const shouldFetchCurrentTab =
+    isAuthenticated &&
+    !isLoading &&
+    (!hasLoadedMessages || !loadedCenterTabs[selectedTab]);
   const baseMessagePath = "/message";
 
   const handleTabChange = (tab: MessageTab) => {
@@ -371,6 +378,12 @@ export function MessageCenterLayoutClient({
     const nextQuery = nextParams.toString();
     router.replace(nextQuery ? `${baseMessagePath}?${nextQuery}` : baseMessagePath);
   };
+
+  useEffect(() => {
+    if (shouldFetchCurrentTab) {
+      void fetchMessages(selectedTab);
+    }
+  }, [fetchMessages, selectedTab, shouldFetchCurrentTab]);
 
   const handleSelectItem = (_itemId: number, itemHref?: string) => {
     if (!itemHref) {
@@ -406,8 +419,8 @@ export function MessageCenterLayoutClient({
           <MessageConversationList
             copy={copy}
             filteredMessages={summarizedMessages}
-            isLoading={isLoading}
-            isSwitchingTab={isSwitchingTab}
+            isLoading={isInitialLoading}
+            isSwitchingTab={isRefreshing}
             isMobileDetailOpen={isMobileDetailOpen}
             locale={locale}
             onTabChange={handleTabChange}

@@ -26,7 +26,7 @@ export function MessageConversationList({
   copy,
   filteredMessages,
   isLoading,
-  isSwitchingTab,
+  isSwitchingTab: _isSwitchingTab,
   isMobileDetailOpen,
   locale,
   onTabChange,
@@ -41,6 +41,8 @@ export function MessageConversationList({
   tMsg,
   tTime,
 }: MessageConversationListProps) {
+  const hasCachedMessages = filteredMessages.length > 0;
+  const isInitialLoading = isLoading && !hasCachedMessages;
   const activeEmptyText = search.trim()
     ? copy.noResults
     : selectedTab === "private"
@@ -102,15 +104,11 @@ export function MessageConversationList({
                   active
                     ? "shadow-none"
                     : "border border-border/70 bg-background",
-                  isSwitchingTab && active && "opacity-80",
                 )}
-                disabled={isSwitchingTab}
+                disabled={isInitialLoading}
               >
                 <Icon className="size-4" />
                 <span>{tab.label}</span>
-                {isSwitchingTab && active && (
-                  <span className="ml-1.5 inline-block size-3 animate-spin rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground" />
-                )}
               </Button>
             );
           })}
@@ -118,23 +116,8 @@ export function MessageConversationList({
       </div>
 
       <div className="relative min-h-0 flex-1 overflow-y-auto px-2 py-2">
-        {/* Tab 切换加载指示器 */}
-        {isSwitchingTab && (
-          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-center py-2">
-            <div className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary">
-              <span className="inline-block size-3 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
-              {tCommon("loading")}
-            </div>
-          </div>
-        )}
-
-        {/* 内容区域 - tab 切换时保留旧数据 */}
         <div>
-          {isLoading && !isSwitchingTab ? (
-            <div className="px-4 py-10 text-sm text-muted-foreground">
-              {tCommon("loading")}
-            </div>
-          ) : isSwitchingTab ? (
+          {isInitialLoading ? (
             <div className="px-4 py-10 text-sm text-muted-foreground">
               {tCommon("loading")}
             </div>

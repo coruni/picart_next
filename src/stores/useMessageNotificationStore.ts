@@ -59,9 +59,11 @@ let socketToken: string | null = null;
 
 interface MessageNotificationState {
   centerMessages: MessageDropdownItem[];
+  centerMessagesByTab: MessageTabCache;
   dropdownMessages: MessageDropdownItem[];
   dropdownMessagesByTab: MessageTabCache;
   selectedTab: MessageTab;
+  centerLoadedTab: MessageTab;
   dropdownLoadedTab: MessageTab;
   unreadCount: number;
   unreadSummary: UnreadCount | null;
@@ -71,6 +73,7 @@ interface MessageNotificationState {
   isUnreadLoading: boolean;
   hasLoadedMessages: boolean;
   hasLoadedDropdownMessages: boolean;
+  loadedCenterTabs: LoadedMessageTabMap;
   loadedDropdownTabs: LoadedMessageTabMap;
   socketConnected: boolean;
   fetchMessages: (tab?: MessageTab) => Promise<void>;
@@ -331,9 +334,11 @@ async function fetchMessageList(
 export const useMessageNotificationStore = create<MessageNotificationState>()(
   (set, get) => ({
     centerMessages: [],
+    centerMessagesByTab: createEmptyDropdownCache(),
     dropdownMessages: [],
     dropdownMessagesByTab: createEmptyDropdownCache(),
     selectedTab: "all",
+    centerLoadedTab: "all",
     dropdownLoadedTab: "all",
     unreadCount: 0,
     unreadSummary: null,
@@ -343,6 +348,7 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
     isUnreadLoading: false,
     hasLoadedMessages: false,
     hasLoadedDropdownMessages: false,
+    loadedCenterTabs: createEmptyLoadedDropdownTabs(),
     loadedDropdownTabs: createEmptyLoadedDropdownTabs(),
     socketConnected: false,
 
@@ -356,14 +362,24 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
       set({
         isLoading: true,
         isSwitchingTab: isTabSwitch, // 标记是否在切换 tab
-        ...(isTabSwitch ? { centerMessages: [] } : {}),
+        centerLoadedTab: tab,
+        centerMessages: get().centerMessagesByTab[tab] || [],
       });
 
       try {
         const messages = await fetchMessageList(tab);
         set({
+          centerMessagesByTab: updateDropdownCache(
+            get().centerMessagesByTab,
+            tab,
+            messages,
+          ),
           centerMessages: messages,
           hasLoadedMessages: true,
+          loadedCenterTabs: {
+            ...get().loadedCenterTabs,
+            [tab]: true,
+          },
         });
       } catch (error) {
         console.error("Failed to fetch messages:", error);
@@ -453,6 +469,14 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
 
         set((state) => ({
           centerMessages: markMessagesAsRead(state.centerMessages, tab),
+          centerMessagesByTab: Object.fromEntries(
+            (Object.entries(state.centerMessagesByTab) as Array<
+              [MessageTab, MessageDropdownItem[]]
+            >).map(([cacheTab, messages]) => [
+              cacheTab,
+              markMessagesAsRead(messages, tab),
+            ]),
+          ) as MessageTabCache,
           dropdownMessages: markMessagesAsRead(state.dropdownMessages, tab),
           dropdownMessagesByTab: Object.fromEntries(
             (Object.entries(state.dropdownMessagesByTab) as Array<
@@ -540,10 +564,18 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
           let changed = false;
 
           if (state.selectedTab === "private" && state.hasLoadedMessages) {
-            nextState.centerMessages = [
+            const nextPrivateMessages = [
               normalized,
-              ...state.centerMessages.filter((item) => item.id !== normalized.id),
+              ...state.centerMessagesByTab.private.filter(
+                (item) => item.id !== normalized.id,
+              ),
             ].slice(0, DEFAULT_LIMIT);
+            nextState.centerMessagesByTab = updateDropdownCache(
+              state.centerMessagesByTab,
+              "private",
+              nextPrivateMessages,
+            );
+            nextState.centerMessages = nextPrivateMessages;
             changed = true;
           }
 
@@ -580,9 +612,10 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
         const {
           hasLoadedMessages,
           hasLoadedDropdownMessages,
-          centerMessages,
+          centerMessagesByTab,
           dropdownMessagesByTab,
           selectedTab,
+          centerLoadedTab,
           dropdownLoadedTab,
         } = get();
         const currentUserId = useUserStore.getState().user?.id
@@ -596,23 +629,42 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
           (selectedTab === "all" || type === selectedTab)
         ) {
           const normalized = normalizeMessageItem(message);
+          const nextCenterMessages = [
+            normalized,
+            ...centerMessagesByTab[selectedTab].filter(
+              (item) => item.id !== normalized.id,
+            ),
+          ].slice(0, DEFAULT_LIMIT);
           set({
-            centerMessages: [
-              normalized,
-              ...centerMessages.filter((item) => item.id !== normalized.id),
-            ].slice(0, DEFAULT_LIMIT),
+            centerMessagesByTab: updateDropdownCache(
+              centerMessagesByTab,
+              selectedTab,
+              nextCenterMessages,
+            ),
+            ...(centerLoadedTab === selectedTab
+              ? { centerMessages: nextCenterMessages }
+              : {}),
           });
         }
 
         if (hasLoadedMessages && selectedTab === "private" && type === "private") {
           const nextMessages = applyPrivateMessagePreview(
-            centerMessages,
+            centerMessagesByTab.private,
             message,
             currentUserId,
           );
 
           if (nextMessages) {
-            set({ centerMessages: nextMessages });
+            set({
+              centerMessagesByTab: updateDropdownCache(
+                centerMessagesByTab,
+                "private",
+                nextMessages,
+              ),
+              ...(centerLoadedTab === "private"
+                ? { centerMessages: nextMessages }
+                : {}),
+            });
           } else {
             void get().fetchMessages("private");
           }
@@ -700,9 +752,11 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
       get().teardownSocket();
       set({
         centerMessages: [],
+        centerMessagesByTab: createEmptyDropdownCache(),
         dropdownMessages: [],
         dropdownMessagesByTab: createEmptyDropdownCache(),
         selectedTab: "all",
+        centerLoadedTab: "all",
         dropdownLoadedTab: "all",
         unreadCount: 0,
         unreadSummary: null,
@@ -711,6 +765,7 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
         isUnreadLoading: false,
         hasLoadedMessages: false,
         hasLoadedDropdownMessages: false,
+        loadedCenterTabs: createEmptyLoadedDropdownTabs(),
         loadedDropdownTabs: createEmptyLoadedDropdownTabs(),
       });
     },

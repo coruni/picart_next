@@ -251,10 +251,12 @@ export function MessageCenterDetailRouteClient() {
   );
   const user = useUserStore((state) => state.user);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
-  const messages = useMessageNotificationStore((state) => state.centerMessages);
   const unreadCount = useMessageNotificationStore((state) => state.unreadCount);
   const socketConnected = useMessageNotificationStore(
     (state) => state.socketConnected,
+  );
+  const messages = useMessageNotificationStore(
+    (state) => state.centerMessagesByTab[selectedTab],
   );
   const markAllAsRead = useMessageNotificationStore((state) => state.markAllAsRead);
   const fetchUnreadCount = useMessageNotificationStore(
@@ -482,6 +484,23 @@ export function MessageCenterDetailRouteClient() {
                 ? { ...message, isRead: true, unreadCount: 0 }
                 : message,
             ),
+            centerMessagesByTab: {
+              all: state.centerMessagesByTab.all.map((message) =>
+                message.type === "private" &&
+                Number(message.counterpartId || 0) ===
+                  Number(selectedPrivateCounterpartId)
+                  ? { ...message, isRead: true, unreadCount: 0 }
+                  : message,
+              ),
+              notification: state.centerMessagesByTab.notification,
+              private: state.centerMessagesByTab.private.map((message) =>
+                Number(message.counterpartId || 0) ===
+                Number(selectedPrivateCounterpartId)
+                  ? { ...message, isRead: true, unreadCount: 0 }
+                  : message,
+              ),
+              system: state.centerMessagesByTab.system,
+            },
           }));
 
           void fetchUnreadCount();
@@ -786,7 +805,7 @@ export function MessageCenterDetailRouteClient() {
 
         const response = await uploadControllerUploadFile({
           body: {
-            file: drafts.map((draft) => draft.file) as unknown as File[],
+            file: drafts.map((draft) => draft.file) as unknown as File,
             metadata,
           },
         });
@@ -1014,6 +1033,12 @@ export function MessageCenterDetailRouteClient() {
           });
 
         return {
+          centerMessagesByTab: {
+            all: filterPrivateMessages(state.centerMessagesByTab.all),
+            notification: state.centerMessagesByTab.notification,
+            private: filterPrivateMessages(state.centerMessagesByTab.private),
+            system: state.centerMessagesByTab.system,
+          },
           centerMessages: filterPrivateMessages(state.centerMessages),
           dropdownMessages: filterPrivateMessages(state.dropdownMessages),
           dropdownMessagesByTab: {
