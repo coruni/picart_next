@@ -79,7 +79,7 @@ export const renderToolbar = ({
 }: RenderToolbarOptions) => {
   const toolbar = document.createElement("div");
   toolbar.className =
-    "ql-toolbar ql-snow top-header sticky z-20 flex items-center bg-border! shadow-sm";
+    "ql-toolbar ql-snow top-header sticky z-20 flex items-center bg-background! shadow-sm";
 
   let emojiPanelInitialized = false;
   let activeEmojiTabKey = "all";

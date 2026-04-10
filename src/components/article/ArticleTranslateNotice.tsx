@@ -77,21 +77,21 @@ export function ArticleTranslateNotice({ enabled = true }: { enabled?: boolean }
       }
 
       const translate = getTranslateApi();
+      const isTranslated = translate && targetLanguage && autoTranslateContent
+        ? isTranslatedToTarget(translate, targetLanguage)
+        : false;
       const articleText = getArticleDetailText();
       const matchesLocale = articleText
         ? isContentMatchingLocale(articleText, locale)
         : false;
-      setShouldHideNotice(matchesLocale);
+      setShouldHideNotice(matchesLocale && !isTranslated);
 
-      if (matchesLocale) {
+      if (matchesLocale && !isTranslated) {
         setShowOriginal(true);
         debounceTimerRef.current = null;
         return;
       }
 
-      const isTranslated = translate && targetLanguage && autoTranslateContent
-        ? isTranslatedToTarget(translate, targetLanguage)
-        : false;
       setShowOriginal(!isTranslated);
       debounceTimerRef.current = null;
     }, DEBOUNCE_DELAY);
