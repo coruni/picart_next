@@ -37,7 +37,7 @@ export default async function SearchPage(props: SearchPageProps) {
       <div className="p-4 font-semibold">
         <span>{t("relatedArticles")}</span>
       </div>
-      <div className="px-6 pb-6">
+      <div className="px-4 md:px-6 pb-6">
         <SearchArticleListClient
           key={`${keyword}-${category || ""}`}
           initArticles={articles}

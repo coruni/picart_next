@@ -166,7 +166,11 @@ export const ArticleCard = ({
                 role="button"
                 tabIndex={0}
                 data-guarded-link-ignore="true"
-                className="rounded-xl overflow-hidden relative cursor-zoom-in aspect-square md:w-31/100 md:pt-[31%]"
+                className={cn(
+                  "overflow-hidden relative cursor-zoom-in aspect-square md:w-31/100 md:pt-[31%]",
+                  idx === 0 && "rounded-l-xl",
+                  idx === 1 && "rounded-r-xl",
+                )}
                 onClick={(e) => {
                   stopLinkNavigationEvent(e);
                   openImageViewer(idx);
@@ -197,7 +201,7 @@ export const ArticleCard = ({
     const remainingCount = imageCount - 3;
 
     return (
-      <div className="mt-3 grid grid-cols-3 md:flex gap-2">
+      <div className="mt-3 grid grid-cols-3 md:flex gap-0.5 md:gap-2">
         {displayImages.map((img, idx) => {
           const imgUrl =
             typeof img === "string" ? img : getImageUrl(img, "small");
@@ -207,7 +211,11 @@ export const ArticleCard = ({
               role="button"
               tabIndex={0}
               data-guarded-link-ignore="true"
-              className="rounded-xl overflow-hidden relative cursor-zoom-in aspect-square md:w-1/5 md:pt-[20%]"
+              className={cn(
+                "overflow-hidden relative cursor-zoom-in aspect-square md:w-1/5 md:pt-[20%]",
+                idx === 0 && "rounded-l-xl ",
+                idx === 2 && "rounded-r-xl",
+              )}
               onClick={(e) => {
                 stopLinkNavigationEvent(e);
                 openImageViewer(idx);
@@ -244,10 +252,13 @@ export const ArticleCard = ({
   const viewerUrls = getImageUrls(previewImages, "original");
 
   return (
-    <article className="p-6 border-border border-b">
+    <article className="p-4 md:p-6 border-border border-b">
       <div className="flex items-center">
         <div className="flex items-center flex-1 cursor-pointer">
-          <Link href={`/account/${article?.author?.id}`} className="shrink-0 flex items-center">
+          <Link
+            href={`/account/${article?.author?.id}`}
+            className="shrink-0 flex items-center"
+          >
             <Avatar
               className={cn("size-10 md:size-12")}
               url={article.author?.avatar}

@@ -355,7 +355,7 @@ export function CommentReplyList({
 
   return (
     <>
-      <div className="mt-3 ml-19 pr-6">
+      <div className="mt-3 md:ml-19 md:pr-6 ml-17 pr-4">
         <div className="pl-3 border-l-3 border-muted text-sm space-y-6">
           {visibleReplies.map((reply) => (
             <CommentReplyItem
@@ -395,7 +395,7 @@ export function CommentReplyList({
             </DialogTitle>
           </DialogHeader>
           <div ref={scrollRootRef} className="max-h-[80vh] overflow-y-auto">
-            <article className="border-b border-border px-6 py-5">
+            <article className="md:px-6 md:py-5 px-4 py-3">
               <div className="flex items-center space-x-3">
                 <Avatar
                   className="size-10"
@@ -502,26 +502,26 @@ export function CommentReplyList({
               ) : null}
             </article>
 
-            <div className="px-6 py-5">
-              <div className="mb-4 border-b border-border pb-4 min-w-min">
-                <DropdownMenu
-                  className="w-fit text-sm"
-                  position="left"
-                  title=""
-                  trigger={({ isOpen }) => (
-                    <button className="inline-flex w-fit shrink-0 items-center gap-1.5 text-sm font-semibold text-muted-foreground transition hover:text-primary">
-                      <span className="w-max">{currentSortLabel}</span>
-                      <ChevronDown
-                        className={`size-4 text-[#aeb8c7] transition-transform duration-180 ease-out ${
-                          isOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-                  )}
-                  items={sortItems}
-                  menuClassName="top-9 min-w-0 rounded-xl border border-border bg-card drop-shadow-lg"
-                />
-              </div>
+            <div className="mb-2 border-b border-border py-4 min-w-min px-4 md:px-6">
+              <DropdownMenu
+                className="w-fit text-sm"
+                position="left"
+                title=""
+                trigger={({ isOpen }) => (
+                  <button className="inline-flex w-fit shrink-0 items-center gap-1.5 text-sm font-semibold text-muted-foreground transition hover:text-primary">
+                    <span className="w-max">{currentSortLabel}</span>
+                    <ChevronDown
+                      className={`size-4 text-[#aeb8c7] transition-transform duration-180 ease-out ${
+                        isOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+                )}
+                items={sortItems}
+                menuClassName="top-9 min-w-0 rounded-xl border border-border bg-card drop-shadow-lg"
+              />
+            </div>
+            <div className="md:px-6 md:py-5 px-4 py-3">
               {isSortChanging || (loading && modalReplies.length === 0) ? (
                 <CommentListSkeleton count={4} className="space-y-6" />
               ) : (

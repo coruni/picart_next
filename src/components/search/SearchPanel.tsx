@@ -46,7 +46,7 @@ export function SearchPanel() {
 
   return (
     <div>
-      <div className="mt-2 flex h-12 w-full items-stretch gap-2 border-b border-border px-6 leading-12">
+      <div className="mt-2 flex h-12 w-full items-stretch gap-2 border-b border-border px-4 md:px-6 leading-12">
         <SearchFeedTabs className="w-full " />
         {isArticleSearchPage ? (
           <div

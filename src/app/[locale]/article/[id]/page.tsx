@@ -205,7 +205,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               />
             </div>
           )}
-          <div className="px-6 pt-4 mt-1">
+          <div className="px-4 md:px-6 pt-4 mt-1">
             <h1
               data-auto-translate-content
               className="text-[22px] wrap-break-word font-bold"
@@ -223,7 +223,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           <div className="px-6">
             <ArticleTranslateNotice enabled={shouldTranslateArticleDetail} />
           </div>
-          <div className="mt-4 px-6">
+          <div className="mt-4 px-4 md:px-6">
             {article?.type === "image" && (
               <div className="relative w-full min-w-0 overflow-hidden">
                 <ImageGallery
@@ -254,7 +254,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               ))}
           </div>
         </section>
-        <div className="px-6 mt-4">
+        <div className="px-4 md:px-6 mt-4">
           <div className="text-secondary text-xs leading-4 ">
             <span>
               {article?.category?.parent?.name} - {article?.category?.name}

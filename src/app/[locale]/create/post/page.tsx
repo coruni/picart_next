@@ -633,7 +633,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           </div>
         </div>
         <div className="flex-1">
-          <div className="px-6 pb-6">
+          <div className="px-4 md:px-6 pb-6">
             {articleLoading ? (
               <div className="flex items-center justify-center py-20">
                 <Loader2 className="size-8 animate-spin text-primary" />

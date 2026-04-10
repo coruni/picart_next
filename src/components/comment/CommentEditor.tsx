@@ -624,7 +624,7 @@ export function CommentEditor({
   };
 
   return (
-    <div className={cn("px-6 pt-5", className)}>
+    <div className={cn("px-4 mdpx-6 pt-5", className)}>
       <div className="rounded-[20px] bg-card">
         <div
           className={cn(

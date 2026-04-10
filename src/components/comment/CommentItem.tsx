@@ -188,7 +188,7 @@ export const CommentItem = memo(function CommentItem({
   return (
     <article>
       {/* User Info element */}
-      <div className="px-6 py-1 flex items-center space-x-3">
+      <div className="px-4 md:px-6 py-1 flex items-center space-x-3">
         <Link href={`/account/${data.author.id}`}>
           <Avatar
             className="size-10"
@@ -246,7 +246,7 @@ export const CommentItem = memo(function CommentItem({
 
       {/* Comment Content element */}
       <div className="py-2">
-        <div className="pl-19 pr-6">
+        <div className="pl-17 pr-4 md:pl-19 md:pr-6">
           <div
             key={renderKey}
             className="whitespace-pre-wrap text-sm"
@@ -259,13 +259,13 @@ export const CommentItem = memo(function CommentItem({
         <CommentImageGallery
           images={commentState.images || []}
           imageAltPrefix={`Comment image ${commentState.id}`}
-          className="mt-3 pl-19 pr-6"
+          className="mt-3 pl-17 pr-4 md:pl-19 md:pr-6"
           prevButtonClassName="left-21"
           onOpenImageViewer={openImageViewer}
         />
       </div>
       {/* Comment Actions element */}
-      <div className="pl-19 pr-6">
+      <div className="pl-17 pr-4 md:pl-19 md:pr-6">
         <div className="flex items-center justify-between text-secondary text-sm mt-2">
           <span className="text-xs">
             {formatRelativeTime(commentState.createdAt, tTime)}

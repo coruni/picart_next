@@ -22,14 +22,14 @@ export default async function SearchLayout(props: SearchLayoutProps) {
         <div className="relative space-y-4">
           <div className="top-header pt-4 sticky z-10  rounded-xl bg-card">
             <Suspense fallback={<div className="h-14 w-full px-6" />}>
-              <SearchHeader categories={categories} className="w-full px-6" />
+              <SearchHeader categories={categories} className="w-full px-4 md:px-6" />
             </Suspense>
             <Suspense fallback={<div className="h-12 w-full" />}>
               <SearchPanel />
             </Suspense>
           </div>
 
-          <div className="rounded-xl bg-card p-6">
+          <div className="rounded-xl bg-card p-4 md:p-6">
             <Banner className="aspect-23/7" />
           </div>
 

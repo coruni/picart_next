@@ -54,9 +54,9 @@ export default async function AccountLayout({
       <div className="relative mt-56 w-full bg-background md:mt-75">
         <AccountInfo user={user} />
 
-        <div className="page-container px-3 pt-3! md:px-0 md:pt-4!">
+        <div className="page-container pt-3! md:px-0 md:pt-4!">
           <div className="left-container">
-            <div className="top-header-tabs sticky z-5 flex h-12 items-center overflow-x-auto rounded-t-xl border-b border-border bg-card px-4 md:h-14 md:px-8">
+            <div className="top-header-tabs sticky z-5 flex h-12 items-center overflow-x-auto rounded-t-xl border-b border-border bg-card px-4  md:px-6">
               <AccountTabs user={user} viewerId={viewerId} />
             </div>
             {children}
