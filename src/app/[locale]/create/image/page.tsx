@@ -173,6 +173,7 @@ export default function CreateImagePage() {
   const parentSearchAbortControllerRef = useRef<AbortController | null>(null);
   const childSearchAbortControllerRef = useRef<AbortController | null>(null);
   const imageItemsRef = useRef<UploadImageItem[]>([]);
+  const articleFetchedRef = useRef(false);
 
   const {
     values,
@@ -261,10 +262,11 @@ export default function CreateImagePage() {
   );
 
   useEffect(() => {
-    if (!isEditMode || !articleId) return;
+    if (!isEditMode || !articleId || articleFetchedRef.current) return;
 
     const fetchArticle = async () => {
       try {
+        articleFetchedRef.current = true;
         const response = await articleControllerFindOne({
           path: { id: articleId },
         });
