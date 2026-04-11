@@ -25,10 +25,15 @@ export const useModalStore = create<ModalState>((set, get) => ({
     })),
 
   closeModal: (id) =>
-    set((state) => ({
-      modals: { ...state.modals, [id]: false },
-      modalData: { ...state.modalData, [id]: undefined },
-    })),
+    set((state) => {
+      const nextModalData = { ...state.modalData };
+      delete nextModalData[id];
+
+      return {
+        modals: { ...state.modals, [id]: false },
+        modalData: nextModalData,
+      };
+    }),
 
   toggleModal: (id) =>
     set((state) => ({

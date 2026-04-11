@@ -1424,7 +1424,7 @@ export type UpdateDecorationDto = {
     /**
      * 装饰品类型
      */
-    type?: 'AVATAR_FRAME' | 'COMMENT_BUBBLE';
+    type?: 'AVATAR_FRAME' | 'COMMENT_BUBBLE' | 'ACHIEVEMENT_BADGE';
     /**
      * 装饰品描述
      */
@@ -12746,7 +12746,7 @@ export type DecorationControllerFindAllData = {
         /**
          * 装饰品类型
          */
-        type?: string;
+        type?: 'AVATAR_FRAME' | 'COMMENT_BUBBLE' | 'ACHIEVEMENT_BADGE';
         /**
          * 状态（管理员可查询，普通用户默认ACTIVE）
          */

@@ -37933,7 +37933,12 @@
             "description": "装饰品类型",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "AVATAR_FRAME",
+                "COMMENT_BUBBLE",
+                "ACHIEVEMENT_BADGE"
+              ]
             }
           },
           {
@@ -50584,7 +50589,8 @@
             "description": "装饰品类型",
             "enum": [
               "AVATAR_FRAME",
-              "COMMENT_BUBBLE"
+              "COMMENT_BUBBLE",
+              "ACHIEVEMENT_BADGE"
             ]
           },
           "description": {
