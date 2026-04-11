@@ -218,7 +218,7 @@ export function useForm<T extends Record<string, any>>({
   const getFieldProps = useCallback(
     (name: keyof T) => ({
       name: String(name),
-      value: values[name] || "",
+      value: String(values[name] ?? ""),
       onChange: handleChange(name),
       onBlur: handleBlur(name),
       error: touched[name as string] ? !!errors[name as string] : false,
