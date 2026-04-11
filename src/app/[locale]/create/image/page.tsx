@@ -42,16 +42,17 @@ type CreateImageFormData = {
   type: "image";
 };
 
-type ImageUploadDraft = {
+type UploadImageItem = {
   id: string;
-  previewUrl: string;
   fileName: string;
+  previewUrl?: string;
+  remoteUrl?: string;
+  status: "uploading" | "ready";
+  remoteLoaded: boolean;
 };
 
 const normalizeImageList = (value: unknown): string[] => {
-  // 处理 ImageInfo 对象数组（新格式）
   if (Array.isArray(value) && value.length > 0) {
-    // 检查是否是 ImageInfo 对象数组
     const isImageInfoArray = value.every(
       (item) =>
         item &&
@@ -62,7 +63,6 @@ const normalizeImageList = (value: unknown): string[] => {
       return getImageUrls(value as ImageInfo[], "original");
     }
 
-    // 处理字符串数组（旧格式）
     return value
       .filter((item): item is string => typeof item === "string" && !!item)
       .map((item) => item.trim().replace(/^[\s"'[\]]+|[\s"'[\]]+$/g, ""));
@@ -75,7 +75,6 @@ const normalizeImageList = (value: unknown): string[] => {
   try {
     const parsed = JSON.parse(value);
     if (Array.isArray(parsed)) {
-      // 检查是否是 ImageInfo 对象数组
       const isImageInfoArray = parsed.every(
         (item) =>
           item &&
@@ -86,7 +85,6 @@ const normalizeImageList = (value: unknown): string[] => {
         return getImageUrls(parsed as ImageInfo[], "original");
       }
 
-      // 处理字符串数组
       return parsed
         .filter((item): item is string => typeof item === "string" && !!item)
         .map((item) => item.trim().replace(/^[\s"'[\]]+|[\s"'[\]]+$/g, ""));
@@ -113,10 +111,7 @@ async function uploadImagesBatch(
 ): Promise<string[]> {
   if (files.length === 0) return [];
 
-  // 先计算压缩前的 hash
   const metadata = await buildUploadMetadata(files);
-
-  // 压缩图片
   const compressionResults = await compressImages(files);
   const compressedFiles = compressionResults.map((r) => r.file);
 
@@ -129,6 +124,12 @@ async function uploadImagesBatch(
     .filter(Boolean);
 }
 
+function createImageItemId(index: number) {
+  return typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${index}-${Math.random()}`;
+}
+
 export default function CreateImagePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -139,55 +140,39 @@ export default function CreateImagePage() {
   const tImage = useTranslations("createImage");
   const tTag = useTranslations("tagSelect");
   const { compressImages } = useImageCompression();
-  // Article loading state for edit mode
-  const [articleLoading, setArticleLoading] = useState(isEditMode);
 
+  const [articleLoading, setArticleLoading] = useState(isEditMode);
   const [imagesUploading, setImagesUploading] = useState(false);
-  const [imageUploadDrafts, setImageUploadDrafts] = useState<ImageUploadDraft[]>(
-    [],
-  );
+  const [imageItems, setImageItems] = useState<UploadImageItem[]>([]);
   const [isImageDropping, setIsImageDropping] = useState(false);
   const [draggingImageIndex, setDraggingImageIndex] = useState<number | null>(
     null,
   );
 
-  // Category states
-  const [parentCategories, setParentCategories] = useState<CategoryOption[]>(
-    [],
-  );
+  const [parentCategories, setParentCategories] = useState<CategoryOption[]>([]);
   const [childCategories, setChildCategories] = useState<CategoryOption[]>([]);
   const [selectedParentId, setSelectedParentId] = useState<string>("");
   const [initialTagOptions, setInitialTagOptions] = useState<
     { value: string; label: string }[]
   >([]);
-  // 独立控制子分类框的显示，不依赖 childCategories.length，避免搜索无结果时隐藏
   const [showChildSelect, setShowChildSelect] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [_parentSearching, setParentSearching] = useState(false);
   const [_childSearching, setChildSearching] = useState(false);
 
-  // Store initial categories and children map in ref to avoid re-fetching
   const initialParentCategoriesRef = useRef<CategoryOption[]>([]);
   const childrenMapRef = useRef<Map<number, CategoryOption[]>>(new Map());
   const parentSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
+  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const childSearchSeqRef = useRef(0);
   const parentSearchSeqRef = useRef(0);
   const lastParentQueryRef = useRef<string | null>(null);
   const lastChildQueryRef = useRef<string | null>(null);
   const parentSearchAbortControllerRef = useRef<AbortController | null>(null);
   const childSearchAbortControllerRef = useRef<AbortController | null>(null);
-  const imageUploadDraftsRef = useRef<ImageUploadDraft[]>([]);
-
-  // Debounce timers for search，用 ref 避免闭包问题
-
-  // 用 ref 跟踪请求序号，丢弃过期响应（防止竞态）
-
-  // 记录上一次实际发起请求的 query，相同值直接跳过
+  const imageItemsRef = useRef<UploadImageItem[]>([]);
 
   const {
     values,
@@ -233,16 +218,16 @@ export default function CreateImagePage() {
             : tImage("form.imagesRequired"),
       },
     },
-    async onSubmit(values) {
+    async onSubmit(formValues) {
       const body = {
-        ...values,
-        categoryId: Number(values.categoryId),
+        ...formValues,
+        categoryId: Number(formValues.categoryId),
         sort: 0,
         type: "image" as const,
-        tagIds: toNumericTagIds(values.tagIds),
-        tagNames: values.tagNames,
-        images: values.images.map(sanitizeImageUrl),
-        content: values.content,
+        tagIds: toNumericTagIds(formValues.tagIds),
+        tagNames: formValues.tagNames,
+        images: formValues.images.map(sanitizeImageUrl),
+        content: formValues.content,
       } as unknown as Parameters<typeof articleControllerCreate>[0]["body"];
 
       if (isEditMode && articleId) {
@@ -253,17 +238,28 @@ export default function CreateImagePage() {
       } else {
         await articleControllerCreate({ body });
       }
-      // 返回上一页
+
       try {
         router.back();
       } catch {
-        // 无法返回时重定向首页
         router.push("/");
       }
     },
   });
 
-  // Fetch article data in edit mode
+  const syncFormImagesFromItems = useCallback(
+    (items: UploadImageItem[]) => {
+      const readyImages = items
+        .filter((item) => item.status === "ready" && item.remoteUrl)
+        .map((item) => item.remoteUrl as string);
+
+      setFieldValues({
+        images: readyImages,
+      });
+    },
+    [setFieldValues],
+  );
+
   useEffect(() => {
     if (!isEditMode || !articleId) return;
 
@@ -276,7 +272,6 @@ export default function CreateImagePage() {
         if (article) {
           const imageList = normalizeImageList(article.images);
 
-          // Set form values
           setFieldValues({
             title: article.title || "",
             content: article.content || "",
@@ -293,6 +288,17 @@ export default function CreateImagePage() {
             sort: article.sort || 0,
             type: "image",
           });
+
+          setImageItems(
+            imageList.map((url, index) => ({
+              id: `server-${index}-${url}`,
+              fileName: `image-${index + 1}`,
+              remoteUrl: url,
+              status: "ready" as const,
+              remoteLoaded: true,
+            })),
+          );
+
           setInitialTagOptions(
             article.tags?.map((tag) => ({
               value: String(tag.id),
@@ -300,13 +306,11 @@ export default function CreateImagePage() {
             })) || [],
           );
 
-          // Handle article category - add to lists if not present
           const category = article.category;
           const parentIdNum = category.parentId;
           const categoryIdStr = String(category.id);
 
           if (parentIdNum && parentIdNum !== 0) {
-            // Category is a child - ensure parent and child are in lists
             const parentOption: CategoryOption = {
               value: String(parentIdNum),
               label: category.parent?.name || "",
@@ -315,16 +319,15 @@ export default function CreateImagePage() {
                 : {}),
             };
 
-            // Add parent to parentCategories if not present
             setParentCategories((prev) => {
-              if (prev.some((p) => p.value === String(parentIdNum)))
+              if (prev.some((p) => p.value === String(parentIdNum))) {
                 return prev;
+              }
               const updated = [...prev, parentOption];
               initialParentCategoriesRef.current = updated;
               return updated;
             });
 
-            // Add child to childrenMap
             const childOption: CategoryOption = {
               value: categoryIdStr,
               label: category.name,
@@ -340,12 +343,10 @@ export default function CreateImagePage() {
               ]);
             }
 
-            // Set selected parent and children
             setSelectedParentId(String(parentIdNum));
             setChildCategories(childrenMapRef.current.get(parentIdNum) || []);
             setShowChildSelect(true);
           } else {
-            // Category is a parent - ensure it's in parent list
             const parentOption: CategoryOption = {
               value: categoryIdStr,
               label: category.name,
@@ -366,10 +367,10 @@ export default function CreateImagePage() {
         setArticleLoading(false);
       }
     };
+
     fetchArticle();
   }, [articleId, isEditMode, setFieldValues]);
 
-  // Fetch categories on mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -404,20 +405,25 @@ export default function CreateImagePage() {
         setCategoriesLoading(false);
       }
     };
+
     fetchCategories();
   }, []);
 
   useEffect(() => {
-    imageUploadDraftsRef.current = imageUploadDrafts;
-  }, [imageUploadDrafts]);
+    imageItemsRef.current = imageItems;
+  }, [imageItems]);
 
   useEffect(() => {
     return () => {
       parentSearchAbortControllerRef.current?.abort();
       childSearchAbortControllerRef.current?.abort();
-      imageUploadDraftsRef.current.forEach((draft) => {
-        URL.revokeObjectURL(draft.previewUrl);
+
+      imageItemsRef.current.forEach((item) => {
+        if (item.previewUrl) {
+          URL.revokeObjectURL(item.previewUrl);
+        }
       });
+
       if (parentSearchTimerRef.current) {
         clearTimeout(parentSearchTimerRef.current);
       }
@@ -427,20 +433,16 @@ export default function CreateImagePage() {
     };
   }, []);
 
-  // Handle parent category change
   const handleParentCategoryChange = (value: string) => {
     setSelectedParentId(value);
     const parentId = parseInt(value, 10);
     const children = childrenMapRef.current.get(parentId) || [];
     setChildCategories(children);
     setFieldValues({ categoryId: "" });
-    // 有子分类数据时才显示子分类框
     setShowChildSelect(children.length > 0);
-    // 重置子分类搜索去重记录
     lastChildQueryRef.current = null;
   };
 
-  // Handle child category change
   const handleChildCategoryChange = (value: string) => {
     setFieldValues({ categoryId: value });
   };
@@ -453,9 +455,7 @@ export default function CreateImagePage() {
     setFieldValues({ tagNames: value });
   };
 
-  // Search parent categories — debounced 300ms，竞态安全
   const _handleSearchParentCategories = (query: string) => {
-    // query 未变化时跳过，防止重渲染引起的重复调用
     if (query === lastParentQueryRef.current) return;
     lastParentQueryRef.current = query;
 
@@ -474,17 +474,20 @@ export default function CreateImagePage() {
       const abortController = new AbortController();
       parentSearchAbortControllerRef.current = abortController;
       setParentSearching(true);
+
       try {
         const response = await categoryControllerFindAll({
           query: { name: query },
           signal: abortController.signal,
         });
-        // 丢弃过期响应
+
         if (
           seq !== parentSearchSeqRef.current ||
           parentSearchAbortControllerRef.current !== abortController
-        )
+        ) {
           return;
+        }
+
         if (response.data?.data?.data) {
           const parents = response.data.data.data
             .filter((cat) => !cat.parentId || cat.parentId === 0)
@@ -510,12 +513,9 @@ export default function CreateImagePage() {
     }, 300);
   };
 
-  // Search child categories — debounced 300ms，竞态安全
-  // 搜索无结果时保留子分类框（showChildSelect 不变），仅清空列表
   const _handleSearchChildCategories = (query: string) => {
     if (!selectedParentId) return;
 
-    // query 未变化时跳过，防止重渲染引起的重复调用
     if (query === lastChildQueryRef.current) return;
     lastChildQueryRef.current = query;
 
@@ -524,10 +524,10 @@ export default function CreateImagePage() {
     }
 
     if (!query.trim()) {
-      // 恢复缓存的子分类列表，同时保留当前已选中项
       const parentId = parseInt(selectedParentId, 10);
       const cached = childrenMapRef.current.get(parentId) || [];
       const currentSelectedId = values.categoryId;
+
       if (
         currentSelectedId &&
         !cached.find((c) => c.value === currentSelectedId)
@@ -540,6 +540,7 @@ export default function CreateImagePage() {
           return;
         }
       }
+
       setChildCategories(cached);
       return;
     }
@@ -550,19 +551,23 @@ export default function CreateImagePage() {
       const abortController = new AbortController();
       childSearchAbortControllerRef.current = abortController;
       setChildSearching(true);
+
       try {
         const parentId = parseInt(selectedParentId, 10);
         const currentSelectedId = values.categoryId;
+
         const response = await categoryControllerFindAll({
           query: { name: query, parentId },
           signal: abortController.signal,
         });
-        // 丢弃过期响应
+
         if (
           seq !== childSearchSeqRef.current ||
           childSearchAbortControllerRef.current !== abortController
-        )
+        ) {
           return;
+        }
+
         if (response.data?.data?.data) {
           const results = response.data.data.data
             .filter((cat) => cat.parentId === parentId)
@@ -572,7 +577,6 @@ export default function CreateImagePage() {
               ...(cat.avatar ? { avatar: cat.avatar } : {}),
             }));
 
-          // 确保当前选中项始终在列表中，避免选中态丢失
           if (
             currentSelectedId &&
             !results.find((c) => c.value === currentSelectedId)
@@ -585,7 +589,6 @@ export default function CreateImagePage() {
             }
           }
 
-          // 无论搜索结果是否为空，都更新列表；showChildSelect 不改变
           setChildCategories(results);
         }
       } catch (error) {
@@ -603,76 +606,140 @@ export default function CreateImagePage() {
     }, 300);
   };
 
-  const handleImagesUpload = useCallback(async (files: File[]) => {
-    if (files.length === 0 || imagesUploading) return;
+  const handleRemoteImageReady = useCallback((itemId: string) => {
+    setImageItems((current) =>
+      current.map((item) => {
+        if (item.id !== itemId) return item;
 
-    const drafts = files.map((file, index) => ({
-      id:
-        typeof crypto !== "undefined" && "randomUUID" in crypto
-          ? crypto.randomUUID()
-          : `${Date.now()}-${index}-${Math.random()}`,
-      previewUrl: URL.createObjectURL(file),
-      fileName: file.name,
-    }));
+        if (item.previewUrl) {
+          window.setTimeout(() => {
+            URL.revokeObjectURL(item.previewUrl as string);
+          }, 180);
+        }
 
-    setImageUploadDrafts((current) => [...current, ...drafts]);
-    setImagesUploading(true);
-    try {
-      const uploadedUrls = await uploadImagesBatch(files, compressImages);
-
-      if (uploadedUrls.length > 0) {
-        // 允许重复图片，不进行 Set 去重
-        const mergedImages = [...values.images, ...uploadedUrls];
-        setFieldValues({
-          images: mergedImages,
-        });
-      }
-    } catch (error) {
-      console.error("Failed to upload images:", error);
-    } finally {
-      drafts.forEach((draft) => {
-        URL.revokeObjectURL(draft.previewUrl);
-      });
-      setImageUploadDrafts((current) =>
-        current.filter((item) => !drafts.some((draft) => draft.id === item.id)),
-      );
-      setImagesUploading(false);
-    }
-  }, [compressImages, imagesUploading, setFieldValues, values.images]);
-
-  const handleImagesChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    await handleImagesUpload(files);
-    e.target.value = "";
-  }, [handleImagesUpload]);
-
-  const handleImageDrop = useCallback(async (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsImageDropping(false);
-    const files = Array.from(e.dataTransfer.files || []).filter((file) =>
-      file.type.startsWith("image/"),
+        return {
+          ...item,
+          remoteLoaded: true,
+          previewUrl: undefined,
+          status: "ready",
+        };
+      }),
     );
-    await handleImagesUpload(files);
-  }, [handleImagesUpload]);
+  }, []);
+
+  const handleImagesUpload = useCallback(
+    async (files: File[]) => {
+      if (files.length === 0 || imagesUploading) return;
+
+      const newItems: UploadImageItem[] = files.map((file, index) => ({
+        id: createImageItemId(index),
+        fileName: file.name,
+        previewUrl: URL.createObjectURL(file),
+        status: "uploading",
+        remoteLoaded: false,
+      }));
+
+      setImageItems((current) => [...current, ...newItems]);
+      setImagesUploading(true);
+
+      try {
+        const uploadedUrls = await uploadImagesBatch(files, compressImages);
+
+        setImageItems((current) => {
+          const next = [...current];
+
+          newItems.forEach((newItem, index) => {
+            const targetIndex = next.findIndex((item) => item.id === newItem.id);
+            if (targetIndex === -1) return;
+
+            const remoteUrl = uploadedUrls[index];
+            if (!remoteUrl) {
+              if (next[targetIndex].previewUrl) {
+                URL.revokeObjectURL(next[targetIndex].previewUrl as string);
+              }
+              next.splice(targetIndex, 1);
+              return;
+            }
+
+            next[targetIndex] = {
+              ...next[targetIndex],
+              remoteUrl,
+              status: "uploading",
+              remoteLoaded: false,
+            };
+          });
+
+          syncFormImagesFromItems(next);
+          return next;
+        });
+      } catch (error) {
+        console.error("Failed to upload images:", error);
+
+        setImageItems((current) => {
+          const next = current.filter((item) => {
+            const shouldRemove = newItems.some((newItem) => newItem.id === item.id);
+            if (shouldRemove && item.previewUrl) {
+              URL.revokeObjectURL(item.previewUrl);
+            }
+            return !shouldRemove;
+          });
+
+          syncFormImagesFromItems(next);
+          return next;
+        });
+      } finally {
+        setImagesUploading(false);
+      }
+    },
+    [compressImages, imagesUploading, syncFormImagesFromItems],
+  );
+
+  const handleImagesChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files || []);
+      await handleImagesUpload(files);
+      e.target.value = "";
+    },
+    [handleImagesUpload],
+  );
+
+  const handleImageDrop = useCallback(
+    async (e: React.DragEvent<HTMLDivElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsImageDropping(false);
+      const files = Array.from(e.dataTransfer.files || []).filter((file) =>
+        file.type.startsWith("image/"),
+      );
+      await handleImagesUpload(files);
+    },
+    [handleImagesUpload],
+  );
 
   const removeImage = (index: number) => {
-    const nextImages = values.images.filter(
-      (_, currentIndex) => currentIndex !== index,
-    );
-    setFieldValues({
-      images: nextImages,
+    setImageItems((current) => {
+      const target = current[index];
+      if (target?.previewUrl) {
+        URL.revokeObjectURL(target.previewUrl);
+      }
+
+      const next = current.filter((_, currentIndex) => currentIndex !== index);
+      syncFormImagesFromItems(next);
+      return next;
     });
+
     setDraggingImageIndex(null);
   };
 
   const moveImage = (fromIndex: number, toIndex: number) => {
     if (fromIndex === toIndex) return;
-    const nextImages = [...values.images];
-    const [movedImage] = nextImages.splice(fromIndex, 1);
-    nextImages.splice(toIndex, 0, movedImage);
-    setFieldValues({
-      images: nextImages,
+
+    setImageItems((current) => {
+      const next = [...current];
+      const [movedImage] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, movedImage);
+      syncFormImagesFromItems(next);
+      return next;
     });
   };
 
@@ -691,6 +758,7 @@ export default function CreateImagePage() {
             </span>
           </div>
         </div>
+
         <div className="flex-1">
           <div className="px-4 md:px-6 pb-6">
             {articleLoading ? (
@@ -717,6 +785,7 @@ export default function CreateImagePage() {
                     className="block h-14"
                   />
                 </FormField>
+
                 <FormField name="content" label={tPost("form.content")}>
                   <div className="relative">
                     <textarea
@@ -727,7 +796,7 @@ export default function CreateImagePage() {
                       maxLength={3000}
                       className={cn(
                         "textarea-resizer min-h-40 w-full rounded-lg border border-border bg-card px-3 py-2 pb-8 text-sm",
-                        "placeholder:text-gray-400 ",
+                        "placeholder:text-gray-400",
                         "focus:ring-offset-0 outline-none focus:outline-none",
                         "transition-colors duration-200",
                         "focus:ring-primary focus:border-primary hover:border-primary",
@@ -738,6 +807,7 @@ export default function CreateImagePage() {
                     </div>
                   </div>
                 </FormField>
+
                 <FormField
                   name="images"
                   label={tImage("form.images")}
@@ -746,6 +816,7 @@ export default function CreateImagePage() {
                   <p className="mb-2 text-xs text-secondary">
                     {tImage("form.imagesHint")}
                   </p>
+
                   <div className="space-y-3">
                     <input
                       type="file"
@@ -755,6 +826,7 @@ export default function CreateImagePage() {
                       className="hidden"
                       id="image-upload"
                     />
+
                     <div
                       onDragOver={(event) => {
                         event.preventDefault();
@@ -770,90 +842,105 @@ export default function CreateImagePage() {
                       )}
                     >
                       <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-                        {values.images.length > 0 &&
-                          values.images.map((image: string, index: number) => (
-                            <div
-                              key={`${image}-${index}`}
-                              draggable
-                              onDragStart={(event) => {
-                                event.dataTransfer.effectAllowed = "move";
-                                event.dataTransfer.setData(
-                                  "text/plain",
-                                  String(index),
-                                );
-                                setDraggingImageIndex(index);
-                              }}
-                              onDragEnd={() => setDraggingImageIndex(null)}
-                              onDragOver={(event) => {
-                                event.preventDefault();
-                                event.dataTransfer.dropEffect = "move";
-                              }}
-                              onDrop={(event) => {
-                                event.preventDefault();
-                                const fromIndex = Number(
-                                  event.dataTransfer.getData("text/plain"),
-                                );
-                                if (Number.isNaN(fromIndex)) return;
-                                moveImage(fromIndex, index);
-                                setDraggingImageIndex(null);
-                              }}
-                              className={cn(
-                                "relative aspect-square overflow-hidden rounded-xl border border-border transition-transform",
-                                draggingImageIndex === index &&
-                                  "scale-[0.98] opacity-70",
-                              )}
-                            >
+                        {imageItems.map((item, index) => (
+                          <div
+                            key={item.id}
+                            draggable
+                            onDragStart={(event) => {
+                              event.dataTransfer.effectAllowed = "move";
+                              event.dataTransfer.setData(
+                                "text/plain",
+                                String(index),
+                              );
+                              setDraggingImageIndex(index);
+                            }}
+                            onDragEnd={() => setDraggingImageIndex(null)}
+                            onDragOver={(event) => {
+                              event.preventDefault();
+                              event.dataTransfer.dropEffect = "move";
+                            }}
+                            onDrop={(event) => {
+                              event.preventDefault();
+                              const fromIndex = Number(
+                                event.dataTransfer.getData("text/plain"),
+                              );
+                              if (Number.isNaN(fromIndex)) return;
+                              moveImage(fromIndex, index);
+                              setDraggingImageIndex(null);
+                            }}
+                            className={cn(
+                              "relative aspect-square overflow-hidden rounded-xl border border-border transition-transform",
+                              draggingImageIndex === index &&
+                                "scale-[0.98] opacity-70",
+                            )}
+                          >
+                            {item.previewUrl && (
                               <Image
-                                src={image}
+                                src={item.previewUrl}
+                                alt={`${item.fileName} ${index + 1}`}
+                                fill
+                                sizes="(max-width: 768px) 50vw, 33vw"
+                                className={cn(
+                                  "object-cover transition-opacity duration-200",
+                                  item.remoteLoaded ? "opacity-0" : "opacity-100",
+                                )}
+                                unoptimized
+                              />
+                            )}
+
+                            {item.remoteUrl && (
+                              <Image
+                                src={item.remoteUrl}
                                 alt={`${values.title || tImage("title")} ${index + 1}`}
                                 fill
                                 sizes="(max-width: 768px) 50vw, 33vw"
-                                className="object-cover"
+                                className={cn(
+                                  "object-cover transition-opacity duration-200",
+                                  item.previewUrl
+                                    ? item.remoteLoaded
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                    : "opacity-100",
+                                )}
+                                onLoad={() => {
+                                  if (item.previewUrl && !item.remoteLoaded) {
+                                    handleRemoteImageReady(item.id);
+                                  }
+                                }}
                               />
-                              <div className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white">
-                                #{index + 1}
-                              </div>
-                              <button
-                                type="button"
-                                onClick={() => removeImage(index)}
-                                className="absolute right-2 top-2 flex size-6 cursor-pointer items-center justify-center rounded-full bg-black/65 text-white hover:bg-primary"
-                              >
-                                <Trash2 size={14} />
-                              </button>
-                            </div>
-                          ))}
-                        {imageUploadDrafts.map((draft, index) => (
-                          <div
-                            key={draft.id}
-                            className="relative aspect-square overflow-hidden rounded-xl border border-border bg-muted/40"
-                          >
-                            <Image
-                              src={draft.previewUrl}
-                              alt={`${draft.fileName} ${index + 1}`}
-                              fill
-                              sizes="(max-width: 768px) 50vw, 33vw"
-                              className="object-cover opacity-70"
-                              unoptimized
-                            />
+                            )}
+
                             <div className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white">
-                              #{values.images.length + index + 1}
+                              #{index + 1}
                             </div>
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/55 backdrop-blur-[2px]">
-                              <Loader2 className="size-5 animate-spin text-primary" />
-                              <span className="max-w-[80%] truncate text-xs text-secondary">
-                                {draft.fileName}
-                              </span>
-                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => removeImage(index)}
+                              className="absolute right-2 top-2 z-10 flex size-6 cursor-pointer items-center justify-center rounded-full bg-black/65 text-white hover:bg-primary"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+
+                            {item.status === "uploading" && (
+                              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/55 backdrop-blur-[2px]">
+                                <Loader2 className="size-5 animate-spin text-primary" />
+                                <span className="max-w-[80%] truncate text-xs text-secondary">
+                                  {item.fileName}
+                                </span>
+                              </div>
+                            )}
                           </div>
                         ))}
+
                         <label
                           htmlFor="image-upload"
                           className={cn(
                             "relative flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border text-xs",
-                            "border-border  bg-muted-foreground text-white",
+                            "border-border bg-muted-foreground text-white",
                             "transition-colors",
                             imagesUploading &&
-                              "pointer-events-none opacity-70 hover:bg-transparent",
+                              "pointer-events-none opacity-70 cursor-not-allowed",
                           )}
                         >
                           <Plus className="size-6" />
@@ -865,6 +952,7 @@ export default function CreateImagePage() {
                     </div>
                   </div>
                 </FormField>
+
                 <FormField
                   name="categoryId"
                   label={tPost("form.publishTo")}
@@ -880,7 +968,6 @@ export default function CreateImagePage() {
                       className="flex-1"
                       inputClassName="min-h-12"
                     />
-                    {/* 用独立的 showChildSelect 控制显隐，与搜索结果数量解耦 */}
                     {selectedParentId && showChildSelect && (
                       <>
                         <span className="relative w-3 h-full shrink-0 before:absolute mx-1 before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-[#b2bdce]" />
@@ -897,6 +984,7 @@ export default function CreateImagePage() {
                     )}
                   </div>
                 </FormField>
+
                 <FormField name="tagIds" label={tTag("label")} className="pt-4">
                   <TagSelect
                     value={values.tagIds}
@@ -910,10 +998,12 @@ export default function CreateImagePage() {
                     inputClassName="min-h-12"
                   />
                 </FormField>
+
                 <div className="mv-3">
                   <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {tPost("settings.title")}
                   </label>
+
                   <div className="border border-border p-3 rounded-lg inline-block max-w-100 w-full space-y-2">
                     <FormField name="requireLogin">
                       <div className="flex items-center justify-between">
@@ -928,6 +1018,7 @@ export default function CreateImagePage() {
                         />
                       </div>
                     </FormField>
+
                     <FormField name="requireFollow">
                       <div className="flex items-center justify-between">
                         <label className="text-black/65 dark:text-white text-sm">
@@ -941,6 +1032,7 @@ export default function CreateImagePage() {
                         />
                       </div>
                     </FormField>
+
                     <FormField name="requirePayment">
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center justify-between w-full">
@@ -954,6 +1046,7 @@ export default function CreateImagePage() {
                             }
                           />
                         </div>
+
                         {values.requirePayment && (
                           <div className="mt-2 flex justify-end">
                             <Input
@@ -974,6 +1067,7 @@ export default function CreateImagePage() {
                         )}
                       </div>
                     </FormField>
+
                     <FormField name="requireMembership">
                       <div className="flex items-center justify-between">
                         <label className="text-black/65 dark:text-white text-sm">

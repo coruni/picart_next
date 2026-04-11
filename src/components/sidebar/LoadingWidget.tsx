@@ -1,12 +1,12 @@
 "use client";
 
+import loginWidgetLeft from "@/assets/images/sidebar/login/login_widget_left.png";
+import loginWidgetRight from "@/assets/images/sidebar/login/login_widget_right.png";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Button } from "../ui/Button";
-import loginWidgetLeft from "@/assets/images/sidebar/login/login_widget_left.png";
-import loginWidgetRight from "@/assets/images/sidebar/login/login_widget_right.png";
 
 export const LoginWidget = () => {
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
@@ -17,6 +17,7 @@ export const LoginWidget = () => {
   return (
     <section className="px-4 pt-4 pb-2.5 bg-card rounded-xl relative">
       <Image
+        draggable={false}
         src={loginWidgetLeft}
         alt="login widget left decoration"
         width={84}
@@ -25,6 +26,7 @@ export const LoginWidget = () => {
         className="object-cover left-0 top-0 absolute"
       />
       <Image
+        draggable={false}
         src={loginWidgetRight}
         alt="login widget right decoration"
         width={84}
