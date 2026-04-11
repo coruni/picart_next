@@ -80,18 +80,18 @@ export function AvatarFrameList() {
         }}
       >
         <div
-          className="h-20 w-full bg-center bg-cover rounded-xl bg-no-repeat flex items-center px-4 justify-between cursor-pointer gap-4"
+          className="flex h-20 w-full items-center justify-between gap-4 rounded-xl bg-cover bg-center bg-no-repeat px-4 cursor-pointer"
           style={{
             backgroundImage: "url(/account/decoration/avatar_frame_banner.png)",
           }}
         >
           <div className="flex flex-col">
-            <span className="text-xl text-[#3db8f5] font-bold">
+            <span className="text-xl font-bold text-[#3db8f5]">
               {t("types.avatarFrame")}
             </span>
             <span className="text-xs text-secondary">{t("ownedHint")}</span>
           </div>
-          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-[#3db8f566] text-white">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3db8f566] text-white">
             <ChevronRight size={16} />
           </div>
         </div>

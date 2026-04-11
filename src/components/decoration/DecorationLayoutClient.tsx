@@ -7,12 +7,12 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 
-import avatarFrameSvg from "@/assets/images/account/decoration/avatar_frame.svg";
-import avatarFrameActiveSvg from "@/assets/images/account/decoration/avatar_frame_active.svg";
-import commentSvg from "@/assets/images/account/decoration/comment.svg";
-import commentActiveSvg from "@/assets/images/account/decoration/comment_active.svg";
-import emojiSvg from "@/assets/images/account/decoration/emoji.svg";
-import emojiActiveSvg from "@/assets/images/account/decoration/emoji_active.svg";
+import avatarFrameSvg from "@/assets/images/account/decoration/avatar.png";
+import avatarFrameActiveSvg from "@/assets/images/account/decoration/avatar_active.png";
+import achievementSvg from "@/assets/images/account/decoration/achievement.png";
+import achievementActiveSvg from "@/assets/images/account/decoration/achievement_active.png";
+import commentSvg from "@/assets/images/account/decoration/comment.png";
+import commentActiveSvg from "@/assets/images/account/decoration/comment_active.png";
 
 interface DecorationLayoutClientProps {
   locale: string;
@@ -30,12 +30,11 @@ export function DecorationLayoutClient({
 
   // 从 pathname 判断当前激活的类型
   // /account/[id]/decoration                => 默认 avatar-frame
-  // /account/[id]/decoration/emoji          => emoji
   // /account/[id]/decoration/comment        => comment
-  const isEmojiPage = pathname.includes("/decoration/emoji");
+  const isAchievementPage = pathname.includes("/decoration/achievement");
   const isCommentPage = pathname.includes("/decoration/comment");
-  const currentDecorationType = isEmojiPage
-    ? "emoji"
+  const currentDecorationType = isAchievementPage
+    ? "achievement"
     : isCommentPage
       ? "comment"
       : "avatar-frame";
@@ -49,11 +48,11 @@ export function DecorationLayoutClient({
       href: `/account/${userId}/decoration`,
     },
     {
-      id: "emoji",
-      translationKey: "emoji",
-      icon: emojiSvg,
-      iconActive: emojiActiveSvg,
-      href: `/account/${userId}/decoration/emoji`,
+      id: "achievement",
+      translationKey: "achievement",
+      icon: achievementSvg,
+      iconActive: achievementActiveSvg,
+      href: `/account/${userId}/decoration/achievement`,
     },
     {
       id: "comment",
