@@ -8,10 +8,45 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 const DETAIL_TRANSLATE_SCOPE_SELECTOR =
   "[data-auto-translate-article-detail] [data-auto-translate-content]";
 const DEBOUNCE_DELAY = 150;
+const ORIGINAL_HTML_ATTR = "data-translate-original-html";
+
+// Global flag to signal manual translation toggle in progress
+// Used to prevent ContentAutoTranslateProvider from re-triggering translation
+export const MANUAL_TOGGLE_PAUSE_MS = 500;
 
 function getTranslateApi() {
   if (typeof window === "undefined") return null;
   return window.translate ?? null;
+}
+
+// Global timestamp for last manual toggle - ContentAutoTranslateProvider can check this
+declare global {
+  interface Window {
+    __lastManualTranslateToggle?: number;
+  }
+}
+
+function markManualToggle() {
+  window.__lastManualTranslateToggle = Date.now();
+}
+
+function isManualTogglePaused(): boolean {
+  const lastToggle = window.__lastManualTranslateToggle;
+  if (!lastToggle) return false;
+  return Date.now() - lastToggle < MANUAL_TOGGLE_PAUSE_MS;
+}
+
+function captureOriginalHtml(element: HTMLElement) {
+  if (!element.getAttribute(ORIGINAL_HTML_ATTR)) {
+    element.setAttribute(ORIGINAL_HTML_ATTR, element.innerHTML);
+  }
+}
+
+function restoreOriginalHtml(element: HTMLElement) {
+  const originalHtml = element.getAttribute(ORIGINAL_HTML_ATTR);
+  if (originalHtml != null) {
+    element.innerHTML = originalHtml;
+  }
 }
 
 function getCurrentDisplayedLanguage(translate: typeof window.translate): string | undefined {
@@ -137,6 +172,7 @@ export function ArticleTranslateNotice({
 
     // Mark that user is actively toggling to prevent auto-detection interference
     isUserTogglingRef.current = true;
+    markManualToggle();
 
     if (showOriginal) {
       // If already translated by auto-translate, just update state
@@ -151,6 +187,11 @@ export function ArticleTranslateNotice({
 
       // Immediately set state before translation
       setShowOriginal(false);
+
+      // Capture original HTML before translation (if not already captured)
+      documents.forEach((doc) => {
+        captureOriginalHtml(doc as HTMLElement);
+      });
 
       translate.service?.use?.("client.edge");
       translate.language?.setLocal?.("chinese_simplified");
@@ -174,7 +215,13 @@ export function ArticleTranslateNotice({
     // Immediately set state before reset
     setShowOriginal(true);
     translate.reset?.();
-    
+
+    // Manually restore original HTML from captured attribute
+    // This ensures DOM is restored even if translate.reset() doesn't work properly (e.g., on mobile)
+    documents.forEach((doc) => {
+      restoreOriginalHtml(doc as HTMLElement);
+    });
+
     // Reset toggle flag after reset is triggered
     window.setTimeout(() => {
       isUserTogglingRef.current = false;
