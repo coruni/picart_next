@@ -9,6 +9,8 @@ import love from "@/assets/images/reaction/love.png";
 import sad from "@/assets/images/reaction/sad.png";
 import wow from "@/assets/images/reaction/wow.png";
 import { cn } from "@/lib";
+import { openLoginDialog } from "@/lib/modal-helpers";
+import { useUserStore } from "@/stores";
 import Image, { StaticImageData } from "next/image";
 import { useState } from "react";
 
@@ -37,6 +39,7 @@ export function ReactionStats({
   onReactionChange,
 }: ReactionStatsProps) {
   const isControlled = externalStats !== undefined;
+  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const [internalReactionStats, setInternalReactionStats] =
     useState<Record<string, number>>(initialStats);
   const [loading, setLoading] = useState(false);
@@ -81,6 +84,10 @@ export function ReactionStats({
     love: love,
   };
   const handleReactionClick = async (emoji: string) => {
+    if (!isAuthenticated) {
+      openLoginDialog();
+      return;
+    }
     if (loading) return;
 
     setLoading(true);

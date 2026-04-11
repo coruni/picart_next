@@ -22,6 +22,8 @@ import {
   formatRelativeTime,
   prepareCommentHtmlForDisplay,
 } from "@/lib";
+import { openLoginDialog } from "@/lib/modal-helpers";
+import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
 import {
   ChevronDown,
@@ -90,6 +92,7 @@ export function CommentReplyList({
   const tAccountInfo = useTranslations("accountInfo");
   const tTime = useTranslations("time");
   const locale = useLocale();
+  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const compactNumberLabels = {
     thousand: tAccountInfo("numberUnits.thousand"),
     tenThousand: tAccountInfo("numberUnits.tenThousand"),
@@ -491,7 +494,13 @@ export function CommentReplyList({
                   <button
                     type="button"
                     className="flex cursor-pointer items-center space-x-1 py-1 hover:text-primary"
-                    onClick={() => onToggleReplyEditor(data.id)}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        openLoginDialog();
+                        return;
+                      }
+                      onToggleReplyEditor(data.id);
+                    }}
                   >
                     <MessageCircleMore size={20} />
                     <span className="text-xs">{tComment("reply")}</span>
@@ -502,7 +511,13 @@ export function CommentReplyList({
                       "flex cursor-pointer items-center space-x-1 py-1 hover:text-primary",
                       data.isLiked && "text-primary",
                     )}
-                    onClick={() => void onToggleLike(data.id)}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        openLoginDialog();
+                        return;
+                      }
+                      void onToggleLike(data.id);
+                    }}
                   >
                     <ThumbsUp size={20} />
                     <span className="text-xs">

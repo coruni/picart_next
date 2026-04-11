@@ -121,6 +121,11 @@ export const CommentItem = memo(function CommentItem({
         return;
       }
 
+      if (!isAuthenticated) {
+        openLoginDialog();
+        return;
+      }
+
       // 如果提供了外部 onReplyClick，优先使用它（用于在 Dialog 中打开回复）
       if (onReplyClick) {
         onReplyClick(parentId);
@@ -131,7 +136,7 @@ export const CommentItem = memo(function CommentItem({
         current === parentId ? null : parentId,
       );
     },
-    [onReplyClick],
+    [onReplyClick, isAuthenticated],
   );
 
   const handleReplySubmitted = useCallback(async () => {

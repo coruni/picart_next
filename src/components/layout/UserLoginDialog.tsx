@@ -15,7 +15,7 @@ import { useAppStore, useModalStore, useUserStore } from "@/stores";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "../ui/Button";
-import { Dialog, DialogContent } from "../ui/Dialog";
+import { Dialog, DialogContent, DialogOverlay } from "../ui/Dialog";
 import { FloatingInput } from "../ui/FloatingInput";
 import { Form, FormField } from "../ui/Form";
 
@@ -357,7 +357,8 @@ export function UserLoginDialog() {
 
   return (
     <Dialog open={loginDialogOpen} onOpenChange={handleDialogClose}>
-      <DialogContent className="max-w-110 rounded-2xl max-h-[98vh] bg-card! border border-border!">
+      <DialogOverlay className="z-499!" />
+      <DialogContent className="max-w-110 rounded-2xl max-h-[95vh] bg-card! border border-border! z-500!" hideOverlay>
         <div className="flex flex-col">
           {/* logo */}
           <div

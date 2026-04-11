@@ -2,8 +2,19 @@
 
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
-import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import {
+  Children,
+  isValidElement,
+  useEffect,
+  useMemo,
+  useRef,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { createPortal } from "react-dom";
+
+// Global stack to track nested dialogs
+const dialogStack: string[] = [];
 
 /**
  * 对话框组件属性接口
@@ -34,6 +45,7 @@ export interface DialogContentProps {
   children: ReactNode;
   showClose?: boolean;
   style?: CSSProperties;
+  hideOverlay?: boolean; // 兼容旧参数，当前实现中不再使用
 }
 
 /**
@@ -84,6 +96,38 @@ export interface DialogDescriptionProps {
   children: ReactNode;
 }
 
+function isDialogOverlayElement(node: ReactNode): boolean {
+  if (!isValidElement(node)) return false;
+  return node.type === DialogOverlay;
+}
+
+function hasDialogOverlayInTree(node: ReactNode): boolean {
+  let found = false;
+
+  Children.forEach(node, (child) => {
+    if (found || !isValidElement<{ children?: ReactNode }>(child)) return;
+
+    if (child.type === DialogOverlay) {
+      found = true;
+      return;
+    }
+
+    if (child.props.children) {
+      found = hasDialogOverlayInTree(child.props.children);
+    }
+  });
+
+  return found;
+}
+
+function dispatchDialogClose() {
+  const currentDialogId = document.body.getAttribute("data-dialog-open");
+  const event = new CustomEvent("dialog-close", {
+    detail: { dialogId: currentDialogId },
+  });
+  window.dispatchEvent(event);
+}
+
 /**
  * 对话框组件
  * @component
@@ -100,27 +144,56 @@ export function Dialog({
     `dialog-${Math.random().toString(36).substring(2, 9)}`,
   );
 
+  const hasCustomOverlay = useMemo(() => {
+    return hasDialogOverlayInTree(children);
+  }, [children]);
+
   useEffect(() => {
     const dialogId = dialogIdRef.current;
 
     if (open) {
+      // Add to stack and lock body
+      dialogStack.push(dialogId);
       document.body.style.overflow = "hidden";
       document.body.setAttribute("data-dialog-open", dialogId);
     } else {
-      // 只有当前 dialog 关闭时才恢复滚动
+      // Remove from stack
+      const index = dialogStack.indexOf(dialogId);
+      if (index > -1) {
+        dialogStack.splice(index, 1);
+      }
+
+      // Only restore body if this dialog is the one that set it
       const currentDialogId = document.body.getAttribute("data-dialog-open");
       if (currentDialogId === dialogId) {
-        document.body.style.overflow = "";
-        document.body.removeAttribute("data-dialog-open");
+        // If there are other dialogs in stack, transfer to the next one
+        if (dialogStack.length > 0) {
+          const nextDialogId = dialogStack[dialogStack.length - 1];
+          document.body.setAttribute("data-dialog-open", nextDialogId);
+        } else {
+          document.body.style.overflow = "";
+          document.body.removeAttribute("data-dialog-open");
+        }
       }
     }
 
     return () => {
-      // 清理时检查是否是当前 dialog
+      // Cleanup: remove from stack if still present
+      const index = dialogStack.indexOf(dialogId);
+      if (index > -1) {
+        dialogStack.splice(index, 1);
+      }
+
+      // Restore body if this dialog is the one that set it
       const currentDialogId = document.body.getAttribute("data-dialog-open");
       if (currentDialogId === dialogId) {
-        document.body.style.overflow = "";
-        document.body.removeAttribute("data-dialog-open");
+        if (dialogStack.length > 0) {
+          const nextDialogId = dialogStack[dialogStack.length - 1];
+          document.body.setAttribute("data-dialog-open", nextDialogId);
+        } else {
+          document.body.style.overflow = "";
+          document.body.removeAttribute("data-dialog-open");
+        }
       }
     };
   }, [open]);
@@ -128,12 +201,19 @@ export function Dialog({
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && open) {
-        onOpenChange(false);
+        // Only the topmost dialog responds to ESC
+        const topDialogId = dialogStack[dialogStack.length - 1];
+        if (topDialogId === dialogIdRef.current) {
+          onOpenChange(false);
+        }
       }
     };
 
-    const handleDialogClose = () => {
-      onOpenChange(false);
+    const handleDialogClose = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail?.dialogId === dialogIdRef.current && open) {
+        onOpenChange(false);
+      }
     };
 
     document.addEventListener("keydown", handleEscape);
@@ -145,17 +225,21 @@ export function Dialog({
     };
   }, [open, onOpenChange]);
 
-  // 关闭时卸载组件
   if (!open && unmountOnClose) {
     return null;
   }
 
-  // 关闭时不卸载，这里仍不渲染内容
   if (!open) {
     return null;
   }
 
-  return createPortal(children, document.body);
+  return createPortal(
+    <>
+      {!hasCustomOverlay && <DialogOverlay onClick={dispatchDialogClose} />}
+      {children}
+    </>,
+    document.body,
+  );
 }
 
 /**
@@ -198,33 +282,24 @@ export function DialogContent({
 }: DialogContentProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const handleOverlayClick = () => {
-    const event = new CustomEvent("dialog-close");
-    window.dispatchEvent(event);
-  };
-
   return (
-    <>
-      <DialogOverlay onClick={handleOverlayClick} />
-      <div
-        ref={contentRef}
-        role="dialog"
-        aria-modal="true"
-        className={cn(
-          "fixed left-[50%] top-[50%] z-101 w-full max-w-lg",
-          "translate-x-[-50%] translate-y-[-50%]",
-          "rounded-lg border bg-card border-border p-6 shadow-xl",
-          "animate-in fade-in-0 zoom-in-95 duration-200",
-          // "max-h-[90vh] overflow-y-auto",
-          className,
-        )}
-        style={style}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {children}
-        {showClose && <DialogClose />}
-      </div>
-    </>
+    <div
+      ref={contentRef}
+      role="dialog"
+      aria-modal="true"
+      className={cn(
+        "fixed left-[50%] top-[50%] z-101 w-full max-w-lg",
+        "translate-x-[-50%] translate-y-[-50%]",
+        "rounded-lg border bg-card border-border p-6 shadow-xl",
+        "animate-in fade-in-0 zoom-in-95 duration-200",
+        className,
+      )}
+      style={style}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {children}
+      {showClose && <DialogClose />}
+    </div>
   );
 }
 
@@ -235,11 +310,6 @@ export function DialogContent({
  * 显示在对话框右上角的 X 关闭按钮
  */
 export function DialogClose({ className }: { className?: string }) {
-  const handleClick = () => {
-    const event = new CustomEvent("dialog-close");
-    window.dispatchEvent(event);
-  };
-
   return (
     <button
       type="button"
@@ -250,7 +320,7 @@ export function DialogClose({ className }: { className?: string }) {
         "disabled:pointer-events-none",
         className,
       )}
-      onClick={handleClick}
+      onClick={dispatchDialogClose}
       aria-label="Close dialog"
     >
       <X className="h-6 w-6" />
@@ -269,7 +339,7 @@ export function DialogHeader({ className, children }: DialogHeaderProps) {
   return (
     <div
       className={cn(
-        "flex  px-6 py-4 flex-col space-y-1.5 text-center sm:text-left text-sm",
+        "flex px-6 py-4 flex-col space-y-1.5 text-center sm:text-left text-sm",
         className,
       )}
     >

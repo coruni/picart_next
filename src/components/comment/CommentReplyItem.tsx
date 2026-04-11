@@ -8,6 +8,8 @@ import {
   formatRelativeTime,
   prepareCommentHtmlForDisplay,
 } from "@/lib";
+import { openLoginDialog } from "@/lib/modal-helpers";
+import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
 import { getImageUrls, type ImageInfo } from "@/types/image";
 import {
@@ -67,6 +69,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   const tAccountInfo = useTranslations("accountInfo");
   const tTime = useTranslations("time");
   const locale = useLocale();
+  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
 
   // 使用 useMemo 缓存翻译和计算结果
   const compactNumberLabels = useMemo(
@@ -123,6 +126,12 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   const handleOpenReplyEditor = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
+
+      if (!isAuthenticated) {
+        openLoginDialog();
+        return;
+      }
+
       // 如果提供了外部 onReplyClick，优先使用它（用于在 Dialog 中打开回复）
       if (onReplyClick) {
         onReplyClick(reply.id);
@@ -130,15 +139,21 @@ export const CommentReplyItem = memo(function CommentReplyItem({
       }
       onToggleReplyEditor(reply.id);
     },
-    [onReplyClick, onToggleReplyEditor, reply.id],
+    [onReplyClick, onToggleReplyEditor, reply.id, isAuthenticated],
   );
 
   const handleToggleLike = useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.stopPropagation();
+
+      if (!isAuthenticated) {
+        openLoginDialog();
+        return;
+      }
+
       void onToggleLike(reply.id);
     },
-    [onToggleLike, reply.id],
+    [onToggleLike, reply.id, isAuthenticated],
   );
 
   const handleOpenImageViewer = useCallback(

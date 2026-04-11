@@ -10,6 +10,8 @@ import sad from "@/assets/images/reaction/sad.png";
 import wow from "@/assets/images/reaction/wow.png";
 import { useClickOutside } from "@/hooks";
 import { cn } from "@/lib";
+import { openLoginDialog } from "@/lib/modal-helpers";
+import { useUserStore } from "@/stores";
 import {
   Angry,
   Frown,
@@ -76,6 +78,7 @@ export const ReactionPanel = ({
   onReactionChange,
 }: ReactionPanelProps) => {
   const t = useTranslations("reactionPanel");
+  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
 
   const [isOpen, setIsOpen] = useState(false);
   const [currentReaction, setCurrentReaction] = useState<string | undefined>(
@@ -152,6 +155,11 @@ export const ReactionPanel = ({
   ];
 
   const handleReaction = async (reactionType: ReactionType) => {
+    if (!isAuthenticated) {
+      openLoginDialog();
+      return;
+    }
+
     if (isLoading) return;
 
     setIsLoading(true);

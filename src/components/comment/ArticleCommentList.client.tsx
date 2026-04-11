@@ -309,7 +309,7 @@ export function ArticleCommentList({
             </button>
           )}
           items={sortItems}
-          menuClassName="top-9 min-w-0 max-w rounded-xl border border-border bg-card drop-shadow-lg"
+          menuClassName="top-8 min-w-0 max-w rounded-xl border border-border bg-card"
         />
       </div>
 

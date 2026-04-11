@@ -381,6 +381,24 @@ export function ImageViewer({
   }, [cleanupCustomUI]);
 
   const destroyViewerInstance = useCallback((skipHistoryBack = false) => {
+    // Only restore body overflow if this viewer is the one that set it
+    if (viewerIdRef.current > 0) {
+      const currentViewer = document.body.getAttribute("data-viewer-open");
+      if (currentViewer === `viewer-${viewerIdRef.current}`) {
+        // Check if there are other viewers in stack
+        const otherViewers = viewerStack.filter(
+          (id) => id !== viewerIdRef.current
+        );
+        if (otherViewers.length > 0) {
+          const nextViewerId = otherViewers[otherViewers.length - 1];
+          document.body.setAttribute("data-viewer-open", `viewer-${nextViewerId}`);
+        } else {
+          document.body.style.overflow = "";
+          document.body.removeAttribute("data-viewer-open");
+        }
+      }
+    }
+
     // Remove this viewer from the stack
     if (viewerIdRef.current > 0) {
       const index = viewerStack.indexOf(viewerIdRef.current);
@@ -529,6 +547,10 @@ export function ImageViewer({
           viewerStack.push(viewerId);
         }
 
+        // Lock body overflow with unique identifier
+        document.body.style.overflow = "hidden";
+        document.body.setAttribute("data-viewer-open", `viewer-${viewerId}`);
+
         // Defer non-critical UI setup to next frame
         requestAnimationFrame(() => {
           setupCustomUI();
@@ -548,6 +570,22 @@ export function ImageViewer({
         if (index > -1) {
           viewerStack.splice(index, 1);
         }
+
+        // Only restore body overflow if this viewer is the one that set it
+        const currentViewer = document.body.getAttribute("data-viewer-open");
+        if (currentViewer === `viewer-${viewerIdRef.current}`) {
+          // If there are other viewers in stack, let the next one take over
+          if (viewerStack.length > 0) {
+            const nextViewerId = viewerStack[viewerStack.length - 1];
+            document.body.setAttribute("data-viewer-open", `viewer-${nextViewerId}`);
+            // Keep overflow hidden, just update the identifier
+          } else {
+            // No more viewers, restore body
+            document.body.style.overflow = "";
+            document.body.removeAttribute("data-viewer-open");
+          }
+        }
+
         // Skip history.back() since we're already responding to a hide event
         destroyViewerInstance(true);
       },

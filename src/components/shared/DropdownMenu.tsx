@@ -1,6 +1,5 @@
 "use client";
 
-import { useClickOutside } from "@/hooks";
 import { Button } from "@/components/ui/Button";
 import {
   Dialog,
@@ -10,6 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
+import { useClickOutside } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { ReactNode, useMemo, useRef, useState } from "react";
@@ -131,11 +131,13 @@ export function DropdownMenu({
 
         <div
           className={cn(
-            "absolute top-8 z-10 min-w-50 w-max rounded-xl border border-border/70 bg-card shadow-lg",
+            "absolute top-8 z-10 min-w-50 w-max rounded-xl border border-border/70 bg-card shadow-lg transition-opacity overflow-hidden",
             position === "right"
               ? "right-0 origin-top-right"
               : "left-0 origin-top-left",
-            isOpen ? "opacity-100" : "pointer-events-none opacity-0",
+            isOpen
+              ? "opacity-100"
+              : "pointer-events-none opacity-0 -z-10! max-h-0 min-h-0",
             menuClassName,
           )}
           role="menu"

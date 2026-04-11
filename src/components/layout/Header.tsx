@@ -32,7 +32,7 @@ export function Header({ categories }: HeaderProps) {
     isAccountTransparentPage || isTopicTransparentPage;
 
   // 与 AccountInfo 的 scrolled 状态同步
-  const threshold = isMobile ? 152 : 220;
+  const threshold = isMobile ? 100 : 220;
   const hysteresis = isMobile ? 4 : 8;
 
   const scrolled = useScrollThreshold(threshold, {
