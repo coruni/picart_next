@@ -1,13 +1,15 @@
 ﻿"use client";
 
 import {
-    userControllerLogin,
-    userControllerRegisterUser,
-    userControllerResetPassword,
-    userControllerSendVerificationCode,
+  userControllerLogin,
+  userControllerRegisterUser,
+  userControllerResetPassword,
+  userControllerSendVerificationCode,
 } from "@/api";
 import loginLogoPng from "@/assets/images/placeholder/loginLogo.png";
 import { useForm } from "@/hooks/useForm";
+import { Link } from "@/i18n/routing";
+import { cn } from "@/lib";
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { useAppStore, useModalStore, useUserStore } from "@/stores";
 import { useTranslations } from "next-intl";
@@ -29,6 +31,7 @@ type RegisterFormData = {
   confirmPassword: string;
   inviteCode?: string;
   verificationCode?: string;
+  agreeTerms: boolean;
 };
 
 type ResetPasswordData = {
@@ -151,6 +154,7 @@ export function UserLoginDialog() {
       confirmPassword: "",
       inviteCode: "",
       verificationCode: "",
+      agreeTerms: false,
     },
     validationRules: {
       username: {
@@ -524,6 +528,55 @@ export function UserLoginDialog() {
                 </FormField>
               )}
 
+              {/* 隐私协议和服务条款 */}
+              <div className="flex items-start gap-2 text-xs text-muted-foreground px-4">
+                <input
+                  type="checkbox"
+                  id="agreeTerms"
+                  className={cn(
+                    "size-4 shrink-0 cursor-pointer appearance-none rounded-full border-2",
+                    "border-muted-foreground bg-transparent",
+                    "checked:bg-primary checked:border-primary",
+                    "relative transition-colors duration-200",
+
+                    // 勾
+                    "after:absolute after:hidden after:content-['']",
+                    "after:left-1/2 after:top-1/2",
+                    "after:size-2 after:-translate-x-1/2 after:-translate-y-1/2",
+                    "after:bg-white after:rounded-sm",
+                    "checked:after:block",
+                  )}
+                  checked={registerForm.values.agreeTerms}
+                  onChange={(e) =>
+                    registerForm.setFieldValues({
+                      agreeTerms: e.target.checked,
+                    })
+                  }
+                />
+                <label htmlFor="agreeTerms" className="cursor-pointer">
+                  {tReg("agreePrefix")}
+                  <Link
+                    href="/service/privacy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline mx-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {tReg("privacyPolicy")}
+                  </Link>
+                  {tReg("andSeparator")}
+                  <Link
+                    href="/service/terms"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:underline mx-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {tReg("termsOfService")}
+                  </Link>
+                </label>
+              </div>
+
               <div className="mt-12">
                 <Button
                   size="lg"
@@ -532,7 +585,7 @@ export function UserLoginDialog() {
                   fullWidth
                   className="rounded-lg"
                   loading={isSubmitting}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !registerForm.values.agreeTerms}
                 >
                   {isSubmitting ? tReg("registering") : tReg("registerButton")}
                 </Button>

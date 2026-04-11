@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
 import { BackgroundEditor } from "./BackgroundEditor.client";
@@ -264,10 +265,21 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                   : "translate-y-0 opacity-100",
               )}
             >
-              <div className="mb-0.5 flex items-center space-x-2 md:mb-1">
+              <div className="mb-0.5 flex items-center space-x-1 md:mb-1">
                 <span className="text-base text-white md:text-xl">
                   {user.nickname || user.username}
                 </span>
+                {user?.equippedDecorations?.ACHIEVEMENT_BADGE && (
+                  <span className="relative size-4" data-auto-translate-conten>
+                    <ImageWithFallback
+                      src={
+                        user?.equippedDecorations?.ACHIEVEMENT_BADGE?.imageUrl
+                      }
+                      alt={user?.equippedDecorations?.ACHIEVEMENT_BADGE?.name}
+                      title={user?.equippedDecorations?.ACHIEVEMENT_BADGE?.name}
+                    />
+                  </span>
+                )}
               </div>
               <div className="flex items-center space-x-1 text-[11px] text-white/80 md:text-xs">
                 <NotepadTextDashed size={14} className="shrink-0" />

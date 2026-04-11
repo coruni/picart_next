@@ -105,7 +105,11 @@
     "registerSuccess": "注册成功",
     "passwordMismatch": "两次密码不一致",
     "codeSent": "验证码已发送",
-    "optional": "选填"
+    "optional": "选填",
+    "agreePrefix": "我已阅读并同意",
+    "privacyPolicy": "隐私协议",
+    "termsOfService": "服务条款",
+    "andSeparator": "和"
   },
   "resetPassword": {
     "title": "重置密码",
@@ -996,5 +1000,9 @@
       "unblockConfirmTitle": "确认取消屏蔽",
       "unblockConfirmDescription": "确定要取消对 {username} 的屏蔽吗？取消后对方将可以再次给您发送私信。"
     }
+  },
+  "sitePages": {
+    "privacyPolicy": "隐私政策",
+    "termsOfService": "服务条款"
   }
 }

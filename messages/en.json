@@ -113,7 +113,11 @@
     "registerSuccess": "Registration Successful",
     "passwordMismatch": "Passwords do not match",
     "codeSent": "Verification code sent",
-    "optional": "Optional"
+    "optional": "Optional",
+    "agreePrefix": "I have read and agree to",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "andSeparator": "and"
   },
   "resetPassword": {
     "title": "Reset Password",
@@ -1004,5 +1008,9 @@
       "unblockConfirmTitle": "Confirm Unblock",
       "unblockConfirmDescription": "Are you sure you want to unblock {username}? They will be able to send you direct messages again."
     }
+  },
+  "sitePages": {
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
   }
 }

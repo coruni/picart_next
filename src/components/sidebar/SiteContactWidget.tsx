@@ -20,7 +20,7 @@ export async function SiteContactWidget() {
   return (
     <section
       className={cn(
-        "text-sm leading-6 text-muted-foreground",
+        "text-sm leading-6 text-secondary",
         "[&_a:not([href^='mailto:'])]:relative",
         "[&_a:not([href^='mailto:'])]:text-primary",
         "[&_a:not([href^='mailto:'])]:inline-block",
