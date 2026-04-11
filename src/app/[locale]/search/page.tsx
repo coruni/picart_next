@@ -22,7 +22,7 @@ export default async function SearchPage(props: SearchPageProps) {
         query: {
           keyword,
           page: 1,
-          limit: 10,
+          limit: 20,
           ...(category && { categoryId: Number(category) }),
           sortBy: "relevance",
         },

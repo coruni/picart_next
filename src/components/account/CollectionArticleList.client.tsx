@@ -26,7 +26,7 @@ export function CollectionArticleListClient({
   initPage,
   initTotal,
   collectionId,
-  pageSize = 10,
+  pageSize = 20,
 }: CollectionArticleListClientProps) {
   const t = useTranslations("articleList");
   const observerRef = useRef<HTMLDivElement>(null);

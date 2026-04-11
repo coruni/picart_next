@@ -43,7 +43,7 @@ export const ArticleListClient = ({
   initTotal,
   fetchArticles,
   fetchParams = {},
-  pageSize = 10,
+  pageSize = 20,
   showFollow = true,
   showProfilePinLabel = false,
   cacheKey,

@@ -47,7 +47,10 @@ export function InfiniteScrollStatus({
       {hasMore && (
         <div
           ref={observerRef}
-          className={cn("flex items-center justify-center py-8", containerClassName)}
+          className={cn(
+            "flex items-center justify-center py-8",
+            containerClassName,
+          )}
         >
           {loading ? (
             <div className={cn("flex items-center gap-2", loadingClassName)}>
@@ -76,13 +79,23 @@ export function InfiniteScrollStatus({
       )}
 
       {!hasMore && !isEmpty && allLoadedText && (
-        <div className={cn("flex items-center justify-center py-3 text-sm", endClassName)}>
+        <div
+          className={cn(
+            "flex items-center justify-center pt-3 pb-6 text-sm",
+            endClassName,
+          )}
+        >
           <div>{allLoadedText}</div>
         </div>
       )}
 
       {!hasMore && isEmpty && emptyText && (
-        <div className={cn("flex items-center justify-center py-12", emptyClassName)}>
+        <div
+          className={cn(
+            "flex items-center justify-center pt-3 pb-6",
+            emptyClassName,
+          )}
+        >
           <div className="text-center">
             <p>{emptyText}</p>
           </div>

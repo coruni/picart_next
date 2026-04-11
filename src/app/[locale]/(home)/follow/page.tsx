@@ -10,7 +10,7 @@ export default async function FollowPage() {
   let result: ArticleControllerFindAllResponse["data"] | undefined;
   const token = await getServerCookie(TOKEN_COOKIE_NAME);
   const query = {
-    limit: 10,
+    limit: 20,
     page: 1,
     type: "following" as const,
   };

@@ -95,7 +95,7 @@ export default async function ChannelPage({
   const { data } = await serverApi.articleControllerFindAll({
     query: {
       page: 1,
-      limit: 10,
+      limit: 20,
       categoryId: Number(childId),
       type: sortType,
     },

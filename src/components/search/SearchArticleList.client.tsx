@@ -26,7 +26,7 @@ export function SearchArticleListClient({
   initTotal,
   keyword,
   categoryId,
-  pageSize = 10,
+  pageSize = 20,
   cacheKey,
 }: SearchArticleListClientProps) {
   const t = useTranslations("articleList");
@@ -45,7 +45,9 @@ export function SearchArticleListClient({
     }
 
     const navigationType = (
-      performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming
+      performance.getEntriesByType(
+        "navigation",
+      )[0] as PerformanceNavigationTiming
     )?.type;
 
     if (navigationType === "reload") {
@@ -78,7 +80,9 @@ export function SearchArticleListClient({
   const isPageRefresh = useRef(
     typeof window !== "undefined" &&
       (
-        performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming
+        performance.getEntriesByType(
+          "navigation",
+        )[0] as PerformanceNavigationTiming
       )?.type === "reload",
   );
   const observerRef = useRef<HTMLDivElement>(null);
@@ -86,7 +90,9 @@ export function SearchArticleListClient({
   const [page, setPage] = useState(initialState.page);
   const [articles, setArticles] = useState<ArticleList>(initialState.articles);
   const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(initialState.articles.length < initTotal);
+  const [hasMore, setHasMore] = useState(
+    initialState.articles.length < initTotal,
+  );
   const [error, setError] = useState<string | null>(null);
   const [scrollRestored, setScrollRestored] = useState(false);
   const hasInitializedRef = useRef(false);
@@ -119,7 +125,9 @@ export function SearchArticleListClient({
           keyword: normalizedKeyword,
           page: pageToLoad,
           limit: pageSize,
-          ...(normalizedCategoryId && { categoryId: Number(normalizedCategoryId) }),
+          ...(normalizedCategoryId && {
+            categoryId: Number(normalizedCategoryId),
+          }),
           sortBy: sort,
         },
       });
@@ -194,7 +202,11 @@ export function SearchArticleListClient({
   }, [scrollKey]);
 
   useEffect(() => {
-    if (typeof window === "undefined" || scrollRestored || isPageRefresh.current) {
+    if (
+      typeof window === "undefined" ||
+      scrollRestored ||
+      isPageRefresh.current
+    ) {
       return;
     }
 
@@ -245,10 +257,8 @@ export function SearchArticleListClient({
     hasMore,
     initTotal,
     loading,
-    normalizedCategoryId,
     normalizedKeyword,
     page,
-    pageSize,
     fetchPage,
     t,
   ]);

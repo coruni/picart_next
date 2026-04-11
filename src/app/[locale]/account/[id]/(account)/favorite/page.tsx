@@ -13,7 +13,7 @@ export default async function AccountFavoritePage({
         query: {
             userId: Number(id),
             page: 1,
-            limit: 10
+            limit: 20
         },
     })
     return (

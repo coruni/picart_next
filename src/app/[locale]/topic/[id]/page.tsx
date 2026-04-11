@@ -18,7 +18,7 @@ export default async function TopicDetailPage(props: TopicDetailPageProps) {
   const { data } = await serverApi.articleControllerFindAll({
     query: {
       page: 1,
-      limit: 10,
+      limit: 20,
       tagId: Number(id),
       type: sortType,
     },

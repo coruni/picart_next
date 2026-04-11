@@ -4,7 +4,7 @@ import { serverApi } from "@/lib/server-api";
 export default async function HomePage() {
   const query = {
     page: 1,
-    limit: 10,
+    limit: 20,
     type: "popular" as const,
   };
 
