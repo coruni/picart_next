@@ -314,7 +314,7 @@ export const CommentItem = memo(function CommentItem({
         <CommentImageGallery
           images={commentState.images || []}
           imageAltPrefix={`Comment image ${commentState.id}`}
-          className={cn("mt-3 ", !compact && "md:pl-19 md:pr-6")}
+          className={cn("mt-3", !compact && "pr-4 md:pr-6", compact && "pr-4")}
           prevButtonClassName="left-21"
           onOpenImageViewer={openImageViewer}
           compact={compact}
@@ -365,7 +365,7 @@ export const CommentItem = memo(function CommentItem({
         </div>
         {authorLikedComment ? (
           <span className="inline-flex rounded-md bg-[#FF6B6B]/15 px-2 py-1 text-xs text-[#FF6B6B] items-center">
-            <MessageCircleHeart size={12} className="mr-1"/>
+            <MessageCircleHeart size={12} className="mr-1" />
             {tComment("authorLiked")}
           </span>
         ) : null}

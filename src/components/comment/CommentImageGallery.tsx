@@ -69,7 +69,13 @@ export function CommentImageGallery({
 
   if (imageUrls.length === 1) {
     return (
-      <div className={cn(contentOffset && !compact && "pl-17", className)}>
+      <div
+        className={cn(
+          contentOffset && !compact && "pl-17 md:pl-19",
+          compact && "pl-17",
+          className,
+        )}
+      >
         <button
           type="button"
           className="inline-block max-w-full cursor-pointer overflow-hidden rounded-xl bg-muted "
@@ -79,6 +85,7 @@ export function CommentImageGallery({
           }}
         >
           <ImageWithFallback
+            draggable={false}
             src={imageUrls[0]}
             width={320}
             height={180}
@@ -129,7 +136,8 @@ export function CommentImageGallery({
             key={`${imageAltPrefix}-${index}`}
             className={cn(
               "w-auto!",
-              index === 0 && contentOffset && !compact && "pl-17 md:pl-0",
+              index === 0 && contentOffset && "pl-17",
+              !compact && "md:pl-19",
             )}
           >
             <div className="overflow-hidden rounded-xl bg-muted h-45 max-w-80 ">
