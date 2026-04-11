@@ -11,6 +11,7 @@ import { RecommendUserWidget } from "./RecommendUserWidget";
 import { RecommendTagWidget } from "./RecommentTagWidget";
 import { SearchHistory } from "./SearchHistory";
 import { SiteContactWidget } from "./SiteContactWidget";
+import { UserInfoWidget } from "./UserInfoWidget";
 
 type SidebarProps = {
   showLogin?: boolean;
@@ -21,6 +22,7 @@ type SidebarProps = {
   showSearchHistory?: boolean;
   showHotSearch?: boolean;
   showBanner?: boolean;
+  showUserInfo?: boolean;
   randomBanner?: boolean;
   author?: ArticleDetail["author"];
   showSiteContact?: boolean;
@@ -43,6 +45,7 @@ export async function Sidebar({
   author,
   showSiteContact = true,
   showCollectionList = false,
+  showUserInfo = false,
   collectionId,
   collectionName,
   currentArticleId,
@@ -52,17 +55,16 @@ export async function Sidebar({
     showBanner && (randomBanner ? Math.random() >= 0.5 : true);
 
   const sidebarItems = [
-    showArticleCreate && currentUser ? (
-      <ArticleCreateWidget key="article-create" />
-    ) : null,
-
-    showSearchHistory ? <SearchHistory key="search-history" /> : null,
-    showHotSearch ? <HotSearch key="hot-search" /> : null,
-    shouldShowBanner ? (
+    showArticleCreate &&
+      currentUser && <ArticleCreateWidget key="article-create" />,
+    showSearchHistory && <SearchHistory key="search-history" />,
+    showHotSearch && <HotSearch key="hot-search" />,
+    shouldShowBanner && (
       <Banner key="sidebar-banner" className=" aspect-8/3 w-full rounded-xl" />
-    ) : null,
-    showRecommendUser ? <RecommendUserWidget key="recommend-user" /> : null,
-    showRecommendTag ? <RecommendTagWidget key="recommend-tag" /> : null,
+    ),
+    showRecommendUser && <RecommendUserWidget key="recommend-user" />,
+    showRecommendTag && <RecommendTagWidget key="recommend-tag" />,
+    showUserInfo && <UserInfoWidget author={author} key="userinfo" />,
   ].filter(Boolean);
 
   return (

@@ -70,6 +70,8 @@ export default async function AccountLayout({
               showArticleCreate={false}
               showRecommendTag={false}
               showRecommendUser={false}
+              author={user}
+              showUserInfo
             />
           </div>
         </div>

@@ -19027,6 +19027,9 @@
                               },
                               "isPinned": {
                                 "type": "boolean"
+                              },
+                              "floor": {
+                                "type": "number"
                               }
                             },
                             "required": [
@@ -19046,7 +19049,8 @@
                               "isLiked",
                               "isAuthorLiked",
                               "pinnedAt",
-                              "isPinned"
+                              "isPinned",
+                              "floor"
                             ]
                           }
                         },
@@ -20781,6 +20785,9 @@
                               },
                               "isPinned": {
                                 "type": "boolean"
+                              },
+                              "floor": {
+                                "type": "number"
                               }
                             },
                             "required": [
@@ -20800,7 +20807,8 @@
                               "isLiked",
                               "isAuthorLiked",
                               "pinnedAt",
-                              "isPinned"
+                              "isPinned",
+                              "floor"
                             ]
                           }
                         },
@@ -23053,6 +23061,9 @@
                               },
                               "isPinned": {
                                 "type": "boolean"
+                              },
+                              "floor": {
+                                "type": "number"
                               }
                             },
                             "required": [
@@ -23072,7 +23083,8 @@
                               "isLiked",
                               "isAuthorLiked",
                               "pinnedAt",
-                              "isPinned"
+                              "isPinned",
+                              "floor"
                             ]
                           }
                         },
@@ -24974,6 +24986,9 @@
                               },
                               "isPinned": {
                                 "type": "boolean"
+                              },
+                              "floor": {
+                                "type": "number"
                               }
                             },
                             "required": [
@@ -24993,7 +25008,8 @@
                               "isLiked",
                               "isAuthorLiked",
                               "pinnedAt",
-                              "isPinned"
+                              "isPinned",
+                              "floor"
                             ]
                           }
                         },
@@ -50483,7 +50499,8 @@
             "description": "装饰品类型",
             "enum": [
               "AVATAR_FRAME",
-              "COMMENT_BUBBLE"
+              "COMMENT_BUBBLE",
+              "ACHIEVEMENT_BADGE"
             ]
           },
           "description": {

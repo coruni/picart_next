@@ -67,8 +67,7 @@ export const CommentItem = memo(function CommentItem({
   const [viewerVisible, setViewerVisible] = useState(false);
   const [viewerImages, setViewerImages] = useState<string[]>([]);
   const [viewerIndex, setViewerIndex] = useState(0);
-  const [viewerZIndexClassName, setViewerZIndexClassName] =
-    useState("z-300!");
+  const [viewerZIndexClassName, setViewerZIndexClassName] = useState("z-300!");
   const [activeReplyParentId, setActiveReplyParentId] = useState<number | null>(
     null,
   );
@@ -97,19 +96,19 @@ export const CommentItem = memo(function CommentItem({
   }, [data]);
 
   const openImageViewer = useCallback(
-      (
-        images: string[],
-        index: number = 0,
-        zIndexClassName: string = "z-300!",
-      ) => {
+    (
+      images: string[],
+      index: number = 0,
+      zIndexClassName: string = "z-300!",
+    ) => {
       if (!images.length) {
         return;
       }
 
-        setViewerImages(images);
-        setViewerIndex(index);
-        setViewerZIndexClassName(zIndexClassName);
-        setViewerVisible(true);
+      setViewerImages(images);
+      setViewerIndex(index);
+      setViewerZIndexClassName(zIndexClassName);
+      setViewerVisible(true);
     },
     [],
   );
@@ -235,7 +234,10 @@ export const CommentItem = memo(function CommentItem({
             </span>
           </Link>
           <span className="text-xs flex-1 text-muted-foreground">
-            {formatRelativeTime(commentState.createdAt, tTime)}
+            {/* {formatRelativeTime(commentState.createdAt, tTime)} */}
+            {commentState.floor != null
+              ? tComment("floor", { floor: commentState.floor })
+              : tComment("unknownFloor")}
           </span>
         </div>
         <div className="flex items-center space-x-2">

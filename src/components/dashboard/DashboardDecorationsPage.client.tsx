@@ -41,6 +41,7 @@ export function DashboardDecorationsPage() {
       { name: "type", label: copy.columns.type, type: "select", options: [
         { value: "AVATAR_FRAME", label: "AVATAR_FRAME" },
         { value: "COMMENT_BUBBLE", label: "COMMENT_BUBBLE" },
+        { value: "ACHIEVEMENT_BADGE", label: "ACHIEVEMENT_BADGE" },
       ] },
       { name: "description", label: copy.columns.description, type: "textarea" },
       {
@@ -205,7 +206,7 @@ export function DashboardDecorationsPage() {
 
   const buildDecorationPayload = (values: Record<string, unknown>) => ({
     name: values.name as string | undefined,
-    type: values.type as "AVATAR_FRAME" | "COMMENT_BUBBLE" | undefined,
+    type: values.type as "AVATAR_FRAME" | "COMMENT_BUBBLE" | "ACHIEVEMENT_BADGE" | undefined,
     description: values.description as string | undefined,
     imageUrl: values.imageUrl as string | undefined,
     previewUrl: values.previewUrl as string | undefined,
@@ -238,7 +239,7 @@ export function DashboardDecorationsPage() {
         body: {
           name: (values.name as string) || "",
           type:
-            (values.type as "AVATAR_FRAME" | "COMMENT_BUBBLE") ||
+            (values.type as "AVATAR_FRAME" | "COMMENT_BUBBLE" | "ACHIEVEMENT_BADGE") ||
             "AVATAR_FRAME",
           description: values.description as string | undefined,
           imageUrl: (values.imageUrl as string) || "",

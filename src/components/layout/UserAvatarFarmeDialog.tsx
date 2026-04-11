@@ -5,7 +5,11 @@ import { useModalStore } from "@/stores/useModalStore";
 import { Dialog, DialogContent, DialogHeader } from "../ui/Dialog";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { DecorationControllerFindAllResponse } from "@/types";
-import { decorationControllerFindAll } from "@/api";
+import {
+  decorationControllerFindAll,
+  decorationControllerUseDecoration,
+  decorationControllerUnuseDecoration,
+} from "@/api";
 import { CheckCircle2Icon } from "lucide-react";
 import Image from "next/image";
 import { cn, formatExpiryTime } from "@/lib";
@@ -24,6 +28,9 @@ export function UserAvatarFarmeDialog() {
     state.isOpen(MODAL_IDS.AVATAR_FRAME),
   );
   const closeModal = useModalStore((state) => state.closeModal);
+  const getModalData = useModalStore((state) => state.getModalData);
+  const modalData = getModalData(MODAL_IDS.AVATAR_FRAME);
+  const initialFrameId = modalData?.avatarFrameId;
 
   const handleDialogClose = () => {
     closeModal(MODAL_IDS.AVATAR_FRAME);
@@ -34,6 +41,7 @@ export function UserAvatarFarmeDialog() {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [selectedFrame, setSelectedFrame] = useState<AvatarFrame | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement>(null);
@@ -73,6 +81,16 @@ export function UserAvatarFarmeDialog() {
     }
   }, [isLoading, hasMore, page, avatarFrames.length]);
 
+  // 处理初始选中项
+  useEffect(() => {
+    if (!initialFrameId || avatarFrames.length === 0) return;
+
+    const targetFrame = avatarFrames.find((f) => f.id === initialFrameId);
+    if (targetFrame && !selectedFrame) {
+      setSelectedFrame(targetFrame);
+    }
+  }, [avatarFrames, initialFrameId, selectedFrame]);
+
   useEffect(() => {
     if (avatarFrameDialogOpen && avatarFrames.length === 0) {
       loadAvatarFrames();
@@ -100,6 +118,41 @@ export function UserAvatarFarmeDialog() {
       }
     },
   });
+
+  const handleUseDecoration = async () => {
+    if (!selectedFrame || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      if (selectedFrame.isUsing) {
+        // 卸载装饰品
+        await decorationControllerUnuseDecoration({
+          path: { decorationId: String(selectedFrame.id) },
+        });
+      } else {
+        // 装备装饰品
+        await decorationControllerUseDecoration({
+          path: { decorationId: String(selectedFrame.id) },
+        });
+      }
+
+      // 更新本地状态
+      setAvatarFrames((prev) =>
+        prev.map((frame) => ({
+          ...frame,
+          isUsing: frame.id === selectedFrame.id ? !frame.isUsing : frame.isUsing,
+        }))
+      );
+
+      setSelectedFrame((prev) =>
+        prev ? { ...prev, isUsing: !prev.isUsing } : null
+      );
+    } catch (error) {
+      console.error("Failed to use/unuse decoration:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <Dialog open={avatarFrameDialogOpen} onOpenChange={handleDialogClose}>
@@ -181,10 +234,15 @@ export function UserAvatarFarmeDialog() {
                     </span>
                   </div>
 
-                  <Button className="min-w-18 rounded-full">
+                  <Button
+                    className="min-w-18 rounded-full"
+                    onClick={handleUseDecoration}
+                    loading={isSubmitting}
+                    disabled={!selectedFrame.isOwned && !selectedFrame.canDirectEquip}
+                  >
                     {selectedFrame.isUsing
                       ? t("unequip")
-                      : selectedFrame.isOwned
+                      : selectedFrame.isOwned || selectedFrame.canDirectEquip
                         ? t("equip")
                         : t("get")}
                   </Button>

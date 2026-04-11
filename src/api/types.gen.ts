@@ -1365,7 +1365,7 @@ export type CreateDecorationDto = {
     /**
      * 装饰品类型
      */
-    type: 'AVATAR_FRAME' | 'COMMENT_BUBBLE';
+    type: 'AVATAR_FRAME' | 'COMMENT_BUBBLE' | 'ACHIEVEMENT_BADGE';
     /**
      * 装饰品描述
      */
@@ -7309,6 +7309,7 @@ export type CommentControllerFindAllResponses = {
                 isAuthorLiked: boolean;
                 pinnedAt: string;
                 isPinned: boolean;
+                floor: number;
             }>;
             meta: {
                 total: number;
@@ -7797,6 +7798,7 @@ export type CommentControllerFindOneResponses = {
                 isAuthorLiked: boolean;
                 pinnedAt: string;
                 isPinned: boolean;
+                floor: number;
             }>;
             meta: {
                 total: number;
@@ -8358,6 +8360,7 @@ export type CommentControllerFindAllCommentsResponses = {
                 isAuthorLiked: boolean;
                 pinnedAt: string;
                 isPinned: boolean;
+                floor: number;
             }>;
             meta: {
                 total: number;
@@ -8870,6 +8873,7 @@ export type CommentControllerGetUserCommentsResponses = {
                 isAuthorLiked: boolean;
                 pinnedAt: string;
                 isPinned: boolean;
+                floor: number;
             }>;
             meta: {
                 total: number;
