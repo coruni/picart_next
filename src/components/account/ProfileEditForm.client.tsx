@@ -59,6 +59,22 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
   const [backgroundLastTouchDistance, setBackgroundLastTouchDistance] =
     useState<number | null>(null);
 
+  const saveProfile = async (overrides?: {
+    avatar?: string;
+    background?: string;
+  }) => {
+    await userControllerUpdate({
+      path: { id: String(user.id) },
+      body: {
+        nickname: formData.nickname,
+        description: formData.description,
+        gender: formData.gender as "male" | "female" | "other",
+        avatar: overrides?.avatar ?? avatarUrl,
+        background: overrides?.background ?? backgroundUrl,
+      },
+    });
+  };
+
   // Avatar handlers
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -101,7 +117,9 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
       });
 
       if (data?.data?.[0]) {
-        setAvatarUrl(data.data[0].url!);
+        const nextAvatarUrl = data.data[0].url!;
+        await saveProfile({ avatar: nextAvatarUrl });
+        setAvatarUrl(nextAvatarUrl);
         setShowAvatarEditor(false);
         setSelectedAvatarImage(null);
       }
@@ -251,19 +269,12 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
     setLoading(true);
 
     try {
-      await userControllerUpdate({
-        path: { id: String(user.id) },
-        body: {
-          nickname: formData.nickname,
-          description: formData.description,
-          gender: formData.gender as "male" | "female" | "other",
-          avatar: avatarUrl,
-          background: backgroundUrl,
-        },
-      });
-
-      router.push(`/${locale}/account/${user.id}`);
-      router.refresh();
+      await saveProfile();
+      if (typeof window !== "undefined" && window.history.length > 1) {
+        router.back();
+        return;
+      }
+      router.push(`/account/${user.id}`);
     } catch {
     } finally {
       setLoading(false);

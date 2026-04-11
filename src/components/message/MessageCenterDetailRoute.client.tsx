@@ -20,7 +20,7 @@ import {
   getMessageDayKey,
   getMessageDayLabel,
 } from "@/components/message/MessageCenter.utils";
-import { MessageDetailPane } from "@/components/message/MessageDetailPane";
+import { MessagePrivateDetailRoutePane } from "@/components/message/MessagePrivateDetailRoutePane";
 import { useIsMobile } from "@/hooks";
 import { useImageCompression } from "@/hooks/useImageCompression";
 import { useRouter } from "@/i18n/routing";
@@ -1064,7 +1064,7 @@ export function MessageCenterDetailRouteClient() {
   }
 
   return (
-    <MessageDetailPane
+    <MessagePrivateDetailRoutePane
       blockSubmitting={blockSubmitting}
       composerValue={composerValue}
       composerImages={composerImages}

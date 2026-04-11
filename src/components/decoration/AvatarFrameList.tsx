@@ -100,10 +100,10 @@ export function AvatarFrameList() {
         className="flex-1 overflow-y-scroll"
         style={{ scrollbarWidth: "none" }}
       >
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {decorations.map((decoration) => (
             <div
-              className="flex h-31 items-stretch cursor-pointer gap-2 group"
+              className="flex h-24 md:h-31 items-stretch cursor-pointer gap-2 group"
               key={decoration.id}
               onClick={() => handleAvatarFrameClick(decoration.decoration.id)}
             >

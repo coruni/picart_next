@@ -1,11 +1,11 @@
 "use client";
 
-import { ReactNode } from "react";
 import { GuardedLink } from "@/components/shared";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { ReactNode } from "react";
 
 import avatarFrameSvg from "@/assets/images/account/decoration/avatar_frame.svg";
 import avatarFrameActiveSvg from "@/assets/images/account/decoration/avatar_frame_active.svg";
@@ -67,16 +67,16 @@ export function DecorationLayoutClient({
   return (
     <div className="mx-auto flex max-w-4xl flex-1 flex-col rounded-xl bg-card">
       {/* 标题栏 */}
-      <div className="flex h-14 items-center border-b border-border px-6">
+      <div className="flex h-14 items-center border-b border-border px-4 md:px-6">
         <div className="flex h-full flex-1 items-center">
           <span className="pr-6 text-base font-bold">{t("title")}</span>
         </div>
       </div>
 
-      <div className="flex flex-1">
+      <div className="flex min-h-0 flex-1">
         {/* 侧边栏 */}
         <div
-          className="flex w-full max-w-30 flex-col space-y-3 overflow-y-scroll border-r border-border p-4"
+          className="flex min-w-0 w-20 shrink-0 flex-col space-y-2 overflow-y-scroll border-r border-border p-2 md:w-full md:max-w-30 md:space-y-3 md:p-4"
           style={{ scrollbarWidth: "none" }}
         >
           {decorationTypes.map(
@@ -88,11 +88,11 @@ export function DecorationLayoutClient({
                   key={id}
                   href={href}
                   className={cn(
-                    "group flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl p-2",
+                    "group flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl p-1 md:p-2",
                     isActive ? "bg-primary/20" : "hover:bg-primary/20",
                   )}
                 >
-                  <div className="relative size-16">
+                  <div className="relative size-10 md:size-16">
                     <Image
                       src={icon}
                       alt={id}
@@ -112,7 +112,7 @@ export function DecorationLayoutClient({
                       )}
                     />
                   </div>
-                  <span className="text-xs">
+                  <span className="text-[10px] leading-4 text-center md:text-xs">
                     {t(`types.${translationKey}`)}
                   </span>
                 </GuardedLink>
@@ -122,7 +122,9 @@ export function DecorationLayoutClient({
         </div>
 
         {/* 内容区 */}
-        <div className="h-full flex-1 px-4 pt-6">{children}</div>
+        <div className="min-h-0 flex-1 px-3 pt-4 md:h-full md:px-4 md:pt-6">
+          {children}
+        </div>
       </div>
     </div>
   );
