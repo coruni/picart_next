@@ -136,7 +136,8 @@ export function CommentImageGallery({
             key={`${imageAltPrefix}-${index}`}
             className={cn(
               "w-auto!",
-              index === 0 && contentOffset && "pl-17 md:pl-19",
+              index === 0 && contentOffset && "pl-17",
+              !compact && index === 0 && "md:pl-19",
             )}
           >
             <div className="overflow-hidden rounded-xl bg-muted h-45 max-w-80 ">
