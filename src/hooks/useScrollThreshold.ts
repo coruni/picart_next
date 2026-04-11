@@ -24,10 +24,20 @@ export function useScrollThreshold(
 
   const [scrolled, setScrolled] = useState(false);
   const scrolledRef = useRef(scrolled);
+  const thresholdRef = useRef(threshold);
+  const hysteresisRef = useRef(hysteresis);
 
   useEffect(() => {
     scrolledRef.current = scrolled;
   }, [scrolled]);
+
+  useEffect(() => {
+    thresholdRef.current = threshold;
+  }, [threshold]);
+
+  useEffect(() => {
+    hysteresisRef.current = hysteresis;
+  }, [hysteresis]);
 
   useEffect(() => {
     if (!enabled) {
@@ -40,10 +50,12 @@ export function useScrollThreshold(
 
     const evaluate = () => {
       frameId = 0;
+      const currentThreshold = thresholdRef.current;
+      const currentHysteresis = hysteresisRef.current;
       const scrollY = window.scrollY;
       const nextScrolled = scrolledRef.current
-        ? scrollY >= threshold - hysteresis
-        : scrollY >= threshold + hysteresis;
+        ? scrollY >= currentThreshold - currentHysteresis
+        : scrollY >= currentThreshold + currentHysteresis;
 
       if (nextScrolled !== scrolledRef.current) {
         scrolledRef.current = nextScrolled;
@@ -70,7 +82,7 @@ export function useScrollThreshold(
       window.removeEventListener("scroll", requestEvaluate);
       window.removeEventListener("resize", requestEvaluate);
     };
-  }, [enabled, hysteresis, threshold]);
+  }, [enabled]);
 
   return scrolled;
 }

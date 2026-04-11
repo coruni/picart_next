@@ -44,7 +44,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
   const isMobile = useIsMobile();
   const scrolled = useScrollThreshold(isMobile ? 152 : 220, {
     enabled: true,
-    hysteresis: isMobile ? 18 : 24,
+    hysteresis: isMobile ? 4 : 8,
   });
   const localUserId = useUserStore((state) => state.user)?.id;
   const isSelf = user.id === localUserId;

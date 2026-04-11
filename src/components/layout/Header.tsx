@@ -31,9 +31,13 @@ export function Header({ categories }: HeaderProps) {
   const isTransparentBgPage =
     isAccountTransparentPage || isTopicTransparentPage;
 
-  const scrolled = useScrollThreshold(isMobile ? 168 : 220, {
+  // 与 AccountInfo 的 scrolled 状态同步
+  const threshold = isMobile ? 152 : 220;
+  const hysteresis = isMobile ? 4 : 8;
+
+  const scrolled = useScrollThreshold(threshold, {
     enabled: isTransparentBgPage,
-    hysteresis: isMobile ? 16 : 24,
+    hysteresis,
   });
 
   const shouldUseTransparentHeader = isTransparentBgPage && !scrolled;
@@ -116,7 +120,7 @@ export function Header({ categories }: HeaderProps) {
       ref={headerRef}
       className={cn(
         "fixed left-0 right-0 top-0 z-50",
-        "transition-[background-color,box-shadow] duration-300 ease-out",
+        "transition-[background-color,box-shadow] duration-200 ease-out",
         "will-change-[background-color]",
         shouldUseTransparentHeader
           ? "bg-transparent dark:bg-transparent"
