@@ -231,18 +231,23 @@ export default function CreateImagePage() {
         content: formValues.content,
       } as unknown as Parameters<typeof articleControllerCreate>[0]["body"];
 
+      let response;
       if (isEditMode && articleId) {
-        await articleControllerUpdate({
+        response = await articleControllerUpdate({
           path: { id: articleId },
           body: body as Parameters<typeof articleControllerUpdate>[0]["body"],
         });
       } else {
-        await articleControllerCreate({ body });
+        response = await articleControllerCreate({ body });
       }
 
-      try {
-        router.back();
-      } catch {
+      // 跳转到详情页或首页
+      const newArticleId = (response as any)?.data?.data?.id;
+      if (newArticleId) {
+        router.push(`/article/${newArticleId}`);
+      } else if (articleId) {
+        router.push(`/article/${articleId}`);
+      } else {
         router.push("/");
       }
     },
@@ -608,7 +613,7 @@ export default function CreateImagePage() {
     }, 300);
   };
 
-  const handleRemoteImageReady = useCallback((itemId: string) => {
+  const _handleRemoteImageReady = useCallback((itemId: string) => {
     setImageItems((current) =>
       current.map((item) => {
         if (item.id !== itemId) return item;
@@ -666,8 +671,8 @@ export default function CreateImagePage() {
             next[targetIndex] = {
               ...next[targetIndex],
               remoteUrl,
-              status: "uploading",
-              remoteLoaded: false,
+              status: "ready",
+              remoteLoaded: true,
             };
           });
 
@@ -710,6 +715,13 @@ export default function CreateImagePage() {
       e.preventDefault();
       e.stopPropagation();
       setIsImageDropping(false);
+
+      // 如果是内部拖拽排序（dataTransfer 包含 text/plain 类型的索引），不处理上传
+      const dragData = e.dataTransfer.getData("text/plain");
+      if (dragData && !Number.isNaN(Number(dragData))) {
+        return;
+      }
+
       const files = Array.from(e.dataTransfer.files || []).filter((file) =>
         file.type.startsWith("image/"),
       );
@@ -876,41 +888,24 @@ export default function CreateImagePage() {
                                 "scale-[0.98] opacity-70",
                             )}
                           >
-                            {item.previewUrl && (
+                            {item.previewUrl ? (
                               <Image
                                 src={item.previewUrl}
                                 alt={`${item.fileName} ${index + 1}`}
                                 fill
                                 sizes="(max-width: 768px) 50vw, 33vw"
-                                className={cn(
-                                  "object-cover transition-opacity duration-200",
-                                  item.remoteLoaded ? "opacity-0" : "opacity-100",
-                                )}
+                                className="object-cover"
                                 unoptimized
                               />
-                            )}
-
-                            {item.remoteUrl && (
+                            ) : item.remoteUrl ? (
                               <Image
                                 src={item.remoteUrl}
-                                alt={`${values.title || tImage("title")} ${index + 1}`}
+                                alt={`${item.fileName} ${index + 1}`}
                                 fill
                                 sizes="(max-width: 768px) 50vw, 33vw"
-                                className={cn(
-                                  "object-cover transition-opacity duration-200",
-                                  item.previewUrl
-                                    ? item.remoteLoaded
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                    : "opacity-100",
-                                )}
-                                onLoad={() => {
-                                  if (item.previewUrl && !item.remoteLoaded) {
-                                    handleRemoteImageReady(item.id);
-                                  }
-                                }}
+                                className="object-cover"
                               />
-                            )}
+                            ) : null}
 
                             <div className="absolute left-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white">
                               #{index + 1}
