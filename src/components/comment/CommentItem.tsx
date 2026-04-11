@@ -314,7 +314,7 @@ export const CommentItem = memo(function CommentItem({
         <CommentImageGallery
           images={commentState.images || []}
           imageAltPrefix={`Comment image ${commentState.id}`}
-          className={cn("mt-3 pr-4 pl-17", !compact && "md:pl-19 md:pr-6")}
+          className={cn("mt-3 ", !compact && "md:pl-19 md:pr-6")}
           prevButtonClassName="left-21"
           onOpenImageViewer={openImageViewer}
           compact={compact}
