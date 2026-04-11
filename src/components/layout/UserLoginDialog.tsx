@@ -358,7 +358,10 @@ export function UserLoginDialog() {
   return (
     <Dialog open={loginDialogOpen} onOpenChange={handleDialogClose}>
       <DialogOverlay className="z-499!" />
-      <DialogContent className="max-w-110 rounded-2xl max-h-[95vh] bg-card! border border-border! z-500!" hideOverlay>
+      <DialogContent
+        className="max-w-110 rounded-2xl max-h-[95vh] bg-card! border border-border! z-500!"
+        hideOverlay
+      >
         <div className="flex flex-col">
           {/* logo */}
           <div
@@ -388,6 +391,7 @@ export function UserLoginDialog() {
                   label={t("username")}
                   {...loginForm.getFieldProps("account")}
                   fullWidth
+                  autoComplete="username"
                 />
               </FormField>
               <FormField name="password" floating>
@@ -397,6 +401,7 @@ export function UserLoginDialog() {
                   type="password"
                   {...loginForm.getFieldProps("password")}
                   fullWidth
+                  autoComplete="current-password"
                 />
               </FormField>
               {loginError && (

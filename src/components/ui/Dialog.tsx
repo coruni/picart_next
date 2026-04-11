@@ -6,106 +6,94 @@ import {
   Children,
   isValidElement,
   useEffect,
+  useId,
   useMemo,
-  useRef,
   type CSSProperties,
+  type MouseEvent,
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
 
-// Global stack to track nested dialogs
-const dialogStack: string[] = [];
-
-/**
- * 对话框组件属性接口
- * @interface DialogProps
- *
- * @property {boolean} open - 对话框是否打开
- * @property {(open: boolean) => void} onOpenChange - 对话框开关状态变化回调
- * @property {ReactNode} children - 对话框内容
- * @property {boolean} [unmountOnClose=true] - 关闭时是否卸载组件
- */
 export interface DialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: ReactNode;
-  unmountOnClose?: boolean; // 关闭时是否卸载组件，默认 true
+  unmountOnClose?: boolean;
 }
 
-/**
- * 对话框内容组件属性接口
- * @interface DialogContentProps
- *
- * @property {string} [className] - 自定义样式类名
- * @property {ReactNode} children - 内容
- * @property {boolean} [showClose] - 是否显示关闭按钮
- */
 export interface DialogContentProps {
   className?: string;
   children: ReactNode;
   showClose?: boolean;
   style?: CSSProperties;
-  hideOverlay?: boolean; // 兼容旧参数，当前实现中不再使用
+  hideOverlay?: boolean;
 }
 
-/**
- * 对话框头部组件属性接口
- * @interface DialogHeaderProps
- *
- * @property {string} [className] - 自定义样式类名
- * @property {ReactNode} children - 头部内容
- */
 export interface DialogHeaderProps {
   className?: string;
   children: ReactNode;
 }
 
-/**
- * 对话框底部组件属性接口
- * @interface DialogFooterProps
- *
- * @property {string} [className] - 自定义样式类名
- * @property {ReactNode} children - 底部内容
- */
 export interface DialogFooterProps {
   className?: string;
   children: ReactNode;
 }
 
-/**
- * 对话框标题组件属性接口
- * @interface DialogTitleProps
- *
- * @property {string} [className] - 自定义样式类名
- * @property {ReactNode} children - 标题内容
- */
 export interface DialogTitleProps {
   className?: string;
   children: ReactNode;
 }
 
-/**
- * 对话框描述组件属性接口
- * @interface DialogDescriptionProps
- *
- * @property {string} [className] - 自定义样式类名
- * @property {ReactNode} children - 描述内容
- */
 export interface DialogDescriptionProps {
   className?: string;
   children: ReactNode;
 }
 
+const DIALOG_ROOT_SELECTOR = '[data-dialog-root="true"]';
+
+function getOpenDialogRoots(): HTMLElement[] {
+  return Array.from(
+    document.querySelectorAll<HTMLElement>(DIALOG_ROOT_SELECTOR),
+  );
+}
+
+function getTopmostDialogRoot(): HTMLElement | null {
+  const roots = getOpenDialogRoots();
+  return roots.length > 0 ? roots[roots.length - 1] : null;
+}
+
+function isTopmostDialog(dialogId: string): boolean {
+  const topmost = getTopmostDialogRoot();
+  return topmost?.dataset.dialogId === dialogId;
+}
+
+function closeDialogById(dialogId: string) {
+  window.dispatchEvent(
+    new CustomEvent("dialog-close", {
+      detail: { dialogId },
+    }),
+  );
+}
+
+function closeClosestDialogFromElement(element: HTMLElement | null) {
+  const dialogRoot = element?.closest<HTMLElement>(DIALOG_ROOT_SELECTOR);
+  const dialogId = dialogRoot?.dataset.dialogId;
+  if (!dialogId) return;
+
+  if (!isTopmostDialog(dialogId)) return;
+  closeDialogById(dialogId);
+}
+
 function isDialogOverlayElement(node: ReactNode): boolean {
-  if (!isValidElement(node)) return false;
-  return node.type === DialogOverlay;
+  return isValidElement(node) && node.type === DialogOverlay;
 }
 
 function hasDialogOverlayInTree(node: ReactNode): boolean {
   let found = false;
 
   Children.forEach(node, (child) => {
-    if (found || !isValidElement<{ children?: ReactNode }>(child)) return;
+    if (found) return;
+    if (!isValidElement<{ children?: ReactNode }>(child)) return;
 
     if (child.type === DialogOverlay) {
       found = true;
@@ -120,98 +108,52 @@ function hasDialogOverlayInTree(node: ReactNode): boolean {
   return found;
 }
 
-function dispatchDialogClose() {
-  const currentDialogId = document.body.getAttribute("data-dialog-open");
-  const event = new CustomEvent("dialog-close", {
-    detail: { dialogId: currentDialogId },
-  });
-  window.dispatchEvent(event);
-}
-
-/**
- * 对话框组件
- * @component
- *
- * 模态对话框组件，支持遮罩层、ESC 关闭、点击外部关闭等能力
- */
 export function Dialog({
   open,
   onOpenChange,
   children,
   unmountOnClose = true,
 }: DialogProps) {
-  const dialogIdRef = useRef(
-    `dialog-${Math.random().toString(36).substring(2, 9)}`,
-  );
+  const reactId = useId();
+  const dialogId = useMemo(() => {
+    return `dialog-${reactId.replace(/[:]/g, "")}`;
+  }, [reactId]);
 
   const hasCustomOverlay = useMemo(() => {
     return hasDialogOverlayInTree(children);
   }, [children]);
 
   useEffect(() => {
-    const dialogId = dialogIdRef.current;
+    if (!open) return;
 
-    if (open) {
-      // Add to stack and lock body
-      dialogStack.push(dialogId);
-      document.body.style.overflow = "hidden";
-      document.body.setAttribute("data-dialog-open", dialogId);
-    } else {
-      // Remove from stack
-      const index = dialogStack.indexOf(dialogId);
-      if (index > -1) {
-        dialogStack.splice(index, 1);
-      }
-
-      // Only restore body if this dialog is the one that set it
-      const currentDialogId = document.body.getAttribute("data-dialog-open");
-      if (currentDialogId === dialogId) {
-        // If there are other dialogs in stack, transfer to the next one
-        if (dialogStack.length > 0) {
-          const nextDialogId = dialogStack[dialogStack.length - 1];
-          document.body.setAttribute("data-dialog-open", nextDialogId);
-        } else {
-          document.body.style.overflow = "";
-          document.body.removeAttribute("data-dialog-open");
-        }
-      }
-    }
+    document.body.style.overflow = "hidden";
 
     return () => {
-      // Cleanup: remove from stack if still present
-      const index = dialogStack.indexOf(dialogId);
-      if (index > -1) {
-        dialogStack.splice(index, 1);
-      }
-
-      // Restore body if this dialog is the one that set it
-      const currentDialogId = document.body.getAttribute("data-dialog-open");
-      if (currentDialogId === dialogId) {
-        if (dialogStack.length > 0) {
-          const nextDialogId = dialogStack[dialogStack.length - 1];
-          document.body.setAttribute("data-dialog-open", nextDialogId);
-        } else {
+      requestAnimationFrame(() => {
+        const hasOtherDialogs = getOpenDialogRoots().length > 0;
+        if (!hasOtherDialogs) {
           document.body.style.overflow = "";
-          document.body.removeAttribute("data-dialog-open");
         }
-      }
+      });
     };
   }, [open]);
 
   useEffect(() => {
+    if (!open) return;
+
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open) {
-        // Only the topmost dialog responds to ESC
-        const topDialogId = dialogStack[dialogStack.length - 1];
-        if (topDialogId === dialogIdRef.current) {
-          onOpenChange(false);
-        }
-      }
+      if (e.key !== "Escape") return;
+      if (!isTopmostDialog(dialogId)) return;
+
+      onOpenChange(false);
     };
 
     const handleDialogClose = (e: Event) => {
-      const customEvent = e as CustomEvent;
-      if (customEvent.detail?.dialogId === dialogIdRef.current && open) {
+      const customEvent = e as CustomEvent<{ dialogId?: string }>;
+      const targetDialogId = customEvent.detail?.dialogId;
+      if (!targetDialogId) return;
+
+      if (targetDialogId === dialogId) {
         onOpenChange(false);
       }
     };
@@ -223,7 +165,7 @@ export function Dialog({
       document.removeEventListener("keydown", handleEscape);
       window.removeEventListener("dialog-close", handleDialogClose);
     };
-  }, [open, onOpenChange]);
+  }, [open, onOpenChange, dialogId]);
 
   if (!open && unmountOnClose) {
     return null;
@@ -234,20 +176,14 @@ export function Dialog({
   }
 
   return createPortal(
-    <>
-      {!hasCustomOverlay && <DialogOverlay onClick={dispatchDialogClose} />}
+    <div data-dialog-root="true" data-dialog-id={dialogId} className="contents">
+      {!hasCustomOverlay && <DialogOverlay />}
       {children}
-    </>,
+    </div>,
     document.body,
   );
 }
 
-/**
- * 对话框遮罩层组件
- * @component
- *
- * 显示半透明黑色遮罩层，点击时可关闭对话框
- */
 export function DialogOverlay({
   className,
   onClick,
@@ -255,6 +191,14 @@ export function DialogOverlay({
   className?: string;
   onClick?: () => void;
 }) {
+  const handleClick = (e: MouseEvent<HTMLDivElement>) => {
+    onClick?.();
+
+    if (onClick) return;
+
+    closeClosestDialogFromElement(e.currentTarget);
+  };
+
   return (
     <div
       className={cn(
@@ -262,29 +206,20 @@ export function DialogOverlay({
         "animate-in fade-in-0 duration-200",
         className,
       )}
-      onClick={onClick}
+      onClick={handleClick}
       aria-hidden="true"
     />
   );
 }
 
-/**
- * 对话框内容容器组件
- * @component
- *
- * 对话框的主要内容区域，包含背景、圆角、阴影等样式
- */
 export function DialogContent({
   className,
   children,
   showClose = true,
   style,
 }: DialogContentProps) {
-  const contentRef = useRef<HTMLDivElement>(null);
-
   return (
     <div
-      ref={contentRef}
       role="dialog"
       aria-modal="true"
       className={cn(
@@ -303,13 +238,11 @@ export function DialogContent({
   );
 }
 
-/**
- * 对话框关闭按钮组件
- * @component
- *
- * 显示在对话框右上角的 X 关闭按钮
- */
 export function DialogClose({ className }: { className?: string }) {
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    closeClosestDialogFromElement(e.currentTarget);
+  };
+
   return (
     <button
       type="button"
@@ -320,7 +253,7 @@ export function DialogClose({ className }: { className?: string }) {
         "disabled:pointer-events-none",
         className,
       )}
-      onClick={dispatchDialogClose}
+      onClick={handleClick}
       aria-label="Close dialog"
     >
       <X className="h-6 w-6" />
@@ -329,12 +262,6 @@ export function DialogClose({ className }: { className?: string }) {
   );
 }
 
-/**
- * 对话框头部组件
- * @component
- *
- * 用于包裹对话框标题和描述
- */
 export function DialogHeader({ className, children }: DialogHeaderProps) {
   return (
     <div
@@ -348,12 +275,6 @@ export function DialogHeader({ className, children }: DialogHeaderProps) {
   );
 }
 
-/**
- * 对话框底部组件
- * @component
- *
- * 用于包裹对话框底部操作按钮
- */
 export function DialogFooter({ className, children }: DialogFooterProps) {
   return (
     <div
@@ -367,12 +288,6 @@ export function DialogFooter({ className, children }: DialogFooterProps) {
   );
 }
 
-/**
- * 对话框标题组件
- * @component
- *
- * 显示对话框标题文本
- */
 export function DialogTitle({ className, children }: DialogTitleProps) {
   return (
     <h2
@@ -386,12 +301,6 @@ export function DialogTitle({ className, children }: DialogTitleProps) {
   );
 }
 
-/**
- * 对话框描述组件
- * @component
- *
- * 显示对话框描述文本
- */
 export function DialogDescription({
   className,
   children,
