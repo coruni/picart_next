@@ -863,7 +863,8 @@
     "types": {
       "avatarFrame": "头像框",
       "emoji": "表情",
-      "commentBubble": "评论气泡"
+      "commentBubble": "评论气泡",
+      "achievement": "成就徽章"
     },
     "rarity": {
       "common": "普通",
@@ -875,7 +876,10 @@
     "expireAt": "到期",
     "permanent": "永久",
     "ownedHint": "已拥有 10 件，查看更多",
-    "emptyByType": "暂无{type}"
+    "emptyByType": "暂无{type}",
+    "unlocked": "解锁",
+    "unequip": "取消佩戴",
+    "equip": "佩戴"
   },
   "channelPage": {
     "noChannels": "暂无频道",

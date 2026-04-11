@@ -17,7 +17,11 @@ export const AuthorInfoWidget = async ({ author }: AuthorInfoWidgetProps) => {
         <span>{t("authorInfo")}</span>
       </div>
       <div className="flex items-center space-x-3">
-        <Avatar url={author?.avatar} className="size-12" />
+        <Avatar
+          url={author?.avatar}
+          className="size-12"
+          frameUrl={author?.equippedDecorations?.AVATAR_FRAME?.imageUrl}
+        />
         <div className="flex-1">
           <span className="font-medium">
             {author?.nickname || author?.username}

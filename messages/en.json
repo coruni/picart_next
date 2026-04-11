@@ -871,7 +871,8 @@
     "types": {
       "avatarFrame": "Avatar Frame",
       "emoji": "Emoji",
-      "commentBubble": "Comment Bubble"
+      "commentBubble": "Comment Bubble",
+      "achievement": "Achievement"
     },
     "rarity": {
       "common": "Common",
@@ -883,7 +884,10 @@
     "expireAt": "expires",
     "permanent": "Permanent",
     "ownedHint": "Owned 10 items, view more",
-    "emptyByType": "No {type}"
+    "emptyByType": "No {type}",
+    "unlocked": "Unlocked",
+    "unequip": "Unequip",
+    "equip": "Equip"
   },
   "channelPage": {
     "noChannels": "No channels yet",

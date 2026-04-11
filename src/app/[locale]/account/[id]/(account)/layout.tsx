@@ -69,6 +69,7 @@ export default async function AccountLayout({
             <Sidebar
               showArticleCreate={false}
               showRecommendTag={false}
+              showLogin={false}
               showRecommendUser={false}
               author={user}
               showUserInfo

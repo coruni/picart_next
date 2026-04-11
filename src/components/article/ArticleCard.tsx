@@ -274,7 +274,7 @@ export const ArticleCard = ({
           <div className="ml-3 flex flex-col flex-1">
             <Link
               href={`/account/${article?.author?.id}`}
-              className=" flex items-center leading-5"
+              className=" flex items-center leading-5 space-x-1"
             >
               <span className="font-bold hover:text-primary">
                 {
@@ -282,6 +282,24 @@ export const ArticleCard = ({
                     article?.author?.username) as string
                 }
               </span>
+              {article?.author?.equippedDecorations?.ACHIEVEMENT_BADGE && (
+                <span className="relative size-4" data-auto-translate-conten>
+                  <ImageWithFallback
+                    src={
+                      article.author?.equippedDecorations?.ACHIEVEMENT_BADGE
+                        ?.imageUrl
+                    }
+                    alt={
+                      article?.author?.equippedDecorations?.ACHIEVEMENT_BADGE
+                        ?.name
+                    }
+                    title={
+                      article?.author?.equippedDecorations?.ACHIEVEMENT_BADGE
+                        ?.name
+                    }
+                  />
+                </span>
+              )}
             </Link>
             <div className="mt-1 leading-4">
               <span className="text-xs text-secondary ">

@@ -271,7 +271,12 @@ export const CategorySelect = ({
                 className="aspect-square shrink-0 rounded-full object-cover"
               />
             ) : null}
-            <span className="truncate text-xs text-muted-foreground hidden md:inline">
+            <span
+              className={cn(
+                "truncate text-xs text-muted-foreground max-w-full ",
+                selectedOption.avatar && "hidden md:inline ",
+              )}
+            >
               {selectedOption.label}
             </span>
           </span>

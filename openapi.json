@@ -39844,7 +39844,151 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "userId": {
+                                "type": "integer"
+                              },
+                              "decorationId": {
+                                "type": "integer"
+                              },
+                              "decoration": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "imageUrl": {
+                                    "type": "string"
+                                  },
+                                  "previewUrl": {
+                                    "type": "string"
+                                  },
+                                  "rarity": {
+                                    "type": "string"
+                                  },
+                                  "obtainMethod": {
+                                    "type": "string"
+                                  },
+                                  "isPurchasable": {
+                                    "type": "boolean"
+                                  },
+                                  "price": {
+                                    "type": "string"
+                                  },
+                                  "isPermanent": {
+                                    "type": "boolean"
+                                  },
+                                  "validDays": {
+                                    "type": "null"
+                                  },
+                                  "sort": {
+                                    "type": "integer"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "activityId": {
+                                    "type": "null"
+                                  },
+                                  "achievementId": {
+                                    "type": "integer"
+                                  },
+                                  "requiredLikes": {
+                                    "type": "integer"
+                                  },
+                                  "requiredComments": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "type",
+                                  "description",
+                                  "imageUrl",
+                                  "previewUrl",
+                                  "rarity",
+                                  "obtainMethod",
+                                  "isPurchasable",
+                                  "price",
+                                  "isPermanent",
+                                  "validDays",
+                                  "sort",
+                                  "status",
+                                  "activityId",
+                                  "achievementId",
+                                  "requiredLikes",
+                                  "requiredComments",
+                                  "createdAt",
+                                  "updatedAt"
+                                ]
+                              },
+                              "obtainMethod": {
+                                "type": "string"
+                              },
+                              "isPermanent": {
+                                "type": "boolean"
+                              },
+                              "expiresAt": {
+                                "type": "null"
+                              },
+                              "isUsing": {
+                                "type": "boolean"
+                              },
+                              "giftFromUserId": {
+                                "type": "null"
+                              },
+                              "orderId": {
+                                "type": "null"
+                              },
+                              "activityId": {
+                                "type": "null"
+                              },
+                              "remark": {
+                                "type": "string"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "userId",
+                              "decorationId",
+                              "decoration",
+                              "obtainMethod",
+                              "isPermanent",
+                              "expiresAt",
+                              "isUsing",
+                              "giftFromUserId",
+                              "orderId",
+                              "activityId",
+                              "remark",
+                              "createdAt",
+                              "updatedAt"
+                            ]
                           }
                         },
                         "meta": {
@@ -48450,11 +48594,39 @@
               "imageUrl",
               "rarity"
             ]
+          },
+          "ACHIEVEMENT_BADGE": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer"
+              },
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "imageUrl": {
+                "type": "string"
+              },
+              "rarity": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "type",
+              "imageUrl",
+              "rarity"
+            ]
           }
         },
         "required": [
           "COMMENT_BUBBLE",
-          "AVATAR_FRAME"
+          "AVATAR_FRAME",
+          "ACHIEVEMENT_BADGE"
         ]
       },
       "CreatePermissionDto": {

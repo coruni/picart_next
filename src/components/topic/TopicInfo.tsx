@@ -1,9 +1,10 @@
 "use client";
 
 import { tagControllerFollow, tagControllerUnfollow } from "@/api";
+import noTag from "@/assets/images/placeholder/no_tag.webp";
 import { DropdownMenu, MenuItem } from "@/components/shared";
-import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useIsMobile } from "@/hooks";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
 import { cn, formatCompactNumber } from "@/lib";
 import { TagDetail } from "@/types";
@@ -12,7 +13,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
-import noTag from "@/assets/images/placeholder/no_tag.webp";
 
 type TopicInfoProps = {
   tag: TagDetail;
@@ -153,7 +153,7 @@ export const TopicInfo = ({
             </div>
             <div
               data-auto-translate-content
-              className="flex items-center space-x-1 text-[11px] text-muted-foreground md:text-xs"
+              className="flex items-center space-x-1 text-[11px] text-white/80 md:text-xs"
             >
               <span className="line-clamp-1">{tag.description}</span>
             </div>

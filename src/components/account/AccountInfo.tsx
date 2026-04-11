@@ -11,19 +11,19 @@ import {
 import { useIsMobile } from "@/hooks";
 import { useAuthNavigation } from "@/hooks/useAuthNavigation";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
-import { buildMessageCenterHref } from "@/lib/message-routes";
 import { cn, formatCompactNumber } from "@/lib";
 import { isAccountSectionHidden } from "@/lib/account-privacy";
+import { buildMessageCenterHref } from "@/lib/message-routes";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { UserDetail } from "@/types";
 import {
-  AudioLines,
   Ban,
   ChevronDown,
   Dessert,
   MessageCircleMore,
   MoreHorizontal,
+  NotepadTextDashed,
   ShieldAlert,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -269,8 +269,8 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                   {user.nickname || user.username}
                 </span>
               </div>
-              <div className="flex items-center space-x-1 text-[11px] text-muted-foreground md:text-xs">
-                <AudioLines size={14} className="shrink-0 md:size-4" />
+              <div className="flex items-center space-x-1 text-[11px] text-white/80 md:text-xs">
+                <NotepadTextDashed size={14} className="shrink-0" />
                 <span className="line-clamp-1">{user.description}</span>
               </div>
             </div>

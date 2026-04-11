@@ -158,7 +158,13 @@ export function ImageWithFallback({
             : "relative block w-full overflow-hidden",
           wrapperClassName,
         )}
-        style={fill ? undefined : { aspectRatio: width && height ? `${width}/${height}` : undefined }}
+        style={
+          fill
+            ? undefined
+            : {
+                aspectRatio: width && height ? `${width}/${height}` : undefined,
+              }
+        }
       >
         <span
           aria-hidden
@@ -180,7 +186,6 @@ export function ImageWithFallback({
         )}
       >
         <Image
-          {...rest}
           src={src}
           alt={alt}
           fill
@@ -188,6 +193,7 @@ export function ImageWithFallback({
           className={imageClassName}
           onLoad={handleLoad}
           onError={handleError}
+          {...rest}
         />
         {status !== "loaded" && (
           <span
@@ -282,7 +288,9 @@ export function clearImageCache(src?: string): void {
   }
 }
 
-export function getImageCacheStatus(src: string): "loaded" | "error" | undefined {
+export function getImageCacheStatus(
+  src: string,
+): "loaded" | "error" | undefined {
   return imageCache.get(src);
 }
 
@@ -290,9 +298,11 @@ export function preloadImageToCache(src: string): Promise<void> {
   if (imageCache.get(src) === "loaded") {
     return Promise.resolve();
   }
-  return preloadImage(src).then(() => {
-    imageCache.set(src, "loaded");
-  }).catch(() => {
-    imageCache.set(src, "error");
-  });
+  return preloadImage(src)
+    .then(() => {
+      imageCache.set(src, "loaded");
+    })
+    .catch(() => {
+      imageCache.set(src, "error");
+    });
 }

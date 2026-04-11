@@ -20,6 +20,7 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { memo, useCallback, useMemo } from "react";
 import { GuardedLink } from "../shared";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
 import { CommentImageGallery } from "./CommentImageGallery";
@@ -167,9 +168,29 @@ export const CommentReplyItem = memo(function CommentReplyItem({
                 className={cn(avatarClassName, "shrink-0")}
               />
             </GuardedLink>
-            <span className="font-semibold text-foreground">
-              {reply.author?.nickname || reply.author?.username}
-            </span>
+            <div className="font-semibold text-foreground space-x-1 flex items-center">
+              <span>{reply.author?.nickname || reply.author?.username}</span>
+              {reply.author?.equippedDecorations?.ACHIEVEMENT_BADGE && (
+                <span className="relative size-4 inline-flex items-center justify-center">
+                  <ImageWithFallback
+                    src={
+                      reply.author.equippedDecorations.ACHIEVEMENT_BADGE
+                        .imageUrl
+                    }
+                    alt={
+                      reply.author.equippedDecorations.ACHIEVEMENT_BADGE.name
+                    }
+                    title={
+                      reply.author.equippedDecorations.ACHIEVEMENT_BADGE.name
+                    }
+                    width={16}
+                    height={16}
+                    className="object-contain size-4"
+                    wrapperClassName="size-4"
+                  />
+                </span>
+              )}
+            </div>
           </div>
           {showTranslateButton && !contentMatchesLocale ? (
             <button
@@ -292,7 +313,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
         <CommentEditor
           articleId={articleId}
           parentId={reply.id}
-          className="px-0 pt-4"
+          className="px-0! pt-4"
           onSubmitted={onReplySubmitted}
         />
       ) : null}

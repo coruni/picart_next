@@ -9,6 +9,7 @@ import { useUserStore } from "@/stores";
 import type { ArticleDetail } from "@/types";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
 
 type ArticleAuthorProps = {
@@ -40,8 +41,8 @@ export function ArticleAuthor({
   const updatedDate = toDate(updatedAt);
   const isEdited = Boolean(
     createdDate &&
-      updatedDate &&
-      createdDate.getTime() !== updatedDate.getTime(),
+    updatedDate &&
+    createdDate.getTime() !== updatedDate.getTime(),
   );
 
   useEffect(() => {
@@ -131,11 +132,20 @@ export function ArticleAuthor({
         <div className="ml-3 flex min-w-0 flex-1 flex-col">
           <Link
             href={`/account/${author.id}`}
-            className="flex items-center leading-5"
+            className="flex items-center leading-5 space-x-1"
           >
             <span className="truncate font-bold hover:text-primary">
               {(author?.nickname || author?.username) as string}
             </span>
+            {author?.equippedDecorations?.ACHIEVEMENT_BADGE && (
+              <span className="relative size-4" data-auto-translate-conten>
+                <ImageWithFallback
+                  src={author?.equippedDecorations?.ACHIEVEMENT_BADGE?.imageUrl}
+                  alt={author?.equippedDecorations?.ACHIEVEMENT_BADGE?.name}
+                  title={author?.equippedDecorations?.ACHIEVEMENT_BADGE?.name}
+                />
+              </span>
+            )}
           </Link>
 
           <div

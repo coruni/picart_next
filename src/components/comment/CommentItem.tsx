@@ -18,11 +18,13 @@ import {
   EllipsisVertical,
   Languages,
   LoaderCircle,
+  MessageCircleHeart,
   MessageCircleMore,
   ThumbsUp,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
 import { CommentImageGallery } from "./CommentImageGallery";
@@ -225,13 +227,34 @@ export const CommentItem = memo(function CommentItem({
 
         <div className="grow w-0">
           <Link
-            className="flex items-center"
+            className="flex items-center gap-1"
             href={`/account/${commentState.author.id}`}
             onClick={(e) => e.stopPropagation()}
           >
             <span className="text-sm leading-5 font-semibold">
               {commentState.author.nickname || commentState.author.username}
             </span>
+            {commentState.author?.equippedDecorations?.ACHIEVEMENT_BADGE && (
+              <span className="relative size-4">
+                <ImageWithFallback
+                  src={
+                    commentState.author.equippedDecorations.ACHIEVEMENT_BADGE
+                      .imageUrl
+                  }
+                  alt={
+                    commentState.author.equippedDecorations.ACHIEVEMENT_BADGE
+                      .name
+                  }
+                  title={
+                    commentState.author.equippedDecorations.ACHIEVEMENT_BADGE
+                      .name
+                  }
+                  width={16}
+                  height={16}
+                  className="object-contain"
+                />
+              </span>
+            )}
           </Link>
           <span className="text-xs flex-1 text-muted-foreground">
             {/* {formatRelativeTime(commentState.createdAt, tTime)} */}
@@ -341,7 +364,8 @@ export const CommentItem = memo(function CommentItem({
           </div>
         </div>
         {authorLikedComment ? (
-          <span className="inline-flex rounded-md bg-[#FF6B6B]/15 px-2 py-1 text-xs text-[#FF6B6B]">
+          <span className="inline-flex rounded-md bg-[#FF6B6B]/15 px-2 py-1 text-xs text-[#FF6B6B] items-center">
+            <MessageCircleHeart size={12} className="mr-1"/>
             {tComment("authorLiked")}
           </span>
         ) : null}
