@@ -1,5 +1,6 @@
 import recommendUserLeft from "@/assets/images/sidebar/recommend/recommend_user_left.png";
 import recommendUserRight from "@/assets/images/sidebar/recommend/recommend_user_right.png";
+import sloganThumb from "@/assets/images/sidebar/recommend/slogan_thumb.webp";
 import { Link } from "@/i18n/routing";
 import { serverApi } from "@/lib/server-api";
 import { UserList } from "@/types";
@@ -9,6 +10,38 @@ import Image from "next/image";
 import { GuardedLink } from "../shared";
 import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
+
+// 根据用户数据生成标语
+const getUserSlogan = (
+  user: UserList[number],
+  t: (key: string) => string,
+): string => {
+  const articleCount = user.articleCount || 0;
+  const followerCount = (user as any).followerCount || 0;
+
+  // 高文章数 + 高粉丝数
+  if (articleCount >= 50 && followerCount >= 1000) {
+    return t("slogan.popularCreator");
+  }
+  // 高文章数
+  if (articleCount >= 50) {
+    return t("slogan.prolificCreator");
+  }
+  // 高粉丝数
+  if (followerCount >= 1000) {
+    return t("slogan.influentialCreator");
+  }
+  // 中等活跃度
+  if (articleCount >= 10 || followerCount >= 100) {
+    return t("slogan.activeCreator");
+  }
+  // 新手但有潜力
+  if (articleCount > 0 && articleCount < 10) {
+    return t("slogan.risingStar");
+  }
+  // 默认
+  return t("slogan.newCreator");
+};
 
 export const RecommendUserWidget = async () => {
   const t = await getTranslations("sidebar");
@@ -65,7 +98,7 @@ export const RecommendUserWidget = async () => {
               key={article.id}
             >
               <Image
-                src={article.cover || article.images|| ""}
+                src={article.cover || article.images || ""}
                 fill
                 sizes="96px"
                 className="object-cover rounded-lg"
@@ -83,7 +116,14 @@ export const RecommendUserWidget = async () => {
           }}
         >
           <span className="text-sm line-clamp-1 wrap-break-word text-muted-foreground flex-1 text-center">
-            {t("quickPost")}
+            <div className="flex items-center justify-center space-x-1">
+              <Image
+                src={sloganThumb}
+                alt="slogan thumb"
+                className=" object-contain size-5"
+              />
+              <span>{getUserSlogan(user, t)}</span>
+            </div>
           </span>
         </div>
       </GuardedLink>

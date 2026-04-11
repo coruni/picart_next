@@ -263,7 +263,15 @@
     "collectionArticles": "合集帖子",
     "viewMoreArticles": "查看更多",
     "collapse": "收起",
-    "expand": "展开"
+    "expand": "展开",
+    "slogan": {
+      "popularCreator": "热门创作者",
+      "prolificCreator": "创作达人",
+      "influentialCreator": "人气博主",
+      "activeCreator": "活跃创作者",
+      "risingStar": "潜力新星",
+      "newCreator": "新晋创作者"
+    }
   },
   "dashboard": {
     "metaTitle": "工作台",
@@ -933,13 +941,7 @@
     "confirm": "确认"
   },
   "searchBox": {
-    "hotSearches": [
-      "签到",
-      "原神",
-      "崩坏",
-      "星穹铁道",
-      "绝区零"
-    ]
+    "hotSearches": ["签到", "原神", "崩坏", "星穹铁道", "绝区零"]
   },
   "languageSwitcher": {
     "zh": "中文",

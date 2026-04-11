@@ -271,7 +271,15 @@
     "collectionArticles": "Collection Posts",
     "viewMoreArticles": "View More",
     "collapse": "Collapse",
-    "expand": "Expand"
+    "expand": "Expand",
+    "slogan": {
+      "popularCreator": "Popular Creator",
+      "prolificCreator": "Prolific Creator",
+      "influentialCreator": "Influential Creator",
+      "activeCreator": "Active Creator",
+      "risingStar": "Rising Star",
+      "newCreator": "New Creator"
+    }
   },
   "dashboard": {
     "metaTitle": "Dashboard",

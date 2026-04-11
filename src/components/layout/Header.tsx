@@ -22,27 +22,42 @@ export function Header({ categories }: HeaderProps) {
   const siteConfig = useAppStore((state) => state.siteConfig);
   const pathname = usePathname();
   const isMobile = useIsMobile();
-  const isAccountTransparentPage = /^\/account\/[^/]+(?:\/(?:comment|favorite|topic|collection))?$/.test(
-    pathname,
-  );
+
+  const isAccountTransparentPage =
+    /^\/account\/[^/]+(?:\/(?:comment|favorite|topic|collection))?$/.test(
+      pathname,
+    );
   const isTopicTransparentPage = /^\/topic\/[^/]+$/.test(pathname);
   const isTransparentBgPage =
     isAccountTransparentPage || isTopicTransparentPage;
+
   const scrolled = useScrollThreshold(isMobile ? 168 : 220, {
     enabled: isTransparentBgPage,
     hysteresis: isMobile ? 16 : 24,
   });
+
   const shouldUseTransparentHeader = isTransparentBgPage && !scrolled;
 
-  // 搜索页不显示搜索框，避免重复
   const isSearchPage =
     pathname === "/search" || pathname.startsWith("/search/");
 
   const actionButtonClassName = cn(
-    "flex items-center justify-center rounded-full p-2 transition-colors",
+    "flex items-center justify-center rounded-full p-2",
+    "transition-colors duration-300 ease-out",
     "cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800",
     "text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white",
     isTransparentBgPage && !scrolled && "text-white",
+  );
+
+  const tabLabelClassName = cn(
+    "transition-colors duration-300 ease-out",
+    shouldUseTransparentHeader && "text-white",
+  );
+
+  const logoClassName = cn(
+    "line-clamp-1 min-w-0 text-nowrap text-xl font-bold md:text-2xl",
+    "transition-colors duration-300 ease-out",
+    shouldUseTransparentHeader ? "text-white" : "text-primary",
   );
 
   const renderActions = () => (
@@ -76,6 +91,7 @@ export function Header({ categories }: HeaderProps) {
     if (!headerElement) return;
 
     const root = document.documentElement;
+
     const updateHeaderHeight = () => {
       root.style.setProperty(
         "--header-height",
@@ -99,7 +115,9 @@ export function Header({ categories }: HeaderProps) {
     <header
       ref={headerRef}
       className={cn(
-        "fixed left-0 right-0 top-0 z-50 transition-[background-color,color,box-shadow] duration-250 ease-out will-change-[background-color]",
+        "fixed left-0 right-0 top-0 z-50",
+        "transition-[background-color,box-shadow] duration-300 ease-out",
+        "will-change-[background-color]",
         shouldUseTransparentHeader
           ? "bg-transparent dark:bg-transparent"
           : "bg-card",
@@ -113,21 +131,14 @@ export function Header({ categories }: HeaderProps) {
       <div className="mx-auto px-4 md:px-10">
         <div className="flex min-h-15 flex-col justify-center gap-2 py-2 md:h-15 md:min-h-0 md:flex-row md:items-center md:justify-between md:gap-4 md:py-0">
           <div className="flex min-w-0 items-center justify-between gap-3 md:flex-none md:justify-start md:gap-4">
-            <Link
-              href="/"
-              className={cn(
-                "line-clamp-1 min-w-0 text-nowrap text-xl font-bold text-primary md:text-2xl",
-                shouldUseTransparentHeader && "text-white",
-              )}
-            >
+            <Link href="/" className={logoClassName}>
               {siteConfig?.site_name}
             </Link>
+
             <div className="hidden md:block">
               <HeaderTabs
                 categories={categories ?? []}
-                labelClassName={
-                  shouldUseTransparentHeader ? "text-white" : undefined
-                }
+                labelClassName={tabLabelClassName}
               />
             </div>
 
@@ -137,10 +148,9 @@ export function Header({ categories }: HeaderProps) {
           <div className="flex items-center gap-2 md:hidden">
             <HeaderTabs
               categories={categories ?? []}
-              labelClassName={
-                shouldUseTransparentHeader ? "text-white" : undefined
-              }
+              labelClassName={tabLabelClassName}
             />
+
             {!isSearchPage && (
               <SearchBox
                 categories={categories}
