@@ -405,13 +405,25 @@ export function MessageCenterLayoutClient({
     router.push(itemHref);
   };
 
-  // 处理通知权限请求
+  // 处理通知权限请求和开关
   const handleRequestNotificationPermission = async () => {
-    const granted = await requestNotificationPermission();
-    if (typeof window !== "undefined" && "Notification" in window) {
-      setNotificationPermission(Notification.permission);
+    // 如果已有权限，直接切换开关
+    if (notificationPermission === "granted") {
+      const newValue = !notificationEnabled;
+      setNotificationSetting(newValue);
+      setNotificationEnabled(newValue);
+      return;
     }
+
+    // 无权限时请求权限
+    const granted = await requestNotificationPermission();
+
+    // 同步更新权限状态
+    const currentPermission = Notification.permission;
+    setNotificationPermission(currentPermission);
+
     if (granted) {
+      // 授权成功后自动开启
       setNotificationSetting(true);
       setNotificationEnabled(true);
       // 显示测试通知
@@ -419,26 +431,6 @@ export function MessageCenterLayoutClient({
         body: "您现在会收到新消息的桌面通知",
         icon: "/favicon.ico",
         onClick: () => window.focus(),
-      });
-    }
-  };
-
-  // 处理通知开关切换
-  const handleToggleNotification = () => {
-    const newValue = !notificationEnabled;
-    setNotificationSetting(newValue);
-    setNotificationEnabled(newValue);
-    if (newValue && notificationPermission !== "granted") {
-      // 如果开启但无权限，先请求权限
-      void requestNotificationPermission().then((granted) => {
-        if (granted) {
-          setNotificationPermission("granted");
-          showNotification("通知已启用", {
-            body: "您现在会收到新消息的桌面通知",
-            icon: "/favicon.ico",
-            onClick: () => window.focus(),
-          });
-        }
       });
     }
   };
@@ -487,7 +479,6 @@ export function MessageCenterLayoutClient({
             notificationPermission={notificationPermission}
             notificationEnabled={notificationEnabled}
             onRequestNotificationPermission={handleRequestNotificationPermission}
-            onToggleNotification={handleToggleNotification}
           />
           {children}
         </div>

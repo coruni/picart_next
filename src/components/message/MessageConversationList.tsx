@@ -43,7 +43,6 @@ export function MessageConversationList({
   notificationPermission,
   notificationEnabled,
   onRequestNotificationPermission,
-  onToggleNotification,
 }: MessageConversationListProps) {
   const hasCachedMessages = filteredMessages.length > 0;
   const isInitialLoading = isLoading && !hasCachedMessages;
@@ -66,33 +65,27 @@ export function MessageConversationList({
             <h1 className=" font-semibold text-foreground">{copy.title}</h1>
             <p className="mt-1 text-xs text-muted-foreground">{copy.subtitle}</p>
           </div>
-          {/* 通知开关 - 始终显示 */}
-          {notificationPermission === "granted" && onToggleNotification && (
-            <button
-              type="button"
-              onClick={onToggleNotification}
-              className={cn(
-                "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-                notificationEnabled
-                  ? "bg-primary/10 text-primary hover:bg-primary/20"
-                  : "bg-muted text-muted-foreground hover:bg-muted/80"
-              )}
-              title={notificationEnabled ? "点击关闭通知" : "点击开启通知"}
-            >
-              <Bell size={14} className={cn(notificationEnabled && "fill-current")} />
-              <span>{notificationEnabled ? "通知已开" : "通知已关"}</span>
-            </button>
-          )}
-          {/* 未授权时显示请求按钮 */}
-          {notificationPermission !== "granted" && onRequestNotificationPermission && (
+          {/* 通知开关按钮 */}
+          {onRequestNotificationPermission && (
             <button
               type="button"
               onClick={onRequestNotificationPermission}
-              className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
-              title="启用桌面通知"
+              className={cn(
+                "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                notificationPermission === "granted" && notificationEnabled
+                  ? "bg-primary/10 text-primary hover:bg-primary/20"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80"
+              )}
+              title={notificationPermission === "granted" && notificationEnabled ? "点击关闭通知" : "点击开启通知"}
             >
-              <Bell size={14} />
-              <span>开启通知</span>
+              <Bell size={14} className={cn(notificationPermission === "granted" && notificationEnabled && "fill-current")} />
+              <span>
+                {notificationPermission === "granted"
+                  ? notificationEnabled
+                    ? "通知已开"
+                    : "通知已关"
+                  : "开启通知"}
+              </span>
             </button>
           )}
         </div>

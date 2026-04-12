@@ -110,7 +110,6 @@ export type MessageConversationListProps = {
   notificationPermission?: NotificationPermission | null;
   notificationEnabled?: boolean;
   onRequestNotificationPermission?: () => void;
-  onToggleNotification?: () => void;
 };
 
 export type MessageDetailPaneProps = {
