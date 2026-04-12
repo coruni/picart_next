@@ -43,7 +43,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
   const locale = useLocale();
   const router = useAuthNavigation();
   const isMobile = useIsMobile();
-  const scrolled = useScrollThreshold(isMobile ? 152 : 220, {
+  const scrolled = useScrollThreshold(isMobile ? 100 : 220, {
     enabled: true,
     hysteresis: isMobile ? 4 : 8,
   });
@@ -165,7 +165,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
             className={cn(
               "transition-[width,height,top] duration-250 ease-out",
               !scrolled
-                ? "size-11 -top-14 md:size-24 lg:size-29.5 md:-top-20"
+                ? "size-14 -top-20 md:size-24 lg:size-29.5 md:-top-20"
                 : "size-8",
             )}
           />

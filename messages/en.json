@@ -276,6 +276,7 @@
     "viewMoreArticles": "View More",
     "collapse": "Collapse",
     "expand": "Expand",
+    "recharge": "Recharge",
     "slogan": {
       "popularCreator": "Popular Creator",
       "prolificCreator": "Prolific Creator",
@@ -357,7 +358,8 @@
     "minutesAgo": "{count} minutes ago",
     "hoursAgo": "{count} hours ago",
     "daysAgo": "{count} days ago",
-    "monthDay": "{month}/{day}"
+    "monthDay": "{month}/{day}",
+    "edited": "Edited"
   },
   "error": {
     "title": "Something went wrong",
@@ -473,7 +475,8 @@
       "insert": "Insert ({count})"
     },
     "placeholder": "Enter content here",
-    "imageCaptionPlaceholder": "Add image caption..."
+    "imageCaptionPlaceholder": "Add image caption...",
+    "untitledArticle": "Post #{id}"
   },
   "create": {
     "title": "Publish Post"
@@ -538,7 +541,8 @@
     "zoomOut": "Zoom out",
     "zoomIn": "Zoom in",
     "fitWidth": "Fit width",
-    "rotateLeft90": "Rotate left 90掳"
+    "rotateLeft90": "Rotate left 90掳",
+    "viewOriginal": "View Original"
   },
   "imageGallery": {
     "clickToView": "Click to view",

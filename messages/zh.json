@@ -268,6 +268,7 @@
     "viewMoreArticles": "查看更多",
     "collapse": "收起",
     "expand": "展开",
+    "recharge": "充值",
     "slogan": {
       "popularCreator": "热门创作者",
       "prolificCreator": "创作达人",
@@ -349,7 +350,8 @@
     "minutesAgo": "{count}分钟前",
     "hoursAgo": "{count}小时前",
     "daysAgo": "{count}天前",
-    "monthDay": "{month}月{day}日"
+    "monthDay": "{month}月{day}日",
+    "edited": "已编辑"
   },
   "error": {
     "title": "出错了",
@@ -465,7 +467,8 @@
       "insert": "插入 ({count})"
     },
     "placeholder": "请输入内容",
-    "imageCaptionPlaceholder": "添加图片说明..."
+    "imageCaptionPlaceholder": "添加图片说明...",
+    "untitledArticle": "文章 #{id}"
   },
   "create": {
     "title": "发布帖子"
@@ -530,7 +533,8 @@
     "zoomOut": "缩小",
     "zoomIn": "放大",
     "fitWidth": "1:1(定宽)",
-    "rotateLeft90": "向左旋转 90°"
+    "rotateLeft90": "向左旋转 90°",
+    "viewOriginal": "查看原文"
   },
   "imageGallery": {
     "clickToView": "点击查看",

@@ -160,7 +160,7 @@ export function ArticleAuthor({
               {formatRelativeTime(createdAt, t, locale)}
               {isEdited ? (
                 <span className="ml-1">
-                  ({locale.startsWith("zh") ? "已编辑" : "Edited"})
+                  ({t("edited")})
                 </span>
               ) : null}
             </span>

@@ -14,6 +14,7 @@ export interface InlineArticleItem {
 
 export interface InlineArticleListValue {
   articles: InlineArticleItem[];
+  untitledArticle?: string; // Translation for "Post #" fallback
 }
 
 export class InlineArticleListBlot extends BlockEmbed {
@@ -26,10 +27,13 @@ export class InlineArticleListBlot extends BlockEmbed {
     node.classList.add("ql-inline-article-list");
     node.setAttribute("contenteditable", "false");
 
-    const { articles = [] } = value;
+    const { articles = [], untitledArticle } = value;
 
     // Store articles data (包括图片URL，方便编辑时复用)
     node.dataset.articles = JSON.stringify(articles);
+    if (untitledArticle) {
+      node.dataset.untitledArticle = untitledArticle;
+    }
 
     // Format view count
     const formatViews = (count: number): string => {
@@ -37,6 +41,14 @@ export class InlineArticleListBlot extends BlockEmbed {
         return `${(count / 10000).toFixed(1).replace(/\.0$/, "")}万`;
       }
       return String(count);
+    };
+
+    // Get fallback title template
+    const getFallbackTitle = (id: string): string => {
+      if (untitledArticle) {
+        return untitledArticle.replace("{id}", id);
+      }
+      return `Post #${id}`;
     };
 
     // Create cards HTML
@@ -66,7 +78,7 @@ export class InlineArticleListBlot extends BlockEmbed {
         <div class="inline-article-wrapper">
           ${coverHtml}
           <div class="inline-article-content">
-            <div class="inline-article-title">${article.title || `文章 #${article.id}`}</div>
+            <div class="inline-article-title">${article.title || getFallbackTitle(article.id)}</div>
             <div class="inline-article-meta">
               <div class="inline-article-author">
                 <div class="inline-article-author-avatar">${avatarHtml}</div>
@@ -95,7 +107,8 @@ export class InlineArticleListBlot extends BlockEmbed {
   static value(domNode: HTMLElement): InlineArticleListValue {
     try {
       const articles = JSON.parse(domNode.dataset.articles || "[]");
-      return { articles };
+      const untitledArticle = domNode.dataset.untitledArticle;
+      return { articles, untitledArticle };
     } catch {
       return { articles: [] };
     }
@@ -104,7 +117,8 @@ export class InlineArticleListBlot extends BlockEmbed {
   static formats(domNode: HTMLElement): Record<string, unknown> {
     try {
       const articles = JSON.parse(domNode.dataset.articles || "[]");
-      return { articles };
+      const untitledArticle = domNode.dataset.untitledArticle;
+      return { articles, untitledArticle };
     } catch {
       return {};
     }

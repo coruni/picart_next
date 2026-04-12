@@ -1101,7 +1101,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         };
       });
 
-      quill.insertEmbed(index, "inlineArticleList", { articles }, "user");
+      quill.insertEmbed(index, "inlineArticleList", { articles, untitledArticle: t("untitledArticle") }, "user");
 
       quill.setSelection(index + 1, 0, "silent");
       setShowArticleModal(false);

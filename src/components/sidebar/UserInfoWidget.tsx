@@ -62,7 +62,7 @@ export const UserInfoWidget = ({ author }: UserInfoWidgetProps) => {
             <span className="text-secondary text-xs flex-1">
               {t("balance", { amount: userBalance })}
             </span>
-            <Button className="h-full rounded-full px-2 py-0.5 text-xs">充值</Button>
+            <Button className="h-full rounded-full px-2 py-0.5 text-xs">{t("recharge")}</Button>
           </div>
         )}
       </div>

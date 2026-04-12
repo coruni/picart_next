@@ -32,6 +32,7 @@ export const ImageComment = memo(function ImageComment({
   replyAvatarClassName = "size-4",
 }: ImageCommentProps) {
   const t = useTranslations("commentEditor");
+  const tImageViewer = useTranslations("imageViewer");
   const articleId = String(article.id);
 
   // 使用 useMemo 缓存作者信息
@@ -103,7 +104,7 @@ export const ImageComment = memo(function ImageComment({
         <div className="mx-4 my-2 py-1 px-2 bg-muted flex items-center rounded-md text-secondary justify-between cursor-pointer">
           <div className="flex items-center flex-1 text-sm gap-2">
             <FileText size={14} />
-            <span>查看原文</span>
+            <span>{tImageViewer("viewOriginal")}</span>
           </div>
           <ChevronRight size={16} />
         </div>
