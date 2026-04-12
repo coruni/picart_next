@@ -8,4 +8,5 @@ export * from "./rich-text";
 export * from "./time";
 export * from "./number";
 export * from "./translate";
+export * from "./notifications";
 

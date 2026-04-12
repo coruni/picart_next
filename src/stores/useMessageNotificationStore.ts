@@ -8,16 +8,17 @@ import type {
   MessageControllerGetPrivateConversationsResponse,
   MessageControllerSearchResponse,
 } from "@/api/types.gen";
+import { buildMessageCenterHref } from "@/lib/message-routes";
 import {
   messageSocketClient,
   type MessageSocketConnectedPayload,
   type MessageSocketErrorPayload,
+  type MessageSocketListItem,
   type MessageSocketPrivateConversationPayload,
   type MessageSocketPrivateConversationsResponse,
-  type MessageSocketListItem,
   type MessageSocketUnreadPayload,
 } from "@/lib/message-socket";
-import { buildMessageCenterHref } from "@/lib/message-routes";
+import { showNotification } from "@/lib/notifications";
 import type { UnreadCount } from "@/types";
 import { create } from "zustand";
 import { useUserStore } from "./useUserStore";
@@ -716,6 +717,25 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
           } else {
             void get().fetchDropdownMessages("private");
           }
+        }
+
+        // 显示系统通知 (Windows Toast Notification)
+        if (type === "private" && message.senderId !== currentUserId) {
+          const content = message.isRecalled
+            ? "[已撤回]"
+            : message.content || "[图片]";
+          const senderName = message.sender?.nickname || message.sender?.username || message.title || "新消息";
+          showNotification(senderName, {
+            body: content,
+            icon: message.sender?.avatar || "/favicon.ico",
+            tag: `private-message-${message.id}`,
+            requireInteraction: false,
+            onClick: () => {
+              window.focus();
+              const href = buildMessageCenterHref("private", message.counterpartId!);
+              window.location.href = href;
+            },
+          });
         }
 
         socket.emit("getUnreadCount");

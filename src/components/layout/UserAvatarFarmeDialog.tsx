@@ -1,23 +1,23 @@
 ﻿"use client";
 
-import { MODAL_IDS } from "@/lib/modal-helpers";
-import { useModalStore } from "@/stores/useModalStore";
-import { Dialog, DialogContent, DialogHeader } from "../ui/Dialog";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { DecorationControllerFindAllResponse } from "@/types";
 import {
   decorationControllerFindAll,
-  decorationControllerUseDecoration,
   decorationControllerUnuseDecoration,
+  decorationControllerUseDecoration,
 } from "@/api";
-import { CheckCircle2Icon } from "lucide-react";
-import Image from "next/image";
-import { cn, formatExpiryTime } from "@/lib";
-import { Button } from "../ui/Button";
-import { Avatar } from "../ui/Avatar";
-import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { InfiniteScrollStatus } from "@/components/shared";
+import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
+import { cn, formatExpiryTime } from "@/lib";
+import { MODAL_IDS } from "@/lib/modal-helpers";
+import { useModalStore } from "@/stores/useModalStore";
+import { DecorationControllerFindAllResponse } from "@/types";
+import { CheckCircle2Icon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Avatar } from "../ui/Avatar";
+import { Button } from "../ui/Button";
+import { Dialog, DialogContent, DialogHeader } from "../ui/Dialog";
 
 type AvatarFrame = DecorationControllerFindAllResponse["data"]["data"][0];
 
@@ -137,12 +137,23 @@ export function UserAvatarFarmeDialog() {
       }
 
       // 更新本地状态
-      setAvatarFrames((prev) =>
-        prev.map((frame) => ({
-          ...frame,
-          isUsing: frame.id === selectedFrame.id ? !frame.isUsing : frame.isUsing,
-        }))
-      );
+      if (!selectedFrame.isUsing) {
+        // 装备新装饰品：将选中的设为使用中，其他同类型的设为未使用
+        setAvatarFrames((prev) =>
+          prev.map((frame) => ({
+            ...frame,
+            isUsing: frame.id === selectedFrame.id,
+          }))
+        );
+      } else {
+        // 卸载当前装饰品：仅将选中的设为未使用
+        setAvatarFrames((prev) =>
+          prev.map((frame) => ({
+            ...frame,
+            isUsing: frame.id === selectedFrame.id ? false : frame.isUsing,
+          }))
+        );
+      }
 
       setSelectedFrame((prev) =>
         prev ? { ...prev, isUsing: !prev.isUsing } : null
@@ -157,7 +168,7 @@ export function UserAvatarFarmeDialog() {
   return (
     <Dialog open={avatarFrameDialogOpen} onOpenChange={handleDialogClose}>
       <DialogContent className="max-w-2xl rounded-2xl p-0">
-        <DialogHeader className="mb-0 border border-border px-6 py-4 text-sm font-semibold">
+        <DialogHeader className="mb-0 border-b border-border px-6 py-4 text-sm font-semibold">
           {t("title")}
         </DialogHeader>
 

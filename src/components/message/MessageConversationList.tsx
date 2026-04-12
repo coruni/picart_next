@@ -40,6 +40,8 @@ export function MessageConversationList({
   tCommon,
   tMsg,
   tTime,
+  notificationPermission,
+  onRequestNotificationPermission,
 }: MessageConversationListProps) {
   const hasCachedMessages = filteredMessages.length > 0;
   const isInitialLoading = isLoading && !hasCachedMessages;
@@ -62,19 +64,17 @@ export function MessageConversationList({
             <h1 className=" font-semibold text-foreground">{copy.title}</h1>
             <p className="mt-1 text-xs text-muted-foreground">{copy.subtitle}</p>
           </div>
-          {/* <div className="rounded-2xl border border-border/70 bg-muted/40 px-3 py-2 text-right">
-            <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-              {copy.realtime}
-            </div>
-            <div
-              className={cn(
-                "mt-1 text-sm font-semibold",
-                socketConnected ? "text-primary" : "text-muted-foreground",
-              )}
+          {notificationPermission !== "granted" && onRequestNotificationPermission && (
+            <button
+              type="button"
+              onClick={onRequestNotificationPermission}
+              className="flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
+              title="启用桌面通知"
             >
-              {socketConnected ? "Online" : "Offline"}
-            </div>
-          </div> */}
+              <Bell size={14} />
+              <span>通知</span>
+            </button>
+          )}
         </div>
 
         <div className="relative mt-4">

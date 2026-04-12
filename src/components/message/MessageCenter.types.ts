@@ -107,6 +107,8 @@ export type MessageConversationListProps = {
   tCommon: (key: string) => string;
   tMsg: (key: string, values?: Record<string, string | number | Date>) => string;
   tTime: (key: string, values?: Record<string, string | number | Date>) => string;
+  notificationPermission?: NotificationPermission | null;
+  onRequestNotificationPermission?: () => void;
 };
 
 export type MessageDetailPaneProps = {

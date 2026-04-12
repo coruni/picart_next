@@ -11,6 +11,7 @@ import { useMessageNotificationStore, useUserStore } from "@/stores";
 import { userControllerFindOne } from "@/api";
 import { useLocale, useTranslations } from "next-intl";
 import { useParams, useSearchParams } from "next/navigation";
+import { requestNotificationPermission, showNotification } from "@/lib/notifications";
 import {
   type ReactNode,
   useDeferredValue,
@@ -128,6 +129,7 @@ export function MessageCenterLayoutClient({
     avatarUrl?: string;
     counterpartId: number;
   } | null>(null);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | null>(null);
 
   const tabs: MessageCenterTabItem[] = [
     { value: "all", label: tMsg("tabs.all") },
@@ -215,6 +217,13 @@ export function MessageCenterLayoutClient({
     setSelectedTab,
     token,
   ]);
+
+  // 检查通知权限状态
+  useEffect(() => {
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setNotificationPermission(Notification.permission);
+    }
+  }, []);
 
   useEffect(() => {
     if (selectedTab === initialTab || !isAuthenticated) {
@@ -393,6 +402,22 @@ export function MessageCenterLayoutClient({
     router.push(itemHref);
   };
 
+  // 处理通知权限请求
+  const handleRequestNotificationPermission = async () => {
+    const granted = await requestNotificationPermission();
+    if (typeof window !== "undefined" && "Notification" in window) {
+      setNotificationPermission(Notification.permission);
+    }
+    if (granted) {
+      // 显示测试通知
+      showNotification("通知已启用", {
+        body: "您现在会收到新消息的桌面通知",
+        icon: "/favicon.ico",
+        onClick: () => window.focus(),
+      });
+    }
+  };
+
   const mobilePageStyle =
     isMobile && mobileViewportHeight
       ? {
@@ -434,6 +459,8 @@ export function MessageCenterLayoutClient({
             tCommon={tCommon}
             tMsg={tMsg}
             tTime={tTime}
+            notificationPermission={notificationPermission}
+            onRequestNotificationPermission={handleRequestNotificationPermission}
           />
           {children}
         </div>

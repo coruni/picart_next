@@ -11,6 +11,19 @@ export interface MessageSocketListItem {
   id: number;
   senderId?: number | null;
   receiverId?: number | null;
+  sender?: {
+    id?: number;
+    username?: string;
+    nickname?: string;
+    avatar?: string;
+  } | null;
+  receiver?: {
+    id?: number;
+    username?: string;
+    nickname?: string;
+    avatar?: string;
+  } | null;
+  counterpartId?: number;
   content: string;
   messageKind?: string;
   payload?: Record<string, unknown> | null;

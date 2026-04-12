@@ -1,8 +1,8 @@
 "use client";
 
 import {
-  decorationControllerGetMyAchievementBadges,
-  DecorationControllerGetMyAchievementBadgesResponse,
+  decorationControllerGetMyDecorations,
+  DecorationControllerGetMyDecorationsResponse,
   decorationControllerUnuseDecoration,
   decorationControllerUseDecoration,
 } from "@/api";
@@ -14,22 +14,22 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/Button";
 
-type AchievementBadgeItem =
-  DecorationControllerGetMyAchievementBadgesResponse["data"]["data"][number];
+type UserDecorationItem =
+  DecorationControllerGetMyDecorationsResponse["data"]["data"][number];
 
-function resolveBadgeName(item: AchievementBadgeItem) {
+function resolveBadgeName(item: UserDecorationItem) {
   return item.decoration?.name || "-";
 }
 
-function resolveBadgeDescription(item: AchievementBadgeItem) {
+function resolveBadgeDescription(item: UserDecorationItem) {
   return item.decoration?.description || "";
 }
 
-function resolveBadgeImage(item: AchievementBadgeItem) {
+function resolveBadgeImage(item: UserDecorationItem) {
   return item.decoration?.imageUrl || "";
 }
 
-function resolveBadgeEarnedAt(item: AchievementBadgeItem) {
+function resolveBadgeEarnedAt(item: UserDecorationItem) {
   return item.createdAt;
 }
 
@@ -37,9 +37,9 @@ export function AchievementBadgeList() {
   const t = useTranslations("decorationPage");
   const tc = useTranslations("common");
   const locale = useLocale();
-  const [items, setItems] = useState<AchievementBadgeItem[]>([]);
+  const [items, setItems] = useState<UserDecorationItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<AchievementBadgeItem | null>(
+  const [selectedItem, setSelectedItem] = useState<UserDecorationItem | null>(
     null,
   );
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -49,13 +49,13 @@ export function AchievementBadgeList() {
     const fetchBadges = async () => {
       setLoading(true);
       try {
-        const response = await decorationControllerGetMyAchievementBadges({
-          query: { page: 1, limit: 100 },
+        const response = await decorationControllerGetMyDecorations({
+          query: { type: "ACHIEVEMENT_BADGE", page: 1, limit: 100 },
         });
         const data = response?.data as
           | {
               data?: {
-                data?: AchievementBadgeItem[];
+                data?: UserDecorationItem[];
               };
             }
           | undefined;
@@ -72,7 +72,7 @@ export function AchievementBadgeList() {
     void fetchBadges();
   }, []);
 
-  const handleItemClick = (item: AchievementBadgeItem) => {
+  const handleItemClick = (item: UserDecorationItem) => {
     setSelectedItem(item);
     setDialogOpen(true);
   };
@@ -82,35 +82,38 @@ export function AchievementBadgeList() {
     setSelectedItem(null);
   };
 
-  const handleDecorationEquip = async (data: AchievementBadgeItem) => {
+  const handleDecorationEquip = async (data: UserDecorationItem) => {
     setIsLoading(true);
     try {
       if (!data.isUsing) {
+        // Use decorationId for equipping
         await decorationControllerUseDecoration({
           path: {
-            decorationId: String(data.id),
+            decorationId: String(data.decorationId),
           },
         });
       } else {
         await decorationControllerUnuseDecoration({
-          path: { decorationId: String(data.id) },
+          path: { decorationId: String(data.decorationId) },
         });
       }
       // 刷新数据
-      const response = await decorationControllerGetMyAchievementBadges({
-        query: { page: 1, limit: 100 },
+      const response = await decorationControllerGetMyDecorations({
+        query: { type: "ACHIEVEMENT_BADGE", page: 1, limit: 100 },
       });
       const resData = response?.data as
         | {
             data?: {
-              data?: AchievementBadgeItem[];
+              data?: UserDecorationItem[];
             };
           }
         | undefined;
       const newItems = resData?.data?.data || [];
       setItems(newItems);
       // 更新选中项状态
-      const updatedItem = newItems.find((item) => item.id === data.id);
+      const updatedItem = newItems.find(
+        (item) => item.decorationId === data.decorationId,
+      );
       if (updatedItem) {
         setSelectedItem(updatedItem);
       }
@@ -146,7 +149,7 @@ export function AchievementBadgeList() {
         className="flex-1 overflow-y-auto"
         style={{ scrollbarWidth: "none" }}
       >
-        <div className="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-4">
           {items.map((item, index) => {
             const imageUrl = resolveBadgeImage(item);
             const earnedAt = resolveBadgeEarnedAt(item);
@@ -194,11 +197,11 @@ export function AchievementBadgeList() {
       {/* Detail Dialog */}
       <Dialog open={dialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent
-          className=" md:max-w-lg overflow-hidden max-h-[65vh]! h-full rounded-2xl border-0 p-0"
+          className="h-full max-h-[65vh]! overflow-hidden rounded-2xl border-0 p-0 md:max-w-lg"
           showClose={true}
         >
           {selectedItem && (
-            <div className="flex flex-col flex-1 h-full">
+            <div className="flex h-full flex-1 flex-col">
               {/* Header with badge image */}
               <div className="relative flex h-48 items-center justify-center bg-linear-to-br from-green-200 to-green-100 dark:from-green-800 dark:to-green-900">
                 {selectedImageUrl ? (
@@ -216,7 +219,7 @@ export function AchievementBadgeList() {
               </div>
 
               {/* Content */}
-              <div className="flex flex-col items-center px-6 pb-6 pt-4 flex-1">
+              <div className="flex flex-1 flex-col items-center px-6 pt-4 pb-6">
                 {/* Badge Name */}
                 <h3 className="mb-2 text-lg font-bold text-foreground">
                   {resolveBadgeName(selectedItem)}
@@ -242,7 +245,7 @@ export function AchievementBadgeList() {
                   fullWidth
                   loading={isLoading}
                   variant={selectedItem.isUsing ? "secondary" : "default"}
-                  className="w-full mt-auto rounded-full h-10"
+                  className="mt-auto h-10 w-full rounded-full"
                   onClick={() => handleDecorationEquip(selectedItem)}
                 >
                   {selectedItem?.isUsing ? t("unequip") : t("equip")}
