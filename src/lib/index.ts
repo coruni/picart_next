@@ -9,4 +9,5 @@ export * from "./time";
 export * from "./number";
 export * from "./translate";
 export * from "./notifications";
+export * from "./notification-settings";
 

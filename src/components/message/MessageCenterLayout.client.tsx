@@ -12,6 +12,7 @@ import { userControllerFindOne } from "@/api";
 import { useLocale, useTranslations } from "next-intl";
 import { useParams, useSearchParams } from "next/navigation";
 import { requestNotificationPermission, showNotification } from "@/lib/notifications";
+import { getNotificationSetting, setNotificationSetting } from "@/lib/notification-settings";
 import {
   type ReactNode,
   useDeferredValue,
@@ -130,6 +131,7 @@ export function MessageCenterLayoutClient({
     counterpartId: number;
   } | null>(null);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission | null>(null);
+  const [notificationEnabled, setNotificationEnabled] = useState<boolean>(false);
 
   const tabs: MessageCenterTabItem[] = [
     { value: "all", label: tMsg("tabs.all") },
@@ -222,6 +224,7 @@ export function MessageCenterLayoutClient({
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
       setNotificationPermission(Notification.permission);
+      setNotificationEnabled(getNotificationSetting());
     }
   }, []);
 
@@ -409,11 +412,33 @@ export function MessageCenterLayoutClient({
       setNotificationPermission(Notification.permission);
     }
     if (granted) {
+      setNotificationSetting(true);
+      setNotificationEnabled(true);
       // 显示测试通知
       showNotification("通知已启用", {
         body: "您现在会收到新消息的桌面通知",
         icon: "/favicon.ico",
         onClick: () => window.focus(),
+      });
+    }
+  };
+
+  // 处理通知开关切换
+  const handleToggleNotification = () => {
+    const newValue = !notificationEnabled;
+    setNotificationSetting(newValue);
+    setNotificationEnabled(newValue);
+    if (newValue && notificationPermission !== "granted") {
+      // 如果开启但无权限，先请求权限
+      void requestNotificationPermission().then((granted) => {
+        if (granted) {
+          setNotificationPermission("granted");
+          showNotification("通知已启用", {
+            body: "您现在会收到新消息的桌面通知",
+            icon: "/favicon.ico",
+            onClick: () => window.focus(),
+          });
+        }
       });
     }
   };
@@ -460,7 +485,9 @@ export function MessageCenterLayoutClient({
             tMsg={tMsg}
             tTime={tTime}
             notificationPermission={notificationPermission}
+            notificationEnabled={notificationEnabled}
             onRequestNotificationPermission={handleRequestNotificationPermission}
+            onToggleNotification={handleToggleNotification}
           />
           {children}
         </div>

@@ -2,6 +2,7 @@
 
 import { useUserStore } from "@/stores";
 import { useEffect } from "react";
+import { getNotificationSetting } from "./notification-settings";
 
 /**
  * 请求通知权限
@@ -40,6 +41,11 @@ export function showNotification(
   }
 
   if (Notification.permission !== "granted") {
+    return null;
+  }
+
+  // 检查用户设置是否关闭了通知
+  if (!getNotificationSetting()) {
     return null;
   }
 
@@ -106,3 +112,4 @@ export function usePrivateMessageNotification() {
     },
   };
 }
+
