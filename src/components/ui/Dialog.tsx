@@ -226,7 +226,7 @@ export function DialogContent({
         "fixed left-[50%] top-[50%] z-101 w-full max-w-lg",
         "translate-x-[-50%] translate-y-[-50%]",
         "rounded-lg border bg-card border-border p-6 shadow-xl",
-        "animate-in fade-in-0 zoom-in-95 duration-200",
+        "animate-in fade-in-0 zoom-in-95 duration-200 ",
         className,
       )}
       style={style}

@@ -692,7 +692,7 @@ export function CommentEditor({
               </button>
 
               {emojiOpen && (
-                <div className="absolute top-full z-10 mb-3 w-max max-w-[calc(100vw-2rem)] min-w-[18rem] md:min-w-[24rem] overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
+                <div className="absolute top-full z-10 mb-3 w-max max-w-[calc(100vw-1rem)] min-w-[18rem] md:min-w-[24rem] overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
                   <div className="flex h-10 items-center gap-2 rounded-t-xl border-b border-border bg-border px-2.5">
                     <button
                       type="button"

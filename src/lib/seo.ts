@@ -143,7 +143,7 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
         shortcut: "/favicon.ico",
         apple: "/apple-touch-icon.png",
       },
-      manifest: "/site.webmanifest",
+      manifest: "/manifest.webmanifest",
     };
   }
 

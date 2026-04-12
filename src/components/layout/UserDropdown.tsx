@@ -1,7 +1,7 @@
 ﻿"use client";
 
-import { GuardedLink } from "@/components/shared/GuardedLink";
 import { looksLikeAdminRole } from "@/components/dashboard/utils";
+import { GuardedLink } from "@/components/shared/GuardedLink";
 import { Button } from "@/components/ui/Button";
 import {
   Dialog,
@@ -425,7 +425,7 @@ export function UserDropdown() {
       </div>
 
       <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-        <DialogContent className="flex max-h-[85vh] w-[calc(100vw-2rem)] max-w-md flex-col overflow-hidden rounded-2xl p-0 md:hidden">
+        <DialogContent className="flex max-h-[85vh] w-[calc(100vw-1rem)] max-w-md flex-col overflow-hidden rounded-2xl p-0 md:hidden">
           <div className="shrink-0 border-b border-border px-4 py-4">
             <div className="flex items-center gap-3">
               <Avatar

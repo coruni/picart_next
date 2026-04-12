@@ -143,7 +143,7 @@ export const ImageComment = memo(function ImageComment({
       <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
         <DialogOverlay className="z-400!" />
 
-      <DialogContent className="max-w-lg w-[calc(100vw-2rem)] p-0 overflow-visible z-401!">
+      <DialogContent className="max-w-lg w-[calc(100vw-1rem)] p-0 overflow-visible z-401!">
           <DialogHeader className="">
             <DialogTitle className=" font-semibold">{t("send")}</DialogTitle>
           </DialogHeader>

@@ -146,7 +146,7 @@ export function AchievementBadgeList() {
         className="flex-1 overflow-y-auto"
         style={{ scrollbarWidth: "none" }}
       >
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2 md:gap-4 md:grid-cols-3">
           {items.map((item, index) => {
             const imageUrl = resolveBadgeImage(item);
             const earnedAt = resolveBadgeEarnedAt(item);
@@ -194,7 +194,7 @@ export function AchievementBadgeList() {
       {/* Detail Dialog */}
       <Dialog open={dialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent
-          className="max-w-lg overflow-hidden max-h-[65vh]! h-full rounded-2xl border-0 p-0"
+          className=" md:max-w-lg overflow-hidden max-h-[65vh]! h-full rounded-2xl border-0 p-0"
           showClose={true}
         >
           {selectedItem && (
