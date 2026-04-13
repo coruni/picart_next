@@ -27,6 +27,10 @@
     "viewAllResults": "View all results",
     "noResults": "No results found",
     "retry": "Retry",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "confirmDelete": "Confirm Delete",
+    "confirmDeleteDescription": "This action cannot be undone. Are you sure you want to continue?",
     "numberUnits": {
       "thousand": "k",
       "tenThousand": "w",
@@ -239,6 +243,8 @@
     "scrollNext": "Scroll right",
     "emptyEmoji": "No emoji",
     "send": "Send",
+    "save": "Save",
+    "cancel": "Cancel",
     "uploadFailed": "Failed to upload image",
     "submitSuccess": "Comment posted",
     "submitFailed": "Failed to post comment"

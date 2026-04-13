@@ -2,6 +2,7 @@
 
 import {
   commentControllerCreate,
+  commentControllerUpdate,
   emojiControllerFindAll,
   emojiControllerIncrementUseCount,
   uploadControllerUploadFile,
@@ -45,9 +46,13 @@ async function loadQuill() {
 type CommentEditorProps = {
   articleId: string | number;
   parentId?: number | string;
+  commentId?: number; // 编辑模式时使用
+  initialContent?: string; // 编辑模式初始内容
   className?: string;
   onSubmitted?: () => void | Promise<void>;
+  onCancel?: () => void; // 取消编辑回调
   minHeight?: string | number;
+  disableImageUpload?: boolean; // 禁用图片上传（编辑模式）
 };
 
 type EmojiRecord = {
@@ -218,11 +223,16 @@ function AttachmentPreviewCard({
 export function CommentEditor({
   articleId,
   parentId,
+  commentId,
+  initialContent,
   className,
   onSubmitted,
+  onCancel,
   minHeight,
+  disableImageUpload = false,
 }: CommentEditorProps) {
   const t = useTranslations("commentEditor");
+  const isEditMode = Boolean(commentId);
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const emojiPanelRef = useRef<HTMLDivElement>(null);
@@ -292,6 +302,12 @@ export function CommentEditor({
       });
 
       quillRef.current = quill;
+
+      // 编辑模式下设置初始内容
+      if (isEditMode && initialContent) {
+        quill.root.innerHTML = initialContent;
+      }
+
       const syncEditorState = () => {
         setEditorHasContent(hasQuillContent(quill));
       };
@@ -599,25 +615,40 @@ export function CommentEditor({
         .map((attachment) => attachment.url)
         .filter((url): url is string => Boolean(url));
 
-      await commentControllerCreate({
-        body: {
-          content: editorHtml,
-          articleId: articleIdValue,
-          parentId: parentIdValue,
-          images,
-        },
-      });
+      if (isEditMode && commentId) {
+        // 编辑模式：更新评论
+        await commentControllerUpdate({
+          path: { id: String(commentId) },
+          body: {
+            content: editorHtml,
+            images,
+          },
+        });
+      } else {
+        // 创建模式：新建评论
+        await commentControllerCreate({
+          body: {
+            content: editorHtml,
+            articleId: articleIdValue,
+            parentId: parentIdValue,
+            images,
+          },
+        });
+      }
 
       quill.setContents([{ insert: "\n" }], "silent");
       setEditorHasContent(false);
       attachments.forEach((attachment) => {
-        URL.revokeObjectURL(attachment.previewUrl);
+        URL.revokeObjectURL(attachment.previewPreviewUrl);
       });
       setAttachments([]);
       setEmojiOpen(false);
       await onSubmitted?.();
     } catch (error) {
-      console.error("Failed to create comment:", error);
+      console.error(
+        isEditMode ? "Failed to update comment:" : "Failed to create comment:",
+        error,
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -781,43 +812,60 @@ export function CommentEditor({
               )}
             </div>
 
-            <button
-              type="button"
-              className="flex size-8 items-center justify-center rounded-full transition hover:bg-muted hover:text-primary"
-              aria-label={t("image")}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <ImagePlus className="size-5" />
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={handleFileChange}
-            />
+            {!disableImageUpload && (
+              <>
+                <button
+                  type="button"
+                  className="flex size-8 items-center justify-center rounded-full transition hover:bg-muted hover:text-primary"
+                  aria-label={t("image")}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <ImagePlus className="size-5" />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+              </>
+            )}
           </div>
 
-          <Button
-            type="button"
-            variant="primary"
-            size="md"
-            loading={isSubmitting}
-            className={cn(
-              "h-8 min-w-24 rounded-full px-4 font-semibold shadow-none",
-              canSubmit
-                ? "hover:opacity-90"
-                : "cursor-not-allowed bg-[#e9eef7] text-[#b7c1d3]",
+          <div className="flex items-center gap-2">
+            {isEditMode && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 rounded-full px-4 font-semibold shadow-none"
+                onClick={() => onCancel?.()}
+              >
+                {t("cancel")}
+              </Button>
             )}
-            onClick={() => void handleSubmit()}
-            disabled={!canSubmit}
-          >
-            <span className="inline-flex items-center gap-2">
-              <Send className="size-4" />
-              {t("send")}
-            </span>
-          </Button>
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              loading={isSubmitting}
+              className={cn(
+                "h-8  rounded-full font-semibold",
+                canSubmit
+                  ? "hover:opacity-90"
+                  : "cursor-not-allowed bg-[#e9eef7] text-[#b7c1d3]",
+              )}
+              onClick={() => void handleSubmit()}
+              disabled={!canSubmit}
+            >
+              <span className="inline-flex items-center gap-2">
+                <Send className="size-4" />
+                {isEditMode ? t("save") : t("send")}
+              </span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

@@ -348,7 +348,10 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             likes={article.likes!}
           />
         </div>
-        <ArticleCommentList articleId={id} />
+        <ArticleCommentList
+          articleId={id}
+          articleAuthorId={article.author?.id}
+        />
       </div>
       <div className="right-container">
         <Sidebar

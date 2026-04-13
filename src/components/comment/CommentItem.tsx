@@ -1,7 +1,12 @@
 "use client";
 
-import { commentControllerLike } from "@/api";
+import {
+  commentControllerLike,
+  commentControllerRemove,
+  commentControllerSetPin,
+} from "@/api";
 import { ImageViewer } from "@/components/article/ImageViewer";
+import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
 import {
@@ -20,7 +25,11 @@ import {
   LoaderCircle,
   MessageCircleHeart,
   MessageCircleMore,
+  PencilLine,
+  Pin,
+  PinOff,
   ThumbsUp,
+  Trash2,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
@@ -32,6 +41,7 @@ import { CommentReplyList } from "./CommentReplyList";
 
 type CommentItemProps = {
   articleId: string;
+  articleAuthorId?: string;
   data: CommentList[number] & { images?: (string | ImageInfo)[] };
   onSubmitted?: () => void | Promise<void>;
   onReplyClick?: (commentId: number) => void;
@@ -43,6 +53,7 @@ type CommentItemProps = {
 // 使用 memo 优化性能
 export const CommentItem = memo(function CommentItem({
   articleId,
+  articleAuthorId,
   data,
   onSubmitted,
   onReplyClick,
@@ -51,6 +62,7 @@ export const CommentItem = memo(function CommentItem({
   compact = false,
 }: CommentItemProps) {
   const tComment = useTranslations("commentList");
+  const tCommon = useTranslations("common");
   const tAccountInfo = useTranslations("accountInfo");
   const tTime = useTranslations("time");
   const locale = useLocale();
@@ -65,6 +77,7 @@ export const CommentItem = memo(function CommentItem({
     [tAccountInfo],
   );
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  const currentUserId = useUserStore((state) => state.user?.id);
   const [commentState, setCommentState] = useState(data);
   const [viewerVisible, setViewerVisible] = useState(false);
   const [viewerImages, setViewerImages] = useState<string[]>([]);
@@ -73,6 +86,7 @@ export const CommentItem = memo(function CommentItem({
   const [activeReplyParentId, setActiveReplyParentId] = useState<number | null>(
     null,
   );
+  const [isEditing, setIsEditing] = useState(false);
   const authorLikedComment = Boolean(commentState.isAuthorLiked);
 
   // 使用 useMemo 缓存内容处理结果
@@ -143,6 +157,83 @@ export const CommentItem = memo(function CommentItem({
     setActiveReplyParentId(null);
     await onSubmitted?.();
   }, [onSubmitted]);
+
+  const handleDelete = useCallback(async () => {
+    if (!commentState.id) return;
+    try {
+      await commentControllerRemove({
+        path: { id: String(commentState.id) },
+      });
+      await onSubmitted?.();
+    } catch (error) {
+      console.error("Failed to delete comment:", error);
+    }
+  }, [commentState.id, onSubmitted]);
+
+  const handleTogglePin = useCallback(async () => {
+    if (!commentState.id) return;
+    try {
+      await commentControllerSetPin({
+        path: { id: String(commentState.id) },
+        body: { isPinned: !commentState.isPinned },
+      });
+      setCommentState((prev) => ({ ...prev, isPinned: !prev.isPinned }));
+      await onSubmitted?.();
+    } catch (error) {
+      console.error("Failed to toggle pin:", error);
+    }
+  }, [commentState.id, commentState.isPinned, onSubmitted]);
+
+  // 判断是否有菜单权限
+  const isCommentAuthor = currentUserId === commentState.author?.id;
+  const isArticleAuthor = currentUserId === Number(articleAuthorId);
+  const canDelete = isCommentAuthor;
+  const canEdit = isCommentAuthor;
+  const canPin = isArticleAuthor && !commentState.parentId; // 只有文章作者可以置顶主评论
+
+  const menuItems: MenuItem[] = useMemo(() => {
+    const items: MenuItem[] = [];
+    if (canEdit) {
+      items.push({
+        label: tCommon("edit"),
+        icon: <PencilLine size={16} />,
+        onClick: () => setIsEditing(true),
+      });
+    }
+    if (canPin) {
+      items.push({
+        label: commentState.isPinned ? tCommon("unpin") : tCommon("pin"),
+        icon: commentState.isPinned ? <PinOff size={16} /> : <Pin size={16} />,
+        onClick: handleTogglePin,
+      });
+    }
+    if (canDelete) {
+      items.push({
+        label: tCommon("delete"),
+        icon: <Trash2 size={16} />,
+        className: "text-red-500",
+        confirmDialog: {
+          enabled: true,
+          title: tCommon("confirmDelete"),
+          description: tCommon("confirmDeleteDescription"),
+          confirmText: tCommon("delete"),
+          cancelText: tCommon("cancel"),
+        },
+        onClick: handleDelete,
+      });
+    }
+    return items;
+  }, [
+    canDelete,
+    canEdit,
+    canPin,
+    commentState.isPinned,
+    handleDelete,
+    handleTogglePin,
+    tCommon,
+  ]);
+
+  const hasMenuPermission = menuItems.length > 0;
 
   const handleToggleLike = useCallback(
     async (commentId: number | undefined) => {
@@ -292,15 +383,24 @@ export const CommentItem = memo(function CommentItem({
               )}
             </button>
           )}
-          <button
-            title={tComment("translate")}
-            className={cn(
-              "flex items-center justify-center outline-none text-secondary focus:outline-0 border-0",
-              "cursor-pointer p-1 font-semibold size-7",
-            )}
-          >
-            <EllipsisVertical size={20} />
-          </button>
+          {hasMenuPermission && (
+            <DropdownMenu
+              items={menuItems}
+              trigger={
+                <button
+                  type="button"
+                  className={cn(
+                    "flex items-center justify-center outline-none text-secondary focus:outline-0 border-0",
+                    "cursor-pointer p-1 font-semibold size-7 hover:text-primary",
+                  )}
+                >
+                  <EllipsisVertical size={20} />
+                </button>
+              }
+              position="right"
+              menuClassName="top-8"
+            />
+          )}
         </div>
       </div>
 
@@ -374,11 +474,25 @@ export const CommentItem = memo(function CommentItem({
             {tComment("authorLiked")}
           </span>
         ) : null}
-        {activeReplyParentId === commentState.id ? (
+        {isEditing ? (
+          <CommentEditor
+            articleId={articleId}
+            commentId={commentState.id}
+            initialContent={commentState.content}
+            disableImageUpload
+            className="px-0! md:px-0! pt-4"
+            onSubmitted={() => {
+              setIsEditing(false);
+              void onSubmitted?.();
+            }}
+            onCancel={() => setIsEditing(false)}
+          />
+        ) : null}
+        {!isEditing && activeReplyParentId === commentState.id ? (
           <CommentEditor
             articleId={articleId}
             parentId={commentState.id}
-            className="px-0 pt-4"
+            className="px-0! md:px-0! pt-4"
             onSubmitted={handleReplySubmitted}
           />
         ) : null}
