@@ -48,7 +48,7 @@ import { CommentReplyList } from "./CommentReplyList";
 
 type CommentItemProps = {
   articleId: string;
-  articleAuthorId?: string;
+  articleAuthorId?: string | number;
   data: CommentList[number] & { images?: (string | ImageInfo)[] };
   onSubmitted?: () => void | Promise<void>;
   onReplyClick?: (commentId: number) => void;
