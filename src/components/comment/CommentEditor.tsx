@@ -639,7 +639,7 @@ export function CommentEditor({
       quill.setContents([{ insert: "\n" }], "silent");
       setEditorHasContent(false);
       attachments.forEach((attachment) => {
-        URL.revokeObjectURL(attachment.previewPreviewUrl);
+        URL.revokeObjectURL(attachment.previewUrl);
       });
       setAttachments([]);
       setEmojiOpen(false);
