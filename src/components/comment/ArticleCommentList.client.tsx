@@ -30,7 +30,7 @@ const MemoizedCommentItem = memo(CommentItem);
 
 type ArticleCommentListProps = {
   articleId: string;
-  articleAuthorId?: string;
+  articleAuthorId?: string | number;
   pageSize?: number;
   commentCount?: number;
   showTopCommentEditor?: boolean;
