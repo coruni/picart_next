@@ -4,9 +4,15 @@ import {
   commentControllerLike,
   commentControllerRemove,
   commentControllerSetPin,
+  reportControllerCreate,
 } from "@/api";
 import { ImageViewer } from "@/components/article/ImageViewer";
-import { DropdownMenu, type MenuItem } from "@/components/shared";
+import {
+  createDefaultReportReasons,
+  DropdownMenu,
+  ReportDialog,
+  type MenuItem,
+} from "@/components/shared";
 import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
 import {
@@ -28,6 +34,7 @@ import {
   PencilLine,
   Pin,
   PinOff,
+  ShieldAlert,
   ThumbsUp,
   Trash2,
 } from "lucide-react";
@@ -63,6 +70,7 @@ export const CommentItem = memo(function CommentItem({
 }: CommentItemProps) {
   const tComment = useTranslations("commentList");
   const tCommon = useTranslations("common");
+  const tArticleMenu = useTranslations("articleMenu");
   const tAccountInfo = useTranslations("accountInfo");
   const tTime = useTranslations("time");
   const locale = useLocale();
@@ -87,7 +95,50 @@ export const CommentItem = memo(function CommentItem({
     null,
   );
   const [isEditing, setIsEditing] = useState(false);
+  const [showReportDialog, setShowReportDialog] = useState(false);
+  const [reportSubmitting, setReportSubmitting] = useState(false);
   const authorLikedComment = Boolean(commentState.isAuthorLiked);
+
+  // 举报相关
+  const reportReasons = createDefaultReportReasons(tArticleMenu);
+
+  const requireAuth = useCallback(() => {
+    if (isAuthenticated) return true;
+    openLoginDialog();
+    return false;
+  }, [isAuthenticated]);
+
+  const handleOpenReportDialog = useCallback(() => {
+    if (!requireAuth()) return;
+    setShowReportDialog(true);
+  }, [requireAuth]);
+
+  const handleReportComment = useCallback(
+    async (payload: {
+      category: "SPAM" | "ABUSE" | "INAPPROPRIATE" | "COPYRIGHT" | "OTHER";
+      reason: string;
+    }) => {
+      if (!commentState.id) return;
+      setReportSubmitting(true);
+      try {
+        await reportControllerCreate({
+          body: {
+            type: "COMMENT",
+            category: payload.category,
+            reason: payload.reason,
+            reportedCommentId: commentState.id,
+            reportedUserId: commentState.author?.id,
+          },
+        });
+      } catch (error) {
+        console.error("Failed to report comment:", error);
+      } finally {
+        setReportSubmitting(false);
+        setShowReportDialog(false);
+      }
+    },
+    [commentState.id, commentState.author?.id],
+  );
 
   // 使用 useMemo 缓存内容处理结果
   const contentHtml = useMemo(
@@ -222,6 +273,15 @@ export const CommentItem = memo(function CommentItem({
         onClick: handleDelete,
       });
     }
+    // 所有人都能看到举报选项（除了自己举报自己）
+    if (!isCommentAuthor) {
+      items.push({
+        label: tCommon("report"),
+        icon: <ShieldAlert size={16} />,
+        onClick: handleOpenReportDialog,
+        className: "text-red-400",
+      });
+    }
     return items;
   }, [
     canDelete,
@@ -230,10 +290,10 @@ export const CommentItem = memo(function CommentItem({
     commentState.isPinned,
     handleDelete,
     handleTogglePin,
+    handleOpenReportDialog,
+    isCommentAuthor,
     tCommon,
   ]);
-
-  const hasMenuPermission = menuItems.length > 0;
 
   const handleToggleLike = useCallback(
     async (commentId: number | undefined) => {
@@ -383,24 +443,22 @@ export const CommentItem = memo(function CommentItem({
               )}
             </button>
           )}
-          {hasMenuPermission && (
-            <DropdownMenu
-              items={menuItems}
-              trigger={
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center justify-center outline-none text-secondary focus:outline-0 border-0",
-                    "cursor-pointer p-1 font-semibold size-7 hover:text-primary",
-                  )}
-                >
-                  <EllipsisVertical size={20} />
-                </button>
-              }
-              position="right"
-              menuClassName="top-8"
-            />
-          )}
+          <DropdownMenu
+            items={menuItems}
+            trigger={
+              <button
+                type="button"
+                className={cn(
+                  "flex items-center justify-center outline-none text-secondary focus:outline-0 border-0",
+                  "cursor-pointer p-1 font-semibold size-7 hover:text-primary",
+                )}
+              >
+                <EllipsisVertical size={20} />
+              </button>
+            }
+            position="right"
+            menuClassName="top-full"
+          />
         </div>
       </div>
 
@@ -522,6 +580,13 @@ export const CommentItem = memo(function CommentItem({
           zIndexClassName={viewerZIndexClassName}
         />
       )}
+      <ReportDialog
+        open={showReportDialog}
+        onOpenChange={setShowReportDialog}
+        reasons={reportReasons}
+        loading={reportSubmitting}
+        onSubmit={handleReportComment}
+      />
     </article>
   );
 });

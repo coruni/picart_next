@@ -30,7 +30,8 @@
     "pin": "置顶",
     "unpin": "取消置顶",
     "confirmDelete": "确认删除",
-    "confirmDeleteDescription": "删除后将无法恢复，确定要继续吗？"
+    "confirmDeleteDescription": "删除后将无法恢复，确定要继续吗？",
+    "report": "举报"
   },
   "nav": {
     "home": "首页",

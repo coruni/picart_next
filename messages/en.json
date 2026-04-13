@@ -31,6 +31,7 @@
     "unpin": "Unpin",
     "confirmDelete": "Confirm Delete",
     "confirmDeleteDescription": "This action cannot be undone. Are you sure you want to continue?",
+    "report": "Report",
     "numberUnits": {
       "thousand": "k",
       "tenThousand": "w",
