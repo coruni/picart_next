@@ -30,6 +30,7 @@ type SidebarProps = {
   collectionId?: number;
   collectionName?: string;
   currentArticleId?: number;
+  tabSticky?: boolean;
 };
 
 export async function Sidebar({
@@ -49,14 +50,16 @@ export async function Sidebar({
   collectionId,
   collectionName,
   currentArticleId,
+  tabSticky = false,
 }: SidebarProps) {
   const currentUser = await getCurrentUser();
   const shouldShowBanner =
     showBanner && (randomBanner ? Math.random() >= 0.5 : true);
 
   const sidebarItems = [
-    showArticleCreate &&
-      currentUser && <ArticleCreateWidget key="article-create" />,
+    showArticleCreate && currentUser && (
+      <ArticleCreateWidget key="article-create" />
+    ),
     showSearchHistory && <SearchHistory key="search-history" />,
     showHotSearch && <HotSearch key="hot-search" />,
     shouldShowBanner && (
@@ -87,7 +90,12 @@ export async function Sidebar({
       </div>
       {/* Sticky element */}
       {showSiteContact && (
-        <div className={cn("sticky self-start pt-4", "top-header-tabs")}>
+        <div
+          className={cn(
+            "sticky self-start pt-4",
+            tabSticky ? "top-header-tabs" : "top-header",
+          )}
+        >
           <SiteContactWidget />
         </div>
       )}
