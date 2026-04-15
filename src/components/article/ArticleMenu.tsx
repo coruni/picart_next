@@ -83,11 +83,12 @@ export function ArticleMenu({
     (currentUser?.id != null && String(currentUser.id) === String(authorId));
 
   // 检查用户是否有 article:manage 权限
-  const hasManagePermission = currentUser?.roles?.some(
-    (role) => role.permissions?.some(
-      (permission) => permission.name === "article:manage"
-    )
-  ) ?? false;
+  const hasManagePermission =
+    currentUser?.roles?.some((role) =>
+      role.permissions?.some(
+        (permission) => permission.name === "article:manage",
+      ),
+    ) ?? false;
 
   // 可以编辑的条件：是作者或有管理权限
   const canEdit = isOwner || hasManagePermission;
@@ -338,10 +339,7 @@ export function ArticleMenu({
             <MoreHorizontal
               size={20}
               strokeWidth={2}
-              className={cn(
-                "transition-transform duration-180 ease-out",
-                isOpen && "scale-105",
-              )}
+              className={cn("transition-transform duration-180 ease-out")}
             />
           </button>
         )}

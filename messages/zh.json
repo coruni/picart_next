@@ -26,7 +26,12 @@
     "noSearchHistory": "暂无搜索历史",
     "viewAllResults": "查看全部结果",
     "noResults": "未找到相关内容",
-    "retry": "重试"
+    "retry": "重试",
+    "pin": "置顶",
+    "unpin": "取消置顶",
+    "confirmDelete": "确认删除",
+    "confirmDeleteDescription": "删除后将无法恢复，确定要继续吗？",
+    "report": "举报"
   },
   "nav": {
     "home": "首页",
@@ -231,6 +236,8 @@
     "scrollNext": "向后滚动",
     "emptyEmoji": "暂无表情",
     "send": "发送",
+    "save": "保存",
+    "cancel": "取消",
     "uploadFailed": "图片上传失败",
     "submitSuccess": "评论发送成功",
     "submitFailed": "评论发送失败"

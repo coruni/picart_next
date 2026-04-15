@@ -30,6 +30,7 @@ const MemoizedCommentItem = memo(CommentItem);
 
 type ArticleCommentListProps = {
   articleId: string;
+  articleAuthorId?: string | number;
   pageSize?: number;
   commentCount?: number;
   showTopCommentEditor?: boolean;
@@ -46,6 +47,7 @@ type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
 
 export function ArticleCommentList({
   articleId,
+  articleAuthorId,
   pageSize = 10,
   commentCount,
   showTopCommentEditor = true,
@@ -320,6 +322,7 @@ export function ArticleCommentList({
           {comments.map((comment) => (
             <MemoizedCommentItem
               articleId={articleId}
+              articleAuthorId={articleAuthorId}
               data={comment}
               key={comment.id}
               onSubmitted={refreshComments}

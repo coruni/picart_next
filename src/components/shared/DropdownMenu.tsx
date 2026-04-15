@@ -131,13 +131,13 @@ export function DropdownMenu({
 
         <div
           className={cn(
-            "absolute top-8 z-10 min-w-50 w-max rounded-xl border border-border/70 bg-card shadow-lg transition-opacity overflow-hidden",
+            "absolute top-full z-10 min-w-50 w-max rounded-xl border border-border/70 bg-card shadow-lg transition-opacity overflow-hidden",
             position === "right"
               ? "right-0 origin-top-right"
               : "left-0 origin-top-left",
             isOpen
               ? "opacity-100"
-              : "pointer-events-none opacity-0 -z-10! max-h-0 min-h-0",
+              : "pointer-events-none hidden -z-10!",
             menuClassName,
           )}
           role="menu"

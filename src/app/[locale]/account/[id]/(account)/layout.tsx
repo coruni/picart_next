@@ -72,6 +72,7 @@ export default async function AccountLayout({
               showLogin={false}
               showRecommendUser={false}
               author={user}
+              tabSticky
               showUserInfo
             />
           </div>

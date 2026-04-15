@@ -133,7 +133,7 @@ export function ReportDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-sm rounded-2xl border border-border bg-card p-5">
-        <DialogHeader className="mb-0 flex-1 space-y-0 text-center sm:text-center">
+        <DialogHeader className="mb-0 flex-1 space-y-0 p-0! text-center sm:text-center">
           <DialogTitle className="text-lg font-semibold">
             {t("reportDialog.title")}
           </DialogTitle>

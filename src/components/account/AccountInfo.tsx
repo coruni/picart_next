@@ -307,14 +307,14 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                         !scrolled
                           ? "bg-[#000000a6] text-white dark:text-black"
                           : "bg-gray-50 text-foreground",
-                        isOpen && "scale-105 text-primary",
+                        isOpen && " text-primary",
                       )}
                     >
                       <MoreHorizontal size={18} />
                     </button>
                   )}
                   className="shrink-0"
-                  menuClassName="top-10"
+                  menuClassName="top-9"
                 />
                 <FollowButtonWithStatus
                   author={user}
