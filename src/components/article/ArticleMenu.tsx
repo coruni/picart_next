@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  articleControllerDislikeArticle,
   articleControllerRemove,
   articleControllerSetFeatured,
   articleControllerSetProfilePin,
@@ -70,6 +71,7 @@ export function ArticleMenu({
   const [deleteSubmitting, setDeleteSubmitting] = useState(false);
   const [featureSubmitting, setFeatureSubmitting] = useState(false);
   const [pinSubmitting, setPinSubmitting] = useState(false);
+  const [dislikeSubmitting, setDislikeSubmitting] = useState(false);
   const [featuredState, setFeaturedState] = useState(Boolean(isFeatured));
   const [profilePinnedState, setProfilePinnedState] = useState(
     Boolean(isPinnedOnProfile),
@@ -148,8 +150,20 @@ export function ArticleMenu({
     }
   };
 
-  const handleDislikeContent = () => {
-    if (!requireAuth()) return;
+  const handleDislikeContent = async () => {
+    if (!requireAuth() || dislikeSubmitting) return;
+
+    setDislikeSubmitting(true);
+    try {
+      await articleControllerDislikeArticle({
+        path: { id: articleId },
+        body: {},
+      });
+    } catch (error) {
+      console.error("Failed to dislike article:", error);
+    } finally {
+      setDislikeSubmitting(false);
+    }
   };
 
   const handleEditArticle = () => {
@@ -241,6 +255,7 @@ export function ArticleMenu({
           label: t("dislikeType"),
           icon: <HeartOff size={18} />,
           onClick: handleDislikeContent,
+          disabled: dislikeSubmitting,
         },
       ];
 

@@ -6681,6 +6681,25 @@ export type ArticleControllerCheckFavoriteStatusResponses = {
 
 export type ArticleControllerCheckFavoriteStatusResponse = ArticleControllerCheckFavoriteStatusResponses[keyof ArticleControllerCheckFavoriteStatusResponses];
 
+export type ArticleControllerGetDislikeStatusData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/article/{id}/dislike/status';
+};
+
+export type ArticleControllerGetDislikeStatusResponses = {
+    200: unknown;
+};
+
 export type ArticleControllerUpdateBrowseProgressData = {
     body: RecordBrowseHistoryDto;
     headers?: {
@@ -6827,6 +6846,46 @@ export type ArticleControllerBatchDeleteBrowseHistoryData = {
 };
 
 export type ArticleControllerBatchDeleteBrowseHistoryResponses = {
+    201: unknown;
+};
+
+export type ArticleControllerCancelDislikeArticleData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/article/{id}/dislike';
+};
+
+export type ArticleControllerCancelDislikeArticleResponses = {
+    200: unknown;
+};
+
+export type ArticleControllerDislikeArticleData = {
+    body: {
+        [key: string]: unknown;
+    };
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/article/{id}/dislike';
+};
+
+export type ArticleControllerDislikeArticleResponses = {
     201: unknown;
 };
 
@@ -6992,13 +7051,6 @@ export type CommentControllerFindAllResponses = {
                             imageUrl: string;
                             rarity: string;
                         };
-                        ACHIEVEMENT_BADGE?: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
                     };
                     isMember: boolean;
                 };
@@ -7092,13 +7144,6 @@ export type CommentControllerFindAllResponses = {
                                 rarity: string;
                             };
                             COMMENT_BUBBLE: {
-                                id: number;
-                                name: string;
-                                type: string;
-                                imageUrl: string;
-                                rarity: string;
-                            };
-                            ACHIEVEMENT_BADGE?: {
                                 id: number;
                                 name: string;
                                 type: string;
@@ -7205,13 +7250,6 @@ export type CommentControllerFindAllResponses = {
                                 rarity: string;
                             };
                             COMMENT_BUBBLE: {
-                                id: number;
-                                name: string;
-                                type: string;
-                                imageUrl: string;
-                                rarity: string;
-                            };
-                            ACHIEVEMENT_BADGE?: {
                                 id: number;
                                 name: string;
                                 type: string;
@@ -7502,13 +7540,6 @@ export type CommentControllerFindOneResponses = {
                             imageUrl: string;
                             rarity: string;
                         };
-                        ACHIEVEMENT_BADGE?: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
                     };
                     isMember: boolean;
                 };
@@ -7602,13 +7633,6 @@ export type CommentControllerFindOneResponses = {
                                 rarity: string;
                             };
                             COMMENT_BUBBLE: {
-                                id: number;
-                                name: string;
-                                type: string;
-                                imageUrl: string;
-                                rarity: string;
-                            };
-                            ACHIEVEMENT_BADGE?: {
                                 id: number;
                                 name: string;
                                 type: string;
@@ -7715,13 +7739,6 @@ export type CommentControllerFindOneResponses = {
                                 rarity: string;
                             };
                             COMMENT_BUBBLE: {
-                                id: number;
-                                name: string;
-                                type: string;
-                                imageUrl: string;
-                                rarity: string;
-                            };
-                            ACHIEVEMENT_BADGE?: {
                                 id: number;
                                 name: string;
                                 type: string;
@@ -8085,13 +8102,6 @@ export type CommentControllerFindAllCommentsResponses = {
                             imageUrl: string;
                             rarity: string;
                         };
-                        ACHIEVEMENT_BADGE?: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
                     };
                     isMember: boolean;
                 };
@@ -8185,13 +8195,6 @@ export type CommentControllerFindAllCommentsResponses = {
                                 rarity: string;
                             };
                             COMMENT_BUBBLE: {
-                                id: number;
-                                name: string;
-                                type: string;
-                                imageUrl: string;
-                                rarity: string;
-                            };
-                            ACHIEVEMENT_BADGE?: {
                                 id: number;
                                 name: string;
                                 type: string;
@@ -8298,13 +8301,6 @@ export type CommentControllerFindAllCommentsResponses = {
                                 rarity: string;
                             };
                             COMMENT_BUBBLE: {
-                                id: number;
-                                name: string;
-                                type: string;
-                                imageUrl: string;
-                                rarity: string;
-                            };
-                            ACHIEVEMENT_BADGE?: {
                                 id: number;
                                 name: string;
                                 type: string;
@@ -8619,13 +8615,6 @@ export type CommentControllerGetUserCommentsResponses = {
                             imageUrl: string;
                             rarity: string;
                         };
-                        ACHIEVEMENT_BADGE?: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
                     };
                     isMember: boolean;
                 };
@@ -8719,13 +8708,6 @@ export type CommentControllerGetUserCommentsResponses = {
                                 rarity: string;
                             };
                             COMMENT_BUBBLE: {
-                                id: number;
-                                name: string;
-                                type: string;
-                                imageUrl: string;
-                                rarity: string;
-                            };
-                            ACHIEVEMENT_BADGE?: {
                                 id: number;
                                 name: string;
                                 type: string;
@@ -8832,13 +8814,6 @@ export type CommentControllerGetUserCommentsResponses = {
                                 rarity: string;
                             };
                             COMMENT_BUBBLE: {
-                                id: number;
-                                name: string;
-                                type: string;
-                                imageUrl: string;
-                                rarity: string;
-                            };
-                            ACHIEVEMENT_BADGE?: {
                                 id: number;
                                 name: string;
                                 type: string;
@@ -11203,13 +11178,6 @@ export type MessageControllerSearchResponses = {
                             imageUrl: string;
                             rarity: string;
                         };
-                        ACHIEVEMENT_BADGE?: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
                     };
                 };
                 articleId?: number;
@@ -11659,13 +11627,6 @@ export type MessageControllerGetPrivateConversationResponses = {
                             rarity: string;
                         };
                         COMMENT_BUBBLE: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
-                        ACHIEVEMENT_BADGE?: {
                             id: number;
                             name: string;
                             type: string;
@@ -13049,8 +13010,8 @@ export type DecorationControllerGetMyDecorationsData = {
         'Device-Type'?: string;
     };
     path?: never;
-    query: {
-        type: string;
+    query?: {
+        type?: string;
         /**
          * 页码
          */
@@ -15208,13 +15169,6 @@ export type CollectionControllerFindAllResponses = {
                             rarity: string;
                         };
                         COMMENT_BUBBLE: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
-                        ACHIEVEMENT_BADGE?: {
                             id: number;
                             name: string;
                             type: string;
