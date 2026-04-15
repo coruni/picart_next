@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <title>All Notifications Active</title>
+  <path d="M12 3.25c-2.9 0-5.25 2.35-5.25 5.25v2.2c0 .64-.2 1.26-.56 1.8L5.2 13.9c-.62.92.04 2.18 1.15 2.18h11.3c1.11 0 1.77-1.26 1.15-2.18l-.99-1.4a3.2 3.2 0 0 1-.56-1.8V8.5c0-2.9-2.35-5.25-5.25-5.25Z" fill="#8FD3FF" stroke="#6680FF" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M9.6 17.1a2.4 2.4 0 0 0 4.8 0" stroke="#4A5FE5" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M15.8 4.85a5.15 5.15 0 0 1 1.95 3.96" stroke="#5EC8F8" stroke-width="1.8" stroke-linecap="round"/>
+  <circle cx="12" cy="8.25" r="1.1" fill="#4A5FE5"/>
+</svg>

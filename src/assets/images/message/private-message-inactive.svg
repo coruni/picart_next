@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+  <title>Private Message Inactive</title>
+  <path d="M12 4.25c-4.56 0-8.25 2.97-8.25 6.64 0 2.12 1.23 4 3.15 5.22l-.58 2.72c-.1.49.4.87.84.63l3.01-1.64c.59.1 1.2.15 1.83.15 4.56 0 8.25-2.97 8.25-6.64S16.56 4.25 12 4.25Z" fill="#F3F6FC" stroke="#A9B4CC" stroke-width="1.8" stroke-linejoin="round"/>
+  <circle cx="8.5" cy="11" r="1.05" fill="#A9B4CC"/>
+  <circle cx="12" cy="11" r="1.05" fill="#A9B4CC"/>
+  <circle cx="15.5" cy="11" r="1.05" fill="#A9B4CC"/>
+  <path d="M17.35 7.85c.9.56 1.46 1.36 1.46 2.27" stroke="#A9B4CC" stroke-width="1.8" stroke-linecap="round"/>
+</svg>

@@ -1,5 +1,13 @@
 "use client";
 
+import AllActiveIcon from "@/assets/images/message/all-notifications-active.svg";
+import AllInactiveIcon from "@/assets/images/message/all-notifications-inactive.svg";
+import NoticeActiveIcon from "@/assets/images/message/notifications-active.svg";
+import NoticeInactiveIcon from "@/assets/images/message/notifications-inactive.svg";
+import PrivateActiveIcon from "@/assets/images/message/private-message-active.svg";
+import PrivateInactiveIcon from "@/assets/images/message/private-message-inactive.svg";
+import SystemActiveIcon from "@/assets/images/message/system-active.svg";
+import SystemInactiveIcon from "@/assets/images/message/system-inactive.svg";
 import { resolveMessagePreviewText } from "@/components/message/MessageCenter.utils";
 import { EmptyState } from "@/components/shared";
 import { GuardedLink } from "@/components/shared/GuardedLink";
@@ -8,14 +16,14 @@ import { Button } from "@/components/ui/Button";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { useIsMobile } from "@/hooks";
 import { cn, formatRelativeTime, formatShortDate } from "@/lib";
-import { prepareRichTextHtmlForSummary } from "@/lib/rich-text";
 import { openLoginDialog } from "@/lib/modal-helpers";
+import { prepareRichTextHtmlForSummary } from "@/lib/rich-text";
 import { useMessageNotificationStore, useUserStore } from "@/stores";
 import type { MessageTab } from "@/stores/useMessageNotificationStore";
 import { BrushCleaning, MessageCircle, Settings } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-
 const MIN_MOBILE_SHEET_HEIGHT = 12;
 const MAX_MOBILE_SHEET_HEIGHT = 92;
 const DEFAULT_MOBILE_SHEET_HEIGHT = 50;
@@ -26,7 +34,12 @@ function hasUnreadMessage(message: { isRead?: boolean; unreadCount?: number }) {
 
 function getTabUnreadCount(
   tab: MessageTab,
-  summary: { personal?: number; notification?: number; broadcast?: number; total?: number } | null,
+  summary: {
+    personal?: number;
+    notification?: number;
+    broadcast?: number;
+    total?: number;
+  } | null,
 ): number {
   if (!summary) return 0;
   switch (tab) {
@@ -65,8 +78,12 @@ export function MessageDropdown({
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const token = useUserStore((state) => state.token);
   const unreadCount = useMessageNotificationStore((state) => state.unreadCount);
-  const unreadSummary = useMessageNotificationStore((state) => state.unreadSummary);
-  const isLoading = useMessageNotificationStore((state) => state.dropdownIsLoading);
+  const unreadSummary = useMessageNotificationStore(
+    (state) => state.unreadSummary,
+  );
+  const isLoading = useMessageNotificationStore(
+    (state) => state.dropdownIsLoading,
+  );
   const hasLoadedDropdownMessages = useMessageNotificationStore(
     (state) => state.hasLoadedDropdownMessages,
   );
@@ -95,11 +112,36 @@ export function MessageDropdown({
   const dragStartHeightRef = useRef<number>(MIN_MOBILE_SHEET_HEIGHT);
   const mobileSheetHeightRef = useRef<number>(MIN_MOBILE_SHEET_HEIGHT);
 
-  const tabs: Array<{ value: MessageTab; label: string }> = [
-    { value: "all", label: tMsg("tabs.all") },
-    { value: "notification", label: tMsg("tabs.notification") },
-    { value: "private", label: tMsg("tabs.private") },
-    { value: "system", label: tMsg("tabs.system") },
+  const tabs: Array<{
+    value: MessageTab;
+    title: string;
+    activeIcon: any;
+    inactiveIcon: any;
+  }> = [
+    {
+      value: "all",
+      title: tMsg("tabs.all"),
+      activeIcon: AllActiveIcon,
+      inactiveIcon: AllInactiveIcon,
+    },
+    {
+      value: "notification",
+      title: tMsg("tabs.notification"),
+      activeIcon: NoticeActiveIcon,
+      inactiveIcon: NoticeInactiveIcon,
+    },
+    {
+      value: "private",
+      title: tMsg("tabs.private"),
+      activeIcon: PrivateActiveIcon,
+      inactiveIcon: PrivateInactiveIcon,
+    },
+    {
+      value: "system",
+      title: tMsg("tabs.system"),
+      activeIcon: SystemActiveIcon,
+      inactiveIcon: SystemInactiveIcon,
+    },
   ];
   const previewCopy = {
     emptyThread: tMsg("center.emptyThread"),
@@ -295,7 +337,11 @@ export function MessageDropdown({
                     </div>
                     <span className="shrink-0 text-xs text-secondary">
                       {formatShortDate(message.createdAt || "", locale) ||
-                        formatRelativeTime(message.createdAt || "", tTime, locale)}
+                        formatRelativeTime(
+                          message.createdAt || "",
+                          tTime,
+                          locale,
+                        )}
                     </span>
                   </div>
                   <div
@@ -349,8 +395,8 @@ export function MessageDropdown({
           )}
         </div>
       </div>
-      <div className="shrink-0 border-b border-border bg-card/95 px-4 backdrop-blur">
-        <div className="flex items-center gap-5 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <div className="shrink-0 bg-card/95 px-4 backdrop-blur">
+        <div className="flex items-center py-2 px-2 gap-2">
           {tabs.map((tab) => {
             const tabUnreadCount = getTabUnreadCount(tab.value, unreadSummary);
             const hasUnread = tabUnreadCount > 0;
@@ -361,21 +407,32 @@ export function MessageDropdown({
                 type="button"
                 onClick={() => handleTabChange(tab.value)}
                 className={cn(
-                  "relative shrink-0 min-w-12 cursor-pointer px-1 pb-3 pt-3 text-sm font-medium transition-colors",
+                  "relative flex-1 flex items-center justify-center focus-within:outline-0 outline-0  h-9 cursor-pointer rounded-xl text-sm font-medium transition-all",
                   dropdownTab === tab.value
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
+                    ? "text-foreground bg-primary/15"
+                    : "text-muted-foreground hover:text-foreground hover:bg-primary/10",
                 )}
               >
-                <span className="flex items-center gap-1.5 justify-center">
-                  {tab.label}
+                <span className="flex items-center gap-1.5 justify-center relative">
+                  <Image
+                    width={28}
+                    height={28}
+                    src={
+                      dropdownTab === tab.value
+                        ? (tab.activeIcon?.src ?? tab.activeIcon)
+                        : (tab.inactiveIcon?.src ?? tab.inactiveIcon)
+                    }
+                    title={tab.title}
+                    alt={tab.title}
+                    className="size-7"
+                  />
                   {hasUnread && (
-                    <span className="flex size-2 items-center justify-center rounded-full bg-red-400" />
+                    <span className="absolute -top-0.5 -right-2.5 flex size-2 items-center justify-center rounded-full bg-red-400" />
                   )}
                 </span>
-                {dropdownTab === tab.value && (
+                {/* {dropdownTab === tab.value && (
                   <span className="absolute bottom-0 left-1/2 h-1 w-6 -translate-x-1/2 rounded-full bg-primary" />
-                )}
+                )} */}
               </button>
             );
           })}
