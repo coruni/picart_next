@@ -70,7 +70,7 @@ export function SearchUser({ user, border, keyword }: SearchUserProps) {
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <h2 className={cn("truncate font-semibold text-foreground", user?.isMember && "text-member")}>
+                <h2 className={cn("truncate font-semibold text-foreground", user?.isMember )}>
                   {highlightText(displayName, keyword)}
                 </h2>
                 <span className="truncate text-xs text-muted-foreground">

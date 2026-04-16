@@ -279,7 +279,7 @@ export const ArticleCard = ({
               <span
                 className={cn(
                   "font-bold hover:text-primary",
-                  article?.author?.isMember && "text-member",
+                  article?.author?.isMember ,
                 )}
               >
                 {

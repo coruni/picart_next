@@ -390,7 +390,7 @@ export const CommentItem = memo(function CommentItem({
             <span
               className={cn(
                 "text-sm leading-5 font-semibold ",
-                commentState.author?.isMember && "text-member",
+                commentState.author?.isMember ,
               )}
             >
               {commentState.author.nickname || commentState.author.username}

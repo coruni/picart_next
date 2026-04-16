@@ -134,7 +134,7 @@ export function ArticleAuthor({
             href={`/account/${author.id}`}
             className="flex items-center leading-5 space-x-1"
           >
-            <span className={cn("truncate font-bold hover:text-primary", author?.isMember && "text-member")}>
+            <span className={cn("truncate font-bold hover:text-primary", author?.isMember )}>
               {(author?.nickname || author?.username) as string}
             </span>
             {author?.equippedDecorations?.ACHIEVEMENT_BADGE && (

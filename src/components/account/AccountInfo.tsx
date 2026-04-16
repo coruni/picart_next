@@ -269,7 +269,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                 <span
                   className={cn(
                     "text-base text-white md:text-xl",
-                    user?.isMember && "text-member",
+                    user?.isMember ,
                   )}
                 >
                   {user.nickname || user.username}

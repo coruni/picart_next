@@ -85,7 +85,7 @@ export const RecommendUserWidget = async () => {
             <span
               className={cn(
                 "font-bold text-base leading-5 text-foreground/90 hover:text-primary",
-                user?.isMember && "text-member",
+                user?.isMember ,
               )}
             >
               {user?.nickname || user?.username}

@@ -2,37 +2,37 @@
 
 import { commentControllerFindOne } from "@/api";
 import {
-  DropdownMenu,
-  InfiniteScrollStatus,
-  type MenuItem,
+    DropdownMenu,
+    InfiniteScrollStatus,
+    type MenuItem,
 } from "@/components/shared";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogOverlay,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogOverlay,
+    DialogTitle,
 } from "@/components/ui/Dialog";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
 import {
-  cn,
-  formatCompactNumber,
-  formatRelativeTime,
-  prepareCommentHtmlForDisplay,
+    cn,
+    formatCompactNumber,
+    formatRelativeTime,
+    prepareCommentHtmlForDisplay,
 } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
 import {
-  ChevronDown,
-  ChevronRight,
-  EllipsisVertical,
-  Languages,
-  LoaderCircle,
-  MessageCircleMore,
-  ThumbsUp,
+    ChevronDown,
+    ChevronRight,
+    EllipsisVertical,
+    Languages,
+    LoaderCircle,
+    MessageCircleMore,
+    ThumbsUp,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -428,7 +428,7 @@ export function CommentReplyList({
                     className="flex items-center"
                     href={`/account/${data.author.id}`}
                   >
-                    <span className={cn("text-sm leading-5 font-semibold", data.author?.isMember && "text-member")}>
+                    <span className={cn("text-sm leading-5 font-semibold", data.author?.isMember )}>
                       {data.author.nickname || data.author.username}
                     </span>
                   </Link>
