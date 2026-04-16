@@ -40,23 +40,23 @@ export function DashboardReportsPage() {
   const typeValueEnum = useMemo(
     () => ({
       "": { text: copy.common.all },
-      USER: { text: "USER" },
-      ARTICLE: { text: "ARTICLE" },
-      COMMENT: { text: "COMMENT" },
+      USER: { text: copy.options.reportType.USER },
+      ARTICLE: { text: copy.options.reportType.ARTICLE },
+      COMMENT: { text: copy.options.reportType.COMMENT },
     }),
-    [copy.common.all],
+    [copy.common.all, copy.options.reportType],
   );
 
   const categoryValueEnum = useMemo(
     () => ({
       "": { text: copy.common.all },
-      SPAM: { text: "SPAM" },
-      ABUSE: { text: "ABUSE" },
-      INAPPROPRIATE: { text: "INAPPROPRIATE" },
-      COPYRIGHT: { text: "COPYRIGHT" },
-      OTHER: { text: "OTHER" },
+      SPAM: { text: copy.options.reportCategory.SPAM },
+      ABUSE: { text: copy.options.reportCategory.ABUSE },
+      INAPPROPRIATE: { text: copy.options.reportCategory.INAPPROPRIATE },
+      COPYRIGHT: { text: copy.options.reportCategory.COPYRIGHT },
+      OTHER: { text: copy.options.reportCategory.OTHER },
     }),
-    [copy.common.all],
+    [copy.common.all, copy.options.reportCategory],
   );
 
   const statusValueEnum = useMemo(
@@ -72,12 +72,12 @@ export function DashboardReportsPage() {
 
   const reportActionOptions = useMemo(
     () => [
-      { value: "DELETE_CONTENT", label: "DELETE_CONTENT" },
-      { value: "BAN_USER", label: "BAN_USER" },
-      { value: "WARNING", label: "WARNING" },
-      { value: "NONE", label: "NONE" },
+      { value: "DELETE_CONTENT", label: copy.options.reportAction.DELETE_CONTENT },
+      { value: "BAN_USER", label: copy.options.reportAction.BAN_USER },
+      { value: "WARNING", label: copy.options.reportAction.WARNING },
+      { value: "NONE", label: copy.options.reportAction.NONE },
     ],
-    [],
+    [copy.options.reportAction],
   );
 
   const editFields = useMemo<DashboardEditField[]>(

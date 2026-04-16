@@ -56,6 +56,87 @@ const copy = {
       replace: "替换",
       passwordPlaceholder: "输入新密码",
     },
+    fields: {
+      // 通用字段
+      username: "用户名",
+      password: "密码",
+      avatar: "头像",
+      background: "背景图",
+      cover: "封面",
+      image: "图片",
+      preview: "预览",
+      icon: "图标",
+      parent: "父分类",
+      link: "链接",
+      // 装饰字段
+      isPurchasable: "可购买",
+      isPermanent: "永久有效",
+      validDays: "有效天数",
+      requiredLikes: "所需点赞数",
+      requiredComments: "所需评论数",
+      // 积分字段
+      targetCount: "目标次数",
+      dailyLimit: "每日限制",
+      totalLimit: "总限制",
+    },
+    options: {
+      // 用户状态
+      status: {
+        ACTIVE: "正常",
+        INACTIVE: "停用",
+        BANNED: "封禁",
+      },
+      // 装饰类型
+      decorationType: {
+        AVATAR_FRAME: "头像框",
+        COMMENT_BUBBLE: "评论气泡",
+        ACHIEVEMENT_BADGE: "成就徽章",
+      },
+      // 稀有度
+      rarity: {
+        COMMON: "普通",
+        RARE: "稀有",
+        EPIC: "史诗",
+        LEGENDARY: "传说",
+      },
+      // 获取方式
+      obtainMethod: {
+        PURCHASE: "购买",
+        ACTIVITY: "活动",
+        GIFT: "赠送",
+        ACHIEVEMENT: "成就",
+        DEFAULT: "默认",
+      },
+      // 积分活动类型
+      activityType: {
+        INSTANT: "即时",
+        DAILY: "每日",
+        WEEKLY: "每周",
+        MONTHLY: "每月",
+        ONCE: "一次性",
+      },
+      // 举报处理动作
+      reportAction: {
+        DELETE_CONTENT: "删除内容",
+        BAN_USER: "封禁用户",
+        WARNING: "警告",
+        NONE: "无操作",
+      },
+      // 举报类型
+      reportType: {
+        USER: "用户",
+        ARTICLE: "文章",
+        COMMENT: "评论",
+      },
+      // 举报分类
+      reportCategory: {
+        SPAM: "垃圾信息",
+        ABUSE: "滥用",
+        INAPPROPRIATE: "不当内容",
+        COPYRIGHT: "版权",
+        OTHER: "其他",
+      },
+    },
     nav: {
       overview: "概览",
       users: "用户",
@@ -448,6 +529,87 @@ const copy = {
       upload: "Upload",
       replace: "Replace",
       passwordPlaceholder: "Enter new password",
+    },
+    fields: {
+      // Common fields
+      username: "Username",
+      password: "Password",
+      avatar: "Avatar",
+      background: "Background",
+      cover: "Cover",
+      image: "Image",
+      preview: "Preview",
+      icon: "Icon",
+      parent: "Parent Category",
+      link: "Link",
+      // Decoration fields
+      isPurchasable: "Purchasable",
+      isPermanent: "Permanent",
+      validDays: "Valid Days",
+      requiredLikes: "Required Likes",
+      requiredComments: "Required Comments",
+      // Points fields
+      targetCount: "Target Count",
+      dailyLimit: "Daily Limit",
+      totalLimit: "Total Limit",
+    },
+    options: {
+      // User status
+      status: {
+        ACTIVE: "Active",
+        INACTIVE: "Inactive",
+        BANNED: "Banned",
+      },
+      // Decoration type
+      decorationType: {
+        AVATAR_FRAME: "Avatar Frame",
+        COMMENT_BUBBLE: "Comment Bubble",
+        ACHIEVEMENT_BADGE: "Achievement Badge",
+      },
+      // Rarity
+      rarity: {
+        COMMON: "Common",
+        RARE: "Rare",
+        EPIC: "Epic",
+        LEGENDARY: "Legendary",
+      },
+      // Obtain method
+      obtainMethod: {
+        PURCHASE: "Purchase",
+        ACTIVITY: "Activity",
+        GIFT: "Gift",
+        ACHIEVEMENT: "Achievement",
+        DEFAULT: "Default",
+      },
+      // Activity type
+      activityType: {
+        INSTANT: "Instant",
+        DAILY: "Daily",
+        WEEKLY: "Weekly",
+        MONTHLY: "Monthly",
+        ONCE: "Once",
+      },
+      // Report action
+      reportAction: {
+        DELETE_CONTENT: "Delete Content",
+        BAN_USER: "Ban User",
+        WARNING: "Warning",
+        NONE: "None",
+      },
+      // Report type
+      reportType: {
+        USER: "User",
+        ARTICLE: "Article",
+        COMMENT: "Comment",
+      },
+      // Report category
+      reportCategory: {
+        SPAM: "Spam",
+        ABUSE: "Abuse",
+        INAPPROPRIATE: "Inappropriate",
+        COPYRIGHT: "Copyright",
+        OTHER: "Other",
+      },
     },
     nav: {
       overview: "Overview",

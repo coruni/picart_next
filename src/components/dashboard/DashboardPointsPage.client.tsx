@@ -112,7 +112,13 @@ export function DashboardPointsPage() {
         name: "type",
         label: copy.columns.type,
         type: "select",
-        options: [...ACTIVITY_TYPE_OPTIONS],
+        options: [
+          { value: "INSTANT", label: copy.options.activityType.INSTANT },
+          { value: "DAILY", label: copy.options.activityType.DAILY },
+          { value: "WEEKLY", label: copy.options.activityType.WEEKLY },
+          { value: "MONTHLY", label: copy.options.activityType.MONTHLY },
+          { value: "ONCE", label: copy.options.activityType.ONCE },
+        ],
       },
       {
         name: "rewardPoints",
@@ -151,7 +157,7 @@ export function DashboardPointsPage() {
       },
       {
         name: "icon",
-        label: "Icon",
+        label: copy.fields.icon,
         type: "image",
         imagePreviewClassName: "aspect-square h-auto w-full max-w-52",
         imageObjectFit: "contain",
@@ -165,11 +171,11 @@ export function DashboardPointsPage() {
 
   const typeValueEnum: DashboardValueEnum = {
     "": { text: copy.common.all },
-    INSTANT: { text: "INSTANT" },
-    DAILY: { text: "DAILY" },
-    WEEKLY: { text: "WEEKLY" },
-    MONTHLY: { text: "MONTHLY" },
-    ONCE: { text: "ONCE" },
+    INSTANT: { text: copy.options.activityType.INSTANT },
+    DAILY: { text: copy.options.activityType.DAILY },
+    WEEKLY: { text: copy.options.activityType.WEEKLY },
+    MONTHLY: { text: copy.options.activityType.MONTHLY },
+    ONCE: { text: copy.options.activityType.ONCE },
   };
 
   const activeValueEnum: DashboardValueEnum = {

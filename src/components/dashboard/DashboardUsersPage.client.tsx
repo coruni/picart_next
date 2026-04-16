@@ -35,19 +35,19 @@ export function DashboardUsersPage() {
 
   const editFields = useMemo<DashboardEditField[]>(
     () => [
-      { name: "username", label: "Username" },
+      { name: "username", label: copy.fields.username },
       { name: "nickname", label: copy.columns.name },
-      { name: "password", label: "Password", type: "text", placeholder: copy.common.passwordPlaceholder },
+      { name: "password", label: copy.fields.password, type: "text", placeholder: copy.common.passwordPlaceholder },
       {
         name: "avatar",
-        label: "Avatar",
+        label: copy.fields.avatar,
         type: "image",
         imagePreviewClassName: "aspect-square h-auto w-full max-w-52",
         imageObjectFit: "contain",
       },
       {
         name: "background",
-        label: "Background",
+        label: copy.fields.background,
         type: "image",
         imagePreviewClassName: "aspect-video h-auto w-full max-w-52",
         imageObjectFit: "cover",
@@ -58,9 +58,9 @@ export function DashboardUsersPage() {
         label: copy.columns.status,
         type: "select",
         options: [
-          { value: "ACTIVE", label: "ACTIVE" },
-          { value: "INACTIVE", label: "INACTIVE" },
-          { value: "BANNED", label: "BANNED" },
+          { value: "ACTIVE", label: copy.options.status.ACTIVE },
+          { value: "INACTIVE", label: copy.options.status.INACTIVE },
+          { value: "BANNED", label: copy.options.status.BANNED },
         ],
       },
       { name: "banReason", label: copy.pages.users.fields.banReason, type: "textarea" },
@@ -85,8 +85,8 @@ export function DashboardUsersPage() {
         label: copy.pages.users.fields.membershipStatus,
         type: "select",
         options: [
-          { value: "ACTIVE", label: "ACTIVE" },
-          { value: "INACTIVE", label: "INACTIVE" },
+          { value: "ACTIVE", label: copy.status.active },
+          { value: "INACTIVE", label: copy.status.inactive },
         ],
       },
       { name: "membershipStartDate", label: copy.pages.users.fields.membershipStartDate, type: "date" },

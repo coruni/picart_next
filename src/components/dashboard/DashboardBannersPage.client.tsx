@@ -56,12 +56,12 @@ export function DashboardBannersPage() {
       },
       {
         name: "imageUrl",
-        label: "Image",
+        label: copy.fields.image,
         type: "image",
         imagePreviewClassName: "aspect-video h-auto w-full max-w-52",
         imageObjectFit: "cover",
       },
-      { name: "linkUrl", label: copy.columns.link },
+      { name: "linkUrl", label: copy.fields.link },
       {
         name: "sortOrder",
         label: copy.columns.sort,
