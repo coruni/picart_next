@@ -119,7 +119,7 @@ export function BlockedUsersClient() {
                 alt={user.nickname || user.username}
               />
               <div>
-                <p className="font-medium text-foreground">
+                <p className={cn("font-medium text-foreground", user.isMember && "text-member")}>
                   {user.nickname || user.username}
                 </p>
                 <p className="text-xs text-muted-foreground">

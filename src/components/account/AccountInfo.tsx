@@ -165,7 +165,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
             className={cn(
               "transition-[width,height,top] duration-250 ease-out",
               !scrolled
-                ? "size-14 -top-20 md:size-24 lg:size-29.5 md:-top-20"
+                ? "size-14 -top-12 md:size-24 lg:size-29.5 md:-top-20"
                 : "size-8",
             )}
           />
@@ -266,7 +266,12 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
               )}
             >
               <div className="mb-0.5 flex items-center space-x-1 md:mb-1">
-                <span className="text-base text-white md:text-xl">
+                <span
+                  className={cn(
+                    "text-base text-white md:text-xl",
+                    user?.isMember && "text-member",
+                  )}
+                >
                   {user.nickname || user.username}
                 </span>
                 {user?.equippedDecorations?.ACHIEVEMENT_BADGE && (

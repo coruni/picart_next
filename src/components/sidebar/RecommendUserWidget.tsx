@@ -2,6 +2,7 @@ import recommendUserLeft from "@/assets/images/sidebar/recommend/recommend_user_
 import recommendUserRight from "@/assets/images/sidebar/recommend/recommend_user_right.png";
 import sloganThumb from "@/assets/images/sidebar/recommend/slogan_thumb.webp";
 import { Link } from "@/i18n/routing";
+import { cn } from "@/lib";
 import { serverApi } from "@/lib/server-api";
 import { UserList } from "@/types";
 import { Plus } from "lucide-react";
@@ -81,7 +82,12 @@ export const RecommendUserWidget = async () => {
         <div className="py-2 my-1 flex items-center">
           <Avatar url={user.avatar} className=" size-8" />
           <div className="ml-3 flex-1">
-            <span className="font-bold text-base leading-5 text-foreground/90 hover:text-primary">
+            <span
+              className={cn(
+                "font-bold text-base leading-5 text-foreground/90 hover:text-primary",
+                user?.isMember && "text-member",
+              )}
+            >
               {user?.nickname || user?.username}
             </span>
           </div>

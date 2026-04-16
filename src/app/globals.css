@@ -64,6 +64,8 @@
   --color-muted-foreground: #6b7280;
   /* Card 背景颜色 */
   --color-card: #ffffff;
+  /* 会员标识颜色 */
+  --color-member: #6c5ce7;
   /* 自定义字体 */
   --font-sans:
     var(--font-misans),

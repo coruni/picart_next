@@ -184,7 +184,9 @@ export const CommentReplyItem = memo(function CommentReplyItem({
               />
             </GuardedLink>
             <div className="font-semibold text-foreground space-x-1 flex items-center">
-              <span>{reply.author?.nickname || reply.author?.username}</span>
+              <span className={cn(reply.author?.isMember && "text-member")}>
+                {reply.author?.nickname || reply.author?.username}
+              </span>
               {reply.author?.equippedDecorations?.ACHIEVEMENT_BADGE && (
                 <span className="relative size-4 inline-flex items-center justify-center">
                   <ImageWithFallback

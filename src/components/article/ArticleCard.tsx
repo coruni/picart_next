@@ -276,7 +276,12 @@ export const ArticleCard = ({
               href={`/account/${article?.author?.id}`}
               className=" flex items-center leading-5 space-x-1"
             >
-              <span className="font-bold hover:text-primary">
+              <span
+                className={cn(
+                  "font-bold hover:text-primary",
+                  article?.author?.isMember && "text-member",
+                )}
+              >
                 {
                   (article?.author?.nickname ||
                     article?.author?.username) as string

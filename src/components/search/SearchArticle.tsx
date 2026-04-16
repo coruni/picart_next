@@ -94,7 +94,7 @@ export function SearchArticle({
                   }
                   className="size-6"
                 />
-                <span className="ml-2 text-xs font-medium text-muted-foreground truncate max-w-25">
+                <span className={cn("ml-2 text-xs font-medium text-muted-foreground truncate max-w-25", article.author?.isMember && "text-member")}>
                   {article.author?.nickname || article.author?.username}
                 </span>
               </div>

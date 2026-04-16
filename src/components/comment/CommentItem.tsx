@@ -387,7 +387,12 @@ export const CommentItem = memo(function CommentItem({
             href={`/account/${commentState.author.id}`}
             onClick={(e) => e.stopPropagation()}
           >
-            <span className="text-sm leading-5 font-semibold">
+            <span
+              className={cn(
+                "text-sm leading-5 font-semibold ",
+                commentState.author?.isMember && "text-member",
+              )}
+            >
               {commentState.author.nickname || commentState.author.username}
             </span>
             {commentState.author?.equippedDecorations?.ACHIEVEMENT_BADGE && (

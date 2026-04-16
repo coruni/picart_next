@@ -428,7 +428,7 @@ export function CommentReplyList({
                     className="flex items-center"
                     href={`/account/${data.author.id}`}
                   >
-                    <span className="text-sm leading-5 font-semibold">
+                    <span className={cn("text-sm leading-5 font-semibold", data.author?.isMember && "text-member")}>
                       {data.author.nickname || data.author.username}
                     </span>
                   </Link>
