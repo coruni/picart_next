@@ -441,6 +441,13 @@ export function MessageDropdown({
         </div>
       </div>
       {renderListContent(mobile)}
+      {isAuthenticated && !mobile && (
+        <div className="px-4 py-2 text-sm text-primary">
+          <GuardedLink href="/message" className="outline-0">
+            查看更多
+          </GuardedLink>
+        </div>
+      )}
     </div>
   );
 
