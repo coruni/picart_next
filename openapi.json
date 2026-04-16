@@ -9182,6 +9182,9 @@
                                   ]
                                 }
                               },
+                              "videoUrl": {
+                                "type": "string"
+                              },
                               "sort": {
                                 "type": "integer"
                               },
@@ -9652,7 +9655,8 @@
                               "pinnedAt",
                               "isHot",
                               "hotScore",
-                              "isFeatured"
+                              "isFeatured",
+                              "videoUrl"
                             ]
                           }
                         },
@@ -9946,6 +9950,9 @@
                               }
                             ]
                           }
+                        },
+                        "videoUrl": {
+                          "type": "string"
                         },
                         "sort": {
                           "type": "integer"
@@ -10586,7 +10593,8 @@
                         "pinnedAt",
                         "isHot",
                         "hotScore",
-                        "isFeatured"
+                        "isFeatured",
+                        "videoUrl"
                       ]
                     }
                   },
@@ -11944,6 +11952,9 @@
                                   ]
                                 }
                               },
+                              "videoUrl": {
+                                "type": "string"
+                              },
                               "sort": {
                                 "type": "integer"
                               },
@@ -12414,7 +12425,8 @@
                               "pinnedAt",
                               "isHot",
                               "hotScore",
-                              "isFeatured"
+                              "isFeatured",
+                              "videoUrl"
                             ]
                           }
                         },
@@ -12690,6 +12702,9 @@
                                   ]
                                 }
                               },
+                              "videoUrl": {
+                                "type": "string"
+                              },
                               "sort": {
                                 "type": "integer"
                               },
@@ -13160,7 +13175,8 @@
                               "pinnedAt",
                               "isHot",
                               "hotScore",
-                              "isFeatured"
+                              "isFeatured",
+                              "videoUrl"
                             ]
                           }
                         },
@@ -49312,6 +49328,10 @@
               "https://example.com/image2.jpg"
             ]
           },
+          "videoUrl": {
+            "type": "string",
+            "description": "文章视频 type 为viideo时必填"
+          },
           "cover": {
             "type": "string",
             "description": "封面图片",
@@ -49435,7 +49455,8 @@
           "requireMembership",
           "listRequireLogin",
           "viewPrice",
-          "type"
+          "type",
+          "videoUrl"
         ]
       },
       "UpdateArticleDto": {

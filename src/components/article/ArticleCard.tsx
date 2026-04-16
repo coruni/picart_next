@@ -21,6 +21,7 @@ import {
   GalleryHorizontalEnd,
   Hash,
   MessageCircleMore,
+  Play,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -91,6 +92,7 @@ export const ArticleCard = ({
   const renderMediaElement = () => {
     if (article.cover) {
       const coverUrl = article.cover;
+      const isVideo = article.type === "video";
 
       return (
         <div
@@ -107,9 +109,17 @@ export const ArticleCard = ({
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover"
           />
-          <div className="absolute bottom-2 right-2 w-6 h-4 bg-[#00000099] rounded-full flex items-center justify-center text-white">
-            <FileImage size={12} strokeWidth={3} />
-          </div>
+          {isVideo ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-12 h-12 bg-black/50 rounded-full flex items-center justify-center text-white backdrop-blur-sm">
+                <Play size={24} fill="white" />
+              </div>
+            </div>
+          ) : (
+            <div className="absolute bottom-2 right-2 w-6 h-4 bg-[#00000099] rounded-full flex items-center justify-center text-white">
+              <FileImage size={12} strokeWidth={3} />
+            </div>
+          )}
         </div>
       );
     }

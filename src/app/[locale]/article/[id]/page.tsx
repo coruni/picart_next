@@ -6,6 +6,7 @@ import {
   type ArticleTocItem,
   ArticleTranslateNotice,
   ImageGallery,
+  VideoPlayer,
 } from "@/components/article";
 import { ArticleReactionWrapper } from "@/components/article/ArticleReactionWrapper.client";
 import { ArticleCommentList } from "@/components/comment/ArticleCommentList.client";
@@ -198,7 +199,15 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           </div>
         </div>
         <section className="relative">
-          {article?.cover && (
+          {article?.type === "video" && article.videoUrl ? (
+            <div className="relative w-full">
+              <VideoPlayer
+                videoUrl={article.videoUrl}
+                cover={article.cover}
+                title={article.title}
+              />
+            </div>
+          ) : article?.cover ? (
             <div className="relative w-full h-80 md:h-120">
               <ImageWithFallback
                 src={article.cover}
@@ -211,7 +220,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                 alt={article?.title}
               />
             </div>
-          )}
+          ) : null}
           <div className="px-4 md:px-6 pt-4 mt-1">
             <h1
               data-auto-translate-content

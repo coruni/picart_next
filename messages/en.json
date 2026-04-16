@@ -537,6 +537,23 @@
       "imagesHint": "Batch upload is supported. Select multiple files at once."
     }
   },
+  "createVideo": {
+    "title": "Create Video",
+    "editTitle": "Edit Video",
+    "form": {
+      "video": "Video",
+      "selectVideo": "Select Video",
+      "videoHint": "Supports MP4, WebM, MOV and other common video formats",
+      "uploading": "Uploading...",
+      "processing": "Processing...",
+      "ready": "Ready",
+      "selectCover": "Select Cover",
+      "coverRequired": "Please select a video cover",
+      "stepExtracting": "Extracting preview frames...",
+      "stepCompressing": "Compressing video (720p 30fps)...",
+      "stepUploading": "Uploading video..."
+    }
+  },
   "imageViewer": {
     "panelTitle": "Image Details",
     "collapsePanel": "Collapse panel",

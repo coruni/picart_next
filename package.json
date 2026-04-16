@@ -22,6 +22,7 @@
     "@fingerprintjs/fingerprintjs": "^5.0.1",
     "@hey-api/client-fetch": "^0.13.1",
     "@hey-api/openapi-ts": "^0.90.3",
+    "artplayer": "^5.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "franc-min": "^6.2.0",

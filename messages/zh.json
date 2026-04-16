@@ -529,6 +529,23 @@
       "imagesHint": "支持批量上传，多选即可一次添加多张图片"
     }
   },
+  "createVideo": {
+    "title": "发布视频",
+    "editTitle": "编辑视频",
+    "form": {
+      "video": "视频",
+      "selectVideo": "选择视频",
+      "videoHint": "支持 MP4、WebM、MOV 等常见视频格式",
+      "uploading": "上传中...",
+      "processing": "处理中...",
+      "ready": "已就绪",
+      "selectCover": "选择封面",
+      "coverRequired": "请选择视频封面",
+      "stepExtracting": "正在提取预览帧...",
+      "stepCompressing": "正在压缩视频（720p 30fps）...",
+      "stepUploading": "正在上传视频..."
+    }
+  },
   "imageViewer": {
     "panelTitle": "图片详情",
     "collapsePanel": "收起面板",

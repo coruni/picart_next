@@ -13,7 +13,10 @@ import { MoreHorizontal, PencilLine, Plus, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
-import { DashboardEditDialog, type DashboardEditField } from "./DashboardEditDialog.client";
+import {
+  DashboardEditDialog,
+  type DashboardEditField,
+} from "./DashboardEditDialog.client";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
@@ -29,8 +32,10 @@ export function DashboardDecorationsPage() {
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
   const [creating, setCreating] = useState(false);
-  const [editingItem, setEditingItem] = useState<DashboardDecorationItem | null>(null);
-  const [deletingItem, setDeletingItem] = useState<DashboardDecorationItem | null>(null);
+  const [editingItem, setEditingItem] =
+    useState<DashboardDecorationItem | null>(null);
+  const [deletingItem, setDeletingItem] =
+    useState<DashboardDecorationItem | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -38,12 +43,30 @@ export function DashboardDecorationsPage() {
   const editFields = useMemo<DashboardEditField[]>(
     () => [
       { name: "name", label: copy.columns.name },
-      { name: "type", label: copy.columns.type, type: "select", options: [
-        { value: "AVATAR_FRAME", label: copy.options.decorationType.AVATAR_FRAME },
-        { value: "COMMENT_BUBBLE", label: copy.options.decorationType.COMMENT_BUBBLE },
-        { value: "ACHIEVEMENT_BADGE", label: copy.options.decorationType.ACHIEVEMENT_BADGE },
-      ] },
-      { name: "description", label: copy.columns.description, type: "textarea" },
+      {
+        name: "type",
+        label: copy.columns.type,
+        type: "select",
+        options: [
+          {
+            value: "AVATAR_FRAME",
+            label: copy.options.decorationType.AVATAR_FRAME,
+          },
+          {
+            value: "COMMENT_BUBBLE",
+            label: copy.options.decorationType.COMMENT_BUBBLE,
+          },
+          {
+            value: "ACHIEVEMENT_BADGE",
+            label: copy.options.decorationType.ACHIEVEMENT_BADGE,
+          },
+        ],
+      },
+      {
+        name: "description",
+        label: copy.columns.description,
+        type: "textarea",
+      },
       {
         name: "imageUrl",
         label: copy.fields.image,
@@ -52,32 +75,57 @@ export function DashboardDecorationsPage() {
         imageObjectFit: "contain",
       },
       {
-        name: "previewUrl",
-        label: copy.fields.preview,
-        type: "image",
-        imagePreviewClassName: "aspect-square h-auto w-full max-w-52",
-        imageObjectFit: "contain",
+        name: "rarity",
+        label: copy.columns.rarity,
+        type: "select",
+        options: [
+          { value: "COMMON", label: copy.options.rarity.COMMON },
+          { value: "RARE", label: copy.options.rarity.RARE },
+          { value: "EPIC", label: copy.options.rarity.EPIC },
+          { value: "LEGENDARY", label: copy.options.rarity.LEGENDARY },
+        ],
       },
-      { name: "rarity", label: copy.columns.rarity, type: "select", options: [
-        { value: "COMMON", label: copy.options.rarity.COMMON },
-        { value: "RARE", label: copy.options.rarity.RARE },
-        { value: "EPIC", label: copy.options.rarity.EPIC },
-        { value: "LEGENDARY", label: copy.options.rarity.LEGENDARY },
-      ] },
-      { name: "obtainMethod", label: copy.columns.type, type: "select", options: [
-        { value: "PURCHASE", label: copy.options.obtainMethod.PURCHASE },
-        { value: "ACTIVITY", label: copy.options.obtainMethod.ACTIVITY },
-        { value: "GIFT", label: copy.options.obtainMethod.GIFT },
-        { value: "ACHIEVEMENT", label: copy.options.obtainMethod.ACHIEVEMENT },
-        { value: "DEFAULT", label: copy.options.obtainMethod.DEFAULT },
-      ] },
-      { name: "isPurchasable", label: copy.fields.isPurchasable, type: "switch" },
+      {
+        name: "obtainMethod",
+        label: copy.columns.type,
+        type: "select",
+        options: [
+          { value: "PURCHASE", label: copy.options.obtainMethod.PURCHASE },
+          { value: "ACTIVITY", label: copy.options.obtainMethod.ACTIVITY },
+          { value: "GIFT", label: copy.options.obtainMethod.GIFT },
+          {
+            value: "ACHIEVEMENT",
+            label: copy.options.obtainMethod.ACHIEVEMENT,
+          },
+          { value: "DEFAULT", label: copy.options.obtainMethod.DEFAULT },
+        ],
+      },
+      {
+        name: "isPurchasable",
+        label: copy.fields.isPurchasable,
+        type: "switch",
+      },
       { name: "price", label: copy.columns.price, type: "number", step: 1 },
       { name: "isPermanent", label: copy.fields.isPermanent, type: "switch" },
-      { name: "validDays", label: copy.fields.validDays, type: "number", step: 1 },
+      {
+        name: "validDays",
+        label: copy.fields.validDays,
+        type: "number",
+        step: 1,
+      },
       { name: "sort", label: copy.columns.sort, type: "number", step: 1 },
-      { name: "requiredLikes", label: copy.fields.requiredLikes, type: "number", step: 1 },
-      { name: "requiredComments", label: copy.fields.requiredComments, type: "number", step: 1 },
+      {
+        name: "requiredLikes",
+        label: copy.fields.requiredLikes,
+        type: "number",
+        step: 1,
+      },
+      {
+        name: "requiredComments",
+        label: copy.fields.requiredComments,
+        type: "number",
+        step: 1,
+      },
     ],
     [copy],
   );
@@ -119,7 +167,9 @@ export function DashboardDecorationsPage() {
         render: (item) => (
           <div className="space-y-1 text-sm text-foreground">
             <div>{item.type || "-"}</div>
-            <div className="text-muted-foreground">{item.obtainMethod || "-"}</div>
+            <div className="text-muted-foreground">
+              {item.obtainMethod || "-"}
+            </div>
           </div>
         ),
       },
@@ -206,7 +256,11 @@ export function DashboardDecorationsPage() {
 
   const buildDecorationPayload = (values: Record<string, unknown>) => ({
     name: values.name as string | undefined,
-    type: values.type as "AVATAR_FRAME" | "COMMENT_BUBBLE" | "ACHIEVEMENT_BADGE" | undefined,
+    type: values.type as
+      | "AVATAR_FRAME"
+      | "COMMENT_BUBBLE"
+      | "ACHIEVEMENT_BADGE"
+      | undefined,
     description: values.description as string | undefined,
     imageUrl: values.imageUrl as string | undefined,
     previewUrl: values.previewUrl as string | undefined,
@@ -239,8 +293,10 @@ export function DashboardDecorationsPage() {
         body: {
           name: (values.name as string) || "",
           type:
-            (values.type as "AVATAR_FRAME" | "COMMENT_BUBBLE" | "ACHIEVEMENT_BADGE") ||
-            "AVATAR_FRAME",
+            (values.type as
+              | "AVATAR_FRAME"
+              | "COMMENT_BUBBLE"
+              | "ACHIEVEMENT_BADGE") || "AVATAR_FRAME",
           description: values.description as string | undefined,
           imageUrl: (values.imageUrl as string) || "",
           previewUrl: values.previewUrl as string | undefined,
@@ -317,7 +373,8 @@ export function DashboardDecorationsPage() {
             query: {
               page: current,
               limit: pageSize,
-              keyword: typeof keyword === "string" && keyword ? keyword : undefined,
+              keyword:
+                typeof keyword === "string" && keyword ? keyword : undefined,
               status: typeof status === "string" && status ? status : undefined,
             },
           });

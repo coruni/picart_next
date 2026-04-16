@@ -10,3 +10,4 @@ export { ArticleMenu } from "./ArticleMenu";
 export { ReactionStats } from "./ReactionStats.client";
 export { ReactionPanel } from "./ReactionPanel.client";
 export { ArticleActions } from "./ArticleActions.client";
+export { VideoPlayer } from "./VideoPlayer.client";

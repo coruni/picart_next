@@ -499,6 +499,10 @@ export type CreateArticleDto = {
      */
     images?: string | Array<string>;
     /**
+     * 文章视频 type 为viideo时必填
+     */
+    videoUrl: string;
+    /**
      * 封面图片
      */
     cover?: string;
@@ -4714,6 +4718,7 @@ export type ArticleControllerFindAllResponses = {
                         large: string;
                     };
                 }>;
+                videoUrl: string;
                 sort: number;
                 summary: string;
                 views: number;
@@ -4950,6 +4955,7 @@ export type ArticleControllerFindOneResponses = {
                     large: string;
                 };
             }>;
+            videoUrl: string;
             sort: number;
             summary: string;
             views: number;
@@ -5476,6 +5482,7 @@ export type ArticleControllerFindRecommendationsResponses = {
                         large: string;
                     };
                 }>;
+                videoUrl: string;
                 sort: number;
                 summary: string;
                 views: number;
@@ -5661,6 +5668,7 @@ export type ArticleControllerFindByAuthorResponses = {
                         large: string;
                     };
                 }>;
+                videoUrl: string;
                 sort: number;
                 summary: string;
                 views: number;
