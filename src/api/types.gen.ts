@@ -7036,22 +7036,7 @@ export type CommentControllerFindAllResponses = {
                     inviteCount: number;
                     createdAt: string;
                     updatedAt: string;
-                    equippedDecorations: {
-                        AVATAR_FRAME: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
-                        COMMENT_BUBBLE: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
-                    };
+                    equippedDecorations: Decoration;
                     isMember: boolean;
                 };
                 article: {
@@ -7241,22 +7226,7 @@ export type CommentControllerFindAllResponses = {
                         inviteCount: number;
                         createdAt: string;
                         updatedAt: string;
-                        equippedDecorations: {
-                            AVATAR_FRAME: {
-                                id: number;
-                                name: string;
-                                type: string;
-                                imageUrl: string;
-                                rarity: string;
-                            };
-                            COMMENT_BUBBLE: {
-                                id: number;
-                                name: string;
-                                type: string;
-                                imageUrl: string;
-                                rarity: string;
-                            };
-                        };
+                        equippedDecorations: Decoration;
                         isMember: boolean;
                     };
                     article: {
@@ -7525,22 +7495,7 @@ export type CommentControllerFindOneResponses = {
                     inviteCount: number;
                     createdAt: string;
                     updatedAt: string;
-                    equippedDecorations: {
-                        AVATAR_FRAME: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
-                        COMMENT_BUBBLE: {
-                            id: number;
-                            name: string;
-                            type: string;
-                            imageUrl: string;
-                            rarity: string;
-                        };
-                    };
+                    equippedDecorations: Decoration;
                     isMember: boolean;
                 };
                 article: {
@@ -7730,22 +7685,7 @@ export type CommentControllerFindOneResponses = {
                         inviteCount: number;
                         createdAt: string;
                         updatedAt: string;
-                        equippedDecorations: {
-                            AVATAR_FRAME: {
-                                id: number;
-                                name: string;
-                                type: string;
-                                imageUrl: string;
-                                rarity: string;
-                            };
-                            COMMENT_BUBBLE: {
-                                id: number;
-                                name: string;
-                                type: string;
-                                imageUrl: string;
-                                rarity: string;
-                            };
-                        };
+                        equippedDecorations: Decoration;
                         isMember: boolean;
                     };
                     article: {

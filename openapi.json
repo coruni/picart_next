@@ -17874,67 +17874,7 @@
                                     "type": "string"
                                   },
                                   "equippedDecorations": {
-                                    "type": "object",
-                                    "properties": {
-                                      "AVATAR_FRAME": {
-                                        "type": "object",
-                                        "properties": {
-                                          "id": {
-                                            "type": "integer"
-                                          },
-                                          "name": {
-                                            "type": "string"
-                                          },
-                                          "type": {
-                                            "type": "string"
-                                          },
-                                          "imageUrl": {
-                                            "type": "string"
-                                          },
-                                          "rarity": {
-                                            "type": "string"
-                                          }
-                                        },
-                                        "required": [
-                                          "id",
-                                          "name",
-                                          "type",
-                                          "imageUrl",
-                                          "rarity"
-                                        ]
-                                      },
-                                      "COMMENT_BUBBLE": {
-                                        "type": "object",
-                                        "properties": {
-                                          "id": {
-                                            "type": "integer"
-                                          },
-                                          "name": {
-                                            "type": "string"
-                                          },
-                                          "type": {
-                                            "type": "string"
-                                          },
-                                          "imageUrl": {
-                                            "type": "string"
-                                          },
-                                          "rarity": {
-                                            "type": "string"
-                                          }
-                                        },
-                                        "required": [
-                                          "id",
-                                          "name",
-                                          "type",
-                                          "imageUrl",
-                                          "rarity"
-                                        ]
-                                      }
-                                    },
-                                    "required": [
-                                      "AVATAR_FRAME",
-                                      "COMMENT_BUBBLE"
-                                    ]
+                                    "$ref": "#/components/schemas/Decoration"
                                   },
                                   "isMember": {
                                     "type": "boolean"
@@ -18682,67 +18622,7 @@
                                           "type": "string"
                                         },
                                         "equippedDecorations": {
-                                          "type": "object",
-                                          "properties": {
-                                            "AVATAR_FRAME": {
-                                              "type": "object",
-                                              "properties": {
-                                                "id": {
-                                                  "type": "integer"
-                                                },
-                                                "name": {
-                                                  "type": "string"
-                                                },
-                                                "type": {
-                                                  "type": "string"
-                                                },
-                                                "imageUrl": {
-                                                  "type": "string"
-                                                },
-                                                "rarity": {
-                                                  "type": "string"
-                                                }
-                                              },
-                                              "required": [
-                                                "id",
-                                                "name",
-                                                "type",
-                                                "imageUrl",
-                                                "rarity"
-                                              ]
-                                            },
-                                            "COMMENT_BUBBLE": {
-                                              "type": "object",
-                                              "properties": {
-                                                "id": {
-                                                  "type": "integer"
-                                                },
-                                                "name": {
-                                                  "type": "string"
-                                                },
-                                                "type": {
-                                                  "type": "string"
-                                                },
-                                                "imageUrl": {
-                                                  "type": "string"
-                                                },
-                                                "rarity": {
-                                                  "type": "string"
-                                                }
-                                              },
-                                              "required": [
-                                                "id",
-                                                "name",
-                                                "type",
-                                                "imageUrl",
-                                                "rarity"
-                                              ]
-                                            }
-                                          },
-                                          "required": [
-                                            "AVATAR_FRAME",
-                                            "COMMENT_BUBBLE"
-                                          ]
+                                          "$ref": "#/components/schemas/Decoration"
                                         },
                                         "isMember": {
                                           "type": "boolean"
@@ -19632,67 +19512,7 @@
                                     "type": "string"
                                   },
                                   "equippedDecorations": {
-                                    "type": "object",
-                                    "properties": {
-                                      "AVATAR_FRAME": {
-                                        "type": "object",
-                                        "properties": {
-                                          "id": {
-                                            "type": "integer"
-                                          },
-                                          "name": {
-                                            "type": "string"
-                                          },
-                                          "type": {
-                                            "type": "string"
-                                          },
-                                          "imageUrl": {
-                                            "type": "string"
-                                          },
-                                          "rarity": {
-                                            "type": "string"
-                                          }
-                                        },
-                                        "required": [
-                                          "id",
-                                          "name",
-                                          "type",
-                                          "imageUrl",
-                                          "rarity"
-                                        ]
-                                      },
-                                      "COMMENT_BUBBLE": {
-                                        "type": "object",
-                                        "properties": {
-                                          "id": {
-                                            "type": "integer"
-                                          },
-                                          "name": {
-                                            "type": "string"
-                                          },
-                                          "type": {
-                                            "type": "string"
-                                          },
-                                          "imageUrl": {
-                                            "type": "string"
-                                          },
-                                          "rarity": {
-                                            "type": "string"
-                                          }
-                                        },
-                                        "required": [
-                                          "id",
-                                          "name",
-                                          "type",
-                                          "imageUrl",
-                                          "rarity"
-                                        ]
-                                      }
-                                    },
-                                    "required": [
-                                      "AVATAR_FRAME",
-                                      "COMMENT_BUBBLE"
-                                    ]
+                                    "$ref": "#/components/schemas/Decoration"
                                   },
                                   "isMember": {
                                     "type": "boolean"
@@ -20440,67 +20260,7 @@
                                           "type": "string"
                                         },
                                         "equippedDecorations": {
-                                          "type": "object",
-                                          "properties": {
-                                            "AVATAR_FRAME": {
-                                              "type": "object",
-                                              "properties": {
-                                                "id": {
-                                                  "type": "integer"
-                                                },
-                                                "name": {
-                                                  "type": "string"
-                                                },
-                                                "type": {
-                                                  "type": "string"
-                                                },
-                                                "imageUrl": {
-                                                  "type": "string"
-                                                },
-                                                "rarity": {
-                                                  "type": "string"
-                                                }
-                                              },
-                                              "required": [
-                                                "id",
-                                                "name",
-                                                "type",
-                                                "imageUrl",
-                                                "rarity"
-                                              ]
-                                            },
-                                            "COMMENT_BUBBLE": {
-                                              "type": "object",
-                                              "properties": {
-                                                "id": {
-                                                  "type": "integer"
-                                                },
-                                                "name": {
-                                                  "type": "string"
-                                                },
-                                                "type": {
-                                                  "type": "string"
-                                                },
-                                                "imageUrl": {
-                                                  "type": "string"
-                                                },
-                                                "rarity": {
-                                                  "type": "string"
-                                                }
-                                              },
-                                              "required": [
-                                                "id",
-                                                "name",
-                                                "type",
-                                                "imageUrl",
-                                                "rarity"
-                                              ]
-                                            }
-                                          },
-                                          "required": [
-                                            "AVATAR_FRAME",
-                                            "COMMENT_BUBBLE"
-                                          ]
+                                          "$ref": "#/components/schemas/Decoration"
                                         },
                                         "isMember": {
                                           "type": "boolean"
