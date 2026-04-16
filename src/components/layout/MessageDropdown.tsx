@@ -317,13 +317,15 @@ export function MessageDropdown({
                 onClick={() => mobile && setMobileOpen(false)}
                 className="mb-1.5 flex items-start gap-3 rounded-md px-3 py-3 text-left transition-all hover:bg-muted/60"
               >
-                <div className="shrink-0">
-                  <Avatar
-                    url={message.avatarUrl}
-                    className="size-10"
-                    alt={message.title}
-                  />
-                </div>
+                {message.type === "private" && (
+                  <div className="shrink-0">
+                    <Avatar
+                      url={message.avatarUrl}
+                      className="size-10"
+                      alt={message.title}
+                    />
+                  </div>
+                )}
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-3">
@@ -405,6 +407,7 @@ export function MessageDropdown({
               <button
                 key={tab.value}
                 type="button"
+                title={tab.title}
                 onClick={() => handleTabChange(tab.value)}
                 className={cn(
                   "relative flex-1 flex items-center justify-center focus-within:outline-0 outline-0  h-9 cursor-pointer rounded-xl text-sm font-medium transition-all",
@@ -422,7 +425,6 @@ export function MessageDropdown({
                         ? (tab.activeIcon?.src ?? tab.activeIcon)
                         : (tab.inactiveIcon?.src ?? tab.inactiveIcon)
                     }
-                    title={tab.title}
                     alt={tab.title}
                     className="size-7"
                   />

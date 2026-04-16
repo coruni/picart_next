@@ -11,6 +11,7 @@ import {
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { cn, formatRelativeTime } from "@/lib";
+import { prepareRichTextHtmlForSummary } from "@/lib/rich-text";
 import {
   ArrowLeft,
   Ban,
@@ -626,9 +627,74 @@ export function MessagePrivateDetailRoutePane({
     });
   }, []);
 
-  if (!selectedItem || selectedItem.type !== "private") {
+  if (!selectedItem) {
     return null;
   }
+
+  // 对于非私信类型（notification/system），渲染简单的详情视图
+  if (selectedItem.type !== "private") {
+    return (
+      <>
+        <section
+          className={cn(
+            "min-h-0 min-w-0 flex-1 flex-col bg-background md:flex",
+            isMobileDetailOpen ? "flex" : "hidden",
+          )}
+        >
+          <div className="flex min-w-0 shrink-0 items-center justify-between border-b border-card bg-card px-4 py-2">
+            <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full p-2 md:hidden"
+                onClick={onBackToList}
+                aria-label={copy.chatList}
+              >
+                <ArrowLeft className="size-4" />
+              </Button>
+              <div className="min-w-0">
+                <h2 className="truncate text-sm font-semibold text-foreground">
+                  {selectedItem.title || tMsg("untitled")}
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  {formatRelativeTime(selectedItem.createdAt || "", tTime, locale)}
+                </p>
+              </div>
+            </div>
+            <div className="flex shrink-0 items-center">
+              <Button
+                className="hidden rounded-full md:inline-flex"
+                onClick={() => void markAllAsRead(selectedTab)}
+              >
+                {copy.markAll}
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            <div className="relative min-h-0 min-w-0 flex-1 px-4 py-6">
+              <div className="mx-auto max-w-2xl">
+                <h3 className="mb-4 text-lg font-semibold text-foreground">
+                  {selectedItem.title || tMsg("untitled")}
+                </h3>
+                <div
+                  className="prose prose-sm max-w-none text-sm text-foreground"
+                  dangerouslySetInnerHTML={{
+                    __html: prepareRichTextHtmlForSummary(selectedItem.content || ""),
+                  }}
+                />
+                <div className="mt-6 text-xs text-muted-foreground">
+                  {formatRelativeTime(selectedItem.createdAt || "", tTime, locale)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </>
+    );
+  }
+
+  // 私信类型保持原有逻辑
 
   return (
     <>

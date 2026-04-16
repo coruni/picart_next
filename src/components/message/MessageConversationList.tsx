@@ -151,13 +151,15 @@ export function MessageConversationList({
                     active && "bg-primary/15",
                   )}
                 >
-                  <div className="shrink-0">
-                    <Avatar
-                      url={item.avatarUrl}
-                      className="size-10"
-                      alt={item.title}
-                    />
-                  </div>
+                  {item.type === "private" && (
+                    <div className="shrink-0">
+                      <Avatar
+                        url={item.avatarUrl}
+                        className="size-10"
+                        alt={item.title}
+                      />
+                    </div>
+                  )}
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-3">
