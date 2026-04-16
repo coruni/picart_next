@@ -14,11 +14,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/Dialog";
-import { formatDate } from "@/lib";
+import { useRouter } from "@/i18n/routing";
+import { cn, formatDate } from "@/lib";
+import { Ban } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "@/i18n/routing";
-import { Ban } from "lucide-react";
 
 type BlockedUser = {
   id: number;
@@ -86,7 +86,9 @@ export function BlockedUsersClient() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="text-sm text-muted-foreground">{tCommon("loading")}</div>
+        <div className="text-sm text-muted-foreground">
+          {tCommon("loading")}
+        </div>
       </div>
     );
   }
@@ -119,7 +121,7 @@ export function BlockedUsersClient() {
                 alt={user.nickname || user.username}
               />
               <div>
-                <p className={cn("font-medium text-foreground", user.isMember && "text-member")}>
+                <p className={cn("font-medium text-foreground")}>
                   {user.nickname || user.username}
                 </p>
                 <p className="text-xs text-muted-foreground">
@@ -155,7 +157,8 @@ export function BlockedUsersClient() {
             <DialogTitle>{t("unblockConfirmTitle")}</DialogTitle>
             <DialogDescription>
               {t("unblockConfirmDescription", {
-                username: selectedUser?.nickname || selectedUser?.username || "",
+                username:
+                  selectedUser?.nickname || selectedUser?.username || "",
               })}
             </DialogDescription>
           </DialogHeader>
