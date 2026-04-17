@@ -520,7 +520,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
             {selectedBackgroundImage ? (
               <>
                 {/* Crop area with X button */}
-                <div className="relative w-full aspect-21/9">
+                <div className="relative w-full">
                   <button
                     type="button"
                     onClick={handleRemoveBackgroundImage}
@@ -530,7 +530,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
                     <X size={16} />
                   </button>
                   <div
-                    className="w-full aspect-21/9 rounded-lg overflow-hidden cursor-move touch-none"
+                    className="w-full h-56 md:h-[300px] rounded-lg overflow-hidden cursor-move touch-none"
                     onWheel={handleBackgroundWheel}
                     onTouchStart={handleBackgroundTouchStart}
                     onTouchMove={handleBackgroundTouchMove}
@@ -539,8 +539,8 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
                     <AvatarEditor
                       ref={backgroundEditorRef}
                       image={selectedBackgroundImage}
-                      width={1050}
-                      height={450}
+                      width={700}
+                      height={300}
                       border={0}
                       borderRadius={0}
                       color={[0, 0, 0, 0.6]}

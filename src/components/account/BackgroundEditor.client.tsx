@@ -168,7 +168,7 @@ export const BackgroundEditor = ({
             <>
               {/* Crop area */}
               <div
-                className="w-full aspect-21/9 rounded-lg overflow-hidden cursor-move touch-none"
+                className="w-full h-56 md:h-[300px] rounded-lg overflow-hidden cursor-move touch-none"
                 onWheel={handleWheel}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
@@ -177,8 +177,8 @@ export const BackgroundEditor = ({
                 <AvatarEditor
                   ref={editorRef}
                   image={selectedImage}
-                  width={1050}
-                  height={450}
+                  width={700}
+                  height={300}
                   border={0}
                   borderRadius={0}
                   color={[0, 0, 0, 0.6]}
