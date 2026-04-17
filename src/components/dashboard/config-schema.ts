@@ -765,56 +765,6 @@ export const auditConfigExamples: ConfigSchema[] = [
       value: "aliyun",
     },
   },
-  {
-    key: "aliyun_text_scene",
-    label: "阿里云文本审核场景",
-    description: "文本内容审核的检测场景",
-    type: "multiselect",
-    defaultValue: "antispam",
-    public: false,
-    group: "audit",
-    sort: 44,
-    ui: {
-      options: [
-        { value: "antispam", label: "垃圾信息" },
-        { value: "porn", label: "色情" },
-        { value: "terrorism", label: "暴恐" },
-        { value: "abuse", label: "辱骂" },
-        { value: "ad", label: "广告" },
-        { value: "politics", label: "敏感政治" },
-      ],
-    },
-    when: {
-      key: "content_audit_provider",
-      operator: "eq",
-      value: "aliyun",
-    },
-  },
-  {
-    key: "aliyun_image_scene",
-    label: "阿里云图片审核场景",
-    description: "图片内容审核的检测场景（多选）",
-    type: "multiselect",
-    defaultValue: "porn,sensitive,terrorism",
-    public: false,
-    group: "audit",
-    sort: 45,
-    ui: {
-      options: [
-        { value: "porn", label: "色情" },
-        { value: "sensitive", label: "敏感内容" },
-        { value: "terrorism", label: "暴恐" },
-        { value: "ad", label: "广告" },
-        { value: "politics", label: "敏感政治" },
-        { value: "contraband", label: "违禁品" },
-      ],
-    },
-    when: {
-      key: "content_audit_provider",
-      operator: "eq",
-      value: "aliyun",
-    },
-  },
 
   // ==================== 收藏夹配置（补充） ====================
   {
@@ -1649,46 +1599,6 @@ export const CONFIG_SCHEMA_MAP: Record<string, ConfigSchema> = {
     public: false,
     group: "audit",
     sort: 43,
-    when: { key: "content_audit_provider", operator: "eq", value: "aliyun" },
-  },
-  "aliyun_text_scene": {
-    key: "aliyun_text_scene",
-    label: "阿里云文本审核场景",
-    type: "multiselect",
-    defaultValue: "antispam",
-    public: false,
-    group: "audit",
-    sort: 44,
-    ui: {
-      options: [
-        { value: "antispam", label: "垃圾信息" },
-        { value: "porn", label: "色情" },
-        { value: "terrorism", label: "暴恐" },
-        { value: "abuse", label: "辱骂" },
-        { value: "ad", label: "广告" },
-        { value: "politics", label: "敏感政治" },
-      ],
-    },
-    when: { key: "content_audit_provider", operator: "eq", value: "aliyun" },
-  },
-  "aliyun_image_scene": {
-    key: "aliyun_image_scene",
-    label: "阿里云图片审核场景",
-    type: "multiselect",
-    defaultValue: "porn,sensitive,terrorism",
-    public: false,
-    group: "audit",
-    sort: 45,
-    ui: {
-      options: [
-        { value: "porn", label: "色情" },
-        { value: "sensitive", label: "敏感内容" },
-        { value: "terrorism", label: "暴恐" },
-        { value: "ad", label: "广告" },
-        { value: "politics", label: "敏感政治" },
-        { value: "contraband", label: "违禁品" },
-      ],
-    },
     when: { key: "content_audit_provider", operator: "eq", value: "aliyun" },
   },
 
