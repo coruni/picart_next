@@ -5309,6 +5309,7 @@ export type ArticleControllerSearchResponses = {
                         large: string;
                     };
                 }>;
+                videoUrl: string;
                 sort: number;
                 summary: string;
                 views: number;
@@ -6497,6 +6498,7 @@ export type ArticleControllerGetFavoritedArticlesResponses = {
                 type: string;
                 content: string;
                 images: Array<string>;
+                videoUrl: string;
                 sort: number;
                 summary: string;
                 views: number;
@@ -6949,6 +6951,35 @@ export type ArticleControllerSetProfilePinData = {
 };
 
 export type ArticleControllerSetProfilePinResponses = {
+    200: unknown;
+};
+
+export type ArticleControllerGetDraftsData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: {
+        /**
+         * 页码
+         */
+        page?: number;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+    };
+    url: '/article/drafts';
+};
+
+export type ArticleControllerGetDraftsResponses = {
+    /**
+     * 获取成功
+     */
     200: unknown;
 };
 
@@ -12638,8 +12669,158 @@ export type ReportControllerFindAllResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<{
+                id?: number;
+                type?: string;
+                reason?: string;
+                category?: string;
+                description?: unknown;
+                status?: string;
+                result?: unknown;
+                action?: unknown;
+                reporterId?: number;
+                reporter?: {
+                    id: number;
+                    username: string;
+                    nickname: unknown;
+                    status: string;
+                    banned: unknown;
+                    banReason: unknown;
+                    avatar: unknown;
+                    description: unknown;
+                    background: unknown;
+                    gender: string;
+                    birthDate: unknown;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    likes: number;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: unknown;
+                    membershipEndDate: unknown;
+                    lastLoginAt: unknown;
+                    lastActiveAt: string;
+                    inviterId: unknown;
+                    myInviteCode: string;
+                    inviteCode: unknown;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                reportedUserId?: number;
+                reportedUser?: {
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: unknown;
+                    banReason: string;
+                    avatar: string;
+                    description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: unknown;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    likes: number;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
+                    lastLoginAt: string;
+                    lastActiveAt: string;
+                    inviterId: unknown;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    equippedDecorations: {
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                        ACHIEVEMENT_BADGE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
+                };
+                reportedArticleId?: number;
+                reportedArticle?: {
+                    id: number;
+                    title: string;
+                    requireLogin: boolean;
+                    requireFollow: boolean;
+                    requirePayment: boolean;
+                    requireMembership: boolean;
+                    listRequireLogin: boolean;
+                    viewPrice: string;
+                    type: string;
+                    content: string;
+                    images: unknown;
+                    videoUrl: unknown;
+                    sort: number;
+                    summary: string;
+                    views: number;
+                    likes: number;
+                    favoriteCount: number;
+                    commentCount: number;
+                    isFeatured: boolean;
+                    featuredAt: unknown;
+                    isPinnedOnProfile: boolean;
+                    pinnedAt: unknown;
+                    status: string;
+                    cover: string;
+                    authorId: number;
+                    activityId: unknown;
+                    downloadCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                reportedCommentId?: unknown;
+                reportedComment?: unknown;
+                handlerId?: unknown;
+                handler?: unknown;
+                handledAt?: unknown;
+                createdAt?: string;
+                updatedAt?: string;
+            }>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
 };
+
+export type ReportControllerFindAllResponse = ReportControllerFindAllResponses[keyof ReportControllerFindAllResponses];
 
 export type ReportControllerCreateData = {
     body: CreateReportDto;
@@ -15825,4 +16006,144 @@ export type SearchControllerClearArticlesData = {
 
 export type SearchControllerClearArticlesResponses = {
     201: unknown;
+};
+
+export type ContentAuditControllerGetConfigData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/content-audit/config';
+};
+
+export type ContentAuditControllerGetConfigResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};
+
+export type ContentAuditControllerReloadConfigData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/content-audit/config/reload';
+};
+
+export type ContentAuditControllerReloadConfigResponses = {
+    /**
+     * 重载成功
+     */
+    200: unknown;
+};
+
+export type ContentAuditControllerGetPendingArticlesData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: {
+        /**
+         * 页码
+         */
+        page?: number;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+    };
+    url: '/content-audit/pending-articles';
+};
+
+export type ContentAuditControllerGetPendingArticlesResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};
+
+export type ContentAuditControllerReviewArticleData = {
+    body: {
+        [key: string]: unknown;
+    };
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/content-audit/articles/{id}/review';
+};
+
+export type ContentAuditControllerReviewArticleErrors = {
+    /**
+     * 文章不存在
+     */
+    404: unknown;
+};
+
+export type ContentAuditControllerReviewArticleResponses = {
+    /**
+     * 审核成功
+     */
+    200: unknown;
+};
+
+export type ContentAuditControllerAuditTextData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/content-audit/text';
+};
+
+export type ContentAuditControllerAuditTextResponses = {
+    /**
+     * 审核完成
+     */
+    200: unknown;
+};
+
+export type ContentAuditControllerAuditImageData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/content-audit/image';
+};
+
+export type ContentAuditControllerAuditImageResponses = {
+    /**
+     * 审核完成
+     */
+    200: unknown;
 };

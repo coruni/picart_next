@@ -74,6 +74,9 @@
     },
     {
       "name": "搜索管理"
+    },
+    {
+      "name": "内容审核"
     }
   ],
   "paths": {
@@ -11244,6 +11247,9 @@
                                   ]
                                 }
                               },
+                              "videoUrl": {
+                                "type": "string"
+                              },
                               "sort": {
                                 "type": "integer"
                               },
@@ -11714,7 +11720,8 @@
                               "pinnedAt",
                               "isHot",
                               "hotScore",
-                              "isFeatured"
+                              "isFeatured",
+                              "videoUrl"
                             ]
                           }
                         },
@@ -15900,6 +15907,9 @@
                                   "type": "string"
                                 }
                               },
+                              "videoUrl": {
+                                "type": "string"
+                              },
                               "sort": {
                                 "type": "integer"
                               },
@@ -16346,7 +16356,8 @@
                               "isPaid",
                               "imageCount",
                               "reactionStats",
-                              "isFavorited"
+                              "isFavorited",
+                              "videoUrl"
                             ]
                           }
                         },
@@ -17582,6 +17593,91 @@
             "bearer": []
           }
         ]
+      }
+    },
+    "/article/drafts": {
+      "get": {
+        "summary": "获取当前用户的草稿文章列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "ArticleController_getDrafts",
+        "tags": [
+          "文章管理"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          }
+        },
+        "security": []
       }
     },
     "/comment/article/{id}": {
@@ -37534,6 +37630,585 @@
         "responses": {
           "200": {
             "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "type": {
+                                "type": "string"
+                              },
+                              "reason": {
+                                "type": "string"
+                              },
+                              "category": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "null"
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "result": {
+                                "type": "null"
+                              },
+                              "action": {
+                                "type": "null"
+                              },
+                              "reporterId": {
+                                "type": "integer"
+                              },
+                              "reporter": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "username": {
+                                    "type": "string"
+                                  },
+                                  "nickname": {
+                                    "type": "null"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "banned": {
+                                    "type": "null"
+                                  },
+                                  "banReason": {
+                                    "type": "null"
+                                  },
+                                  "avatar": {
+                                    "type": "null"
+                                  },
+                                  "description": {
+                                    "type": "null"
+                                  },
+                                  "background": {
+                                    "type": "null"
+                                  },
+                                  "gender": {
+                                    "type": "string"
+                                  },
+                                  "birthDate": {
+                                    "type": "null"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followerCount": {
+                                    "type": "integer"
+                                  },
+                                  "followingCount": {
+                                    "type": "integer"
+                                  },
+                                  "likes": {
+                                    "type": "integer"
+                                  },
+                                  "level": {
+                                    "type": "integer"
+                                  },
+                                  "experience": {
+                                    "type": "integer"
+                                  },
+                                  "wallet": {
+                                    "type": "integer"
+                                  },
+                                  "points": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevel": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevelName": {
+                                    "type": "string"
+                                  },
+                                  "membershipStatus": {
+                                    "type": "string"
+                                  },
+                                  "membershipStartDate": {
+                                    "type": "null"
+                                  },
+                                  "membershipEndDate": {
+                                    "type": "null"
+                                  },
+                                  "lastLoginAt": {
+                                    "type": "null"
+                                  },
+                                  "lastActiveAt": {
+                                    "type": "string"
+                                  },
+                                  "inviterId": {
+                                    "type": "null"
+                                  },
+                                  "myInviteCode": {
+                                    "type": "string"
+                                  },
+                                  "inviteCode": {
+                                    "type": "null"
+                                  },
+                                  "inviteEarnings": {
+                                    "type": "string"
+                                  },
+                                  "inviteCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "username",
+                                  "nickname",
+                                  "status",
+                                  "banned",
+                                  "banReason",
+                                  "avatar",
+                                  "description",
+                                  "background",
+                                  "gender",
+                                  "birthDate",
+                                  "articleCount",
+                                  "followerCount",
+                                  "followingCount",
+                                  "likes",
+                                  "level",
+                                  "experience",
+                                  "wallet",
+                                  "points",
+                                  "membershipLevel",
+                                  "membershipLevelName",
+                                  "membershipStatus",
+                                  "membershipStartDate",
+                                  "membershipEndDate",
+                                  "lastLoginAt",
+                                  "lastActiveAt",
+                                  "inviterId",
+                                  "myInviteCode",
+                                  "inviteCode",
+                                  "inviteEarnings",
+                                  "inviteCount",
+                                  "createdAt",
+                                  "updatedAt"
+                                ]
+                              },
+                              "reportedUserId": {
+                                "type": "integer"
+                              },
+                              "reportedUser": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "username": {
+                                    "type": "string"
+                                  },
+                                  "nickname": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "banned": {
+                                    "type": "null"
+                                  },
+                                  "banReason": {
+                                    "type": "string"
+                                  },
+                                  "avatar": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "background": {
+                                    "type": "string"
+                                  },
+                                  "gender": {
+                                    "type": "string"
+                                  },
+                                  "birthDate": {
+                                    "type": "null"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followerCount": {
+                                    "type": "integer"
+                                  },
+                                  "followingCount": {
+                                    "type": "integer"
+                                  },
+                                  "likes": {
+                                    "type": "integer"
+                                  },
+                                  "level": {
+                                    "type": "integer"
+                                  },
+                                  "experience": {
+                                    "type": "integer"
+                                  },
+                                  "wallet": {
+                                    "type": "integer"
+                                  },
+                                  "points": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevel": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevelName": {
+                                    "type": "string"
+                                  },
+                                  "membershipStatus": {
+                                    "type": "string"
+                                  },
+                                  "membershipStartDate": {
+                                    "type": "string"
+                                  },
+                                  "membershipEndDate": {
+                                    "type": "string"
+                                  },
+                                  "lastLoginAt": {
+                                    "type": "string"
+                                  },
+                                  "lastActiveAt": {
+                                    "type": "string"
+                                  },
+                                  "inviterId": {
+                                    "type": "null"
+                                  },
+                                  "myInviteCode": {
+                                    "type": "string"
+                                  },
+                                  "inviteCode": {
+                                    "type": "string"
+                                  },
+                                  "inviteEarnings": {
+                                    "type": "string"
+                                  },
+                                  "inviteCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  },
+                                  "equippedDecorations": {
+                                    "type": "object",
+                                    "properties": {
+                                      "AVATAR_FRAME": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "integer"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "type": {
+                                            "type": "string"
+                                          },
+                                          "imageUrl": {
+                                            "type": "string"
+                                          },
+                                          "rarity": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name",
+                                          "type",
+                                          "imageUrl",
+                                          "rarity"
+                                        ]
+                                      },
+                                      "ACHIEVEMENT_BADGE": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "integer"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "type": {
+                                            "type": "string"
+                                          },
+                                          "imageUrl": {
+                                            "type": "string"
+                                          },
+                                          "rarity": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name",
+                                          "type",
+                                          "imageUrl",
+                                          "rarity"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "AVATAR_FRAME",
+                                      "ACHIEVEMENT_BADGE"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "username",
+                                  "nickname",
+                                  "status",
+                                  "banned",
+                                  "banReason",
+                                  "avatar",
+                                  "description",
+                                  "background",
+                                  "gender",
+                                  "birthDate",
+                                  "articleCount",
+                                  "followerCount",
+                                  "followingCount",
+                                  "likes",
+                                  "level",
+                                  "experience",
+                                  "wallet",
+                                  "points",
+                                  "membershipLevel",
+                                  "membershipLevelName",
+                                  "membershipStatus",
+                                  "membershipStartDate",
+                                  "membershipEndDate",
+                                  "lastLoginAt",
+                                  "lastActiveAt",
+                                  "inviterId",
+                                  "myInviteCode",
+                                  "inviteCode",
+                                  "inviteEarnings",
+                                  "inviteCount",
+                                  "createdAt",
+                                  "updatedAt",
+                                  "equippedDecorations"
+                                ]
+                              },
+                              "reportedArticleId": {
+                                "type": "integer"
+                              },
+                              "reportedArticle": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "requireLogin": {
+                                    "type": "boolean"
+                                  },
+                                  "requireFollow": {
+                                    "type": "boolean"
+                                  },
+                                  "requirePayment": {
+                                    "type": "boolean"
+                                  },
+                                  "requireMembership": {
+                                    "type": "boolean"
+                                  },
+                                  "listRequireLogin": {
+                                    "type": "boolean"
+                                  },
+                                  "viewPrice": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string"
+                                  },
+                                  "content": {
+                                    "type": "string"
+                                  },
+                                  "images": {
+                                    "type": "null"
+                                  },
+                                  "videoUrl": {
+                                    "type": "null"
+                                  },
+                                  "sort": {
+                                    "type": "integer"
+                                  },
+                                  "summary": {
+                                    "type": "string"
+                                  },
+                                  "views": {
+                                    "type": "integer"
+                                  },
+                                  "likes": {
+                                    "type": "integer"
+                                  },
+                                  "favoriteCount": {
+                                    "type": "integer"
+                                  },
+                                  "commentCount": {
+                                    "type": "integer"
+                                  },
+                                  "isFeatured": {
+                                    "type": "boolean"
+                                  },
+                                  "featuredAt": {
+                                    "type": "null"
+                                  },
+                                  "isPinnedOnProfile": {
+                                    "type": "boolean"
+                                  },
+                                  "pinnedAt": {
+                                    "type": "null"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "cover": {
+                                    "type": "string"
+                                  },
+                                  "authorId": {
+                                    "type": "integer"
+                                  },
+                                  "activityId": {
+                                    "type": "null"
+                                  },
+                                  "downloadCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "title",
+                                  "requireLogin",
+                                  "requireFollow",
+                                  "requirePayment",
+                                  "requireMembership",
+                                  "listRequireLogin",
+                                  "viewPrice",
+                                  "type",
+                                  "content",
+                                  "images",
+                                  "videoUrl",
+                                  "sort",
+                                  "summary",
+                                  "views",
+                                  "likes",
+                                  "favoriteCount",
+                                  "commentCount",
+                                  "isFeatured",
+                                  "featuredAt",
+                                  "isPinnedOnProfile",
+                                  "pinnedAt",
+                                  "status",
+                                  "cover",
+                                  "authorId",
+                                  "activityId",
+                                  "downloadCount",
+                                  "createdAt",
+                                  "updatedAt"
+                                ]
+                              },
+                              "reportedCommentId": {
+                                "type": "null"
+                              },
+                              "reportedComment": {
+                                "type": "null"
+                              },
+                              "handlerId": {
+                                "type": "null"
+                              },
+                              "handler": {
+                                "type": "null"
+                              },
+                              "handledAt": {
+                                "type": "null"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "page": {
+                              "type": "integer"
+                            },
+                            "limit": {
+                              "type": "integer"
+                            },
+                            "totalPages": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "total",
+                            "page",
+                            "limit",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "data",
+                        "meta"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           }
         },
@@ -48534,6 +49209,421 @@
             "bearer": []
           }
         ]
+      }
+    },
+    "/content-audit/config": {
+      "get": {
+        "summary": "获取审核配置",
+        "deprecated": false,
+        "description": "",
+        "operationId": "ContentAuditController_getConfig",
+        "tags": [
+          "内容审核"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/content-audit/config/reload": {
+      "post": {
+        "summary": "重新加载审核配置",
+        "deprecated": false,
+        "description": "",
+        "operationId": "ContentAuditController_reloadConfig",
+        "tags": [
+          "内容审核"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "重载成功",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/content-audit/pending-articles": {
+      "get": {
+        "summary": "获取待审核文章列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "ContentAuditController_getPendingArticles",
+        "tags": [
+          "内容审核"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/content-audit/articles/{id}/review": {
+      "post": {
+        "summary": "审核文章",
+        "deprecated": false,
+        "description": "",
+        "operationId": "ContentAuditController_reviewArticle",
+        "tags": [
+          "内容审核"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": 0,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "审核成功",
+            "headers": {}
+          },
+          "404": {
+            "description": "文章不存在",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/content-audit/text": {
+      "post": {
+        "summary": "测试文本审核",
+        "deprecated": false,
+        "description": "",
+        "operationId": "ContentAuditController_auditText",
+        "tags": [
+          "内容审核"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "审核完成",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/content-audit/image": {
+      "post": {
+        "summary": "测试图片审核",
+        "deprecated": false,
+        "description": "",
+        "operationId": "ContentAuditController_auditImage",
+        "tags": [
+          "内容审核"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "审核完成",
+            "headers": {}
+          }
+        },
+        "security": []
       }
     }
   },
