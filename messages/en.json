@@ -408,7 +408,8 @@
       "cropBackground": "Crop Background",
       "backgroundPreview": "Background Preview",
       "backgroundEditorHint": "Drag to reposition, scroll to zoom",
-      "selectImage": "Select Image"
+      "selectImage": "Select Image",
+      "reselectImage": "Reselect"
     }
   },
   "editor": {

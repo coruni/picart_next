@@ -400,7 +400,8 @@
       "cropBackground": "裁剪背景图",
       "backgroundPreview": "背景预览",
       "backgroundEditorHint": "拖动调整位置，滚动缩放大小",
-      "selectImage": "选择图片"
+      "selectImage": "选择图片",
+      "reselectImage": "重新选择"
     }
   },
   "editor": {

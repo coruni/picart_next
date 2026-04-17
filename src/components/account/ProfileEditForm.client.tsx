@@ -15,9 +15,9 @@ import { useRouter } from "@/i18n/routing";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import type { UserDetail } from "@/types";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { useRef, useState } from "react";
 import AvatarEditor from "react-avatar-editor";
+import { X } from "lucide-react";
 
 type ProfileEditFormProps = {
   user: UserDetail;
@@ -136,6 +136,19 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
     setAvatarScale(1);
   };
 
+  const handleAvatarDialogOpenChange = (open: boolean) => {
+    if (!open) {
+      handleCancelAvatarEdit();
+    } else {
+      setShowAvatarEditor(true);
+    }
+  };
+
+  const handleRemoveAvatarImage = () => {
+    setSelectedAvatarImage(null);
+    setAvatarScale(1);
+  };
+
   // Background handlers
   const handleBackgroundChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -191,6 +204,19 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
 
   const handleCancelBackgroundEdit = () => {
     setShowBackgroundEditor(false);
+    setSelectedBackgroundImage(null);
+    setBackgroundScale(1);
+  };
+
+  const handleBackgroundDialogOpenChange = (open: boolean) => {
+    if (!open) {
+      handleCancelBackgroundEdit();
+    } else {
+      setShowBackgroundEditor(true);
+    }
+  };
+
+  const handleRemoveBackgroundImage = () => {
     setSelectedBackgroundImage(null);
     setBackgroundScale(1);
   };
@@ -391,34 +417,45 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
       </form>
 
       {/* Avatar Editor Modal */}
-      <Dialog open={showAvatarEditor} onOpenChange={setShowAvatarEditor}>
+      <Dialog open={showAvatarEditor} onOpenChange={handleAvatarDialogOpenChange}>
         <DialogContent className="max-w-sm md:max-w-md lg:max-w-lg">
           <DialogHeader>
             <DialogTitle>{t("cropAvatar")}</DialogTitle>
           </DialogHeader>
 
           <div className="flex flex-col items-center gap-4 py-4">
-            {selectedAvatarImage && (
+            {selectedAvatarImage ? (
               <>
-                <div
-                  className="w-full max-w-sm aspect-square rounded-lg overflow-hidden cursor-move touch-none"
-                  onWheel={handleAvatarWheel}
-                  onTouchStart={handleAvatarTouchStart}
-                  onTouchMove={handleAvatarTouchMove}
-                  onTouchEnd={handleAvatarTouchEnd}
-                >
-                  <AvatarEditor
-                    ref={avatarEditorRef}
-                    image={selectedAvatarImage}
-                    width={400}
-                    height={400}
-                    border={0}
-                    borderRadius={200}
-                    color={[0, 0, 0, 0.6]}
-                    scale={avatarScale}
-                    rotate={0}
-                    style={{ width: "100%", height: "100%" }}
-                  />
+                {/* Crop area */}
+                <div className="relative w-full max-w-sm aspect-square">
+                  <button
+                    type="button"
+                    onClick={handleRemoveAvatarImage}
+                    className="absolute -top-2 -right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-destructive hover:text-white transition-colors border border-border shadow-sm"
+                    title={t("reselectImage")}
+                  >
+                    <X size={16} />
+                  </button>
+                  <div
+                    className="w-full aspect-square rounded-lg overflow-hidden cursor-move touch-none"
+                    onWheel={handleAvatarWheel}
+                    onTouchStart={handleAvatarTouchStart}
+                    onTouchMove={handleAvatarTouchMove}
+                    onTouchEnd={handleAvatarTouchEnd}
+                  >
+                    <AvatarEditor
+                      ref={avatarEditorRef}
+                      image={selectedAvatarImage}
+                      width={400}
+                      height={400}
+                      border={0}
+                      borderRadius={200}
+                      color={[0, 0, 0, 0.6]}
+                      scale={avatarScale}
+                      rotate={0}
+                      style={{ width: "100%", height: "100%" }}
+                    />
+                  </div>
                 </div>
 
                 <p className="text-xs text-gray-500 text-center">
@@ -448,6 +485,22 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
                   </Button>
                 </div>
               </>
+            ) : (
+              <div className="flex flex-col items-center gap-4 py-8">
+                <input
+                  id="avatar-reselect"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarChange}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="avatar-reselect"
+                  className="cursor-pointer px-6 py-2 bg-primary text-sm text-white rounded-full hover:bg-primary/90 transition-colors"
+                >
+                  {t("selectImage")}
+                </label>
+              </div>
             )}
           </div>
         </DialogContent>
@@ -456,7 +509,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
       {/* Background Editor Modal */}
       <Dialog
         open={showBackgroundEditor}
-        onOpenChange={setShowBackgroundEditor}
+        onOpenChange={handleBackgroundDialogOpenChange}
       >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -464,48 +517,38 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
           </DialogHeader>
 
           <div className="flex flex-col gap-4 py-4">
-            {selectedBackgroundImage && (
+            {selectedBackgroundImage ? (
               <>
-                {/* Preview with decorative background */}
-                <div className="relative w-full aspect-21/9 rounded-lg overflow-hidden bg-linear-to-br from-blue-500 to-purple-600">
-                  {backgroundUrl && (
-                    <Image
-                      fill
-                      unoptimized
-                      src={backgroundUrl}
-                      alt="Background preview"
-                      className="w-full h-full object-cover opacity-50"
+                {/* Crop area with X button */}
+                <div className="relative w-full aspect-21/9">
+                  <button
+                    type="button"
+                    onClick={handleRemoveBackgroundImage}
+                    className="absolute -top-2 -right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-destructive hover:text-white transition-colors border border-border shadow-sm"
+                    title={t("reselectImage")}
+                  >
+                    <X size={16} />
+                  </button>
+                  <div
+                    className="w-full aspect-21/9 rounded-lg overflow-hidden cursor-move touch-none"
+                    onWheel={handleBackgroundWheel}
+                    onTouchStart={handleBackgroundTouchStart}
+                    onTouchMove={handleBackgroundTouchMove}
+                    onTouchEnd={handleBackgroundTouchEnd}
+                  >
+                    <AvatarEditor
+                      ref={backgroundEditorRef}
+                      image={selectedBackgroundImage}
+                      width={1050}
+                      height={450}
+                      border={0}
+                      borderRadius={0}
+                      color={[0, 0, 0, 0.6]}
+                      scale={backgroundScale}
+                      rotate={0}
+                      style={{ width: "100%", height: "100%" }}
                     />
-                  )}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-white text-center">
-                      <div className="text-sm opacity-75">
-                        {t("backgroundPreview")}
-                      </div>
-                    </div>
                   </div>
-                </div>
-
-                {/* Crop area */}
-                <div
-                  className="w-full aspect-21/9 rounded-lg overflow-hidden cursor-move touch-none"
-                  onWheel={handleBackgroundWheel}
-                  onTouchStart={handleBackgroundTouchStart}
-                  onTouchMove={handleBackgroundTouchMove}
-                  onTouchEnd={handleBackgroundTouchEnd}
-                >
-                  <AvatarEditor
-                    ref={backgroundEditorRef}
-                    image={selectedBackgroundImage}
-                    width={1050}
-                    height={450}
-                    border={0}
-                    borderRadius={0}
-                    color={[0, 0, 0, 0.6]}
-                    scale={backgroundScale}
-                    rotate={0}
-                    style={{ width: "100%", height: "100%" }}
-                  />
                 </div>
 
                 <p className="text-xs text-gray-500 text-center">
@@ -535,6 +578,22 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
                   </Button>
                 </div>
               </>
+            ) : (
+              <div className="flex flex-col items-center gap-4 py-8">
+                <input
+                  id="background-reselect"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleBackgroundChange}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="background-reselect"
+                  className="cursor-pointer px-6 py-2 bg-primary text-sm text-white rounded-full hover:bg-primary/90 transition-colors"
+                >
+                  {t("selectImage")}
+                </label>
+              </div>
             )}
           </div>
         </DialogContent>
