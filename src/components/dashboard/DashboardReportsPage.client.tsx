@@ -9,6 +9,8 @@ import { DropdownMenu } from "@/components/shared";
 import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
+import { Avatar } from "@/components/ui/Avatar";
+import { cn } from "@/lib";
 import { getDashboardCopy } from "./copy";
 import { DashboardEditDialog, type DashboardEditField } from "./DashboardEditDialog.client";
 import { DashboardLoadingView } from "./DashboardFeedback";
@@ -37,7 +39,7 @@ export function DashboardReportsPage() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const typeValueEnum = useMemo(
+  const _typeValueEnum = useMemo(
     () => ({
       "": { text: copy.common.all },
       USER: { text: copy.options.reportType.USER },
@@ -104,39 +106,115 @@ export function DashboardReportsPage() {
   const columns = useMemo<DashboardTableColumn<DashboardReportItem>[]>(
     () => [
       {
-        key: "reason",
-        header: copy.columns.reason,
+        key: "reporter",
+        header: "举报人",
+        hideInSearch: true,
+        render: (item) => {
+          const reporter = item.reporter as Record<string, unknown> | undefined;
+          if (!reporter) return <span className="text-sm text-muted-foreground">-</span>;
+
+          const username = getStringField(reporter, "username");
+          const avatar = getStringField(reporter, "avatar");
+          const articleCount = getNumberField(reporter, "articleCount") || 0;
+
+          return (
+            <div className="flex items-center gap-2">
+              <Avatar
+                url={avatar || "/images/default-avatar.png"}
+                alt={username}
+                className="size-8"
+              />
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-foreground">{username}</span>
+                <span className="text-xs text-muted-foreground">发文 {articleCount}</span>
+              </div>
+            </div>
+          );
+        },
+      },
+      {
+        key: "targetUser",
+        header: "被举报者",
+        hideInSearch: true,
+        render: (item) => {
+          const reportedUser = item.reportedUser as Record<string, unknown> | undefined;
+          if (!reportedUser) return <span className="text-sm text-muted-foreground">-</span>;
+
+          const username = getStringField(reportedUser, "username");
+          const avatar = getStringField(reportedUser, "avatar");
+          const articleCount = getNumberField(reportedUser, "articleCount") || 0;
+          const followerCount = getNumberField(reportedUser, "followerCount") || 0;
+
+          return (
+            <div className="flex items-center gap-2">
+              <Avatar
+                url={avatar || "/images/default-avatar.png"}
+                alt={username}
+                className="size-8"
+              />
+              <div className="flex flex-col">
+                <span className="text-sm font-medium text-foreground">{username}</span>
+                <span className="text-xs text-muted-foreground">
+                  粉丝 {followerCount} · 文章 {articleCount}
+                </span>
+              </div>
+            </div>
+          );
+        },
+      },
+      {
+        key: "content",
+        header: "举报内容",
         dataIndex: "keyword",
         searchPlaceholder: copy.filters.reportPlaceholder,
         ellipsis: true,
-        ellipsisClassName: "max-w-[360px]",
         getTooltip: (item) =>
           getStringField(item, "reason") || getStringField(item, "description") || undefined,
-        render: (item) => (
-          <div className="min-w-0">
-            <div className="truncate text-sm font-medium text-foreground">
-              {compactText(
-                getStringField(item, "reason") || getStringField(item, "description"),
-                80,
+        render: (item) => {
+          const type = getStringField(item, "type");
+          const reason = getStringField(item, "reason");
+          const description = getStringField(item, "description");
+
+          // 获取被举报内容的预览
+          let contentPreview = "";
+          const reportedArticle = item.reportedArticle as Record<string, unknown> | undefined;
+          const reportedComment = item.reportedComment as Record<string, unknown> | undefined;
+
+          if (type === "ARTICLE" && reportedArticle) {
+            contentPreview = getStringField(reportedArticle, "title") ||
+              getStringField(reportedArticle, "content")?.slice(0, 50) || "";
+          } else if (type === "COMMENT" && reportedComment) {
+            contentPreview = getStringField(reportedComment, "content")?.slice(0, 50) || "";
+          }
+
+          return (
+            <div className="min-w-0 max-w-[280px]">
+              <div className="flex items-center gap-1.5">
+                <span className={cn(
+                  "rounded px-1.5 py-0.5 text-xs font-medium",
+                  type === "USER" && "bg-blue-100 text-blue-700",
+                  type === "ARTICLE" && "bg-green-100 text-green-700",
+                  type === "COMMENT" && "bg-purple-100 text-purple-700",
+                )}>
+                  {type}
+                </span>
+                <span className="truncate text-sm font-medium text-foreground">
+                  {compactText(reason, 40)}
+                </span>
+              </div>
+              {contentPreview && (
+                <div className="mt-1 truncate text-xs text-muted-foreground">
+                  内容: {contentPreview}
+                </div>
+              )}
+              {description && (
+                <div className="mt-1 truncate text-xs text-muted-foreground">
+                  补充: {compactText(String(description), 40)}
+                </div>
               )}
             </div>
-            <div className="mt-1 text-xs text-muted-foreground">
-              {formatDashboardDate(getStringField(item, "createdAt"))}
-            </div>
-          </div>
-        ),
-      },
-      {
-        key: "type",
-        header: copy.columns.type,
-        dataIndex: "type",
-        valueType: "select",
-        valueEnum: typeValueEnum,
-        render: (item) => (
-          <div className="text-sm text-foreground">
-            {getStringField(item, "type") || "-"}
-          </div>
-        ),
+          );
+        },
       },
       {
         key: "category",
@@ -144,30 +222,22 @@ export function DashboardReportsPage() {
         dataIndex: "category",
         valueType: "select",
         valueEnum: categoryValueEnum,
-        render: (item) => (
-          <div className="text-sm text-muted-foreground">
-            {getStringField(item, "category") || "-"}
-          </div>
-        ),
-      },
-      {
-        key: "target",
-        header: copy.columns.userId,
-        hideInSearch: true,
         render: (item) => {
-          const targetId =
-            getStringField(item, "reportedUserId") ||
-            getStringField(item, "reportedArticleId") ||
-            getStringField(item, "reportedCommentId") ||
-            String(
-              getNumberField(item, "reportedUserId") ||
-                getNumberField(item, "reportedArticleId") ||
-                getNumberField(item, "reportedCommentId") ||
-                "",
-            );
-
+          const category = getStringField(item, "category");
+          const categoryColors: Record<string, string> = {
+            SPAM: "bg-orange-100 text-orange-700",
+            ABUSE: "bg-red-100 text-red-700",
+            INAPPROPRIATE: "bg-yellow-100 text-yellow-700",
+            COPYRIGHT: "bg-indigo-100 text-indigo-700",
+            OTHER: "bg-gray-100 text-gray-700",
+          };
           return (
-            <div className="text-sm text-muted-foreground">{targetId || "-"}</div>
+            <span className={cn(
+              "rounded px-2 py-0.5 text-xs font-medium",
+              categoryColors[category || ""] || "bg-gray-100 text-gray-700"
+            )}>
+              {category || "-"}
+            </span>
           );
         },
       },
@@ -179,6 +249,16 @@ export function DashboardReportsPage() {
         valueEnum: statusValueEnum,
         render: (item) => (
           <DashboardStatusBadge value={getStringField(item, "status")} />
+        ),
+      },
+      {
+        key: "createdAt",
+        header: "举报时间",
+        hideInSearch: true,
+        render: (item) => (
+          <div className="flex flex-col text-xs text-muted-foreground">
+            <span>{formatDashboardDate(getStringField(item, "createdAt"))}</span>
+          </div>
         ),
       },
       {
@@ -222,7 +302,7 @@ export function DashboardReportsPage() {
         },
       },
     ],
-    [categoryValueEnum, copy, statusValueEnum, typeValueEnum],
+    [categoryValueEnum, copy, statusValueEnum],
   );
 
   const handleDelete = async () => {
