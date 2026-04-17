@@ -1,7 +1,7 @@
 import { getDashboardCopy } from "@/components/dashboard/copy";
 import type { Metadata } from "next";
 
-export { DashboardConfigsPage as default } from "@/components/dashboard/DashboardConfigsPage.client";
+export { DashboardConfigsPageV2 as default } from "@/components/dashboard/DashboardConfigsPageV2.client";
 
 export async function generateMetadata({
   params,

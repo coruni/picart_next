@@ -31,45 +31,6 @@ import { compactText, formatDashboardDate } from "./utils";
 type ConfigEditorKind = "input" | "textarea" | "image" | "boolean" | "number";
 
 const ALL_GROUP_VALUE = "__all__";
-const IMAGE_KEYWORDS = [
-  "logo",
-  "image",
-  "cover",
-  "avatar",
-  "background",
-  "banner",
-  "icon",
-  "qrcode",
-  "qr_code",
-  "qr",
-];
-const TEXTAREA_KEYWORDS = [
-  "description",
-  "content",
-  "message",
-  "keywords",
-  "style",
-  "script",
-  "html",
-  "css",
-  "notice",
-  "announcement",
-  "contact",
-  "proxy_url",
-];
-const NUMBER_KEYWORDS = [
-  "_count",
-  "_limit",
-  "_price",
-  "_rate",
-  "_version",
-  "_sort",
-  "_level",
-  "_minute",
-  "_seconds",
-  "_days",
-  "_hours",
-];
 
 const CONFIG_TYPES = [
   { value: "string", label: "字符串 (string)" },
@@ -79,49 +40,30 @@ const CONFIG_TYPES = [
   { value: "text", label: "长文本 (text)" },
 ];
 
-function looksLikeNumberValue(value: string) {
-  return /^-?\d+(\.\d+)?$/.test(value.trim());
-}
-
 function getConfigEditorKind(item: DashboardConfigItem): ConfigEditorKind {
-  const key = item.key.toLowerCase();
+  // 直接使用 API 返回的 type，不再根据关键词推断
   const type = item.type.toLowerCase();
   const value = (item.value ?? "").trim().toLowerCase();
 
+  // 布尔值判断（根据值内容）
   if (value === "true" || value === "false") {
     return "boolean";
   }
 
-  if (
-    NUMBER_KEYWORDS.some((keyword) => key.includes(keyword)) ||
-    ["number", "int", "integer", "float", "double", "decimal"].some(
-      (keyword) => type.includes(keyword),
-    ) ||
-    looksLikeNumberValue(value)
-  ) {
+  // 根据 type 字段直接映射
+  if (["number", "int", "integer", "float", "double", "decimal"].includes(type)) {
     return "number";
   }
 
-  if (
-    IMAGE_KEYWORDS.some((keyword) => key.includes(keyword)) ||
-    ["image", "img", "upload", "file", "picture"].some((keyword) =>
-      type.includes(keyword),
-    )
-  ) {
+  if (["image", "img", "upload", "file", "picture"].includes(type)) {
     return "image";
   }
 
-  if (
-    TEXTAREA_KEYWORDS.some((keyword) => key.includes(keyword)) ||
-    ["textarea", "text", "longtext", "editor", "json", "html", "css"].some(
-      (keyword) => type.includes(keyword),
-    ) ||
-    item.value.length > 120 ||
-    item.value.includes("\n")
-  ) {
+  if (["textarea", "text", "longtext", "editor", "json", "html", "css"].includes(type)) {
     return "textarea";
   }
 
+  // 默认为 input
   return "input";
 }
 

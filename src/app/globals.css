@@ -799,3 +799,24 @@ body.viewer-open .fixed {
   user-select: none;
   pointer-events: none;
 }
+
+/* ArtPlayer 层级控制 */
+.artplayer-layer,
+.artplayer-video-player,
+.artplayer {
+  z-index: 10 !important;
+}
+
+.artplayer-mask,
+.artplayer-loading,
+.artplayer-contextmenu,
+.artplayer-danmuku {
+  z-index: 11 !important;
+}
+
+.artplayer-controller,
+.artplayer-subtitle,
+.artplayer-setting,
+.artplayer-info-panel {
+  z-index: 12 !important;
+}

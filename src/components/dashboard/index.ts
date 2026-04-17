@@ -5,6 +5,8 @@ export { DashboardBannersPage } from "./DashboardBannersPage.client";
 export { DashboardClientPage } from "./DashboardClientPage.client";
 export { DashboardCommentsPage } from "./DashboardCommentsPage.client";
 export { DashboardConfigsPage } from "./DashboardConfigsPage.client";
+export { DashboardConfigsPageV2 } from "./DashboardConfigsPageV2.client";
+export * from "./config-schema";
 export { DashboardDataPanel } from "./DashboardDataPanel";
 export { DashboardDecorationsPage } from "./DashboardDecorationsPage.client";
 export { DashboardEmojisPage } from "./DashboardEmojisPage.client";

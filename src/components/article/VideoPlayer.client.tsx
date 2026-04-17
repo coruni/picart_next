@@ -31,7 +31,7 @@ export function VideoPlayer({ videoUrl, cover, title }: VideoPlayerProps) {
       autoplay: false,
       pip: true,
       autoSize: true,
-      autoMini: true,
+      autoMini: false,
       screenshot: false,
       setting: true,
       loop: false,
@@ -43,7 +43,7 @@ export function VideoPlayer({ videoUrl, cover, title }: VideoPlayerProps) {
       subtitleOffset: false,
       miniProgressBar: true,
       mutex: true,
-      backdrop: true,
+      backdrop: false,
       playsInline: true,
       autoPlayback: true,
       airplay: true,
@@ -75,7 +75,7 @@ export function VideoPlayer({ videoUrl, cover, title }: VideoPlayerProps) {
   }, [videoUrl, cover, title]);
 
   return (
-    <div className="relative w-full overflow-hidden bg-black">
+    <div className="relative z-10 w-full overflow-hidden bg-black">
       <div ref={containerRef} className="aspect-video w-full" />
     </div>
   );
