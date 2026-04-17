@@ -139,7 +139,7 @@ export const BackgroundEditor = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl p-0! border-0">
-        <DialogHeader className="mb-0">
+        <DialogHeader className="mb-0 p-0">
           <div
             style={{ backgroundImage: `url(${user?.background})` }}
             className="h-46 bg-center bg-no-repeat bg-cover relative"

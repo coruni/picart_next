@@ -224,6 +224,7 @@
     "viewImages": "View images",
     "like": "Like",
     "authorLiked": "Liked by author",
+    "pendingReview": "Pending review",
     "floor": "{floor}F",
     "unknownFloor": "Unknown floor",
     "sortOptions": {

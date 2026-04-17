@@ -26,6 +26,7 @@ import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
 import { type ImageInfo } from "@/types/image";
 import {
+  Clock,
   EllipsisVertical,
   Languages,
   LoaderCircle,
@@ -390,7 +391,7 @@ export const CommentItem = memo(function CommentItem({
             <span
               className={cn(
                 "text-sm leading-5 font-semibold ",
-                commentState.author?.isMember ,
+                commentState.author?.isMember,
               )}
             >
               {commentState.author.nickname || commentState.author.username}
@@ -423,6 +424,13 @@ export const CommentItem = memo(function CommentItem({
               ? tComment("floor", { floor: commentState.floor })
               : tComment("unknownFloor")}
           </span>
+
+          {commentState.status === "PENDING" && (
+            <span className="inline-flex gap-1 ml-2  rounded-md text-[10px] text-secondary items-center">
+              <Clock size={10} />
+              {tComment("pendingReview")}
+            </span>
+          )}
         </div>
         <div className="flex items-center space-x-2">
           {!contentMatchesLocale && (
@@ -488,6 +496,7 @@ export const CommentItem = memo(function CommentItem({
           compact={compact}
         />
       </div>
+
       {/* Comment Actions element */}
       <div className={cn("pl-17 pr-4", !compact && "md:pl-19 md:pr-6")}>
         <div className="flex items-center justify-between text-secondary text-sm mt-2">
@@ -537,6 +546,7 @@ export const CommentItem = memo(function CommentItem({
             {tComment("authorLiked")}
           </span>
         ) : null}
+
         {isEditing ? (
           <CommentEditor
             articleId={articleId}

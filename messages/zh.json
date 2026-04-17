@@ -216,6 +216,7 @@
     "viewImages": "查看图片",
     "like": "点赞",
     "authorLiked": "作者赞过",
+    "pendingReview": "审核中",
     "floor": "{floor}楼",
     "unknownFloor": "未知楼层",
     "sortOptions": {
