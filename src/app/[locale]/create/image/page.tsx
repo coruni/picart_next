@@ -232,23 +232,38 @@ export default function CreateImagePage() {
       } as unknown as Parameters<typeof articleControllerCreate>[0]["body"];
 
       let response;
-      if (isEditMode && articleId) {
-        response = await articleControllerUpdate({
-          path: { id: articleId },
-          body: body as Parameters<typeof articleControllerUpdate>[0]["body"],
-        });
-      } else {
-        response = await articleControllerCreate({ body });
+      let newArticleId: string | undefined;
+
+      try {
+        if (isEditMode && articleId) {
+          response = await articleControllerUpdate({
+            path: { id: articleId },
+            body: body as Parameters<typeof articleControllerUpdate>[0]["body"],
+          });
+          newArticleId = String(response.data?.data?.data?.id ?? articleId);
+        } else {
+          response = await articleControllerCreate({ body });
+          newArticleId = (response as any)?.data?.data?.id;
+        }
+      } catch (error) {
+        console.error("Failed to submit article:", error);
+        throw error;
       }
 
       // 跳转到详情页或首页
-      const newArticleId = (response as any)?.data?.data?.id;
-      if (newArticleId) {
-        router.push(`/article/${newArticleId}`);
-      } else if (articleId) {
-        router.push(`/article/${articleId}`);
-      } else {
-        router.push("/");
+      try {
+        if (newArticleId) {
+          await router.push(`/article/${newArticleId}`);
+        } else {
+          await router.push("/");
+        }
+      } catch {
+        // 跳转失败时尝试返回上一页或首页
+        try {
+          router.back();
+        } catch {
+          window.location.href = "/";
+        }
       }
     },
   });

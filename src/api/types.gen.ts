@@ -5158,8 +5158,136 @@ export type ArticleControllerUpdateResponses = {
     /**
      * 更新成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            message: string;
+            data: {
+                id: number;
+                title: string;
+                requireLogin: boolean;
+                requireFollow: boolean;
+                requirePayment: boolean;
+                requireMembership: boolean;
+                listRequireLogin: boolean;
+                viewPrice: string;
+                type: string;
+                content: string;
+                images: Array<string>;
+                videoUrl: unknown;
+                sort: number;
+                summary: string;
+                views: number;
+                likes: number;
+                favoriteCount: number;
+                commentCount: number;
+                isFeatured: boolean;
+                featuredAt: unknown;
+                isPinnedOnProfile: boolean;
+                pinnedAt: unknown;
+                status: string;
+                cover: string;
+                authorId: number;
+                author: {
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: unknown;
+                    banReason: string;
+                    avatar: string;
+                    description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: unknown;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    likes: number;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
+                    lastLoginAt: string;
+                    lastActiveAt: string;
+                    inviterId: unknown;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    equippedDecorations: {
+                        ACHIEVEMENT_BADGE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
+                };
+                category: {
+                    id: number;
+                    name: string;
+                    description: unknown;
+                    parentId: number;
+                    link: unknown;
+                    parent: {
+                        id: number;
+                        name: string;
+                        description: unknown;
+                        parentId: unknown;
+                        link: unknown;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                    avatar: unknown;
+                    background: unknown;
+                    cover: unknown;
+                    sort: number;
+                    status: string;
+                    articleCount: number;
+                    followCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                tags: Array<string>;
+                downloads: Array<string>;
+                activityId: unknown;
+                downloadCount: number;
+                createdAt: string;
+                updatedAt: string;
+                hotScore: number;
+                isHot: boolean;
+                imageCount: number;
+            };
+        };
+    };
 };
+
+export type ArticleControllerUpdateResponse = ArticleControllerUpdateResponses[keyof ArticleControllerUpdateResponses];
 
 export type ArticleControllerGetLikeStatusData = {
     body?: never;
@@ -16109,7 +16237,9 @@ export type ContentAuditControllerReviewArticleResponses = {
 };
 
 export type ContentAuditControllerAuditTextData = {
-    body?: never;
+    body?: {
+        content: string;
+    };
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -16125,8 +16255,29 @@ export type ContentAuditControllerAuditTextResponses = {
     /**
      * 审核完成
      */
-    200: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            success: boolean;
+            data: {
+                passed: boolean;
+                details: {
+                    code: number;
+                    data: {
+                        descriptions: string;
+                        labels: string;
+                        reason: string;
+                    };
+                    message: string;
+                    requestId: string;
+                };
+            };
+        };
+    };
 };
+
+export type ContentAuditControllerAuditTextResponse = ContentAuditControllerAuditTextResponses[keyof ContentAuditControllerAuditTextResponses];
 
 export type ContentAuditControllerAuditImageData = {
     body?: never;

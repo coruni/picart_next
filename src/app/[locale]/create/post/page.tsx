@@ -138,6 +138,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   const lastChildQueryRef = useRef<string | null>(null);
   const parentSearchAbortControllerRef = useRef<AbortController | null>(null);
   const childSearchAbortControllerRef = useRef<AbortController | null>(null);
+  const hasFetchedArticleRef = useRef(false);
 
   const {
     values,
@@ -194,20 +195,38 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         tagNames: values.tagNames,
       } as unknown as Parameters<typeof articleControllerCreate>[0]["body"];
 
-      if (isEditMode && articleId) {
-        await articleControllerUpdate({
-          path: { id: articleId },
-          body,
-        });
-      } else {
-        await articleControllerCreate({ body });
-      }
-      // 返回上一页
+      let newArticleId: string | undefined;
+
       try {
-        router.back();
+        if (isEditMode && articleId) {
+          const response = await articleControllerUpdate({
+            path: { id: articleId },
+            body,
+          });
+          newArticleId = String(response?.data?.data?.data?.id ?? articleId);
+        } else {
+          const response = await articleControllerCreate({ body });
+          newArticleId = (response as { data?: { data?: { id?: string } } })?.data?.data?.id;
+        }
+      } catch (error) {
+        console.error("Failed to submit article:", error);
+        throw error;
+      }
+
+      // 跳转到详情页或返回上一页
+      try {
+        if (newArticleId) {
+          await router.push(`/article/${newArticleId}`);
+        } else {
+          await router.push("/");
+        }
       } catch {
-        // 无法返回时重定向首页
-        router.push("/");
+        // 跳转失败时尝试返回上一页或首页
+        try {
+          router.back();
+        } catch {
+          window.location.href = "/";
+        }
       }
     },
   });
@@ -229,7 +248,9 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
 
   // Fetch article data in edit mode
   useEffect(() => {
-    if (!isEditMode || !articleId) return;
+    if (!isEditMode || !articleId || hasFetchedArticleRef.current) return;
+
+    hasFetchedArticleRef.current = true;
 
     let isCancelled = false;
 

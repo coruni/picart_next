@@ -10783,6 +10783,526 @@
         "responses": {
           "200": {
             "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "title": {
+                              "type": "string"
+                            },
+                            "requireLogin": {
+                              "type": "boolean"
+                            },
+                            "requireFollow": {
+                              "type": "boolean"
+                            },
+                            "requirePayment": {
+                              "type": "boolean"
+                            },
+                            "requireMembership": {
+                              "type": "boolean"
+                            },
+                            "listRequireLogin": {
+                              "type": "boolean"
+                            },
+                            "viewPrice": {
+                              "type": "string"
+                            },
+                            "type": {
+                              "type": "string"
+                            },
+                            "content": {
+                              "type": "string"
+                            },
+                            "images": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "videoUrl": {
+                              "type": "null"
+                            },
+                            "sort": {
+                              "type": "integer"
+                            },
+                            "summary": {
+                              "type": "string"
+                            },
+                            "views": {
+                              "type": "integer"
+                            },
+                            "likes": {
+                              "type": "integer"
+                            },
+                            "favoriteCount": {
+                              "type": "integer"
+                            },
+                            "commentCount": {
+                              "type": "integer"
+                            },
+                            "isFeatured": {
+                              "type": "boolean"
+                            },
+                            "featuredAt": {
+                              "type": "null"
+                            },
+                            "isPinnedOnProfile": {
+                              "type": "boolean"
+                            },
+                            "pinnedAt": {
+                              "type": "null"
+                            },
+                            "status": {
+                              "type": "string"
+                            },
+                            "cover": {
+                              "type": "string"
+                            },
+                            "authorId": {
+                              "type": "integer"
+                            },
+                            "author": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "integer"
+                                },
+                                "username": {
+                                  "type": "string"
+                                },
+                                "nickname": {
+                                  "type": "string"
+                                },
+                                "status": {
+                                  "type": "string"
+                                },
+                                "banned": {
+                                  "type": "null"
+                                },
+                                "banReason": {
+                                  "type": "string"
+                                },
+                                "avatar": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "background": {
+                                  "type": "string"
+                                },
+                                "gender": {
+                                  "type": "string"
+                                },
+                                "birthDate": {
+                                  "type": "null"
+                                },
+                                "articleCount": {
+                                  "type": "integer"
+                                },
+                                "followerCount": {
+                                  "type": "integer"
+                                },
+                                "followingCount": {
+                                  "type": "integer"
+                                },
+                                "likes": {
+                                  "type": "integer"
+                                },
+                                "level": {
+                                  "type": "integer"
+                                },
+                                "experience": {
+                                  "type": "integer"
+                                },
+                                "wallet": {
+                                  "type": "integer"
+                                },
+                                "points": {
+                                  "type": "integer"
+                                },
+                                "membershipLevel": {
+                                  "type": "integer"
+                                },
+                                "membershipLevelName": {
+                                  "type": "string"
+                                },
+                                "membershipStatus": {
+                                  "type": "string"
+                                },
+                                "membershipStartDate": {
+                                  "type": "string"
+                                },
+                                "membershipEndDate": {
+                                  "type": "string"
+                                },
+                                "lastLoginAt": {
+                                  "type": "string"
+                                },
+                                "lastActiveAt": {
+                                  "type": "string"
+                                },
+                                "inviterId": {
+                                  "type": "null"
+                                },
+                                "myInviteCode": {
+                                  "type": "string"
+                                },
+                                "inviteCode": {
+                                  "type": "string"
+                                },
+                                "inviteEarnings": {
+                                  "type": "string"
+                                },
+                                "inviteCount": {
+                                  "type": "integer"
+                                },
+                                "createdAt": {
+                                  "type": "string"
+                                },
+                                "updatedAt": {
+                                  "type": "string"
+                                },
+                                "equippedDecorations": {
+                                  "type": "object",
+                                  "properties": {
+                                    "ACHIEVEMENT_BADGE": {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "integer"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "type": {
+                                          "type": "string"
+                                        },
+                                        "imageUrl": {
+                                          "type": "string"
+                                        },
+                                        "rarity": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "type",
+                                        "imageUrl",
+                                        "rarity"
+                                      ]
+                                    },
+                                    "AVATAR_FRAME": {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "integer"
+                                        },
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "type": {
+                                          "type": "string"
+                                        },
+                                        "imageUrl": {
+                                          "type": "string"
+                                        },
+                                        "rarity": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "id",
+                                        "name",
+                                        "type",
+                                        "imageUrl",
+                                        "rarity"
+                                      ]
+                                    }
+                                  },
+                                  "required": [
+                                    "ACHIEVEMENT_BADGE",
+                                    "AVATAR_FRAME"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "username",
+                                "nickname",
+                                "status",
+                                "banned",
+                                "banReason",
+                                "avatar",
+                                "description",
+                                "background",
+                                "gender",
+                                "birthDate",
+                                "articleCount",
+                                "followerCount",
+                                "followingCount",
+                                "likes",
+                                "level",
+                                "experience",
+                                "wallet",
+                                "points",
+                                "membershipLevel",
+                                "membershipLevelName",
+                                "membershipStatus",
+                                "membershipStartDate",
+                                "membershipEndDate",
+                                "lastLoginAt",
+                                "lastActiveAt",
+                                "inviterId",
+                                "myInviteCode",
+                                "inviteCode",
+                                "inviteEarnings",
+                                "inviteCount",
+                                "createdAt",
+                                "updatedAt",
+                                "equippedDecorations"
+                              ]
+                            },
+                            "category": {
+                              "type": "object",
+                              "properties": {
+                                "id": {
+                                  "type": "integer"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "null"
+                                },
+                                "parentId": {
+                                  "type": "integer"
+                                },
+                                "link": {
+                                  "type": "null"
+                                },
+                                "parent": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer"
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "description": {
+                                      "type": "null"
+                                    },
+                                    "parentId": {
+                                      "type": "null"
+                                    },
+                                    "link": {
+                                      "type": "null"
+                                    },
+                                    "avatar": {
+                                      "type": "string"
+                                    },
+                                    "background": {
+                                      "type": "string"
+                                    },
+                                    "cover": {
+                                      "type": "string"
+                                    },
+                                    "sort": {
+                                      "type": "integer"
+                                    },
+                                    "status": {
+                                      "type": "string"
+                                    },
+                                    "articleCount": {
+                                      "type": "integer"
+                                    },
+                                    "followCount": {
+                                      "type": "integer"
+                                    },
+                                    "createdAt": {
+                                      "type": "string"
+                                    },
+                                    "updatedAt": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "description",
+                                    "parentId",
+                                    "link",
+                                    "avatar",
+                                    "background",
+                                    "cover",
+                                    "sort",
+                                    "status",
+                                    "articleCount",
+                                    "followCount",
+                                    "createdAt",
+                                    "updatedAt"
+                                  ]
+                                },
+                                "avatar": {
+                                  "type": "null"
+                                },
+                                "background": {
+                                  "type": "null"
+                                },
+                                "cover": {
+                                  "type": "null"
+                                },
+                                "sort": {
+                                  "type": "integer"
+                                },
+                                "status": {
+                                  "type": "string"
+                                },
+                                "articleCount": {
+                                  "type": "integer"
+                                },
+                                "followCount": {
+                                  "type": "integer"
+                                },
+                                "createdAt": {
+                                  "type": "string"
+                                },
+                                "updatedAt": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "id",
+                                "name",
+                                "description",
+                                "parentId",
+                                "link",
+                                "parent",
+                                "avatar",
+                                "background",
+                                "cover",
+                                "sort",
+                                "status",
+                                "articleCount",
+                                "followCount",
+                                "createdAt",
+                                "updatedAt"
+                              ]
+                            },
+                            "tags": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "downloads": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "activityId": {
+                              "type": "null"
+                            },
+                            "downloadCount": {
+                              "type": "integer"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            },
+                            "hotScore": {
+                              "type": "number"
+                            },
+                            "isHot": {
+                              "type": "boolean"
+                            },
+                            "imageCount": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "title",
+                            "requireLogin",
+                            "requireFollow",
+                            "requirePayment",
+                            "requireMembership",
+                            "listRequireLogin",
+                            "viewPrice",
+                            "type",
+                            "content",
+                            "images",
+                            "videoUrl",
+                            "sort",
+                            "summary",
+                            "views",
+                            "likes",
+                            "favoriteCount",
+                            "commentCount",
+                            "isFeatured",
+                            "featuredAt",
+                            "isPinnedOnProfile",
+                            "pinnedAt",
+                            "status",
+                            "cover",
+                            "authorId",
+                            "author",
+                            "category",
+                            "tags",
+                            "downloads",
+                            "activityId",
+                            "downloadCount",
+                            "createdAt",
+                            "updatedAt",
+                            "hotScore",
+                            "isHot",
+                            "imageCount"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "success",
+                        "message",
+                        "data"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           },
           "400": {
@@ -49555,9 +50075,110 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "content": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "content"
+                ]
+              },
+              "examples": {}
+            }
+          }
+        },
         "responses": {
-          "200": {
+          "201": {
             "description": "审核完成",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "success": {
+                          "type": "boolean"
+                        },
+                        "data": {
+                          "type": "object",
+                          "properties": {
+                            "passed": {
+                              "type": "boolean"
+                            },
+                            "details": {
+                              "type": "object",
+                              "properties": {
+                                "code": {
+                                  "type": "integer"
+                                },
+                                "data": {
+                                  "type": "object",
+                                  "properties": {
+                                    "descriptions": {
+                                      "type": "string"
+                                    },
+                                    "labels": {
+                                      "type": "string"
+                                    },
+                                    "reason": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "descriptions",
+                                    "labels",
+                                    "reason"
+                                  ]
+                                },
+                                "message": {
+                                  "type": "string"
+                                },
+                                "requestId": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "code",
+                                "data",
+                                "message",
+                                "requestId"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "passed",
+                            "details"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "success",
+                        "data"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           }
         },

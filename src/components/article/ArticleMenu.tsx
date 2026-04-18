@@ -169,10 +169,14 @@ export function ArticleMenu({
 
   const handleEditArticle = () => {
     if (!canEdit) return;
-    const editPath =
-      articleType === "image"
-        ? `/create/image?articleId=${articleId}`
-        : `/create/post?articleId=${articleId}`;
+    let editPath: string;
+    if (articleType === "video") {
+      editPath = `/create/video?articleId=${articleId}`;
+    } else if (articleType === "image") {
+      editPath = `/create/image?articleId=${articleId}`;
+    } else {
+      editPath = `/create/post?articleId=${articleId}`;
+    }
     router.push(editPath);
   };
 

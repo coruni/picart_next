@@ -553,7 +553,8 @@
       "coverRequired": "Please select a video cover",
       "stepExtracting": "Extracting preview frames...",
       "stepCompressing": "Compressing video (720p 30fps)...",
-      "stepUploading": "Uploading video..."
+      "stepUploading": "Uploading video...",
+      "existingVideo": "Existing video"
     }
   },
   "imageViewer": {

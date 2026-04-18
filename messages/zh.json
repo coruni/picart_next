@@ -545,7 +545,8 @@
       "coverRequired": "请选择视频封面",
       "stepExtracting": "正在提取预览帧...",
       "stepCompressing": "正在压缩视频（720p 30fps）...",
-      "stepUploading": "正在上传视频..."
+      "stepUploading": "正在上传视频...",
+      "existingVideo": "已有视频"
     }
   },
   "imageViewer": {

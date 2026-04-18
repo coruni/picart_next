@@ -169,7 +169,7 @@ async function compressVideo(
     const startTime = 0;
     let wasTrimmed = false;
 
-    const attemptCompression = () => {
+    const attemptCompression = async () => {
       const chunks: Blob[] = [];
       let mediaRecorder: MediaRecorder | null = null;
       let recordingStarted = false;
@@ -214,14 +214,67 @@ async function compressVideo(
         targetWidth * targetHeight * targetFrameRate * bitsPerPixel,
       );
 
-      const stream = canvas.captureStream(targetFrameRate);
+      // 捕获视频流
+      const videoStream = canvas.captureStream(targetFrameRate);
+
+      // 设置开始和结束时间（提前定义，供音频同步使用）
+      const effectiveStartTime = startTime;
+      const effectiveEndTime =
+        targetDuration > 0 ? startTime + targetDuration : originalDuration;
+
+      // 尝试从原始视频获取音频轨道
+      let audioVideo: HTMLVideoElement | null = null;
+      let audioContext: AudioContext | null = null;
+      try {
+        // 创建一个新的视频元素来获取音频流
+        audioVideo = document.createElement("video");
+        audioVideo.src = video.src;
+        audioVideo.muted = false;
+        audioVideo.crossOrigin = "anonymous";
+
+        // 等待音频视频准备好
+        await new Promise<void>((resolve, reject) => {
+          audioVideo!.onloadedmetadata = () => resolve();
+          audioVideo!.onerror = () => reject(new Error("Failed to load audio"));
+          audioVideo!.load();
+        });
+
+        // 捕获音频流（通过 Web Audio API）
+        const AudioContextClass = window.AudioContext || (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (!AudioContextClass) {
+          throw new Error("Web Audio API not supported");
+        }
+        audioContext = new AudioContextClass();
+        const source = audioContext.createMediaElementSource(audioVideo);
+        const destination = audioContext.createMediaStreamDestination();
+        source.connect(destination);
+
+        // 将音频轨道添加到视频流
+        const audioTrack = destination.stream.getAudioTracks()[0];
+        if (audioTrack) {
+          videoStream.addTrack(audioTrack);
+          console.log("[Video Compression] Audio track added");
+        }
+      } catch (audioError) {
+        console.warn("[Video Compression] Failed to capture audio:", audioError);
+        // 继续压缩，只是没有音频
+      }
+
       const recorderOptions: MediaRecorderOptions = {
         videoBitsPerSecond: videoBitrate,
       };
       if (selectedMimeType) {
         recorderOptions.mimeType = selectedMimeType;
       }
-      mediaRecorder = new MediaRecorder(stream, recorderOptions);
+      mediaRecorder = new MediaRecorder(videoStream, recorderOptions);
+
+      // 开始录制时同步播放音频
+      if (audioVideo) {
+        audioVideo.currentTime = effectiveStartTime;
+        audioVideo.play().catch(() => {
+          console.warn("[Video Compression] Failed to play audio");
+        });
+      }
 
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) {
@@ -250,16 +303,19 @@ async function compressVideo(
 
           // 重置并重新压缩
           chunks.length = 0;
-          attemptCompression();
+          void attemptCompression();
         } else {
           // 文件大小符合要求或已经无法再截断
           // 修复 WebM 时长元数据
           if (actualMimeType.includes("webm") && actualDuration > 0) {
             try {
-              blob = await fixWebmDuration(blob, actualDuration * 1000);
-              console.log("[Video Compression] Fixed WebM duration:", actualDuration);
+              const fixedBlob = await fixWebmDuration(blob, actualDuration * 1000);
+              // fix-webm-duration 返回的是 ArrayBuffer，需要重新包装成 Blob
+              blob = new Blob([fixedBlob], { type: "video/webm" });
+              console.log("[Video Compression] Fixed WebM duration:", actualDuration, "type:", blob.type);
             } catch (e) {
               console.warn("[Video Compression] Failed to fix WebM duration:", e);
+              // 修复失败时保持原始 blob
             }
           }
           resolve({ blob, duration: actualDuration, wasTrimmed });
@@ -273,11 +329,6 @@ async function compressVideo(
       // 开始录制
       mediaRecorder.start(100);
       recordingStarted = true;
-
-      // 设置开始和结束时间
-      const effectiveStartTime = startTime;
-      const effectiveEndTime =
-        targetDuration > 0 ? startTime + targetDuration : originalDuration;
 
       // 跳转到开始时间
       video.currentTime = effectiveStartTime;
@@ -343,7 +394,7 @@ async function compressVideo(
     video.onloadedmetadata = () => {
       originalDuration = video.duration;
       targetDuration = 0; // 初始使用完整时长
-      attemptCompression();
+      void attemptCompression();
     };
 
     video.onerror = () => {
@@ -411,6 +462,7 @@ export default function CreateVideoPage() {
   const parentSearchAbortControllerRef = useRef<AbortController | null>(null);
   const childSearchAbortControllerRef = useRef<AbortController | null>(null);
   const uploadConfigRef = useRef<{ maxFileSize: number } | null>(null);
+  const hasFetchedArticleRef = useRef(false);
 
   const {
     values,
@@ -481,30 +533,47 @@ export default function CreateVideoPage() {
       } as unknown as Parameters<typeof articleControllerCreate>[0]["body"];
 
       let response;
-      if (isEditMode && articleId) {
-        response = await articleControllerUpdate({
-          path: { id: articleId },
-          body: body as Parameters<typeof articleControllerUpdate>[0]["body"],
-        });
-      } else {
-        response = await articleControllerCreate({ body });
+      let newArticleId: string | undefined;
+
+      try {
+        if (isEditMode && articleId) {
+          response = await articleControllerUpdate({
+            path: { id: articleId },
+            body: body as Parameters<typeof articleControllerUpdate>[0]["body"],
+          });
+          newArticleId = String(response?.data?.data?.data?.id ?? articleId);
+        } else {
+          response = await articleControllerCreate({ body });
+          newArticleId = (response as any)?.data?.data?.id;
+        }
+      } catch (error) {
+        console.error("Failed to submit article:", error);
+        throw error;
       }
 
       // 跳转到详情页或首页
-      const newArticleId = (response as any)?.data?.data?.id;
-      if (newArticleId) {
-        router.push(`/article/${newArticleId}`);
-      } else if (articleId) {
-        router.push(`/article/${articleId}`);
-      } else {
-        router.push("/");
+      try {
+        if (newArticleId) {
+          await router.push(`/article/${newArticleId}`);
+        } else {
+          await router.push("/");
+        }
+      } catch {
+        // 跳转失败时尝试返回上一页或首页
+        try {
+          router.back();
+        } catch {
+          window.location.href = "/";
+        }
       }
     },
   });
 
   // Fetch article data in edit mode
   useEffect(() => {
-    if (!isEditMode || !articleId) return;
+    if (!isEditMode || !articleId || hasFetchedArticleRef.current) return;
+
+    hasFetchedArticleRef.current = true;
 
     const fetchArticle = async () => {
       try {
@@ -513,6 +582,7 @@ export default function CreateVideoPage() {
         });
         const article = response.data?.data;
         if (article) {
+          const videoUrl = (article as { videoUrl?: string }).videoUrl || "";
           setFieldValues({
             title: article.title || "",
             content: article.content || "",
@@ -520,7 +590,7 @@ export default function CreateVideoPage() {
             tagIds: article.tags?.map((tag) => String(tag.id)) || [],
             tagNames: [],
             cover: article.cover || "",
-            videoUrl: (article as any).videoUrl || "",
+            videoUrl,
             requireLogin: article.requireLogin || false,
             requireFollow: article.requireFollow || false,
             requirePayment: article.requirePayment || false,
@@ -530,6 +600,17 @@ export default function CreateVideoPage() {
             sort: article.sort || 0,
             type: "video",
           });
+
+          // Set video item if videoUrl exists
+          if (videoUrl) {
+            setVideoItem({
+              id: `video-${Date.now()}`,
+              fileName: tVideo("form.existingVideo"),
+              remoteUrl: videoUrl,
+              status: "ready",
+            });
+          }
+
           setInitialTagOptions(
             article.tags?.map((tag) => ({
               value: String(tag.id),
@@ -729,14 +810,26 @@ export default function CreateVideoPage() {
         setProcessingStep("uploading");
         setProcessingProgress(0);
 
+        // 强制使用正确的 MIME 类型
+        const finalMimeType = compressedBlob.type?.startsWith("video/")
+          ? compressedBlob.type
+          : "video/webm";
+
         // 根据 MIME 类型确定文件扩展名
-        const isMP4 = compressedBlob.type.includes("mp4");
+        const isMP4 = finalMimeType.includes("mp4");
         const fileExt = isMP4 ? ".mp4" : ".webm";
         const baseFileName = file.name.replace(/\.[^/.]+$/, ""); // 移除原扩展名
 
-        const compressedFile = new File([compressedBlob], `${baseFileName}${fileExt}`, {
-          type: compressedBlob.type,
+        // 确保 Blob 有正确的类型
+        const typedBlob = compressedBlob.type?.startsWith("video/")
+          ? compressedBlob
+          : new Blob([compressedBlob], { type: "video/webm" });
+
+        const compressedFile = new File([typedBlob], `${baseFileName}${fileExt}`, {
+          type: finalMimeType,
         });
+
+        console.log("[Video Upload] File type:", compressedFile.type, "size:", compressedFile.size);
 
         const baseMetadata = await buildUploadMetadata([compressedFile]);
 
