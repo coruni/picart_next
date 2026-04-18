@@ -94,6 +94,7 @@ export function Avatar({
             src={frameUrl}
             alt="avatar frame"
             fill
+            loading="eager"
             className="object-contain"
           />
         </div>

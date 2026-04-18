@@ -12,6 +12,13 @@ const DEFAULT_PLACEHOLDER = imagePlaceholder;
 const DEFAULT_ERROR = imageError;
 const UNOPTIMIZED_HOSTS = new Set(["cf-s3.coslark.org"]);
 
+// Helper to extract string URL from src (string or StaticImageData)
+const getSrcString = (src: string | StaticImageData | undefined): string => {
+  if (!src) return "";
+  if (typeof src === "string") return src;
+  return src.src;
+};
+
 // 全局图片缓存 - 存储已加载成功的图片URL
 const imageCache = new Map<string, "loaded" | "error">();
 
@@ -56,13 +63,20 @@ export function ImageWithFallback({
   lazyThreshold = 0,
   ...rest
 }: ImageWithFallbackProps) {
-  let srcString = typeof src === "string" ? src : src?.toString() || "";
+  // Handle src as string or StaticImageData object
+  let srcString: string;
+  if (typeof src === "string") {
+    srcString = src;
+  } else if (src && typeof src === "object" && "src" in src) {
+    // StaticImageData object
+    srcString = (src as StaticImageData).src;
+  } else {
+    srcString = String(src ?? "");
+  }
+
   // 如果图片被屏蔽，使用错误占位图
   if (srcString === "/images/blocked.webp") {
-
-    srcString = typeof ImageBlock === "string" ? ImageBlock : ImageBlock.src;
-    console.log("ImageWithFallback srcsssssss:", srcString);
-
+    srcString = ImageBlock.src;
   }
 
   // 从缓存获取初始状态
@@ -139,6 +153,8 @@ export function ImageWithFallback({
   };
 
   const fallbackSrc = status === "error" ? errorSrc : placeholderSrc;
+  const fallbackSrcString = getSrcString(fallbackSrc);
+  const placeholderSrcString = getSrcString(placeholderSrc);
   const imageClassName = cn(className, status === "loaded" ? "" : "opacity-0");
 
   const shouldDisableOptimization =
@@ -177,7 +193,7 @@ export function ImageWithFallback({
         <span
           aria-hidden
           className="pointer-events-none absolute inset-0 block select-none bg-cover bg-center"
-          style={{ backgroundImage: `url(${placeholderSrc})` }}
+          style={{ backgroundImage: `url(${placeholderSrcString})` }}
         />
       </span>
     );
@@ -207,7 +223,7 @@ export function ImageWithFallback({
           <span
             aria-hidden
             className="pointer-events-none absolute inset-0 block select-none bg-cover bg-center"
-            style={{ backgroundImage: `url(${fallbackSrc})` }}
+            style={{ backgroundImage: `url(${fallbackSrcString})` }}
           />
         )}
       </span>
@@ -244,7 +260,7 @@ export function ImageWithFallback({
           <span
             aria-hidden
             className="pointer-events-none absolute inset-0 block select-none bg-cover bg-center"
-            style={{ backgroundImage: `url(${fallbackSrc})` }}
+            style={{ backgroundImage: `url(${fallbackSrcString})` }}
           />
         )}
       </span>

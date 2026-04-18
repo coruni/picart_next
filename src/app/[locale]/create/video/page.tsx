@@ -23,6 +23,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import fixWebmDuration from "fix-webm-duration";
 
 type CreateVideoFormData = {
   title: string;
@@ -161,6 +162,8 @@ async function compressVideo(
     video.muted = true;
     video.playsInline = true;
 
+    // 记录原始时长
+    let originalDuration = 0;
     // 计算目标时长（初始为完整时长）
     let targetDuration = 0;
     const startTime = 0;
@@ -182,11 +185,12 @@ async function compressVideo(
       // 设置帧率
       const targetFrameRate = 30;
 
-      // 尝试使用不同的 MIME 类型
+      // 尝试使用不同的 MIME 类型 - WebM 优先（fix-webm-duration 可以修复时长）
       const mimeTypes = [
         'video/webm;codecs="vp9"',
         'video/webm;codecs="vp8"',
         "video/webm",
+        'video/mp4;codecs="avc1.42E01E"',
         "video/mp4",
       ];
 
@@ -194,13 +198,14 @@ async function compressVideo(
       for (const mime of mimeTypes) {
         if (MediaRecorder.isTypeSupported(mime)) {
           selectedMimeType = mime;
+          console.log("[Video Compression] Using MIME type:", mime);
           break;
         }
       }
 
+      // 如果没有支持的 MIME 类型，使用默认 WebM
       if (!selectedMimeType) {
-        reject(new Error("No supported video MIME type found"));
-        return;
+        console.warn("[Video Compression] No specific MIME type supported, using default WebM");
       }
 
       // 计算码率（720p 30fps 建议 2.5-5 Mbps）
@@ -210,10 +215,13 @@ async function compressVideo(
       );
 
       const stream = canvas.captureStream(targetFrameRate);
-      mediaRecorder = new MediaRecorder(stream, {
-        mimeType: selectedMimeType,
+      const recorderOptions: MediaRecorderOptions = {
         videoBitsPerSecond: videoBitrate,
-      });
+      };
+      if (selectedMimeType) {
+        recorderOptions.mimeType = selectedMimeType;
+      }
+      mediaRecorder = new MediaRecorder(stream, recorderOptions);
 
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) {
@@ -221,10 +229,12 @@ async function compressVideo(
         }
       };
 
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: selectedMimeType });
+      mediaRecorder.onstop = async () => {
+        // 使用实际录制的 MIME 类型，如果没有则回退到预设的
+        const actualMimeType = mediaRecorder?.mimeType || selectedMimeType || "video/webm";
+        let blob = new Blob(chunks, { type: actualMimeType });
         const actualDuration =
-          targetDuration > 0 ? targetDuration : video.duration;
+          targetDuration > 0 ? targetDuration : originalDuration;
 
         // 检查文件大小
         if (blob.size > maxFileSize && actualDuration > 5) {
@@ -243,6 +253,15 @@ async function compressVideo(
           attemptCompression();
         } else {
           // 文件大小符合要求或已经无法再截断
+          // 修复 WebM 时长元数据
+          if (actualMimeType.includes("webm") && actualDuration > 0) {
+            try {
+              blob = await fixWebmDuration(blob, actualDuration * 1000);
+              console.log("[Video Compression] Fixed WebM duration:", actualDuration);
+            } catch (e) {
+              console.warn("[Video Compression] Failed to fix WebM duration:", e);
+            }
+          }
           resolve({ blob, duration: actualDuration, wasTrimmed });
         }
       };
@@ -258,7 +277,7 @@ async function compressVideo(
       // 设置开始和结束时间
       const effectiveStartTime = startTime;
       const effectiveEndTime =
-        targetDuration > 0 ? startTime + targetDuration : video.duration;
+        targetDuration > 0 ? startTime + targetDuration : originalDuration;
 
       // 跳转到开始时间
       video.currentTime = effectiveStartTime;
@@ -322,6 +341,7 @@ async function compressVideo(
     };
 
     video.onloadedmetadata = () => {
+      originalDuration = video.duration;
       targetDuration = 0; // 初始使用完整时长
       attemptCompression();
     };
@@ -709,13 +729,19 @@ export default function CreateVideoPage() {
         setProcessingStep("uploading");
         setProcessingProgress(0);
 
-        const compressedFile = new File([compressedBlob], file.name, {
+        // 根据 MIME 类型确定文件扩展名
+        const isMP4 = compressedBlob.type.includes("mp4");
+        const fileExt = isMP4 ? ".mp4" : ".webm";
+        const baseFileName = file.name.replace(/\.[^/.]+$/, ""); // 移除原扩展名
+
+        const compressedFile = new File([compressedBlob], `${baseFileName}${fileExt}`, {
           type: compressedBlob.type,
         });
 
-        const metadata = await buildUploadMetadata([compressedFile]);
+        const baseMetadata = await buildUploadMetadata([compressedFile]);
+
         const { data } = await uploadControllerUploadFile({
-          body: { file: compressedFile, metadata },
+          body: { file: compressedFile, metadata: baseMetadata },
         });
 
         const videoUrl = data?.data?.[0]?.url || "";

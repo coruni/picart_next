@@ -177,6 +177,11 @@ function markUnreadSummaryAsRead(
   return nextSummary;
 }
 
+const IGNORABLE_ERROR_CODES = [
+  "USER_NOT_FOUND",
+  "CONVERSATION_NOT_FOUND",
+];
+
 function getSocketErrorMessage(payload: unknown): string | null {
   if (typeof payload === "string" && payload.trim()) {
     return payload;
@@ -193,6 +198,12 @@ function getSocketErrorMessage(payload: unknown): string | null {
     typeof payload.message === "string" &&
     payload.message.trim()
   ) {
+    // Check if this is an ignorable error code
+    if ("code" in payload && typeof payload.code === "string") {
+      if (IGNORABLE_ERROR_CODES.includes(payload.code)) {
+        return null; // Don't log ignorable errors
+      }
+    }
     return payload.message;
   }
 
