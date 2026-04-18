@@ -38,7 +38,6 @@ export async function SiteContactWidget() {
         "[&_a:not([href^='mailto:'])]:before:rounded-full",
         "[&_a:not([href^='mailto:']):hover]:before:w-full",
       )}
-      data-auto-translate-content
       dangerouslySetInnerHTML={{ __html: siteContact }}
     />
   );

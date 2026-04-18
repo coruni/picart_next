@@ -84,6 +84,8 @@ export function ImageWithFallback({
   const [status, setStatus] = useState<"loading" | "loaded" | "error">(
     cachedStatus || "loading",
   );
+  // 实际图片是否已渲染（用于缓存命中时的淡入效果）
+  const [imageRendered, setImageRendered] = useState(false);
   const [shouldLoad, setShouldLoad] = useState(!lazy);
   const wrapperRef = useRef<HTMLSpanElement | null>(null);
 
@@ -121,12 +123,18 @@ export function ImageWithFallback({
 
     // 如果已有缓存，直接使用缓存状态
     if (imageCache.has(srcString)) {
-      setStatus(imageCache.get(srcString)!);
+      const cached = imageCache.get(srcString)!;
+      setStatus(cached);
+      // 缓存命中且已成功加载时，标记为已渲染
+      if (cached === "loaded") {
+        setImageRendered(true);
+      }
       return;
     }
 
     // 重置为加载中状态
     setStatus("loading");
+    setImageRendered(false);
 
     // 预加载图片并更新缓存
     preloadImage(srcString)
@@ -143,6 +151,7 @@ export function ImageWithFallback({
   const handleLoad: ImageProps["onLoad"] = (event) => {
     imageCache.set(srcString, "loaded");
     setStatus("loaded");
+    setImageRendered(true);
     onLoad?.(event);
   };
 
@@ -155,21 +164,36 @@ export function ImageWithFallback({
   const fallbackSrc = status === "error" ? errorSrc : placeholderSrc;
   const fallbackSrcString = getSrcString(fallbackSrc);
   const placeholderSrcString = getSrcString(placeholderSrc);
-  const imageClassName = cn(className, status === "loaded" ? "" : "opacity-0");
+  // 图片真正显示的条件：状态为 loaded 且实际已渲染
+  const isImageVisible = status === "loaded" && imageRendered;
+  // 添加过渡动画类，避免加载图到实际图的闪烁
+  const imageClassName = cn(
+    className,
+    "transition-opacity duration-300",
+    isImageVisible ? "opacity-100" : "opacity-0",
+  );
+  const placeholderClassName = cn(
+    "pointer-events-none absolute inset-0 block select-none bg-cover bg-center transition-opacity duration-300",
+    isImageVisible ? "opacity-0" : "opacity-100",
+  );
+
+  // 判断是否为本地图片（StaticImageData）
+  const isLocalImage = typeof src !== "string";
 
   const shouldDisableOptimization =
-    typeof src === "string" &&
-    (() => {
-      try {
-        const parsed = new URL(src, "http://localhost");
-        return (
-          parsed.searchParams.has("url") ||
-          UNOPTIMIZED_HOSTS.has(parsed.hostname)
-        );
-      } catch {
-        return false;
-      }
-    })();
+    isLocalImage ||
+    (typeof src === "string" &&
+      (() => {
+        try {
+          const parsed = new URL(src, "http://localhost");
+          return (
+            parsed.searchParams.has("url") ||
+            UNOPTIMIZED_HOSTS.has(parsed.hostname)
+          );
+        } catch {
+          return false;
+        }
+      })());
 
   // 未开始加载时显示占位符
   if (!shouldLoad) {
@@ -192,7 +216,7 @@ export function ImageWithFallback({
       >
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 block select-none bg-cover bg-center"
+          className={cn(placeholderClassName)}
           style={{ backgroundImage: `url(${placeholderSrcString})` }}
         />
       </span>
@@ -219,10 +243,10 @@ export function ImageWithFallback({
           onError={handleError}
           {...rest}
         />
-        {status !== "loaded" && (
+        {!isImageVisible && (
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-0 block select-none bg-cover bg-center"
+            className={cn(placeholderClassName)}
             style={{ backgroundImage: `url(${fallbackSrcString})` }}
           />
         )}
@@ -256,10 +280,10 @@ export function ImageWithFallback({
           onLoad={handleLoad}
           onError={handleError}
         />
-        {status !== "loaded" && (
+        {!isImageVisible && (
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-0 block select-none bg-cover bg-center"
+            className={cn(placeholderClassName)}
             style={{ backgroundImage: `url(${fallbackSrcString})` }}
           />
         )}
@@ -292,10 +316,10 @@ export function ImageWithFallback({
         onLoad={handleLoad}
         onError={handleError}
       />
-      {status !== "loaded" && (
+      {!isImageVisible && (
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 block select-none bg-cover bg-center"
+          className={cn(placeholderClassName)}
           style={{ backgroundImage: `url(${fallbackSrc})` }}
         />
       )}
