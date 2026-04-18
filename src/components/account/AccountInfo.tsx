@@ -275,13 +275,15 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                   {user.nickname || user.username}
                 </span>
                 {user?.equippedDecorations?.ACHIEVEMENT_BADGE && (
-                  <span className="relative size-4" data-auto-translate-conten>
+                  <span className="relative block size-4" data-auto-translate-conten>
                     <ImageWithFallback
                       src={
                         user?.equippedDecorations?.ACHIEVEMENT_BADGE?.imageUrl
                       }
                       alt={user?.equippedDecorations?.ACHIEVEMENT_BADGE?.name}
                       title={user?.equippedDecorations?.ACHIEVEMENT_BADGE?.name}
+                      fill
+                      className="object-cover"
                     />
                   </span>
                 )}
