@@ -87,6 +87,12 @@ export const BackgroundEditor = ({
         router.refresh();
       }
     } catch (error) {
+      // 审核不通过或其他错误时关闭对话框
+      onOpenChange(false);
+      setSelectedImage(null);
+      setScale(1);
+      setUploading(false);
+      setLastTouchDistance(null);
       console.error("Failed to upload background:", error);
     } finally {
       setUploading(false);
@@ -97,6 +103,8 @@ export const BackgroundEditor = ({
     onOpenChange(false);
     setSelectedImage(null);
     setScale(1);
+    setUploading(false);
+    setLastTouchDistance(null);
   };
 
   const handleWheel = (e: React.WheelEvent) => {
@@ -132,13 +140,24 @@ export const BackgroundEditor = ({
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      // Dialog 关闭时（点击X或遮罩层）重置状态
+      setSelectedImage(null);
+      setScale(1);
+      setUploading(false);
+      setLastTouchDistance(null);
+    }
+    onOpenChange(open);
+  };
+
   const handleTouchEnd = () => {
     setLastTouchDistance(null);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl p-0! border-0">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-2xl p-0! border-0 overflow-hidden">
         <DialogHeader className="mb-0 p-0">
           <div
             style={{ backgroundImage: `url(${user?.background})` }}

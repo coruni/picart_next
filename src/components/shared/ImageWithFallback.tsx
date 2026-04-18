@@ -1,5 +1,6 @@
 "use client";
 
+import ImageBlock from "@/assets/images/placeholder/image_block.webp";
 import imageError from "@/assets/images/placeholder/image_error.webp";
 import imagePlaceholder from "@/assets/images/placeholder/image_placeholder.webp";
 import { cn } from "@/lib";
@@ -55,7 +56,14 @@ export function ImageWithFallback({
   lazyThreshold = 0,
   ...rest
 }: ImageWithFallbackProps) {
-  const srcString = typeof src === "string" ? src : src?.toString() || "";
+  let srcString = typeof src === "string" ? src : src?.toString() || "";
+  // 如果图片被屏蔽，使用错误占位图
+  if (srcString === "/images/blocked.webp") {
+
+    srcString = typeof ImageBlock === "string" ? ImageBlock : ImageBlock.src;
+    console.log("ImageWithFallback srcsssssss:", srcString);
+
+  }
 
   // 从缓存获取初始状态
   const cachedStatus = imageCache.get(srcString);
@@ -186,7 +194,7 @@ export function ImageWithFallback({
         )}
       >
         <Image
-          src={src}
+          src={srcString}
           alt={alt}
           fill
           unoptimized={shouldDisableOptimization}
@@ -223,7 +231,7 @@ export function ImageWithFallback({
       >
         <Image
           {...rest}
-          src={src}
+          src={srcString}
           alt={alt}
           width={1}
           height={1}
@@ -254,7 +262,7 @@ export function ImageWithFallback({
     >
       <Image
         {...rest}
-        src={src}
+        src={srcString}
         alt={alt}
         width={width}
         height={height}

@@ -124,6 +124,10 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
         setSelectedAvatarImage(null);
       }
     } catch (error) {
+      // 审核不通过或其他错误时关闭对话框
+      setShowAvatarEditor(false);
+      setSelectedAvatarImage(null);
+      setAvatarScale(1);
       console.error("Failed to upload avatar:", error);
     } finally {
       setAvatarUploading(false);
@@ -134,14 +138,19 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
     setShowAvatarEditor(false);
     setSelectedAvatarImage(null);
     setAvatarScale(1);
+    setAvatarUploading(false);
+    setAvatarLastTouchDistance(null);
   };
 
   const handleAvatarDialogOpenChange = (open: boolean) => {
     if (!open) {
-      handleCancelAvatarEdit();
-    } else {
-      setShowAvatarEditor(true);
+      // Dialog 关闭时（点击X或遮罩层）重置状态
+      setSelectedAvatarImage(null);
+      setAvatarScale(1);
+      setAvatarUploading(false);
+      setAvatarLastTouchDistance(null);
     }
+    setShowAvatarEditor(open);
   };
 
   const handleRemoveAvatarImage = () => {
@@ -196,6 +205,10 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
         setSelectedBackgroundImage(null);
       }
     } catch (error) {
+      // 审核不通过或其他错误时关闭对话框
+      setShowBackgroundEditor(false);
+      setSelectedBackgroundImage(null);
+      setBackgroundScale(1);
       console.error("Failed to upload background:", error);
     } finally {
       setBackgroundUploading(false);
@@ -206,14 +219,19 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
     setShowBackgroundEditor(false);
     setSelectedBackgroundImage(null);
     setBackgroundScale(1);
+    setBackgroundUploading(false);
+    setBackgroundLastTouchDistance(null);
   };
 
   const handleBackgroundDialogOpenChange = (open: boolean) => {
     if (!open) {
-      handleCancelBackgroundEdit();
-    } else {
-      setShowBackgroundEditor(true);
+      // Dialog 关闭时（点击X或遮罩层）重置状态
+      setSelectedBackgroundImage(null);
+      setBackgroundScale(1);
+      setBackgroundUploading(false);
+      setBackgroundLastTouchDistance(null);
     }
+    setShowBackgroundEditor(open);
   };
 
   const handleRemoveBackgroundImage = () => {

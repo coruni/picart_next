@@ -10,8 +10,8 @@ import { useSearchStore } from "@/stores";
 import { CategoryList } from "@/types";
 import { ChevronDown, Loader2, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 export interface SearchBoxParams {
   q: string;
@@ -394,7 +394,7 @@ export function SearchBox({
             >
               {typeof currentCategory.avatar === "string" &&
                 currentCategory.avatar.startsWith("/") && (
-                  <Image
+                  <ImageWithFallback
                     src={currentCategory.avatar}
                     width={28}
                     height={28}
@@ -403,7 +403,7 @@ export function SearchBox({
                   />
                 )}
               {typeof currentCategory.avatar === "object" && (
-                <Image
+                <ImageWithFallback
                   src={currentCategory.avatar}
                   width={28}
                   height={28}
@@ -637,7 +637,7 @@ export function SearchBox({
                 )}
               >
                 <div className="size-8 rounded-full bg-primary/15 flex items-center justify-center">
-                  <Image
+                  <ImageWithFallback
                     src={menuPng}
                     width={32}
                     height={32}
@@ -662,10 +662,9 @@ export function SearchBox({
                 >
                   <div className="size-8 rounded-full bg-primary/15 flex items-center justify-center relative">
                     {category.avatar && (
-                      <Image
+                      <ImageWithFallback
                         src={category.avatar}
                         fill
-                        quality={95}
                         alt={category.name}
                         className="rounded-full object-cover"
                       />

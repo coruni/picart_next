@@ -77,6 +77,7 @@ export function MessageDropdown({
   const [dropdownTab, setDropdownTab] = useState<MessageTab>("all");
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const token = useUserStore((state) => state.token);
+  const userId = useUserStore((state) => state.user?.id);
   const unreadCount = useMessageNotificationStore((state) => state.unreadCount);
   const unreadSummary = useMessageNotificationStore(
     (state) => state.unreadSummary,
@@ -155,7 +156,10 @@ export function MessageDropdown({
       return;
     }
 
-    initializeSocket(token);
+    if (userId != null) {
+      initializeSocket(token);
+    }
+
     void fetchUnreadCount();
   }, [
     fetchUnreadCount,
@@ -163,6 +167,7 @@ export function MessageDropdown({
     isAuthenticated,
     resetNotifications,
     token,
+    userId,
   ]);
 
   useEffect(() => {

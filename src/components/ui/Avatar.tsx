@@ -68,6 +68,9 @@ export function Avatar({
   bordered,
   alt = "avatar",
 }: AvatarProps) {
+  // 如果图片被屏蔽，使用占位图
+  const imageUrl = url === "/images/blocked.webp" ? avatarPlaceholder : url || avatarPlaceholder;
+
   return (
     <div
       className={cn(
@@ -99,7 +102,7 @@ export function Avatar({
       {/* Avatar image - REAL content */}
       <div className="relative z-2 h-full w-full">
         <Image
-          src={url || avatarPlaceholder}
+          src={imageUrl}
           alt={alt}
           fill
           className={cn(

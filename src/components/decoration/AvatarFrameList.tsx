@@ -7,8 +7,8 @@ import { formatDate } from "@/lib/utils";
 import { useModalStore } from "@/stores/useModalStore";
 import { CheckCircle2Icon, ChevronRight, Clock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
 import { useEffect, useState } from "react";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 type Decoration =
   DecorationControllerGetMyDecorationsResponse["data"]["data"][0];
@@ -108,7 +108,7 @@ export function AvatarFrameList() {
               onClick={() => handleAvatarFrameClick(decoration.decoration.id)}
             >
               <div className="flex items-center justify-center aspect-square rounded-xl bg-background relative shrink-0">
-                <Image
+                <ImageWithFallback
                   fill
                   src={decoration.decoration.imageUrl}
                   alt={decoration.decoration.name}

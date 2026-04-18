@@ -18,9 +18,9 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
 import { useState } from "react";
 import { Avatar } from "../ui/Avatar";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 interface CommentCardProps {
   comment: UserCommentList[number];
@@ -170,11 +170,10 @@ export function CommentCard({
 
             return (
               <div className="relative size-12.5 bg-gray-50">
-                <Image
+                <ImageWithFallback
                   alt={comment?.article?.title || ""}
                   src={imageUrl}
                   fill
-                  quality={95}
                   className="object-cover"
                 />
               </div>

@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib";
-import Image from "next/image";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { type MouseEvent, useState } from "react";
 import "swiper/css";
 import { Autoplay } from "swiper/modules";
@@ -37,7 +37,7 @@ function BannerImage({ banner }: { banner: ResolvedBannerItem }) {
       }}
       onMouseMove={handleMouseMove}
     >
-      <Image
+      <ImageWithFallback
         src={banner.image}
         alt={banner.title}
         fill

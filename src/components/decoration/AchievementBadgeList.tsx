@@ -10,9 +10,9 @@ import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { formatDate } from "@/lib/utils";
 import { Clock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/Button";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 type UserDecorationItem =
   DecorationControllerGetMyDecorationsResponse["data"]["data"][number];
@@ -163,7 +163,7 @@ export function AchievementBadgeList() {
                 {/* Badge Image */}
                 <div className="relative my-3 aspect-square size-26 w-full overflow-hidden md:size-30">
                   {imageUrl ? (
-                    <Image
+                    <ImageWithFallback
                       src={imageUrl}
                       alt={resolveBadgeName(item)}
                       fill
@@ -205,7 +205,7 @@ export function AchievementBadgeList() {
               {/* Header with badge image */}
               <div className="relative flex h-48 items-center justify-center bg-linear-to-br from-green-200 to-green-100 dark:from-green-800 dark:to-green-900">
                 {selectedImageUrl ? (
-                  <Image
+                  <ImageWithFallback
                     draggable={false}
                     src={selectedImageUrl}
                     alt={resolveBadgeName(selectedItem)}

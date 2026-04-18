@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { ReactNode } from "react";
 
 import { AccountInfo, AccountTabs } from "@/components/account";
 import { Sidebar } from "@/components/sidebar/Sidebar";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { generateAuthorMetadata } from "@/lib";
 import { getCurrentUserId } from "@/lib/current-user";
 import { getAccountUser } from "../account-user";
@@ -38,12 +38,11 @@ export default async function AccountLayout({
       <div className="fixed z-0 box-border h-56 w-full md:h-75">
         <div className="absolute top-0 left-0 z-2 h-16 w-full bg-linear-to-b from-[#00000066] to-transparent md:h-20" />
         {user.background && (
-          <Image
+          <ImageWithFallback
             quality={95}
             src={user.background}
             fill
             loading="eager"
-            preload
             alt={`${user.nickname || user.username} background image`}
             className="h-full w-full object-cover object-bottom align-bottom"
           />
