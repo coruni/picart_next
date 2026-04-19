@@ -6,18 +6,57 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export interface CompressionConfig {
   maxWidth: number;
   quality: number;
-  format: "jpeg" | "webp" | "auto";
+  format: "jpeg" | "webp" | "auto" | "string";
 }
 
 export interface UploadLimits {
-  maxFileSize: number;
-  maxFileCount: number;
+  maxSize: {
+    image: { mb: string; bytes: number };
+    video: { mb: string; bytes: number };
+    audio: { mb: string; bytes: number };
+    other: { mb: string; bytes: number };
+  };
+  maxFileCount: string;
+}
+
+export interface AllowedMimeTypes {
+  image: string[];
+  video: string[];
+  audio: string[];
+  document: string[];
 }
 
 export interface UploadConfig {
-  compression: CompressionConfig;
+  storage: { type: string };
+  compression: {
+    image: CompressionConfig;
+    video: {
+      enabled: boolean;
+      maxWidth: number;
+      maxHeight: number;
+      crf: number;
+    };
+  };
   limits: UploadLimits;
-  allowedMimeTypes: string[];
+  allowedMimeTypes: AllowedMimeTypes;
+  imageProcessing: {
+    compressionEnabled: boolean;
+    format: string;
+    quality: number;
+    maxWidth: number;
+    maxHeight: number;
+    keepOriginal: boolean;
+  };
+  videoProcessing: {
+    compressionEnabled: boolean;
+    preset: string;
+    crf: number;
+    maxWidth: number;
+    maxHeight: number;
+    videoBitrate: string;
+    audioBitrate: string;
+    minCompressSize: number;
+  };
 }
 
 export interface CompressedImageResult {
@@ -305,7 +344,7 @@ export function useImageCompression() {
         task.startTime = Date.now();
 
         task.file.arrayBuffer().then((fileArrayBuffer) => {
-          const compressionConfig = configRef.current?.compression || {
+          const compressionConfig = configRef.current?.compression.image || {
             maxWidth: 1920,
             quality: 85,
             format: "auto",
@@ -344,16 +383,53 @@ export function useImageCompression() {
       console.error("[ImageCompression] Failed to fetch upload config:", error);
       // 使用默认配置
       const defaultConfig = {
+        storage: { type: "local" },
         compression: {
-          maxWidth: 1920,
-          quality: 85,
-          format: "jpeg" as const,
+          image: {
+            maxWidth: 1920,
+            quality: 85,
+            format: "jpeg",
+          },
+          video: {
+            enabled: true,
+            maxWidth: 1920,
+            maxHeight: 1080,
+            crf: 23,
+          },
         },
         limits: {
-          maxFileSize: 10 * 1024 * 1024, // 10MB
-          maxFileCount: 9,
+          maxSize: {
+            image: { mb: "10", bytes: 10 * 1024 * 1024 },
+            video: { mb: "100", bytes: 100 * 1024 * 1024 },
+            audio: { mb: "20", bytes: 20 * 1024 * 1024 },
+            other: { mb: "10", bytes: 10 * 1024 * 1024 },
+          },
+          maxFileCount: "9",
         },
-        allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
+        allowedMimeTypes: {
+          image: ["image/jpeg", "image/png", "image/webp", "image/gif"],
+          video: [],
+          audio: [],
+          document: [],
+        },
+        imageProcessing: {
+          compressionEnabled: true,
+          format: "jpeg",
+          quality: 85,
+          maxWidth: 1920,
+          maxHeight: 1080,
+          keepOriginal: false,
+        },
+        videoProcessing: {
+          compressionEnabled: true,
+          preset: "medium",
+          crf: 23,
+          maxWidth: 1920,
+          maxHeight: 1080,
+          videoBitrate: "1000k",
+          audioBitrate: "128k",
+          minCompressSize: 1024 * 1024,
+        },
       } satisfies UploadConfig;
       setConfig(defaultConfig);
       configRef.current = defaultConfig;
@@ -375,7 +451,7 @@ export function useImageCompression() {
       file: File,
       customConfig?: CompressionConfig,
     ): Promise<CompressedImageResult> => {
-      const compressionConfig = customConfig || configRef.current?.compression;
+      const compressionConfig = customConfig || configRef.current?.compression.image;
 
       // 如果不是图片，直接返回
       if (!file.type.startsWith("image/")) {
@@ -484,7 +560,8 @@ export function useImageCompression() {
       }
 
       // 检查文件数量
-      if (files.length > limits.maxFileCount) {
+      const maxFileCount = parseInt(limits.maxFileCount, 10);
+      if (files.length > maxFileCount) {
         return {
           valid: false,
           error: `最多只能上传 ${limits.maxFileCount} 个文件`,
@@ -493,17 +570,17 @@ export function useImageCompression() {
 
       // 检查每个文件大小
       for (const file of files) {
-        if (file.size > limits.maxFileSize) {
+        if (file.size > limits.maxSize.image.bytes) {
           const sizeType = isCompressed ? "压缩后" : "";
           return {
             valid: false,
-            error: `${sizeType}文件大小不能超过 ${formatFileSize(limits.maxFileSize)}`,
+            error: `${sizeType}文件大小不能超过 ${formatFileSize(limits.maxSize.image.bytes)}`,
           };
         }
       }
 
       // 检查文件类型
-      const allowedTypes = configRef.current?.allowedMimeTypes;
+      const allowedTypes = configRef.current?.allowedMimeTypes.image;
       if (allowedTypes && allowedTypes.length > 0) {
         for (const file of files) {
           if (!allowedTypes.includes(file.type)) {

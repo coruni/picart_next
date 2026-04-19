@@ -48,7 +48,7 @@ export function VideoPlayer({ videoUrl, cover, title }: VideoPlayerProps) {
       muted: false,
       autoplay: false,
       pip: true,
-      autoSize: true,
+      autoSize: false,
       autoMini: false,
       screenshot: false,
       setting: true,
@@ -92,6 +92,9 @@ export function VideoPlayer({ videoUrl, cover, title }: VideoPlayerProps) {
     });
 
     art.on("ready", () => {
+      art.template.$player.style.width = "100%";
+      art.template.$player.style.height = "100%";
+
       const video = art.video;
       if (!video) return;
 

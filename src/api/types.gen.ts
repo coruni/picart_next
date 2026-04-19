@@ -10901,16 +10901,67 @@ export type UploadControllerGetUploadConfigResponses = {
         code: number;
         message: string;
         data: {
+            storage: {
+                type: string;
+            };
             compression: {
-                maxWidth: number;
-                quality: number;
-                format: string;
+                image: {
+                    maxWidth: number;
+                    quality: number;
+                    format: string;
+                };
+                video: {
+                    enabled: boolean;
+                    maxWidth: number;
+                    maxHeight: number;
+                    crf: number;
+                };
             };
             limits: {
-                maxFileSize: number;
-                maxFileCount: number;
+                maxSize: {
+                    image: {
+                        mb: string;
+                        bytes: number;
+                    };
+                    video: {
+                        mb: string;
+                        bytes: number;
+                    };
+                    audio: {
+                        mb: string;
+                        bytes: number;
+                    };
+                    other: {
+                        mb: string;
+                        bytes: number;
+                    };
+                };
+                maxFileCount: string;
             };
-            allowedMimeTypes: Array<string>;
+            allowedMimeTypes: {
+                image: Array<string>;
+                video: Array<string>;
+                audio: Array<string>;
+                document: Array<string>;
+            };
+            imageProcessing: {
+                compressionEnabled: boolean;
+                format: string;
+                quality: number;
+                maxWidth: number;
+                maxHeight: number;
+                keepOriginal: boolean;
+            };
+            videoProcessing: {
+                compressionEnabled: boolean;
+                preset: string;
+                crf: number;
+                maxWidth: number;
+                maxHeight: number;
+                videoBitrate: string;
+                audioBitrate: string;
+                minCompressSize: number;
+            };
         };
     };
 };

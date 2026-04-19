@@ -31435,51 +31435,264 @@
                     "data": {
                       "type": "object",
                       "properties": {
-                        "compression": {
+                        "storage": {
                           "type": "object",
                           "properties": {
-                            "maxWidth": {
-                              "type": "integer"
-                            },
-                            "quality": {
-                              "type": "integer"
-                            },
-                            "format": {
+                            "type": {
                               "type": "string"
                             }
                           },
                           "required": [
-                            "maxWidth",
-                            "quality",
-                            "format"
+                            "type"
+                          ]
+                        },
+                        "compression": {
+                          "type": "object",
+                          "properties": {
+                            "image": {
+                              "type": "object",
+                              "properties": {
+                                "maxWidth": {
+                                  "type": "integer"
+                                },
+                                "quality": {
+                                  "type": "integer"
+                                },
+                                "format": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "maxWidth",
+                                "quality",
+                                "format"
+                              ]
+                            },
+                            "video": {
+                              "type": "object",
+                              "properties": {
+                                "enabled": {
+                                  "type": "boolean"
+                                },
+                                "maxWidth": {
+                                  "type": "integer"
+                                },
+                                "maxHeight": {
+                                  "type": "integer"
+                                },
+                                "crf": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "enabled",
+                                "maxWidth",
+                                "maxHeight",
+                                "crf"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "image",
+                            "video"
                           ]
                         },
                         "limits": {
                           "type": "object",
                           "properties": {
-                            "maxFileSize": {
-                              "type": "integer"
+                            "maxSize": {
+                              "type": "object",
+                              "properties": {
+                                "image": {
+                                  "type": "object",
+                                  "properties": {
+                                    "mb": {
+                                      "type": "string"
+                                    },
+                                    "bytes": {
+                                      "type": "integer"
+                                    }
+                                  },
+                                  "required": [
+                                    "mb",
+                                    "bytes"
+                                  ]
+                                },
+                                "video": {
+                                  "type": "object",
+                                  "properties": {
+                                    "mb": {
+                                      "type": "string"
+                                    },
+                                    "bytes": {
+                                      "type": "integer"
+                                    }
+                                  },
+                                  "required": [
+                                    "mb",
+                                    "bytes"
+                                  ]
+                                },
+                                "audio": {
+                                  "type": "object",
+                                  "properties": {
+                                    "mb": {
+                                      "type": "string"
+                                    },
+                                    "bytes": {
+                                      "type": "integer"
+                                    }
+                                  },
+                                  "required": [
+                                    "mb",
+                                    "bytes"
+                                  ]
+                                },
+                                "other": {
+                                  "type": "object",
+                                  "properties": {
+                                    "mb": {
+                                      "type": "string"
+                                    },
+                                    "bytes": {
+                                      "type": "integer"
+                                    }
+                                  },
+                                  "required": [
+                                    "mb",
+                                    "bytes"
+                                  ]
+                                }
+                              },
+                              "required": [
+                                "image",
+                                "video",
+                                "audio",
+                                "other"
+                              ]
                             },
                             "maxFileCount": {
-                              "type": "integer"
+                              "type": "string"
                             }
                           },
                           "required": [
-                            "maxFileSize",
+                            "maxSize",
                             "maxFileCount"
                           ]
                         },
                         "allowedMimeTypes": {
-                          "type": "array",
-                          "items": {
-                            "type": "string"
-                          }
+                          "type": "object",
+                          "properties": {
+                            "image": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "video": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "audio": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            },
+                            "document": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              }
+                            }
+                          },
+                          "required": [
+                            "image",
+                            "video",
+                            "audio",
+                            "document"
+                          ]
+                        },
+                        "imageProcessing": {
+                          "type": "object",
+                          "properties": {
+                            "compressionEnabled": {
+                              "type": "boolean"
+                            },
+                            "format": {
+                              "type": "string"
+                            },
+                            "quality": {
+                              "type": "integer"
+                            },
+                            "maxWidth": {
+                              "type": "integer"
+                            },
+                            "maxHeight": {
+                              "type": "integer"
+                            },
+                            "keepOriginal": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "compressionEnabled",
+                            "format",
+                            "quality",
+                            "maxWidth",
+                            "maxHeight",
+                            "keepOriginal"
+                          ]
+                        },
+                        "videoProcessing": {
+                          "type": "object",
+                          "properties": {
+                            "compressionEnabled": {
+                              "type": "boolean"
+                            },
+                            "preset": {
+                              "type": "string"
+                            },
+                            "crf": {
+                              "type": "integer"
+                            },
+                            "maxWidth": {
+                              "type": "integer"
+                            },
+                            "maxHeight": {
+                              "type": "integer"
+                            },
+                            "videoBitrate": {
+                              "type": "string"
+                            },
+                            "audioBitrate": {
+                              "type": "string"
+                            },
+                            "minCompressSize": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "compressionEnabled",
+                            "preset",
+                            "crf",
+                            "maxWidth",
+                            "maxHeight",
+                            "videoBitrate",
+                            "audioBitrate",
+                            "minCompressSize"
+                          ]
                         }
                       },
                       "required": [
+                        "storage",
                         "compression",
                         "limits",
-                        "allowedMimeTypes"
+                        "allowedMimeTypes",
+                        "imageProcessing",
+                        "videoProcessing"
                       ]
                     }
                   },

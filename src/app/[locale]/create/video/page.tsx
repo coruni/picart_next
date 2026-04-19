@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   articleControllerCreate,
@@ -18,13 +18,11 @@ import { useForm } from "@/hooks/useForm";
 import { useRouter } from "@/i18n/routing";
 import { cn } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
-import { compressVideoWithFfmpeg } from "@/lib/videoCompression";
 import { Loader2, Trash2, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import fixWebmDuration from "fix-webm-duration";
 
 type CreateVideoFormData = {
   title: string;
@@ -60,7 +58,7 @@ type UploadVideoItem = {
 const toNumericTagIds = (value: string[]) =>
   value.map((item) => Number(item)).filter((item) => Number.isFinite(item));
 
-// 从视频中提取帧
+// Extract preview frames from the uploaded video.
 async function extractVideoFrames(
   videoFile: File,
   frameCount: number = 7,
@@ -83,7 +81,7 @@ async function extractVideoFrames(
     video.playsInline = true;
 
     video.onloadedmetadata = () => {
-      // 计算提取时间点：跳过前10%防止首帧无内容，均匀分布
+      // 璁＄畻鎻愬彇鏃堕棿鐐癸細璺宠繃鍓?0%闃叉棣栧抚鏃犲唴瀹癸紝鍧囧寑鍒嗗竷
       const duration = video.duration;
       const skipStart = duration * 0.1;
       const usableDuration = duration - skipStart;
@@ -116,8 +114,7 @@ async function extractVideoFrames(
         captureFrame(frameIndex);
       };
 
-      // 开始捕获第一帧
-      captureFrame(0);
+      // 寮€濮嬫崟鑾风涓€甯?      captureFrame(0);
     };
 
     video.onerror = () => {
@@ -128,7 +125,7 @@ async function extractVideoFrames(
   });
 }
 
-// 将 dataURL 转换为 File
+// 灏?dataURL 杞崲涓?File
 function dataUrlToFile(dataUrl: string, filename: string): File {
   const arr = dataUrl.split(",");
   const mime = arr[0].match(/:(.*?);/)?.[1] || "image/jpeg";
@@ -143,270 +140,7 @@ function dataUrlToFile(dataUrl: string, filename: string): File {
   return new File([u8arr], filename, { type: mime });
 }
 
-// 压缩视频到 720p 30fps，支持时长截断
-async function compressVideo(
-  videoFile: File,
-  maxFileSize: number, // 最大文件大小（字节）
-  onProgress?: (progress: number, step: string) => void,
-): Promise<{ blob: Blob; duration: number; wasTrimmed: boolean }> {
-  return new Promise((resolve, reject) => {
-    const video = document.createElement("video");
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) {
-      reject(new Error("Failed to get canvas context"));
-      return;
-    }
-
-    video.preload = "auto";
-    video.muted = true;
-    video.playsInline = true;
-
-    // 记录原始时长
-    let originalDuration = 0;
-    // 计算目标时长（初始为完整时长）
-    let targetDuration = 0;
-    const startTime = 0;
-    let wasTrimmed = false;
-
-    const attemptCompression = async () => {
-      const chunks: Blob[] = [];
-      let mediaRecorder: MediaRecorder | null = null;
-      let recordingStarted = false;
-
-      // 计算目标尺寸（720p，保持宽高比）
-      const targetHeight = 720;
-      const aspectRatio = video.videoWidth / video.videoHeight;
-      const targetWidth = Math.round(targetHeight * aspectRatio);
-
-      canvas.width = targetWidth;
-      canvas.height = targetHeight;
-
-      // 设置帧率
-      const targetFrameRate = 30;
-
-      // 尝试使用不同的 MIME 类型 - WebM 优先（fix-webm-duration 可以修复时长）
-      const mimeTypes = [
-        'video/webm;codecs="vp9"',
-        'video/webm;codecs="vp8"',
-        "video/webm",
-        'video/mp4;codecs="avc1.42E01E"',
-        "video/mp4",
-      ];
-
-      let selectedMimeType = "";
-      for (const mime of mimeTypes) {
-        if (MediaRecorder.isTypeSupported(mime)) {
-          selectedMimeType = mime;
-          console.log("[Video Compression] Using MIME type:", mime);
-          break;
-        }
-      }
-
-      // 如果没有支持的 MIME 类型，使用默认 WebM
-      if (!selectedMimeType) {
-        console.warn("[Video Compression] No specific MIME type supported, using default WebM");
-      }
-
-      // 计算码率（720p 30fps 建议 2.5-5 Mbps）
-      const bitsPerPixel = 0.08; // 降低一点以控制文件大小
-      const videoBitrate = Math.round(
-        targetWidth * targetHeight * targetFrameRate * bitsPerPixel,
-      );
-
-      // 捕获视频流
-      const videoStream = canvas.captureStream(targetFrameRate);
-
-      // 设置开始和结束时间（提前定义，供音频同步使用）
-      const effectiveStartTime = startTime;
-      const effectiveEndTime =
-        targetDuration > 0 ? startTime + targetDuration : originalDuration;
-
-      // 尝试从原始视频获取音频轨道
-      let audioVideo: HTMLVideoElement | null = null;
-      let audioContext: AudioContext | null = null;
-      try {
-        // 创建一个新的视频元素来获取音频流
-        audioVideo = document.createElement("video");
-        audioVideo.src = video.src;
-        audioVideo.muted = false;
-        audioVideo.crossOrigin = "anonymous";
-
-        // 等待音频视频准备好
-        await new Promise<void>((resolve, reject) => {
-          audioVideo!.onloadedmetadata = () => resolve();
-          audioVideo!.onerror = () => reject(new Error("Failed to load audio"));
-          audioVideo!.load();
-        });
-
-        // 捕获音频流（通过 Web Audio API）
-        const AudioContextClass = window.AudioContext || (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-        if (!AudioContextClass) {
-          throw new Error("Web Audio API not supported");
-        }
-        audioContext = new AudioContextClass();
-        const source = audioContext.createMediaElementSource(audioVideo);
-        const destination = audioContext.createMediaStreamDestination();
-        source.connect(destination);
-
-        // 将音频轨道添加到视频流
-        const audioTrack = destination.stream.getAudioTracks()[0];
-        if (audioTrack) {
-          videoStream.addTrack(audioTrack);
-          console.log("[Video Compression] Audio track added");
-        }
-      } catch (audioError) {
-        console.warn("[Video Compression] Failed to capture audio:", audioError);
-        // 继续压缩，只是没有音频
-      }
-
-      const recorderOptions: MediaRecorderOptions = {
-        videoBitsPerSecond: videoBitrate,
-      };
-      if (selectedMimeType) {
-        recorderOptions.mimeType = selectedMimeType;
-      }
-      mediaRecorder = new MediaRecorder(videoStream, recorderOptions);
-
-      // 开始录制时同步播放音频
-      if (audioVideo) {
-        audioVideo.currentTime = effectiveStartTime;
-        audioVideo.play().catch(() => {
-          console.warn("[Video Compression] Failed to play audio");
-        });
-      }
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          chunks.push(e.data);
-        }
-      };
-
-      mediaRecorder.onstop = async () => {
-        // 使用实际录制的 MIME 类型，如果没有则回退到预设的
-        const actualMimeType = mediaRecorder?.mimeType || selectedMimeType || "video/webm";
-        let blob = new Blob(chunks, { type: actualMimeType });
-        const actualDuration =
-          targetDuration > 0 ? targetDuration : originalDuration;
-
-        // 检查文件大小
-        if (blob.size > maxFileSize && actualDuration > 5) {
-          // 文件太大，需要截断时长
-          // 根据当前大小估算需要的时长
-          const currentSize = blob.size;
-          const targetSize = maxFileSize * 0.9; // 留 10% 余量
-          const estimatedDuration = (targetSize / currentSize) * actualDuration;
-
-          // 限制最小 5 秒，避免无限循环
-          targetDuration = Math.max(5, Math.floor(estimatedDuration));
-          wasTrimmed = true;
-
-          // 重置并重新压缩
-          chunks.length = 0;
-          void attemptCompression();
-        } else {
-          // 文件大小符合要求或已经无法再截断
-          // 修复 WebM 时长元数据
-          if (actualMimeType.includes("webm") && actualDuration > 0) {
-            try {
-              const fixedBlob = await fixWebmDuration(blob, actualDuration * 1000);
-              // fix-webm-duration 返回的是 ArrayBuffer，需要重新包装成 Blob
-              blob = new Blob([fixedBlob], { type: "video/webm" });
-              console.log("[Video Compression] Fixed WebM duration:", actualDuration, "type:", blob.type);
-            } catch (e) {
-              console.warn("[Video Compression] Failed to fix WebM duration:", e);
-              // 修复失败时保持原始 blob
-            }
-          }
-          resolve({ blob, duration: actualDuration, wasTrimmed });
-        }
-      };
-
-      mediaRecorder.onerror = (e) => {
-        reject(new Error(`MediaRecorder error: ${e}`));
-      };
-
-      // 开始录制
-      mediaRecorder.start(100);
-      recordingStarted = true;
-
-      // 跳转到开始时间
-      video.currentTime = effectiveStartTime;
-
-      const drawFrame = () => {
-        if (!recordingStarted) return;
-
-        // 检查是否到达结束时间
-        if (video.currentTime >= effectiveEndTime || video.ended) {
-          if (mediaRecorder && mediaRecorder.state === "recording") {
-            mediaRecorder.stop();
-          }
-          video.pause();
-          return;
-        }
-
-        // 绘制视频帧（保持比例并居中）
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        const scale = Math.min(
-          canvas.width / video.videoWidth,
-          canvas.height / video.videoHeight,
-        );
-        const x = (canvas.width - video.videoWidth * scale) / 2;
-        const y = (canvas.height - video.videoHeight * scale) / 2;
-
-        ctx.drawImage(
-          video,
-          x,
-          y,
-          video.videoWidth * scale,
-          video.videoHeight * scale,
-        );
-
-        // 更新进度
-        if (onProgress && video.duration) {
-          const currentProgress =
-            (video.currentTime - effectiveStartTime) /
-            (effectiveEndTime - effectiveStartTime);
-          const progress = Math.min(currentProgress * 100, 99);
-          const step = wasTrimmed ? "trimming" : "compressing";
-          onProgress(Math.round(progress), step);
-        }
-
-        requestAnimationFrame(drawFrame);
-      };
-
-      video.onseeked = () => {
-        if (!recordingStarted) return;
-        video.play();
-      };
-
-      video.onplay = () => {
-        drawFrame();
-      };
-
-      video.onerror = () => {
-        reject(new Error("Failed to play video"));
-      };
-    };
-
-    video.onloadedmetadata = () => {
-      originalDuration = video.duration;
-      targetDuration = 0; // 初始使用完整时长
-      void attemptCompression();
-    };
-
-    video.onerror = () => {
-      reject(new Error("Failed to load video for compression"));
-    };
-
-    video.src = URL.createObjectURL(videoFile);
-  });
-}
-
-// 上传封面帧
+// Upload cover image selected from extracted frames.
 async function uploadFrame(dataUrl: string): Promise<string> {
   const file = dataUrlToFile(dataUrl, `cover-${Date.now()}.jpg`);
   const metadata = await buildUploadMetadata([file]);
@@ -462,7 +196,7 @@ export default function CreateVideoPage() {
   const lastChildQueryRef = useRef<string | null>(null);
   const parentSearchAbortControllerRef = useRef<AbortController | null>(null);
   const childSearchAbortControllerRef = useRef<AbortController | null>(null);
-  const uploadConfigRef = useRef<{ maxFileSize: number } | null>(null);
+  const uploadConfigRef = useRef<{ maxFileSize: number; maxVideoFileSize: number } | null>(null);
   const hasFetchedArticleRef = useRef(false);
 
   const {
@@ -505,7 +239,7 @@ export default function CreateVideoPage() {
       categoryId: { required: tPost("form.categoryRequired") },
     },
     async onSubmit(formValues) {
-      // 检查是否选中了封面帧
+      // 妫€鏌ユ槸鍚﹂€変腑浜嗗皝闈㈠抚
       const selectedFrame = frames.find((f) => f.id === selectedFrameId);
       if (!selectedFrame && !isEditMode) {
         return;
@@ -513,7 +247,7 @@ export default function CreateVideoPage() {
 
       let coverUrl = formValues.cover;
 
-      // 如果选中了新的帧，上传作为封面
+      // Upload the selected frame as cover when needed.
       if (selectedFrame && !coverUrl) {
         try {
           coverUrl = await uploadFrame(selectedFrame.dataUrl);
@@ -552,7 +286,7 @@ export default function CreateVideoPage() {
         throw error;
       }
 
-      // 跳转到详情页或首页
+      // Navigate to the article or fallback route after submit.
       try {
         if (newArticleId) {
           await router.push(`/article/${newArticleId}`);
@@ -560,7 +294,7 @@ export default function CreateVideoPage() {
           await router.push("/");
         }
       } catch {
-        // 跳转失败时尝试返回上一页或首页
+        // 璺宠浆澶辫触鏃跺皾璇曡繑鍥炰笂涓€椤垫垨棣栭〉
         try {
           router.back();
         } catch {
@@ -730,14 +464,16 @@ export default function CreateVideoPage() {
       try {
         const response = await uploadControllerGetUploadConfig({});
         if (response.data?.data) {
+          const limits = response.data.data.limits;
           uploadConfigRef.current = {
-            maxFileSize: response.data.data.limits.maxFileSize,
+            maxFileSize: limits.maxSize.image.bytes,
+            maxVideoFileSize: limits.maxSize.video.bytes,
           };
         }
       } catch (error) {
         console.error("Failed to fetch upload config:", error);
         // 使用默认值 10MB
-        uploadConfigRef.current = { maxFileSize: 10 * 1024 * 1024 };
+        uploadConfigRef.current = { maxFileSize: 10 * 1024 * 1024, maxVideoFileSize: 100 * 1024 * 1024 };
       }
     };
 
@@ -777,7 +513,6 @@ export default function CreateVideoPage() {
       setVideoItem(newItem);
 
       try {
-        // 1. 提取帧
         const extractedFrames = await extractVideoFrames(file, 7);
         setFrames(extractedFrames);
 
@@ -785,57 +520,12 @@ export default function CreateVideoPage() {
           setSelectedFrameId(extractedFrames[0].id);
         }
 
-        // 2. 压缩视频
-        setProcessingStep("compressing");
-        setProcessingProgress(0);
-
-        const maxFileSize =
-          uploadConfigRef.current?.maxFileSize || 10 * 1024 * 1024;
-        const {
-          blob: compressedBlob,
-          duration,
-          wasTrimmed,
-        } = await compressVideoWithFfmpeg(file, maxFileSize, (progress, step) => {
-          setProcessingStep(step === "trimming" ? "compressing" : step);
-          setProcessingProgress(Math.round(progress));
-        });
-
-        // 如果视频被截断了，记录日志（后续可以添加UI提示）
-        if (wasTrimmed) {
-          console.warn(
-            `视频被截断: 原始时长未知 -> ${duration.toFixed(1)}秒 (文件大小限制)`,
-          );
-        }
-
-        // 3. 上传压缩后的视频
         setProcessingStep("uploading");
         setProcessingProgress(0);
 
-        // 强制使用正确的 MIME 类型
-        const finalMimeType = compressedBlob.type?.startsWith("video/")
-          ? compressedBlob.type
-          : "video/webm";
-
-        // 根据 MIME 类型确定文件扩展名
-        const isMP4 = finalMimeType.includes("mp4");
-        const fileExt = isMP4 ? ".mp4" : ".webm";
-        const baseFileName = file.name.replace(/\.[^/.]+$/, ""); // 移除原扩展名
-
-        // 确保 Blob 有正确的类型
-        const typedBlob = compressedBlob.type?.startsWith("video/")
-          ? compressedBlob
-          : new Blob([compressedBlob], { type: "video/webm" });
-
-        const compressedFile = new File([typedBlob], `${baseFileName}${fileExt}`, {
-          type: finalMimeType,
-        });
-
-        console.log("[Video Upload] File type:", compressedFile.type, "size:", compressedFile.size);
-
-        const baseMetadata = await buildUploadMetadata([compressedFile]);
-
+        const metadata = await buildUploadMetadata([file]);
         const { data } = await uploadControllerUploadFile({
-          body: { file: compressedFile, metadata: baseMetadata },
+          body: { file, metadata },
         });
 
         const videoUrl = data?.data?.[0]?.url || "";
@@ -861,7 +551,6 @@ export default function CreateVideoPage() {
     },
     [setFieldValues],
   );
-
   const handleVideoChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -873,13 +562,12 @@ export default function CreateVideoPage() {
     [handleVideoUpload],
   );
 
-  // 切换选中的封面帧 - 只更新本地状态，提交时再上传
+  // 鍒囨崲閫変腑鐨勫皝闈㈠抚 - 鍙洿鏂版湰鍦扮姸鎬侊紝鎻愪氦鏃跺啀涓婁紶
   const handleFrameSelect = useCallback(
     (frameId: string) => {
       if (frameId === selectedFrameId) return;
       setSelectedFrameId(frameId);
-      // 清空已上传的 cover，标记需要重新上传
-      setFieldValues({ cover: "" });
+      // 娓呯┖宸蹭笂浼犵殑 cover锛屾爣璁伴渶瑕侀噸鏂颁笂浼?      setFieldValues({ cover: "" });
     },
     [selectedFrameId, setFieldValues],
   );
@@ -992,7 +680,7 @@ export default function CreateVideoPage() {
                             ) : null}
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-medium">
+                            <p className="text-sm line-clamp-1 text-ellipsis">
                               {videoItem.fileName}
                             </p>
                             <p className="text-xs text-muted-foreground">
@@ -1267,3 +955,4 @@ export default function CreateVideoPage() {
     </div>
   );
 }
+
