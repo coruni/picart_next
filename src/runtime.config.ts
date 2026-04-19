@@ -35,13 +35,30 @@ export function initializeInterceptors(): Promise<void> {
 
       client.interceptors.response.use(async (response) => response);
 
-      client.interceptors.error.use(async (error, response) => {
+      client.interceptors.error.use(async (error) => {
         if (process.env.NODE_ENV === "development") {
           console.warn("[auth][interceptor] response error", {
-            status: response?.status ?? null,
-            isServer: typeof window === "undefined",
             error,
           });
+        }
+
+        // 尝试从 error 中获取 response
+        const err = error as { status?: number; response?: { status?: number } };
+        const status = err?.status ?? err?.response?.status;
+
+        // 处理 401 未授权错误
+        if (status === 401 && typeof window !== "undefined") {
+          // 尝试刷新 token
+          try {
+            const { useUserStore } = await import("./stores/useUserStore");
+            const refreshed = await useUserStore.getState().refreshAccessToken();
+            console.log("[auth] Token refresh result:", refreshed);
+            if (!refreshed) {
+              console.warn("[auth] Token refresh failed, logged out");
+            }
+          } catch (refreshError) {
+            console.error("[auth] Error during token refresh:", refreshError);
+          }
         }
 
         throw error;

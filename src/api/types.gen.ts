@@ -3979,8 +3979,16 @@ export type UserControllerRefreshTokenData = {
 };
 
 export type UserControllerRefreshTokenResponses = {
-    201: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            token: string;
+        };
+    };
 };
+
+export type UserControllerRefreshTokenResponse = UserControllerRefreshTokenResponses[keyof UserControllerRefreshTokenResponses];
 
 export type UserControllerLogoutData = {
     body?: never;
