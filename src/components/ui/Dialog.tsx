@@ -279,7 +279,7 @@ export function DialogFooter({ className, children }: DialogFooterProps) {
   return (
     <div
       className={cn(
-        "mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-2",
+        "mt-6 flex gap-2 sm:justify-end sm:gap-2",
         className,
       )}
     >

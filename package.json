@@ -19,6 +19,8 @@
   },
   "dependencies": {
     "@enzedonline/quill-blot-formatter2": "github:enzedonline/quill-blot-formatter2",
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
     "@fingerprintjs/fingerprintjs": "^5.0.1",
     "@hey-api/client-fetch": "^0.13.1",
     "@hey-api/openapi-ts": "^0.90.3",

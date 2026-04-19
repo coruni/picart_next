@@ -11,8 +11,8 @@ import { formatDate } from "@/lib/utils";
 import { Clock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { Button } from "../ui/Button";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
+import { Button } from "../ui/Button";
 
 type UserDecorationItem =
   DecorationControllerGetMyDecorationsResponse["data"]["data"][number];
@@ -209,8 +209,8 @@ export function AchievementBadgeList() {
                     draggable={false}
                     src={selectedImageUrl}
                     alt={resolveBadgeName(selectedItem)}
-                    width={120}
-                    height={120}
+                    width={158}
+                    height={158}
                     className="object-contain"
                   />
                 ) : (

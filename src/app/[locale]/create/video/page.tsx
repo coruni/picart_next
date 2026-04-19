@@ -18,6 +18,7 @@ import { useForm } from "@/hooks/useForm";
 import { useRouter } from "@/i18n/routing";
 import { cn } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
+import { compressVideoWithFfmpeg } from "@/lib/videoCompression";
 import { Loader2, Trash2, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -794,7 +795,7 @@ export default function CreateVideoPage() {
           blob: compressedBlob,
           duration,
           wasTrimmed,
-        } = await compressVideo(file, maxFileSize, (progress, step) => {
+        } = await compressVideoWithFfmpeg(file, maxFileSize, (progress, step) => {
           setProcessingStep(step === "trimming" ? "compressing" : step);
           setProcessingProgress(Math.round(progress));
         });

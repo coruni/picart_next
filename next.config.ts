@@ -72,6 +72,10 @@ const nextConfig: NextConfig = {
     minimumCacheTTL: 60,
   },
   async headers() {
+    // 开发模式禁用自定义缓存头，避免警告
+    if (process.env.NODE_ENV !== "production") {
+      return [];
+    }
     return [
       {
         source: "/:path*",
