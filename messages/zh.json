@@ -528,7 +528,8 @@
       "images": "图片",
       "imagesPlaceholder": "选择图片",
       "imagesRequired": "请至少上传一张图片",
-      "imagesHint": "支持批量上传，多选即可一次添加多张图片"
+      "imagesHint": "支持批量上传，多选即可一次添加多张图片",
+      "maxImages": "每次最多选择 {count} 张"
     }
   },
   "createVideo": {
@@ -538,6 +539,7 @@
       "video": "视频",
       "selectVideo": "选择视频",
       "videoHint": "支持 MP4、WebM、MOV 等常见视频格式",
+      "maxVideoSize": "最大支持 {size}",
       "uploading": "上传中...",
       "processing": "处理中...",
       "ready": "已就绪",

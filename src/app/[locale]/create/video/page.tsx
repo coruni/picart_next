@@ -75,23 +75,58 @@ async function extractVideoFrames(
 
     const frames: VideoFrame[] = [];
     let frameIndex = 0;
+    let isSeeking = false;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    // 设置超时处理
+    const setLoadingTimeout = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        cleanup();
+        reject(new Error("视频预览提取超时"));
+      }, 30000); // 30秒超时
+    };
+
+    const cleanup = () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      video.src = "";
+      video.load();
+    };
 
     video.preload = "metadata";
     video.muted = true;
     video.playsInline = true;
+    video.crossOrigin = "anonymous";
 
-    video.onloadedmetadata = () => {
-      // 璁＄畻鎻愬彇鏃堕棿鐐癸細璺宠繃鍓?0%闃叉棣栧抚鏃犲唴瀹癸紝鍧囧寑鍒嗗竷
+    // 视频可以播放时触发
+    video.oncanplay = () => {
+      if (isSeeking) return;
+      isSeeking = true;
+
+      // 计算提取时间点：跳过前10%防止首帧黑屏内容，均匀分布
       const duration = video.duration;
+      if (!duration || duration === Infinity) {
+        cleanup();
+        reject(new Error("无法获取视频时长"));
+        return;
+      }
+
       const skipStart = duration * 0.1;
       const usableDuration = duration - skipStart;
       const interval = usableDuration / frameCount;
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      // 限制预览帧最大分辨率，提高性能
+      const maxPreviewWidth = 480;
+      const scale = Math.min(1, maxPreviewWidth / video.videoWidth);
+      canvas.width = video.videoWidth * scale;
+      canvas.height = video.videoHeight * scale;
 
       const captureFrame = (index: number) => {
         if (index >= frameCount) {
+          cleanup();
           resolve(frames);
           return;
         }
@@ -101,27 +136,51 @@ async function extractVideoFrames(
       };
 
       video.onseeked = () => {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
+        setLoadingTimeout();
+        try {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
 
-        frames.push({
-          id: `frame-${frameIndex}-${Date.now()}`,
-          dataUrl,
-          time: video.currentTime,
-        });
+          frames.push({
+            id: `frame-${frameIndex}-${Date.now()}`,
+            dataUrl,
+            time: video.currentTime,
+          });
 
-        frameIndex++;
-        captureFrame(frameIndex);
+          frameIndex++;
+          captureFrame(frameIndex);
+        } catch {
+          cleanup();
+          reject(new Error("绘制视频帧失败"));
+        }
       };
 
-      // 寮€濮嬫崟鑾风涓€甯?      captureFrame(0);
+      // 开始捕获第一帧
+      captureFrame(0);
+    };
+
+    video.onloadedmetadata = () => {
+      setLoadingTimeout();
+      // 某些浏览器需要显式调用 play/pause 来确保 canplay 触发
+      video
+        .play()
+        .then(() => {
+          video.pause();
+        })
+        .catch(() => {
+          // play 失败也没关系，继续等待 canplay
+        });
     };
 
     video.onerror = () => {
-      reject(new Error("Failed to load video"));
+      cleanup();
+      reject(new Error("视频加载失败"));
     };
 
-    video.src = URL.createObjectURL(videoFile);
+    // 设置视频源
+    const objectUrl = URL.createObjectURL(videoFile);
+    video.src = objectUrl;
+    video.load();
   });
 }
 
@@ -196,7 +255,11 @@ export default function CreateVideoPage() {
   const lastChildQueryRef = useRef<string | null>(null);
   const parentSearchAbortControllerRef = useRef<AbortController | null>(null);
   const childSearchAbortControllerRef = useRef<AbortController | null>(null);
-  const uploadConfigRef = useRef<{ maxFileSize: number; maxVideoFileSize: number } | null>(null);
+  const uploadConfigRef = useRef<{
+    maxFileSize: number;
+    maxVideoFileSize: number;
+  } | null>(null);
+  const [maxVideoSize, setMaxVideoSize] = useState<string>("100MB");
   const hasFetchedArticleRef = useRef(false);
 
   const {
@@ -465,15 +528,23 @@ export default function CreateVideoPage() {
         const response = await uploadControllerGetUploadConfig({});
         if (response.data?.data) {
           const limits = response.data.data.limits;
+          const videoSizeBytes = limits.maxSize.video.bytes;
           uploadConfigRef.current = {
             maxFileSize: limits.maxSize.image.bytes,
-            maxVideoFileSize: limits.maxSize.video.bytes,
+            maxVideoFileSize: videoSizeBytes,
           };
+          // 转换为 MB 显示
+          const sizeInMB = Math.round(videoSizeBytes / (1024 * 1024));
+          setMaxVideoSize(`${sizeInMB}MB`);
         }
       } catch (error) {
         console.error("Failed to fetch upload config:", error);
-        // 使用默认值 10MB
-        uploadConfigRef.current = { maxFileSize: 10 * 1024 * 1024, maxVideoFileSize: 100 * 1024 * 1024 };
+        // 使用默认值
+        uploadConfigRef.current = {
+          maxFileSize: 10 * 1024 * 1024,
+          maxVideoFileSize: 100 * 1024 * 1024,
+        };
+        setMaxVideoSize("100MB");
       }
     };
 
@@ -653,6 +724,9 @@ export default function CreateVideoPage() {
                         <p className="text-sm text-muted-foreground">
                           {tVideo("form.videoHint")}
                         </p>
+                        <p className="text-xs text-muted-foreground/60">
+                          {tVideo("form.maxVideoSize", { size: maxVideoSize })}
+                        </p>
                       </div>
                       <label
                         htmlFor="video-upload"
@@ -670,14 +744,14 @@ export default function CreateVideoPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="relative size-16 overflow-hidden rounded-lg bg-muted">
-                            {values.cover ? (
+                            {values.cover && (
                               <Image
                                 src={values.cover}
                                 alt={videoItem.fileName}
                                 fill
                                 className="object-cover"
                               />
-                            ) : null}
+                            )}
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm line-clamp-1 text-ellipsis">
@@ -955,4 +1029,3 @@ export default function CreateVideoPage() {
     </div>
   );
 }
-

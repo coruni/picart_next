@@ -5,6 +5,7 @@ import {
   articleControllerFindOne,
   articleControllerUpdate,
   categoryControllerFindAll,
+  uploadControllerGetUploadConfig,
   uploadControllerUploadFile,
 } from "@/api";
 import { Button } from "@/components/ui/Button";
@@ -144,6 +145,7 @@ export default function CreateImagePage() {
   const [articleLoading, setArticleLoading] = useState(isEditMode);
   const [imagesUploading, setImagesUploading] = useState(false);
   const [imageItems, setImageItems] = useState<UploadImageItem[]>([]);
+  const [maxImages, setMaxImages] = useState<number>(9);
   const [isImageDropping, setIsImageDropping] = useState(false);
   const [draggingImageIndex, setDraggingImageIndex] = useState<number | null>(
     null,
@@ -429,6 +431,28 @@ export default function CreateImagePage() {
     };
 
     fetchCategories();
+  }, []);
+
+  // Fetch upload config on mount
+  useEffect(() => {
+    const fetchUploadConfig = async () => {
+      try {
+        const response = await uploadControllerGetUploadConfig({});
+        if (response.data?.data) {
+          const maxFileCount = parseInt(
+            response.data.data.limits.maxFileCount,
+            10,
+          );
+          setMaxImages(maxFileCount);
+        }
+      } catch (error) {
+        console.error("Failed to fetch upload config:", error);
+        // 使用默认值 9
+        setMaxImages(9);
+      }
+    };
+
+    void fetchUploadConfig();
   }, []);
 
   useEffect(() => {
@@ -844,6 +868,9 @@ export default function CreateImagePage() {
                 >
                   <p className="mb-2 text-xs text-secondary">
                     {tImage("form.imagesHint")}
+                  </p>
+                  <p className="mb-2 text-xs text-muted-foreground/60">
+                    {tImage("form.maxImages", { count: maxImages })}
                   </p>
 
                   <div className="space-y-3">
