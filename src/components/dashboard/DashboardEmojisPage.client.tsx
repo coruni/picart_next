@@ -230,7 +230,7 @@ export function DashboardEmojisPage() {
     setCreateLoading(true);
     try {
       await emojiControllerUpload({
-        body: values as unknown as { name: string; code?: string; category?: string; tags?: string; isPublic: boolean; file: File },
+        body: values,
       });
       setCreatingItem(false);
       setRefreshKey((current) => current + 1);

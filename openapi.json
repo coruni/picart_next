@@ -45931,9 +45931,19 @@
         "requestBody": {
           "content": {
             "multipart/form-data": {
+              "encoding": {
+                "file": {
+                  "contentType": "multipart/form-data"
+                }
+              },
               "schema": {
                 "type": "object",
                 "properties": {
+                  "file": {
+                    "format": "binary",
+                    "type": "string",
+                    "description": "表情图片文件"
+                  },
                   "name": {
                     "type": "string",
                     "description": "表情名称",
@@ -45963,6 +45973,7 @@
                 },
                 "required": [
                   "name",
+                  "file",
                   "isPublic"
                 ]
               }

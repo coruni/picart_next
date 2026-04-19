@@ -15073,6 +15073,10 @@ export type EmojiControllerAddToFavoritesResponses = {
 export type EmojiControllerUploadData = {
     body: {
         /**
+         * 表情图片文件
+         */
+        file: Blob | File;
+        /**
          * 表情名称
          */
         name: string;
