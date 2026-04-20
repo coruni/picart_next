@@ -143,7 +143,7 @@ export default function CreateImagePage() {
   const tTag = useTranslations("tagSelect");
   const { compressImages } = useImageCompression();
 
-  const [articleLoading, setArticleLoading] = useState(isEditMode);
+  const [articleLoading, setArticleLoading] = useState(false);
   const [imagesUploading, setImagesUploading] = useState(false);
   const [imageItems, setImageItems] = useState<UploadImageItem[]>([]);
   const [maxImages, setMaxImages] = useState<number>(9);
@@ -176,7 +176,7 @@ export default function CreateImagePage() {
   const parentSearchAbortControllerRef = useRef<AbortController | null>(null);
   const childSearchAbortControllerRef = useRef<AbortController | null>(null);
   const imageItemsRef = useRef<UploadImageItem[]>([]);
-  const articleFetchedRef = useRef(false);
+  const hasFetchedArticleRef = useRef(false);
 
   const {
     values,
@@ -286,11 +286,13 @@ export default function CreateImagePage() {
   );
 
   useEffect(() => {
-    if (!isEditMode || !articleId || articleFetchedRef.current) return;
+    if (!isEditMode || !articleId) return;
+    if (hasFetchedArticleRef.current) return;
+    hasFetchedArticleRef.current = true;
 
     const fetchArticle = async () => {
+      setArticleLoading(true);
       try {
-        articleFetchedRef.current = true;
         const response = await articleControllerFindOne({
           path: { id: articleId },
         });
@@ -395,10 +397,6 @@ export default function CreateImagePage() {
     };
 
     fetchArticle();
-
-    return () => {
-      articleFetchedRef.current = false;
-    };
   }, [articleId, isEditMode, setFieldValues]);
 
   useEffect(() => {

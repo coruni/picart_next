@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   articleControllerCreate,
@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/Switch";
 import { TagSelect } from "@/components/ui/TagSelect";
 import { useForm } from "@/hooks/useForm";
 import { useRouter } from "@/i18n/routing";
-import { cn, showToast, getErrorMessage } from "@/lib";
+import { cn, getErrorMessage, showToast } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { Loader2, Trash2, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -221,7 +221,7 @@ export default function CreateVideoPage() {
   const tVideo = useTranslations("createVideo");
   const tTag = useTranslations("tagSelect");
 
-  const [articleLoading, setArticleLoading] = useState(isEditMode);
+  const [articleLoading, setArticleLoading] = useState(false);
   const [videoUploading, setVideoUploading] = useState(false);
   const [videoProcessing, setVideoProcessing] = useState(false);
   const [processingStep, setProcessingStep] = useState<string>("");
@@ -371,11 +371,12 @@ export default function CreateVideoPage() {
 
   // Fetch article data in edit mode
   useEffect(() => {
-    if (!isEditMode || !articleId || hasFetchedArticleRef.current) return;
-
+    if (!isEditMode || !articleId) return;
+    if (hasFetchedArticleRef.current) return;
     hasFetchedArticleRef.current = true;
 
     const fetchArticle = async () => {
+      setArticleLoading(true);
       try {
         const response = await articleControllerFindOne({
           path: { id: articleId },
@@ -482,11 +483,7 @@ export default function CreateVideoPage() {
     };
 
     fetchArticle();
-
-    return () => {
-      hasFetchedArticleRef.current = false;
-    };
-  }, [articleId, isEditMode, setFieldValues]);
+  }, [articleId, isEditMode, setFieldValues, tVideo]);
 
   // Fetch categories on mount
   useEffect(() => {
