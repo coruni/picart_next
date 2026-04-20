@@ -188,7 +188,6 @@ export function ImageGallery({
               sticky: false,
             }}
             resistanceRatio={0}
-            watchSlidesProgress
             onSlideChange={syncThumbNavState}
             onReachBeginning={syncThumbNavState}
             onReachEnd={syncThumbNavState}
@@ -198,11 +197,20 @@ export function ImageGallery({
             {thumbnailUrls.map((imageUrl, index) => (
               <SwiperSlide
                 key={`thumb-${index}`}
-                className="shrink-0 size-26! md:size-32!"
+                className={`shrink-0 size-26! md:size-32! ${
+                  activeIndex === index
+                    ? "[&>div]:border-primary [&>div]:ring-2 [&>div]:ring-primary/30"
+                    : ""
+                }`}
               >
                 <div
-                  className="relative h-full w-full cursor-pointer overflow-hidden rounded-lg border-2 border-gray-200 transition-colors hover:border-primary"
-                  onClick={() => mainSwiper?.slideTo(index)}
+                  className={
+                    "relative h-full w-full border-border cursor-pointer overflow-hidden rounded-lg border-2 transition-colors hover:border-primary"
+                  }
+                  onClick={() => {
+                    setActiveIndex(index);
+                    mainSwiper?.slideTo(index);
+                  }}
                 >
                   <ImageWithFallback
                     src={imageUrl}
