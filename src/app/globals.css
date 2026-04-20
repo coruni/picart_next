@@ -104,6 +104,7 @@
 
 body {
   @apply font-sans;
+  font-weight: 400;
   background: var(--background);
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
