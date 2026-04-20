@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import ImageBlock from "@/assets/images/placeholder/image_block.webp";
+import ImageBlock from "@/assets/images/placeholder/image_blocked.webp";
 import { cn } from "@/lib";
 import { ArticleDetail, ArticleList } from "@/types";
 import { ChevronLeft } from "lucide-react";

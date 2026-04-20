@@ -1,16 +1,16 @@
+import ImageBlock from "@/assets/images/placeholder/image_blocked.webp";
 import {
-  ChevronLeft,
-  ChevronRight,
-  Minus,
-  Plus,
-  RotateCcwSquare,
-  Square,
-  X,
+    ChevronLeft,
+    ChevronRight,
+    Minus,
+    Plus,
+    RotateCcwSquare,
+    Square,
+    X,
 } from "lucide-react";
 import { ComponentType, Dispatch, SetStateAction } from "react";
 import ReactDOMServer from "react-dom/server";
 import Viewer from "viewerjs";
-import ImageBlock from "@/assets/images/placeholder/image_block.webp";
 
 // Icon cache to avoid re-rendering same icons - use WeakMap with Icon as key
 const iconCache = new WeakMap<ComponentType<{ size?: number; className?: string }>, Map<string, string>>();

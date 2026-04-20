@@ -1,6 +1,6 @@
 "use client";
 
-import ImageBlock from "@/assets/images/placeholder/image_block.webp";
+import ImageBlock from "@/assets/images/placeholder/image_blocked.webp";
 import imageError from "@/assets/images/placeholder/image_error.webp";
 import imagePlaceholder from "@/assets/images/placeholder/image_placeholder.webp";
 import { cn } from "@/lib";
