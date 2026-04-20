@@ -482,6 +482,10 @@ export default function CreateVideoPage() {
     };
 
     fetchArticle();
+
+    return () => {
+      hasFetchedArticleRef.current = false;
+    };
   }, [articleId, isEditMode, setFieldValues]);
 
   // Fetch categories on mount

@@ -251,9 +251,12 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
 
   // Fetch article data in edit mode
   useEffect(() => {
-    if (!isEditMode || !articleId || hasFetchedArticleRef.current) return;
+    if (!isEditMode || !articleId) return;
+    // 防止重复请求：已获取过或正在加载中都跳过
+    if (hasFetchedArticleRef.current || articleLoading) return;
 
     hasFetchedArticleRef.current = true;
+    setArticleLoading(true);
 
     let isCancelled = false;
 
@@ -362,6 +365,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
 
     return () => {
       isCancelled = true;
+      // 不重置 hasFetchedArticleRef，防止 StrictMode 重复请求
     };
   }, [isEditMode, articleId]);
 

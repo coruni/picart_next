@@ -129,7 +129,18 @@ const workerCode = `
     const { maxWidth, quality, format } = config;
 
     const blob = new Blob([arrayBuffer], { type: fileType });
-    const bitmap = await createImageBitmap(blob);
+    let bitmap;
+    try {
+      bitmap = await createImageBitmap(blob);
+    } catch (e) {
+      throw new Error("Failed to create image bitmap: " + (e.message || e));
+    }
+
+    // 验证 bitmap 尺寸
+    if (!bitmap.width || !bitmap.height) {
+      bitmap.close?.();
+      throw new Error("Invalid image dimensions");
+    }
 
     let { width, height } = bitmap;
     const originalWidth = width;
@@ -196,12 +207,22 @@ const workerCode = `
       });
     } catch (e) {
       // 如果指定格式失败，回退到 JPEG
-      mimeType = "image/jpeg";
-      outputExtension = ".jpg";
-      compressedBlob = await canvas.convertToBlob({
-        type: mimeType,
-        quality: quality / 100,
-      });
+      try {
+        mimeType = "image/jpeg";
+        outputExtension = ".jpg";
+        compressedBlob = await canvas.convertToBlob({
+          type: mimeType,
+          quality: quality / 100,
+        });
+      } catch (e2) {
+        // 如果 JPEG 也失败，返回原文件
+        throw new Error("Canvas to Blob failed after fallback");
+      }
+    }
+
+    // 验证 compressedBlob 是否有效
+    if (!compressedBlob || compressedBlob.size === 0) {
+      throw new Error("Compressed blob is null or empty");
     }
 
     // 如果压缩后比原文件大，返回原文件
@@ -220,6 +241,11 @@ const workerCode = `
     }
 
     const compressedArrayBuffer = await compressedBlob.arrayBuffer();
+
+    // 验证压缩后的 ArrayBuffer
+    if (!compressedArrayBuffer || compressedArrayBuffer.byteLength === 0) {
+      throw new Error("Compressed ArrayBuffer is empty");
+    }
 
     return {
       file: compressedArrayBuffer,
@@ -276,11 +302,38 @@ export function useImageCompression() {
           const duration = Date.now() - task.startTime;
 
           if (success && result) {
+            // 验证压缩结果是否有效
+            if (!result.file || result.file.byteLength === 0) {
+              console.error(`[ImageCompression] Compressed file is empty, using original`);
+              // 使用原文件
+              task.resolve({
+                file: task.file,
+                originalSize: task.file.size,
+                compressedSize: task.file.size,
+                compressionRatio: 1,
+              });
+              tasksRef.current.delete(id);
+              return;
+            }
+
             // Reconstruct File from ArrayBuffer
             const file = new File([result.file], result.fileName, {
               type: result.fileType,
               lastModified: result.lastModified,
             });
+
+            // 再次验证文件大小
+            if (file.size === 0) {
+              console.error(`[ImageCompression] Reconstructed file has 0 size, using original`);
+              task.resolve({
+                file: task.file,
+                originalSize: task.file.size,
+                compressedSize: task.file.size,
+                compressionRatio: 1,
+              });
+              tasksRef.current.delete(id);
+              return;
+            }
 
             // 开发环境下输出压缩信息
             if (process.env.NODE_ENV === "development") {

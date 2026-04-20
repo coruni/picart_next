@@ -395,6 +395,10 @@ export default function CreateImagePage() {
     };
 
     fetchArticle();
+
+    return () => {
+      articleFetchedRef.current = false;
+    };
   }, [articleId, isEditMode, setFieldValues]);
 
   useEffect(() => {

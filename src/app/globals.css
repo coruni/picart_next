@@ -513,24 +513,16 @@ body.viewer-open .fixed {
   opacity: 1;
 }
 
-.ql-editor .ql-image-wrapper > img.ql-image,
+.ql-editor .ql-image-wrapper .ql-image,
 .ql-editor video {
-  max-width: 100%;
-  height: auto;
-}
-
-.ql-editor .ql-image-wrapper > img.ql-image {
-  margin: 0.18rem 0;
-  border-radius: 12px;
-}
-
-.ql-editor .ql-image-wrapper {
-  display: inline-block;
-  max-width: 100%;
+  max-width: 100% !important;
+  height: auto !important;
 }
 
 .ql-editor .ql-image-wrapper .ql-image {
-  display: block;
+  margin: 0.18rem 0 !important;
+  border-radius: 12px !important;
+  display: block !important;
 }
 
 .ql-editor table {
