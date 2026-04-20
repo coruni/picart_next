@@ -9,7 +9,7 @@ import love from "@/assets/images/reaction/love.png";
 import sad from "@/assets/images/reaction/sad.png";
 import wow from "@/assets/images/reaction/wow.png";
 import { useClickOutside } from "@/hooks";
-import { cn } from "@/lib";
+import { cn, showToast, getErrorMessage } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import {
@@ -187,6 +187,7 @@ export const ReactionPanel = ({
       onReactionChange?.(reactionType, newStats);
     } catch (error) {
       console.error("Reaction failed:", error);
+      showToast(getErrorMessage(error, "操作失败"));
     } finally {
       setIsLoading(false);
     }

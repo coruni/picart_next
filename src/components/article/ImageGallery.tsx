@@ -130,18 +130,15 @@ export function ImageGallery({
         >
           <ImageWithFallback
             src={imgUrl}
-            fill
             quality={95}
-            className="transition-transform group-hover:scale-105 object-cover"
+            className=" w-full h-auto"
             alt={alt}
             sizes="(max-width: 1280px) 100vw, 1280px"
             preload
           />
-          <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/10">
-            <div className="flex items-center gap-2 rounded-lg bg-black/60 px-3 py-2 text-white opacity-0 transition-opacity group-hover:opacity-100">
-              <Fullscreen size={16} />
-              <span className="text-sm">{t("clickToView")}</span>
-            </div>
+          <div className="pointer-events-none absolute right-4 bottom-4 flex items-center gap-1.5 rounded-full bg-black/60 px-3 py-1.5 text-sm text-white opacity-85 backdrop-blur-sm transition-opacity group-hover:opacity-100">
+            <Fullscreen size={14} />
+            <span>{t("viewFullImage")}</span>
           </div>
         </div>
         {viewerVisible && (

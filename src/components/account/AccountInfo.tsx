@@ -11,7 +11,7 @@ import {
 import { useIsMobile } from "@/hooks";
 import { useAuthNavigation } from "@/hooks/useAuthNavigation";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
-import { cn, formatCompactNumber } from "@/lib";
+import { cn, formatCompactNumber, showToast, getErrorMessage } from "@/lib";
 import { isAccountSectionHidden } from "@/lib/account-privacy";
 import { buildMessageCenterHref } from "@/lib/message-routes";
 import { openLoginDialog } from "@/lib/modal-helpers";
@@ -129,6 +129,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
       setShowReportDialog(false);
     } catch (error) {
       console.error("Failed to report user:", error);
+      showToast(getErrorMessage(error, "举报失败"));
     } finally {
       setReportSubmitting(false);
     }

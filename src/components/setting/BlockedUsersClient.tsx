@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/Dialog";
 import { useRouter } from "@/i18n/routing";
-import { cn, formatDate } from "@/lib";
+import { cn, formatDate, showToast, getErrorMessage } from "@/lib";
 import { Ban } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
@@ -50,6 +50,7 @@ export function BlockedUsersClient() {
       setBlockedUsers([]);
     } catch (error) {
       console.error("Failed to load blocked users:", error);
+      showToast(getErrorMessage(error, "加载失败"));
     } finally {
       setLoading(false);
     }
@@ -78,6 +79,7 @@ export function BlockedUsersClient() {
       await loadBlockedUsers();
     } catch (error) {
       console.error("Failed to unblock user:", error);
+      showToast(getErrorMessage(error, "解除屏蔽失败"));
     } finally {
       setUnblockSubmitting(false);
     }

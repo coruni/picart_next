@@ -8,7 +8,7 @@ import {
   uploadControllerUploadFile,
 } from "@/api";
 import { useImageCompression } from "@/hooks/useImageCompression";
-import { cn, sanitizeRichTextHtml } from "@/lib";
+import { cn, sanitizeRichTextHtml, showToast, getErrorMessage } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
@@ -552,7 +552,7 @@ export function CommentEditor({
         }
 
         const uploadedUrl = uploadedUrls[index]?.url;
-        if (uploadedUrl) {
+        if (uploadedUrl && !uploadedUrl.includes("/images/blocked.webp")) {
           clearUploadTimer(id);
           updateAttachment(id, (attachment) => ({
             ...attachment,
@@ -572,6 +572,7 @@ export function CommentEditor({
         removeAttachment(id);
       });
       console.error("Failed to upload comment images:", error);
+      showToast(getErrorMessage(error, "图片上传失败"));
     }
   };
 
@@ -649,6 +650,7 @@ export function CommentEditor({
         isEditMode ? "Failed to update comment:" : "Failed to create comment:",
         error,
       );
+      showToast(getErrorMessage(error, isEditMode ? "更新失败" : "评论失败"));
     } finally {
       setIsSubmitting(false);
     }

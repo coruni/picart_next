@@ -4,6 +4,7 @@ import { uploadControllerUploadFile, userControllerUpdate } from "@/api";
 import { Button } from "@/components/ui/Button";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/Dialog";
 import { useRouter } from "@/i18n/routing";
+import { showToast, getErrorMessage } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import type { UserDetail } from "@/types";
 import { useTranslations } from "next-intl";
@@ -94,6 +95,7 @@ export const BackgroundEditor = ({
       setUploading(false);
       setLastTouchDistance(null);
       console.error("Failed to upload background:", error);
+      showToast(getErrorMessage(error, "背景图上传失败"));
     } finally {
       setUploading(false);
     }

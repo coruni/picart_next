@@ -2,6 +2,7 @@
 
 import ImageBlock from "@/assets/images/placeholder/image_blocked.webp";
 import imageError from "@/assets/images/placeholder/image_error.webp";
+import ImagePending from "@/assets/images/placeholder/image_pending.webp";
 import imagePlaceholder from "@/assets/images/placeholder/image_placeholder.webp";
 import { cn } from "@/lib";
 import type { StaticImageData } from "next/image";
@@ -75,8 +76,12 @@ export function ImageWithFallback({
   }
 
   // 如果图片被屏蔽，使用错误占位图
-  if (srcString === "/images/blocked.webp") {
+  if (srcString.includes("/images/blocked.webp")) {
     srcString = ImageBlock.src;
+  }
+  // 如果图片是pending状态，使用pending占位图
+  if (srcString.includes("/images/pending.webp")) {
+    srcString = ImagePending.src;
   }
 
   // 从缓存获取初始状态

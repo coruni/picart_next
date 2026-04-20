@@ -17,7 +17,7 @@ import { TagSelect } from "@/components/ui/TagSelect";
 import { useForm } from "@/hooks/useForm";
 import { useImageCompression } from "@/hooks/useImageCompression";
 import { useRouter } from "@/i18n/routing";
-import { cn } from "@/lib";
+import { cn, showToast, getErrorMessage } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { getImageUrls, type ImageInfo } from "@/types/image";
 import { Loader2, Plus, Trash2 } from "lucide-react";
@@ -25,6 +25,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 
 type CreateImageFormData = {
   title: string;
@@ -249,6 +250,7 @@ export default function CreateImagePage() {
         }
       } catch (error) {
         console.error("Failed to submit article:", error);
+        showToast(getErrorMessage(error, "提交失败"));
         throw error;
       }
 
@@ -699,7 +701,7 @@ export default function CreateImagePage() {
             if (targetIndex === -1) return;
 
             const remoteUrl = uploadedUrls[index];
-            if (!remoteUrl) {
+            if (!remoteUrl || remoteUrl.includes("/images/blocked.webp")) {
               if (next[targetIndex].previewUrl) {
                 URL.revokeObjectURL(next[targetIndex].previewUrl as string);
               }
@@ -720,6 +722,7 @@ export default function CreateImagePage() {
         });
       } catch (error) {
         console.error("Failed to upload images:", error);
+        showToast(getErrorMessage(error, "图片上传失败"));
 
         setImageItems((current) => {
           const next = current.filter((item) => {
@@ -940,7 +943,7 @@ export default function CreateImagePage() {
                                 unoptimized
                               />
                             ) : item.remoteUrl ? (
-                              <Image
+                              <ImageWithFallback
                                 src={item.remoteUrl}
                                 alt={`${item.fileName} ${index + 1}`}
                                 fill

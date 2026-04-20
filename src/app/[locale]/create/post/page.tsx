@@ -29,6 +29,8 @@ import {
   hasMeaningfulRichTextContent,
   prepareRichTextHtmlForDisplay,
   sanitizeRichTextHtml,
+  showToast,
+  getErrorMessage,
 } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { useUserStore } from "@/stores";
@@ -210,6 +212,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         }
       } catch (error) {
         console.error("Failed to submit article:", error);
+        showToast(getErrorMessage(error, "提交失败"));
         throw error;
       }
 
@@ -632,6 +635,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       }
     } catch (error) {
       console.error("Failed to upload cover:", error);
+      showToast(getErrorMessage(error, "封面上传失败"));
     } finally {
       setCoverUploading(false);
     }

@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { useRouter } from "@/i18n/routing";
+import { showToast, getErrorMessage } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import type { UserDetail } from "@/types";
 import { useTranslations } from "next-intl";
@@ -129,6 +130,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
       setSelectedAvatarImage(null);
       setAvatarScale(1);
       console.error("Failed to upload avatar:", error);
+      showToast(getErrorMessage(error, "头像上传失败"));
     } finally {
       setAvatarUploading(false);
     }
@@ -210,6 +212,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
       setSelectedBackgroundImage(null);
       setBackgroundScale(1);
       console.error("Failed to upload background:", error);
+      showToast(getErrorMessage(error, "背景图上传失败"));
     } finally {
       setBackgroundUploading(false);
     }

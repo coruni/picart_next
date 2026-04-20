@@ -15,7 +15,7 @@ import { articleControllerFindByAuthor, articleControllerFindOne } from "@/api";
 import { useImageCompression } from "@/hooks/useImageCompression";
 import { useEditorFocus } from "@/hooks/useEditorFocus";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
-import { prepareRichTextHtmlForEditor, sanitizeRichTextHtml } from "@/lib";
+import { prepareRichTextHtmlForEditor, sanitizeRichTextHtml, showToast, getErrorMessage } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { useUserStore } from "@/stores";
 import { ArticleList } from "@/types";
@@ -513,7 +513,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                   if (!item.wrapper || !item.img) return;
 
                   const uploadedUrl = uploadedUrls[idx]?.url;
-                  if (uploadedUrl) {
+                  if (uploadedUrl && !uploadedUrl.includes("/images/blocked.webp")) {
                     item.img.src = uploadedUrl;
                     item.img.dataset.uploaded = "true";
                     if (item.previewUrl.startsWith("blob:")) {
@@ -522,6 +522,9 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     if (item.progressText) {
                       item.progressText.textContent = "100%";
                     }
+                  } else {
+                    // Remove placeholder if upload failed or returned blocked image
+                    quill.deleteText(item.index, 1);
                   }
                   // Remove overlay
                   item.overlay?.remove();
@@ -531,6 +534,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                   return;
                 }
                 console.error("Upload failed:", error);
+                showToast(getErrorMessage(error, "上传失败"));
                 // Remove all overlays and delete placeholders on error
                 uploadItems.forEach((item) => {
                   item.overlay?.remove();

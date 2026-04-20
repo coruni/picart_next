@@ -40,3 +40,28 @@ export const getPublicBanners = unstable_cache(
     revalidate: 300,
   },
 );
+
+/**
+ * 从 API 错误中提取可读的错误消息
+ */
+export function getErrorMessage(
+  error: unknown,
+  fallback = "操作失败",
+): string {
+  if (error && typeof error === "object") {
+    // API 返回的错误格式: { code: number, message: string, data: null }
+    if ("message" in error && typeof error.message === "string") {
+      return error.message;
+    }
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "string") {
+    return error;
+  }
+
+  return fallback;
+}

@@ -23,6 +23,7 @@ import { getMessages } from "next-intl/server";
 import { unstable_noStore as noStore } from "next/cache";
 import { notFound } from "next/navigation";
 import NextTopLoader from "nextjs-toploader";
+import { ToastContainer } from "@/lib";
 import { LocaleProvider } from "./LocaleProvider";
 
 export const dynamic = "force-dynamic";
@@ -85,6 +86,7 @@ export default async function LocaleLayout({
           <AuthRouteGuard />
           <AppChrome categories={categories}>{children}</AppChrome>
         </UserStateProvider>
+        <ToastContainer />
       </NextIntlClientProvider>
     </>
   );

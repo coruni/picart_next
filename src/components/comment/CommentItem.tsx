@@ -20,6 +20,8 @@ import {
   formatCompactNumber,
   formatRelativeTime,
   prepareCommentHtmlForDisplay,
+  showToast,
+  getErrorMessage,
 } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
@@ -133,6 +135,7 @@ export const CommentItem = memo(function CommentItem({
         });
       } catch (error) {
         console.error("Failed to report comment:", error);
+        showToast(getErrorMessage(error, "举报失败"));
       } finally {
         setReportSubmitting(false);
         setShowReportDialog(false);
@@ -219,6 +222,7 @@ export const CommentItem = memo(function CommentItem({
       await onSubmitted?.();
     } catch (error) {
       console.error("Failed to delete comment:", error);
+      showToast(getErrorMessage(error, "删除失败"));
     }
   }, [commentState.id, onSubmitted]);
 
@@ -233,6 +237,7 @@ export const CommentItem = memo(function CommentItem({
       await onSubmitted?.();
     } catch (error) {
       console.error("Failed to toggle pin:", error);
+      showToast(getErrorMessage(error, "操作失败"));
     }
   }, [commentState.id, commentState.isPinned, onSubmitted]);
 
@@ -349,6 +354,7 @@ export const CommentItem = memo(function CommentItem({
               },
         );
         console.error("Failed to like comment:", error);
+        showToast(getErrorMessage(error, "点赞失败"));
       }
     },
     [

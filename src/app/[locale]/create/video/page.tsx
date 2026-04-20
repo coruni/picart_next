@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/Switch";
 import { TagSelect } from "@/components/ui/TagSelect";
 import { useForm } from "@/hooks/useForm";
 import { useRouter } from "@/i18n/routing";
-import { cn } from "@/lib";
+import { cn, showToast, getErrorMessage } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { Loader2, Trash2, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -316,6 +316,7 @@ export default function CreateVideoPage() {
           coverUrl = await uploadFrame(selectedFrame.dataUrl);
         } catch (error) {
           console.error("Failed to upload cover frame:", error);
+          showToast(getErrorMessage(error, "封面上传失败"));
           return;
         }
       }
@@ -346,6 +347,7 @@ export default function CreateVideoPage() {
         }
       } catch (error) {
         console.error("Failed to submit article:", error);
+        showToast(getErrorMessage(error, "提交失败"));
         throw error;
       }
 
@@ -612,6 +614,7 @@ export default function CreateVideoPage() {
         setFieldValues({ videoUrl });
       } catch (error) {
         console.error("Failed to process video:", error);
+        showToast(getErrorMessage(error, "视频处理失败"));
         setVideoItem(null);
       } finally {
         setVideoUploading(false);
