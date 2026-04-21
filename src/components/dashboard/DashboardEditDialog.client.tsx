@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/Button";
 import { CategorySelect } from "@/components/ui/CategorySelect";
 import { DatePicker } from "@/components/ui/DatePicker";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogOverlay,
+    DialogTitle,
 } from "@/components/ui/Dialog";
 import { Form, FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
@@ -701,7 +701,7 @@ export function DashboardEditDialog({
         <DialogFooter className="shrink-0 mt-0! border-t border-border px-6 py-4 gap-4!">
           <Button
             variant="outline"
-            className="h-7 rounded-full px-4"
+            className="h-7 rounded-full px-2"
             onClick={() => onOpenChange(false)}
             disabled={loading}
           >
@@ -709,7 +709,7 @@ export function DashboardEditDialog({
           </Button>
           <Button
             variant="primary"
-            className="h-7 rounded-full px-4"
+            className="h-7 rounded-full px-2"
             loading={loading}
             onClick={() => {
               void onSubmit(
@@ -779,7 +779,7 @@ export function DashboardEditDialog({
             <DialogFooter className="gap-4! pb-4! px-6">
               <Button
                 variant="ghost"
-                className="h-7 rounded-full px-4"
+                className="h-7 rounded-full px-2"
                 onClick={() => {
                   setEditingImageField(null);
                   setSelectedImage(null);
@@ -791,7 +791,7 @@ export function DashboardEditDialog({
               </Button>
               <Button
                 variant="primary"
-                className="h-7 rounded-full px-4"
+                className="h-7 rounded-full px-2"
                 loading={uploadingImage}
                 onClick={() => void handleSaveEditedImage()}
               >

@@ -461,7 +461,7 @@ export function DashboardAchievementsPage() {
         action={
           <Button
             variant="primary"
-            className="h-9 rounded-full px-4"
+            className="h-7 rounded-full px-2"
             onClick={() => setCreating(true)}
           >
             <Plus className="mr-2 size-4" />

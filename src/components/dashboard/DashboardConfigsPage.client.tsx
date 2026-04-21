@@ -1,25 +1,25 @@
 "use client";
 
 import {
-  configControllerFindAll,
-  configControllerUpdateAll,
-  uploadControllerUploadFile,
+    configControllerFindAll,
+    configControllerUpdateAll,
+    uploadControllerUploadFile,
 } from "@/api";
-import { cn } from "@/lib";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { ImagePlus, X, Save } from "lucide-react";
+import { useImageCompression } from "@/hooks/useImageCompression";
+import { cn } from "@/lib";
+import { buildUploadMetadata } from "@/lib/file-hash";
+import { ImagePlus, Save, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useImageCompression } from "@/hooks/useImageCompression";
-import { buildUploadMetadata } from "@/lib/file-hash";
 import { getDashboardCopy } from "./copy";
 import {
-  DashboardErrorView,
-  DashboardLoadingView,
+    DashboardErrorView,
+    DashboardLoadingView,
 } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardPanel } from "./DashboardPanel";
@@ -550,7 +550,7 @@ export function DashboardConfigsPage() {
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
-                  className="h-7 rounded-full px-4"
+                  className="h-7 rounded-full px-2"
                   onClick={() => void loadAllConfigs(false)}
                 >
                   {copy.common.refresh}
@@ -558,7 +558,7 @@ export function DashboardConfigsPage() {
                 {hasUnsavedChanges && (
                   <Button
                     variant="primary"
-                    className="h-7 rounded-full px-4"
+                    className="h-7 rounded-full px-2"
                     onClick={handleBatchSave}
                     loading={isSaving}
                   >

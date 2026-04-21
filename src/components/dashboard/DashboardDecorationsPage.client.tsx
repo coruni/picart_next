@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  decorationControllerCreate,
-  decorationControllerFindAll,
-  decorationControllerRemove,
-  decorationControllerUpdate,
+    decorationControllerCreate,
+    decorationControllerFindAll,
+    decorationControllerRemove,
+    decorationControllerUpdate,
 } from "@/api";
 import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
@@ -14,14 +14,14 @@ import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import {
-  DashboardEditDialog,
-  type DashboardEditField,
+    DashboardEditDialog,
+    type DashboardEditField,
 } from "./DashboardEditDialog.client";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
 import { DashboardStatusBadge } from "./DashboardStatusBadge";
-import type { DashboardTableColumn } from "./DashboardTable";
+import type { DashboardTableColumn, DashboardValueEnum } from "./DashboardTable";
 import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import type { DashboardDecorationItem } from "./types";
 import { useDashboardGuard } from "./useDashboardGuard";
@@ -136,6 +136,7 @@ export function DashboardDecorationsPage() {
         key: "name",
         header: copy.columns.name,
         dataIndex: "keyword",
+        valueType: "text",
         searchPlaceholder: copy.filters.decorationPlaceholder,
         render: (item) => (
           <div className="flex min-w-0 items-center gap-3">
@@ -163,7 +164,14 @@ export function DashboardDecorationsPage() {
       {
         key: "type",
         header: copy.columns.type,
-        hideInSearch: true,
+        dataIndex: "type",
+        valueType: "select",
+        valueEnum: {
+          "": { text: copy.common.all },
+          AVATAR_FRAME: { text: copy.options.decorationType.AVATAR_FRAME },
+          COMMENT_BUBBLE: { text: copy.options.decorationType.COMMENT_BUBBLE },
+          ACHIEVEMENT_BADGE: { text: copy.options.decorationType.ACHIEVEMENT_BADGE },
+        } as DashboardValueEnum,
         render: (item) => (
           <div className="space-y-1 text-sm text-foreground">
             <div>{item.type || "-"}</div>
@@ -195,7 +203,7 @@ export function DashboardDecorationsPage() {
           "": { text: copy.common.all },
           ACTIVE: { text: copy.status.active },
           INACTIVE: { text: copy.status.inactive },
-        },
+        } as DashboardValueEnum,
         render: (item) => <DashboardStatusBadge value={item.status} />,
       },
       {
@@ -360,7 +368,7 @@ export function DashboardDecorationsPage() {
         action={
           <Button
             variant="primary"
-            className="h-9 rounded-full px-4"
+            className="h-7 rounded-full px-2"
             onClick={() => setCreating(true)}
           >
             <Plus className="mr-2 size-4" />
@@ -368,7 +376,7 @@ export function DashboardDecorationsPage() {
           </Button>
         }
         columns={columns}
-        request={async ({ current, pageSize, keyword, status }) => {
+        request={async ({ current, pageSize, keyword, status, type }) => {
           const response = await decorationControllerFindAll({
             query: {
               page: current,
@@ -376,6 +384,9 @@ export function DashboardDecorationsPage() {
               keyword:
                 typeof keyword === "string" && keyword ? keyword : undefined,
               status: typeof status === "string" && status ? status : undefined,
+              type: type === "AVATAR_FRAME" || type === "COMMENT_BUBBLE" || type === "ACHIEVEMENT_BADGE"
+                ? type
+                : undefined,
             },
           });
 

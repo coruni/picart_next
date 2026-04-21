@@ -536,8 +536,9 @@
       "images": "Images",
       "imagesPlaceholder": "Select images",
       "imagesRequired": "Please upload at least one image",
-      "imagesHint": "Batch upload is supported. Select multiple files at once."},
-      "maxImages": "Select up to {count} images at a time"
+      "imagesHint": "Batch upload is supported. Select multiple files at once.",
+      "maxImages": "Select up to {count} images at a time",
+      "maxImagesExceeded": "Maximum {count} images per upload, extra files ignored"
     }
   },
   "createVideo": {

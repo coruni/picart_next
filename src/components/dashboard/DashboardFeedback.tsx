@@ -39,7 +39,7 @@ export function DashboardErrorView({
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           {description}
         </p>
-        <Button className="mt-5 h-7 rounded-full px-4" onClick={onRetry}>
+        <Button className="mt-5 h-7 rounded-full px-2" onClick={onRetry}>
           {retryLabel}
         </Button>
       </div>

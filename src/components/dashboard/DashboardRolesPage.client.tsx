@@ -1,20 +1,20 @@
 "use client";
 
 import {
-  permissionControllerFindAll,
-  roleControllerAssignPermissions,
-  roleControllerFindWithPagination,
-  roleControllerRemove,
-  roleControllerUpdate,
+    permissionControllerFindAll,
+    roleControllerAssignPermissions,
+    roleControllerFindWithPagination,
+    roleControllerRemove,
+    roleControllerUpdate,
 } from "@/api";
 import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { Button } from "@/components/ui/Button";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/Dialog";
 import { MoreHorizontal, PencilLine, Shield, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
@@ -371,7 +371,7 @@ export function DashboardRolesPage() {
           <DialogFooter className="gap-3 pb-4 px-6 border-t border-border pt-4">
             <Button
               variant="outline"
-              className="h-9 rounded-full px-4"
+              className="h-7 rounded-full px-2"
               onClick={() => setEditingPermissionsItem(null)}
               disabled={permissionsSubmitting}
             >
@@ -379,7 +379,7 @@ export function DashboardRolesPage() {
             </Button>
             <Button
               variant="primary"
-              className="h-9 rounded-full px-4"
+              className="h-7 rounded-full px-2"
               loading={permissionsSubmitting}
               onClick={handleSavePermissions}
             >

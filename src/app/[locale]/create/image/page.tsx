@@ -734,10 +734,17 @@ export default function CreateImagePage() {
   const handleImagesChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(e.target.files || []);
-      await handleImagesUpload(files);
+      // 限制多选数量：一次性最多选择 maxImages 张，超出截断
+      if (files.length > maxImages) {
+        showToast(tImage("form.maxImagesExceeded", { count: maxImages }));
+        const truncatedFiles = files.slice(0, maxImages);
+        await handleImagesUpload(truncatedFiles);
+      } else {
+        await handleImagesUpload(files);
+      }
       e.target.value = "";
     },
-    [handleImagesUpload],
+    [handleImagesUpload, maxImages, tImage],
   );
 
   const handleImageDrop = useCallback(
@@ -755,9 +762,16 @@ export default function CreateImagePage() {
       const files = Array.from(e.dataTransfer.files || []).filter((file) =>
         file.type.startsWith("image/"),
       );
-      await handleImagesUpload(files);
+      // 限制多选数量：一次性最多选择 maxImages 张，超出截断
+      if (files.length > maxImages) {
+        showToast(tImage("form.maxImagesExceeded", { count: maxImages }));
+        const filesToUpload = files.slice(0, maxImages);
+        await handleImagesUpload(filesToUpload);
+      } else {
+        await handleImagesUpload(files);
+      }
     },
-    [handleImagesUpload],
+    [handleImagesUpload, maxImages, tImage],
   );
 
   const removeImage = (index: number) => {

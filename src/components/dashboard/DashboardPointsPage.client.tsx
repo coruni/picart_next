@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  pointsControllerCreateActivity,
-  pointsControllerFindAllActivities,
-  pointsControllerRemoveActivity,
-  pointsControllerUpdateActivity,
+    pointsControllerCreateActivity,
+    pointsControllerFindAllActivities,
+    pointsControllerRemoveActivity,
+    pointsControllerUpdateActivity,
 } from "@/api";
 import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
@@ -14,8 +14,8 @@ import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import {
-  DashboardEditDialog,
-  type DashboardEditField,
+    DashboardEditDialog,
+    type DashboardEditField,
 } from "./DashboardEditDialog.client";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
@@ -415,7 +415,7 @@ export function DashboardPointsPage() {
         action={
           <Button
             variant="primary"
-            className="h-9 rounded-full px-4"
+            className="h-7 rounded-full px-2"
             onClick={() => setCreating(true)}
           >
             <Plus className="mr-2 size-4" />

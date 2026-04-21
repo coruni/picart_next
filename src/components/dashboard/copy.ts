@@ -389,6 +389,7 @@ const copy = {
       achievementPlaceholder: "搜索成就名称",
       status: "状态",
       group: "分组",
+      type: "类型",
     },
     columns: {
       user: "用户",

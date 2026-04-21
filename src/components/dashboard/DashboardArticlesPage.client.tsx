@@ -1,29 +1,29 @@
 "use client";
 
 import {
-  articleControllerFindAll,
-  articleControllerRemove,
-  articleControllerUpdate,
+    articleControllerFindAll,
+    articleControllerRemove,
+    articleControllerUpdate,
 } from "@/api";
 import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { Button } from "@/components/ui/Button";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/Dialog";
 import { Switch } from "@/components/ui/Switch";
 import { Textarea } from "@/components/ui/Textarea";
 import { Link, useRouter } from "@/i18n/routing";
 import {
-  CheckCircle,
-  FileCheck,
-  MoreHorizontal,
-  PencilLine,
-  Trash2,
-  XCircle,
+    CheckCircle,
+    FileCheck,
+    MoreHorizontal,
+    PencilLine,
+    Trash2,
+    XCircle,
 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
@@ -321,7 +321,7 @@ export function DashboardArticlesPage() {
           <DialogFooter className="gap-3 pb-4 px-6">
             <Button
               variant="outline"
-              className="h-9 rounded-full px-4"
+              className="h-7 rounded-full px-2"
               onClick={() => setAuditingItem(null)}
               disabled={auditSubmitting}
             >
@@ -330,7 +330,7 @@ export function DashboardArticlesPage() {
             </Button>
             <Button
               variant="primary"
-              className="h-9 rounded-full px-4"
+              className="h-7 rounded-full px-2"
               loading={auditSubmitting}
               onClick={() => handleAudit("APPROVED")}
             >

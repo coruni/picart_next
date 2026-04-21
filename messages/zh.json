@@ -529,7 +529,8 @@
       "imagesPlaceholder": "选择图片",
       "imagesRequired": "请至少上传一张图片",
       "imagesHint": "支持批量上传，多选即可一次添加多张图片",
-      "maxImages": "每次最多选择 {count} 张"
+      "maxImages": "每次最多选择 {count} 张",
+      "maxImagesExceeded": "一次最多选择 {count} 张图片，超出部分已忽略"
     }
   },
   "createVideo": {
