@@ -904,6 +904,24 @@
     "expireToday": "今天过期",
     "expireInDays": "{days}天后过期"
   },
+  "commentBubbleDialog": {
+    "title": "更换评论气泡",
+    "empty": "暂无评论气泡",
+    "loading": "加载中...",
+    "allLoaded": "已全部加载",
+    "duration": "时长：",
+    "permanent": "永久",
+    "canDirectEquip": "可直接装备",
+    "notOwned": "未拥有",
+    "unequip": "卸下",
+    "equip": "装备",
+    "get": "获取",
+    "selectHint": "在左侧选择一个评论气泡进行预览",
+    "preview": "预览",
+    "expired": "已过期",
+    "expireToday": "今天过期",
+    "expireInDays": "{days}天后过期"
+  },
   "decorationPage": {
     "title": "我的装扮",
     "types": {

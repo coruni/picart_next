@@ -126,6 +126,11 @@ export function DashboardDecorationsPage() {
         type: "number",
         step: 1,
       },
+      {
+        name: "bubbleColor",
+        label: copy.fields.bubbleColor,
+        type: "text",
+      },
     ],
     [copy],
   );
@@ -292,6 +297,7 @@ export function DashboardDecorationsPage() {
     sort: values.sort as number | undefined,
     requiredLikes: values.requiredLikes as number | undefined,
     requiredComments: values.requiredComments as number | undefined,
+    bubbleColor: values.bubbleColor as string | undefined,
   });
 
   const handleCreate = async (values: Record<string, unknown>) => {
@@ -328,6 +334,7 @@ export function DashboardDecorationsPage() {
           sort: values.sort as number | undefined,
           requiredLikes: values.requiredLikes as number | undefined,
           requiredComments: values.requiredComments as number | undefined,
+          bubbleColor: values.bubbleColor as string | undefined,
         },
       });
       setCreating(false);
@@ -419,6 +426,7 @@ export function DashboardDecorationsPage() {
           sort: 0,
           requiredLikes: 0,
           requiredComments: 0,
+          bubbleColor: "",
         }}
         loading={submitting}
         onOpenChange={(open) => {
@@ -447,6 +455,7 @@ export function DashboardDecorationsPage() {
           sort: editingItem?.sort,
           requiredLikes: editingItem?.requiredLikes,
           requiredComments: editingItem?.requiredComments,
+          bubbleColor: editingItem?.bubbleColor,
         }}
         loading={submitting}
         onOpenChange={(open) => {

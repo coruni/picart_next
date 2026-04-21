@@ -190,7 +190,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
               "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
               "hover:bg-primary/10 hover:text-primary",
               active
-                ? "bg-primary/15 text-primary shadow-sm"
+                ? "bg-primary/15 text-primary"
                 : "text-muted-foreground",
             )}
             title={isCollapsed ? item.label : undefined}
@@ -205,7 +205,7 @@ export function DashboardShell({ children }: DashboardShellProps) {
             />
             <span
               className={cn(
-                "transition-all duration-200",
+                "transition-all duration-200 truncate text-nowrap",
                 isCollapsed && "hidden",
               )}
             >

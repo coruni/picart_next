@@ -912,6 +912,24 @@
     "expireToday": "Expires today",
     "expireInDays": "Expires in {days} days"
   },
+  "commentBubbleDialog": {
+    "title": "Change Comment Bubble",
+    "empty": "No comment bubbles",
+    "loading": "Loading...",
+    "allLoaded": "All loaded",
+    "duration": "Duration:",
+    "permanent": "Permanent",
+    "canDirectEquip": "Can equip directly",
+    "notOwned": "Not owned",
+    "unequip": "Unequip",
+    "equip": "Equip",
+    "get": "Get",
+    "selectHint": "Select a comment bubble on the left for preview",
+    "preview": "Preview",
+    "expired": "Expired",
+    "expireToday": "Expires today",
+    "expireInDays": "Expires in {days} days"
+  },
   "decorationPage": {
     "title": "My Decorations",
     "types": {

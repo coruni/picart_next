@@ -2,6 +2,8 @@ import { create } from "zustand";
 
 interface ModalData {
   avatarFrameId?: number;
+  commentBubbleId?: number;
+  achievementId?: number;
 }
 
 interface ModalState {

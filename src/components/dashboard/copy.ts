@@ -74,6 +74,7 @@ const copy = {
       validDays: "有效天数",
       requiredLikes: "所需点赞数",
       requiredComments: "所需评论数",
+      bubbleColor: "气泡颜色",
       // 积分字段
       targetCount: "目标次数",
       dailyLimit: "每日限制",
@@ -549,6 +550,7 @@ const copy = {
       validDays: "Valid Days",
       requiredLikes: "Required Likes",
       requiredComments: "Required Comments",
+      bubbleColor: "Bubble Color",
       // Points fields
       targetCount: "Target Count",
       dailyLimit: "Daily Limit",

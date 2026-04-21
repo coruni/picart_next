@@ -9,6 +9,8 @@ export const MODAL_IDS = {
   FORGOT_PASSWORD: "forgot-password-dialog",
   // 可以继续添加其他 modal ID
   AVATAR_FRAME: "avatar-frame-dialog",
+  COMMENT_BUBBLE: "comment-bubble-dialog",
+  ACHIEVEMENT_BADGE: "achievement-badge-dialog",
 } as const;
 
 /**
@@ -65,5 +67,33 @@ export function openAvatarFrameDialog() {
  */
 export function closeAvatarFrameDialog() {
   useModalStore.getState().closeModal(MODAL_IDS.AVATAR_FRAME);
+}
+
+/**
+ * 打开评论气泡对话框
+ */
+export function openCommentBubbleDialog() {
+  useModalStore.getState().openModal(MODAL_IDS.COMMENT_BUBBLE);
+}
+
+/**
+ * 关闭评论气泡对话框
+ */
+export function closeCommentBubbleDialog() {
+  useModalStore.getState().closeModal(MODAL_IDS.COMMENT_BUBBLE);
+}
+
+/**
+ * 打开成就徽章对话框
+ */
+export function openAchievementBadgeDialog() {
+  useModalStore.getState().openModal(MODAL_IDS.ACHIEVEMENT_BADGE);
+}
+
+/**
+ * 关闭成就徽章对话框
+ */
+export function closeAchievementBadgeDialog() {
+  useModalStore.getState().closeModal(MODAL_IDS.ACHIEVEMENT_BADGE);
 }
 

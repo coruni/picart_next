@@ -2,6 +2,8 @@
 
 import { decorationControllerGetMyDecorations } from "@/api/sdk.gen";
 import type { DecorationControllerGetMyDecorationsResponse } from "@/api/types.gen";
+import { MODAL_IDS } from "@/lib/modal-helpers";
+import { useModalStore } from "@/stores/useModalStore";
 import { cn, formatDate } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -14,10 +16,9 @@ type Decoration =
 export function CommentBubbleList() {
   const t = useTranslations("decorationPage");
   const tc = useTranslations("common");
+  const openModal = useModalStore((state) => state.openModal);
   const [decorations, setDecorations] = useState<Decoration[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedDecoration, setSelectedDecoration] =
-    useState<Decoration | null>(null);
 
   const getRarityName = (rarity?: string) => {
     if (rarity === "COMMON") return t("rarity.common");
@@ -51,6 +52,19 @@ export function CommentBubbleList() {
     fetchDecorations();
   }, []);
 
+  const handleItemClick = (decoration: Decoration) => {
+    openModal(MODAL_IDS.COMMENT_BUBBLE, { commentBubbleId: decoration.decorationId });
+  };
+
+  const handleBannerClick = () => {
+    // 打开第一个装饰品的对话框，如果没有则打开空对话框
+    if (decorations.length > 0) {
+      openModal(MODAL_IDS.COMMENT_BUBBLE, { commentBubbleId: decorations[0].decorationId });
+    } else {
+      openModal(MODAL_IDS.COMMENT_BUBBLE, {});
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-40">
@@ -67,14 +81,12 @@ export function CommentBubbleList() {
           style={{
             backgroundImage: "url(/account/decoration/avatar_frame_banner.png)",
           }}
-          onClick={() =>
-            decorations[0] && setSelectedDecoration(decorations[0])
-          }
+          onClick={handleBannerClick}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
-              decorations[0] && setSelectedDecoration(decorations[0]);
+              handleBannerClick();
             }
           }}
         >
@@ -99,6 +111,7 @@ export function CommentBubbleList() {
           {decorations.map((decoration) => (
             <div
               key={decoration.id}
+              onClick={() => handleItemClick(decoration)}
               className={cn(
                 "relative rounded-xl p-4 cursor-pointer transition-all",
                 decoration.isUsing
