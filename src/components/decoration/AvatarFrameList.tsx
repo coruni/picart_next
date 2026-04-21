@@ -89,7 +89,7 @@ export function AvatarFrameList() {
             <span className="text-xl font-bold text-[#3db8f5]">
               {t("types.avatarFrame")}
             </span>
-            <span className="text-xs text-secondary">{t("ownedHint")}</span>
+            <span className="text-xs text-secondary">{t("ownedHint", { count: decorations.length })}</span>
           </div>
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3db8f566] text-white">
             <ChevronRight size={16} />

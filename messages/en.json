@@ -929,7 +929,7 @@
     "series": "Series",
     "expireAt": "expires",
     "permanent": "Permanent",
-    "ownedHint": "Owned 10 items, view more",
+    "ownedHint": "Owned {count} items, view more",
     "emptyByType": "No {type}",
     "unlocked": "Unlocked",
     "unequip": "Unequip",

@@ -8,7 +8,7 @@ import {
 } from "@/api";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { formatDate } from "@/lib/utils";
-import { Clock } from "lucide-react";
+import { ChevronRight, Clock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
@@ -145,6 +145,25 @@ export function AchievementBadgeList() {
 
   return (
     <div className="flex h-full flex-col">
+      {/* Banner */}
+      <div className="mb-4">
+        <div
+          className="flex h-20 w-full items-center justify-between gap-4 rounded-xl bg-cover bg-center bg-no-repeat px-4"
+          style={{
+            backgroundImage: "url(/account/decoration/avatar_frame_banner.png)",
+          }}
+        >
+          <div className="flex flex-col">
+            <span className="text-xl font-bold text-[#3db8f5]">
+              {t("types.achievement")}
+            </span>
+            <span className="text-xs text-secondary">{t("ownedHint", { count: items.length })}</span>
+          </div>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3db8f566] text-white">
+            <ChevronRight size={16} />
+          </div>
+        </div>
+      </div>
       <div
         className="flex-1 overflow-y-auto"
         style={{ scrollbarWidth: "none" }}

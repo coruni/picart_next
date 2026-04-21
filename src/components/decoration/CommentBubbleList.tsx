@@ -16,6 +16,7 @@ export function CommentBubbleList() {
   const tc = useTranslations("common");
   const [decorations, setDecorations] = useState<Decoration[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedDecoration, setSelectedDecoration] = useState<Decoration | null>(null);
 
   const getRarityName = (rarity?: string) => {
     if (rarity === "COMMON") return t("rarity.common");
@@ -70,16 +71,24 @@ export function CommentBubbleList() {
     <div className="flex h-full flex-col">
       <div className="mb-4">
         <div
-          className="flex h-20 w-full items-center justify-between gap-4 rounded-xl bg-cover bg-center bg-no-repeat px-4"
+          className="flex h-20 w-full items-center justify-between gap-4 rounded-xl bg-cover bg-center bg-no-repeat px-4 cursor-pointer"
           style={{
             backgroundImage: "url(/account/decoration/avatar_frame_banner.png)",
+          }}
+          onClick={() => decorations[0] && setSelectedDecoration(decorations[0])}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              decorations[0] && setSelectedDecoration(decorations[0]);
+            }
           }}
         >
           <div className="flex flex-col">
             <span className="text-xl font-bold text-[#3db8f5]">
               {t("types.commentBubble")}
             </span>
-            <span className="text-xs text-secondary">{t("ownedHint")}</span>
+            <span className="text-xs text-secondary">{t("ownedHint", { count: decorations.length })}</span>
           </div>
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3db8f566] text-white">
             <ChevronRight size={16} />
