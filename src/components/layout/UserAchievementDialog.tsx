@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  decorationControllerFindOne,
   decorationControllerGetMyDecorations,
   DecorationControllerGetMyDecorationsResponse,
   decorationControllerUnuseDecoration,
@@ -19,20 +20,58 @@ import { useEffect, useState } from "react";
 type UserDecorationItem =
   DecorationControllerGetMyDecorationsResponse["data"]["data"][number];
 
-function resolveBadgeName(item: UserDecorationItem) {
+// Type for non-owned decoration details from API
+type DecorationDetail = {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+  type: string;
+};
+
+// Union type for selected item (owned or non-owned)
+type SelectedAchievement =
+  | ({ isOwned: true } & UserDecorationItem)
+  | ({ isOwned: false; decoration: DecorationDetail });
+
+function resolveBadgeName(item: SelectedAchievement | null): string {
+  if (!item) return "-";
+  if (item.isOwned) {
+    return item.decoration?.name || "-";
+  }
   return item.decoration?.name || "-";
 }
 
-function resolveBadgeDescription(item: UserDecorationItem) {
+function resolveBadgeDescription(item: SelectedAchievement | null): string {
+  if (!item) return "";
+  if (item.isOwned) {
+    return item.decoration?.description || "";
+  }
   return item.decoration?.description || "";
 }
 
-function resolveBadgeImage(item: UserDecorationItem) {
+function resolveBadgeImage(item: SelectedAchievement | null): string {
+  if (!item) return "";
+  if (item.isOwned) {
+    return item.decoration?.imageUrl || "";
+  }
   return item.decoration?.imageUrl || "";
 }
 
-function resolveBadgeEarnedAt(item: UserDecorationItem) {
-  return item.createdAt;
+function resolveBadgeEarnedAt(item: SelectedAchievement | null): string | undefined {
+  if (!item) return undefined;
+  if (item.isOwned) {
+    return item.createdAt;
+  }
+  return undefined;
+}
+
+function isItemUsing(item: SelectedAchievement | null): boolean {
+  if (!item) return false;
+  if (item.isOwned) {
+    return item.isUsing;
+  }
+  return false;
 }
 
 export function UserAchievementDialog() {
@@ -48,7 +87,7 @@ export function UserAchievementDialog() {
   const initialItemId = modalData?.achievementId;
 
   const [items, setItems] = useState<UserDecorationItem[]>([]);
-  const [selectedItem, setSelectedItem] = useState<UserDecorationItem | null>(
+  const [selectedItem, setSelectedItem] = useState<SelectedAchievement | null>(
     null,
   );
   const [isLoading, setIsLoading] = useState(false);
@@ -66,15 +105,16 @@ export function UserAchievementDialog() {
     if (!initialItemId || items.length === 0) return;
 
     const targetItem = items.find((item) => item.decorationId === initialItemId);
-    if (targetItem) {
-      setSelectedItem(targetItem);
+    if (targetItem && !selectedItem) {
+      setSelectedItem({ ...targetItem, isOwned: true });
     }
-  }, [items, initialItemId]);
+  }, [items, initialItemId, selectedItem]);
 
   // 对话框关闭时重置状态
   useEffect(() => {
     if (!achievementDialogOpen) {
       setSelectedItem(null);
+      setItems([]);
     }
   }, [achievementDialogOpen]);
 
@@ -95,20 +135,45 @@ export function UserAchievementDialog() {
       const newItems = data?.data?.data || [];
       setItems(newItems);
 
-      // 如果有 initialItemId，设置选中项
+      // 如果有 initialItemId，先尝试在已拥有列表中查找
       if (initialItemId) {
         const targetItem = newItems.find(
           (item) => item.decorationId === initialItemId,
         );
         if (targetItem) {
-          setSelectedItem(targetItem);
+          setSelectedItem({ ...targetItem, isOwned: true });
+        } else {
+          // 如果不在已拥有列表中，通过API获取详情
+          await fetchDecorationDetail(initialItemId);
         }
       }
     } catch (error) {
       console.error("Failed to fetch achievement badges:", error);
       setItems([]);
+      // 如果有 initialItemId，尝试通过API获取
+      if (initialItemId) {
+        await fetchDecorationDetail(initialItemId);
+      }
     } finally {
       setDialogLoading(false);
+    }
+  };
+
+  // 获取非拥有的装饰品详情
+  const fetchDecorationDetail = async (decorationId: number) => {
+    try {
+      const response = await decorationControllerFindOne({
+        path: { id: String(decorationId) },
+      });
+      const decoration = response?.data?.data;
+      if (decoration) {
+        setSelectedItem({
+          isOwned: false,
+          decoration: decoration as DecorationDetail,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch decoration detail:", error);
     }
   };
 
@@ -118,7 +183,7 @@ export function UserAchievementDialog() {
   };
 
   const handleDecorationEquip = async () => {
-    if (!selectedItem) return;
+    if (!selectedItem || !selectedItem.isOwned) return;
 
     setIsLoading(true);
     try {
@@ -140,8 +205,10 @@ export function UserAchievementDialog() {
     }
   };
 
-  const selectedImageUrl = selectedItem ? resolveBadgeImage(selectedItem) : "";
-  const selectedEarnedAt = selectedItem ? resolveBadgeEarnedAt(selectedItem) : "";
+  const selectedImageUrl = resolveBadgeImage(selectedItem);
+  const selectedEarnedAt = resolveBadgeEarnedAt(selectedItem);
+  const isOwned = selectedItem?.isOwned ?? false;
+  const isUsing = isItemUsing(selectedItem);
 
   return (
     <Dialog open={achievementDialogOpen} onOpenChange={handleCloseDialog}>
@@ -178,8 +245,8 @@ export function UserAchievementDialog() {
                 {resolveBadgeName(selectedItem)}
               </h3>
 
-              {/* Earned Date */}
-              {selectedEarnedAt && (
+              {/* Earned Date - only show for owned items */}
+              {isOwned && selectedEarnedAt && (
                 <div className="mb-4 flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
                   <Clock size={14} />
                   <span>
@@ -193,16 +260,18 @@ export function UserAchievementDialog() {
                 {resolveBadgeDescription(selectedItem)}
               </p>
 
-              {/* Action Button */}
-              <Button
-                fullWidth
-                loading={isLoading}
-                variant={selectedItem.isUsing ? "secondary" : "default"}
-                className="mt-auto h-10 w-full rounded-full"
-                onClick={handleDecorationEquip}
-              >
-                {selectedItem?.isUsing ? t("unequip") : t("equip")}
-              </Button>
+              {/* Action Button - only show for owned items */}
+              {isOwned && (
+                <Button
+                  fullWidth
+                  loading={isLoading}
+                  variant={isUsing ? "secondary" : "default"}
+                  className="mt-auto h-10 w-full rounded-full"
+                  onClick={handleDecorationEquip}
+                >
+                  {isUsing ? t("unequip") : t("equip")}
+                </Button>
+              )}
             </div>
           </div>
         ) : (

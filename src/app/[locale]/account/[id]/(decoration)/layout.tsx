@@ -1,8 +1,5 @@
 import { ReactNode } from "react";
 import { DecorationLayoutClient } from "@/components/decoration/DecorationLayoutClient";
-import { UserAchievementDialog } from "@/components/layout/UserAchievementDialog";
-import { UserAvatarFarmeDialog } from "@/components/layout/UserAvatarFarmeDialog";
-import { UserCommentBubbleDialog } from "@/components/layout/UserCommentBubbleDialog";
 
 interface DecorationLayoutProps {
   children: ReactNode;
@@ -18,9 +15,6 @@ export default async function DecorationLayout({
   return (
     <div className="page-container">
       <DecorationLayoutClient locale={locale} userId={id}>{children}</DecorationLayoutClient>
-      <UserAvatarFarmeDialog />
-      <UserCommentBubbleDialog />
-      <UserAchievementDialog />
     </div>
   );
 }

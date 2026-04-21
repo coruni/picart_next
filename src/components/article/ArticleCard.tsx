@@ -11,6 +11,7 @@ import {
   formatRelativeTime,
   prepareRichTextHtmlForSummary,
 } from "@/lib";
+import { MODAL_IDS, openModal } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import type { ArticleDetail, ArticleList } from "@/types";
 import { getImageUrl, getImageUrls, type ImageInfo } from "@/types/image";
@@ -289,7 +290,7 @@ export const ArticleCard = ({
               <span
                 className={cn(
                   "font-bold hover:text-primary",
-                  article?.author?.isMember ,
+                  article?.author?.isMember,
                 )}
               >
                 {
@@ -298,7 +299,20 @@ export const ArticleCard = ({
                 }
               </span>
               {article?.author?.equippedDecorations?.ACHIEVEMENT_BADGE && (
-                <span className="relative size-4" data-auto-translate-conten>
+                <span
+                  className="relative size-4 cursor-pointer"
+                  data-auto-translate-content
+                  data-guarded-link-ignore="true"
+                  onClick={(e) => {
+                    e.preventDefault();  
+                    e.stopPropagation();
+                    openModal(MODAL_IDS.ACHIEVEMENT_BADGE, {
+                      achievementId:
+                        article.author?.equippedDecorations?.ACHIEVEMENT_BADGE
+                          ?.id,
+                    });
+                  }}
+                >
                   <ImageWithFallback
                     src={
                       article.author?.equippedDecorations?.ACHIEVEMENT_BADGE

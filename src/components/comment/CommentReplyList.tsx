@@ -2,37 +2,37 @@
 
 import { commentControllerFindOne } from "@/api";
 import {
-    DropdownMenu,
-    InfiniteScrollStatus,
-    type MenuItem,
+  DropdownMenu,
+  InfiniteScrollStatus,
+  type MenuItem,
 } from "@/components/shared";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogOverlay,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogOverlay,
+  DialogTitle,
 } from "@/components/ui/Dialog";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { useManualHtmlTranslate } from "@/hooks/useManualHtmlTranslate";
 import { Link } from "@/i18n/routing";
 import {
-    cn,
-    formatCompactNumber,
-    formatRelativeTime,
-    prepareCommentHtmlForDisplay,
+  cn,
+  formatCompactNumber,
+  formatRelativeTime,
+  prepareCommentHtmlForDisplay,
 } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
 import {
-    ChevronDown,
-    ChevronRight,
-    EllipsisVertical,
-    Languages,
-    LoaderCircle,
-    MessageCircleMore,
-    ThumbsUp,
+  ChevronDown,
+  ChevronRight,
+  EllipsisVertical,
+  Languages,
+  LoaderCircle,
+  MessageCircleMore,
+  ThumbsUp,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -404,7 +404,7 @@ export function CommentReplyList({
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogOverlay className="z-400!" />
 
-        <DialogContent className="w-[calc(100vw-1rem)] max-w-2xl rounded-xl p-0 z-401!">
+        <DialogContent className="w-[calc(100vw-1rem)] max-w-2xl rounded-xl p-0 z-401! flex flex-col max-h-[85vh] min-h-0">
           <DialogHeader className="px-6 py-4 mb-0!">
             <DialogTitle className="text-sm font-semibold text-left">
               {tComment.has("viewCommentTitle")
@@ -412,7 +412,7 @@ export function CommentReplyList({
                 : `${tComment("totalReplies", { count: totalReplies })}`}
             </DialogTitle>
           </DialogHeader>
-          <div ref={scrollRootRef} className="max-h-[80vh] overflow-y-auto">
+          <div ref={scrollRootRef} className="flex-1 min-h-0 overflow-y-auto">
             <article className={cn("px-4 py-3", !compact && "md:px-6 md:py-5")}>
               <div className="flex items-center space-x-3">
                 <Avatar
@@ -428,7 +428,12 @@ export function CommentReplyList({
                     className="flex items-center"
                     href={`/account/${data.author.id}`}
                   >
-                    <span className={cn("text-sm leading-5 font-semibold", data.author?.isMember )}>
+                    <span
+                      className={cn(
+                        "text-sm leading-5 font-semibold",
+                        data.author?.isMember,
+                      )}
+                    >
                       {data.author.nickname || data.author.username}
                     </span>
                   </Link>

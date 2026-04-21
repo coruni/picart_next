@@ -2,6 +2,7 @@
 
 import {
   decorationControllerFindAll,
+  decorationControllerFindOne,
   decorationControllerUnuseDecoration,
   decorationControllerUseDecoration,
 } from "@/api";
@@ -10,6 +11,7 @@ import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { cn, formatExpiryTime } from "@/lib";
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { useModalStore } from "@/stores/useModalStore";
+import { useUserStore } from "@/stores/useUserStore";
 import { DecorationControllerFindAllResponse } from "@/types";
 import { CheckCircle2Icon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -21,9 +23,27 @@ import { Dialog, DialogContent, DialogHeader } from "../ui/Dialog";
 
 type CommentBubble = DecorationControllerFindAllResponse["data"]["data"][0];
 
+// Type for non-owned decoration details from API
+type DecorationDetail = {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+  bubbleColor: string;
+  type: string;
+  isPermanent?: boolean;
+  expiresAt?: string;
+};
+
+// Union type for selected item
+type SelectedBubble =
+  | ({ isOwned: true } & CommentBubble)
+  | ({ isOwned: false; isUsing: false } & DecorationDetail);
+
 export function UserCommentBubbleDialog() {
   const t = useTranslations("commentBubbleDialog");
   const locale = useLocale();
+  const user = useUserStore((state) => state.user);
   const commentBubbleDialogOpen = useModalStore((state) =>
     state.isOpen(MODAL_IDS.COMMENT_BUBBLE),
   );
@@ -40,10 +60,11 @@ export function UserCommentBubbleDialog() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  const [selectedBubble, setSelectedBubble] = useState<CommentBubble | null>(
+  const [selectedBubble, setSelectedBubble] = useState<SelectedBubble | null>(
     null,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dialogLoading, setDialogLoading] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement>(null);
@@ -83,22 +104,62 @@ export function UserCommentBubbleDialog() {
     }
   }, [isLoading, hasMore, page, commentBubbles.length]);
 
-  // 处理初始选中项
-  useEffect(() => {
-    if (!initialBubbleId || commentBubbles.length === 0) return;
-
-    const targetBubble = commentBubbles.find((b) => b.id === initialBubbleId);
-    if (targetBubble && !selectedBubble) {
-      setSelectedBubble(targetBubble);
+  // 获取非拥有的装饰品详情
+  const fetchDecorationDetail = async (decorationId: number) => {
+    try {
+      const response = await decorationControllerFindOne({
+        path: { id: String(decorationId) },
+      });
+      const decoration = response?.data?.data;
+      if (decoration) {
+        setSelectedBubble({
+          ...(decoration as DecorationDetail),
+          isOwned: false,
+          isUsing: false,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch decoration detail:", error);
     }
-  }, [commentBubbles, initialBubbleId, selectedBubble]);
+  };
+
+  // 处理初始选中项 - 在列表加载完成后检查
+  useEffect(() => {
+    if (!commentBubbleDialogOpen || !initialBubbleId) return;
+
+    // 在已拥有的列表中查找
+    const targetBubble = commentBubbles.find((b) => b.id === initialBubbleId);
+    if (targetBubble) {
+      setSelectedBubble({ ...targetBubble, isOwned: true });
+    } else if (commentBubbles.length > 0 || !dialogLoading) {
+      // 如果列表已加载但未找到，通过API获取
+      fetchDecorationDetail(initialBubbleId);
+    }
+  }, [commentBubbleDialogOpen, initialBubbleId, commentBubbles, dialogLoading]);
 
   useEffect(() => {
     if (commentBubbleDialogOpen && commentBubbles.length === 0) {
-      loadCommentBubbles();
+      setDialogLoading(true);
+      loadCommentBubbles().then(() => {
+        setDialogLoading(false);
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [commentBubbleDialogOpen]);
+
+  // 处理初始选中项 - 在列表加载完成后检查
+  useEffect(() => {
+    if (!commentBubbleDialogOpen || !initialBubbleId) return;
+
+    // 在已拥有的列表中查找
+    const targetBubble = commentBubbles.find((b) => b.id === initialBubbleId);
+    if (targetBubble) {
+      setSelectedBubble({ ...targetBubble, isOwned: true });
+    } else if (commentBubbles.length > 0 || !dialogLoading) {
+      // 如果列表已加载但未找到，通过API获取
+      fetchDecorationDetail(initialBubbleId);
+    }
+  }, [commentBubbleDialogOpen, initialBubbleId, commentBubbles, dialogLoading]);
 
   useEffect(() => {
     if (!commentBubbleDialogOpen) {
@@ -122,7 +183,7 @@ export function UserCommentBubbleDialog() {
   });
 
   const handleUseDecoration = async () => {
-    if (!selectedBubble || isSubmitting) return;
+    if (!selectedBubble || isSubmitting || !selectedBubble.isOwned) return;
 
     setIsSubmitting(true);
     try {
@@ -157,9 +218,13 @@ export function UserCommentBubbleDialog() {
         );
       }
 
-      setSelectedBubble((prev) =>
-        prev ? { ...prev, isUsing: !prev.isUsing } : null,
-      );
+      setSelectedBubble((prev) => {
+        if (!prev) return null;
+        if (prev.isOwned) {
+          return { ...prev, isUsing: !prev.isUsing };
+        }
+        return prev;
+      });
     } catch (error) {
       console.error("Failed to use/unuse decoration:", error);
     } finally {
@@ -167,29 +232,98 @@ export function UserCommentBubbleDialog() {
     }
   };
 
+  // Helper functions to safely access bubble properties
+  const getBubbleId = (bubble: SelectedBubble | CommentBubble) => {
+    if ("isOwned" in bubble && !bubble.isOwned) {
+      return (bubble as DecorationDetail).id;
+    }
+    return (bubble as CommentBubble).id;
+  };
+
+  const getBubbleName = (bubble: SelectedBubble | null) => {
+    if (!bubble) return "";
+    if ("isOwned" in bubble && !bubble.isOwned) {
+      return (bubble as DecorationDetail).name;
+    }
+    return (bubble as CommentBubble).name;
+  };
+
+  const getBubbleColor = (bubble: SelectedBubble | null) => {
+    if (!bubble) return "";
+    if ("isOwned" in bubble && !bubble.isOwned) {
+      return (bubble as DecorationDetail).bubbleColor;
+    }
+    return (bubble as CommentBubble).bubbleColor;
+  };
+
+  const getBubbleImageUrl = (bubble: SelectedBubble | null) => {
+    if (!bubble) return "";
+    if ("isOwned" in bubble && !bubble.isOwned) {
+      return (bubble as DecorationDetail).imageUrl;
+    }
+    return (bubble as CommentBubble).imageUrl;
+  };
+
+  const getBubbleIsUsing = (bubble: SelectedBubble | null) => {
+    if (!bubble) return false;
+    if ("isOwned" in bubble && !bubble.isOwned) {
+      return false;
+    }
+    return (bubble as CommentBubble).isUsing;
+  };
+
+  const isBubbleOwned = (bubble: SelectedBubble | null) => {
+    if (!bubble) return false;
+    return !("isOwned" in bubble) || bubble.isOwned;
+  };
+
+  const canBubbleEquip = (bubble: SelectedBubble | null) => {
+    if (!bubble) return false;
+    if ("isOwned" in bubble && !bubble.isOwned) {
+      return false;
+    }
+    const b = bubble as CommentBubble;
+    return b.isOwned || b.canDirectEquip;
+  };
+
+  const getBubbleExpiryInfo = (
+    bubble: SelectedBubble | null,
+  ): { isPermanent?: boolean; userExpiresAt?: string } | null => {
+    if (!bubble) return null;
+    if ("isOwned" in bubble && !bubble.isOwned) {
+      const d = bubble as DecorationDetail;
+      return { isPermanent: d.isPermanent, userExpiresAt: d.expiresAt };
+    }
+    const b = bubble as CommentBubble;
+    return { isPermanent: b.userIsPermanent, userExpiresAt: b.userExpiresAt };
+  };
+
   return (
     <Dialog open={commentBubbleDialogOpen} onOpenChange={handleDialogClose}>
-      <DialogContent className="max-w-2xl rounded-2xl p-0">
+      <DialogContent className="max-w-2xl rounded-2xl p-0 sm:max-w-2xl max-w-full sm:h-auto h-[90vh]">
         <DialogHeader className="mb-0 border-b border-border px-6 py-4 text-sm font-semibold">
           {t("title")}
         </DialogHeader>
 
-        <div className="flex h-125">
+        <div className="flex sm:flex-row flex-col sm:h-125 h-[calc(90vh-64px)]">
           <div ref={scrollContainerRef} className="flex-1 overflow-auto px-4">
-            {commentBubbles.length === 0 && !isLoading ? (
+            {commentBubbles.length === 0 && !isLoading && !dialogLoading ? (
               <div className="flex h-full items-center justify-center text-muted-foreground">
                 {t("empty")}
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-3 py-4">
+              <div className="grid grid-cols-1 sm:grid-cols-1 gap-3 py-4">
                 {commentBubbles.map((bubble) => (
                   <button
                     key={bubble.id}
-                    onClick={() => setSelectedBubble(bubble)}
+                    onClick={() =>
+                      setSelectedBubble({ ...bubble, isOwned: true })
+                    }
                     className={cn(
                       "relative h-27.5 w-full cursor-pointer rounded-xl transition-all ring-0 outline-0",
-                      "bg-border hover:bg-primary/15",
-                      selectedBubble?.id === bubble.id &&
+                      "hover:bg-primary/15",
+                      selectedBubble &&
+                        getBubbleId(selectedBubble) === bubble.id &&
                         "ring-2 ring-primary ring-offset-1",
                     )}
                   >
@@ -199,13 +333,13 @@ export function UserCommentBubbleDialog() {
                       </div>
                     )}
 
-                    <div className="flex items-center justify-center h-full p-4 ">
+                    <div className="flex flex-col items-center justify-center h-full p-4 gap-2">
                       <div className="pt-6 w-full relative">
                         <div
-                          className="h-11 w-full text-center leading-11 rounded-lg text-sm"
+                          className="h-11 w-full text-center leading-11 rounded-lg text-xs text-muted-foreground"
                           style={{ backgroundColor: bubble?.bubbleColor }}
                         >
-                          123123
+                          <span>Hello~</span>
                         </div>
                         {/* 定位图片 */}
                         {bubble.imageUrl && (
@@ -218,6 +352,9 @@ export function UserCommentBubbleDialog() {
                           </div>
                         )}
                       </div>
+                      <span className="text-xs font-medium text-muted-foreground truncate max-w-full">
+                        {bubble.name}
+                      </span>
                     </div>
                   </button>
                 ))}
@@ -237,35 +374,44 @@ export function UserCommentBubbleDialog() {
             />
           </div>
 
-          <div className="flex flex-1 flex-col items-center border-l border-border  bg-background">
+          <div className="flex flex-1 flex-col items-center border-l border-border bg-background sm:border-t-0 border-t sm:max-w-none max-w-full sm:h-auto h-auto">
             {selectedBubble ? (
               <>
                 <div className="p-4 w-full flex-1">
-                  <div className="bg-card rounded-md p-4 flex space-x-2 items-stretch">
-                    <Avatar url={""} className="size-10" />
+                  <div className="bg-card rounded-lg p-4 flex space-x-2 items-stretch">
+                    <Avatar url={user?.avatar || ""} className="size-10" />
                     <div className="h-full flex-1">
-                      <div className="text-xs">用户名</div>
+                      <div className="text-xs">
+                        {user?.nickname || user?.username || "用户名"}
+                      </div>
                       <div className="text-xs text-secondary mb-2">1F</div>
                       <div className="w-full relative p-3 pt-4">
                         <div
-                          className="h-11 w-full text-center leading-11 rounded-lg text-sm"
+                          className="h-11 w-full text-center leading-11 rounded-lg text-sm text-muted-foreground"
                           style={{
-                            backgroundColor: selectedBubble?.bubbleColor,
+                            backgroundColor: getBubbleColor(selectedBubble),
                           }}
                         >
-                          123123
+                          <span>Hello~</span>
                         </div>
-                        {selectedBubble.imageUrl && (
+                        {getBubbleImageUrl(selectedBubble) && (
                           <div className="w-32 h-8 absolute top-0 overflow-hidden right-0">
                             <Image
-                              src={selectedBubble.imageUrl}
-                              alt={selectedBubble.name}
+                              src={getBubbleImageUrl(selectedBubble)!}
+                              alt={getBubbleName(selectedBubble)}
                               fill
                             />
                           </div>
                         )}
                       </div>
                     </div>
+                  </div>
+
+                  {/* 装饰品名称 */}
+                  <div className="mt-4 text-center">
+                    <h3 className="text-sm text-secondary text-left">
+                      {getBubbleName(selectedBubble)}
+                    </h3>
                   </div>
                 </div>
 
@@ -275,34 +421,37 @@ export function UserCommentBubbleDialog() {
                       {t("duration")}
                     </p>
                     <span className="text-xs">
-                      {selectedBubble.isOwned
-                        ? selectedBubble.userIsPermanent
-                          ? t("permanent")
-                          : formatExpiryTime(
-                              selectedBubble.userExpiresAt,
+                      {isBubbleOwned(selectedBubble)
+                        ? (() => {
+                            const expiryInfo =
+                              getBubbleExpiryInfo(selectedBubble);
+                            if (expiryInfo?.isPermanent) {
+                              return t("permanent");
+                            }
+                            return formatExpiryTime(
+                              expiryInfo?.userExpiresAt,
                               t,
                               locale,
-                            )
-                        : selectedBubble.canDirectEquip
-                          ? t("canDirectEquip")
-                          : t("notOwned")}
+                            );
+                          })()
+                        : t("notOwned")}
                     </span>
                   </div>
 
-                  <Button
-                    className="min-w-18 rounded-full"
-                    onClick={handleUseDecoration}
-                    loading={isSubmitting}
-                    disabled={
-                      !selectedBubble.isOwned && !selectedBubble.canDirectEquip
-                    }
-                  >
-                    {selectedBubble.isUsing
-                      ? t("unequip")
-                      : selectedBubble.isOwned || selectedBubble.canDirectEquip
-                        ? t("equip")
-                        : t("get")}
-                  </Button>
+                  {isBubbleOwned(selectedBubble) && (
+                    <Button
+                      className="min-w-18 rounded-full"
+                      onClick={handleUseDecoration}
+                      loading={isSubmitting}
+                      disabled={!canBubbleEquip(selectedBubble)}
+                    >
+                      {getBubbleIsUsing(selectedBubble)
+                        ? t("unequip")
+                        : canBubbleEquip(selectedBubble)
+                          ? t("equip")
+                          : t("get")}
+                    </Button>
+                  )}
                 </div>
               </>
             ) : (

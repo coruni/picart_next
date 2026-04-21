@@ -3,12 +3,12 @@
 import { decorationControllerGetMyDecorations } from "@/api/sdk.gen";
 import type { DecorationControllerGetMyDecorationsResponse } from "@/api/types.gen";
 import { MODAL_IDS } from "@/lib/modal-helpers";
+import { cn } from "@/lib/utils";
 import { useModalStore } from "@/stores/useModalStore";
-import { cn, formatDate } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
+import { CheckCircle2Icon, ChevronRight, Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import { useEffect, useState } from "react";
-import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 type Decoration =
   DecorationControllerGetMyDecorationsResponse["data"]["data"][0];
@@ -19,14 +19,6 @@ export function CommentBubbleList() {
   const openModal = useModalStore((state) => state.openModal);
   const [decorations, setDecorations] = useState<Decoration[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const getRarityName = (rarity?: string) => {
-    if (rarity === "COMMON") return t("rarity.common");
-    if (rarity === "RARE") return t("rarity.rare");
-    if (rarity === "EPIC") return t("rarity.epic");
-    if (rarity === "LEGENDARY") return t("rarity.legendary");
-    return t("rarity.common");
-  };
 
   useEffect(() => {
     const fetchDecorations = async () => {
@@ -53,13 +45,17 @@ export function CommentBubbleList() {
   }, []);
 
   const handleItemClick = (decoration: Decoration) => {
-    openModal(MODAL_IDS.COMMENT_BUBBLE, { commentBubbleId: decoration.decorationId });
+    openModal(MODAL_IDS.COMMENT_BUBBLE, {
+      commentBubbleId: decoration.decorationId,
+    });
   };
 
   const handleBannerClick = () => {
     // 打开第一个装饰品的对话框，如果没有则打开空对话框
     if (decorations.length > 0) {
-      openModal(MODAL_IDS.COMMENT_BUBBLE, { commentBubbleId: decorations[0].decorationId });
+      openModal(MODAL_IDS.COMMENT_BUBBLE, {
+        commentBubbleId: decorations[0].decorationId,
+      });
     } else {
       openModal(MODAL_IDS.COMMENT_BUBBLE, {});
     }
@@ -107,81 +103,66 @@ export function CommentBubbleList() {
         className="flex-1 overflow-y-scroll"
         style={{ scrollbarWidth: "none" }}
       >
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {decorations.map((decoration) => (
-            <div
+            <button
               key={decoration.id}
               onClick={() => handleItemClick(decoration)}
               className={cn(
-                "relative rounded-xl p-4 cursor-pointer transition-all",
-                decoration.isUsing
-                  ? "bg-primary/10"
-                  : "bg-muted hover:bg-muted/80",
+                "relative w-full cursor-pointer rounded-xl transition-all ring-0 outline-0 overflow-hidden",
               )}
             >
-              {decoration.isUsing && (
-                <div className="absolute top-3 left-3 size-6 bg-primary rounded-full flex items-center justify-center">
-                  <svg
-                    className="size-4 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={3}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
+              <div className="flex items-stretch gap-2">
+                {/* 左侧预览图 */}
+                <div className="w-41.5 shrink-0 rounded-xl overflow-hidden border border-border p-3 relative">
+                  {decoration.decoration?.imageUrl && (
+                    <div className="pt-6 w-full relative">
+                      <div
+                        className="h-11 w-full text-center leading-11 rounded-lg text-sm text-muted-foreground"
+                        style={{
+                          backgroundColor:
+                            decoration?.decoration?.bubbleColor || "",
+                        }}
+                      >
+                        Hello~
+                      </div>
+                      {/* 定位图片 */}
+                      {decoration.decoration?.imageUrl && (
+                        <div className="w-full h-9 absolute top-0 overflow-hidden right-0">
+                          <Image
+                            src={decoration.decoration?.imageUrl}
+                            alt={decoration.decoration?.name}
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {decoration.isUsing && (
+                    <div className="absolute top-2 right-2">
+                      <CheckCircle2Icon size={16} className="text-primary" />
+                    </div>
+                  )}
                 </div>
-              )}
 
-              <div className="flex items-start gap-4">
-                <div className="relative size-20 shrink-0">
-                  <ImageWithFallback
-                    fill
-                    src={decoration.decoration.imageUrl}
-                    alt={decoration.decoration.name}
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium text-base mb-1 truncate">
-                    {decoration.decoration.name}
-                  </div>
-                  <div className="text-xs text-secondary mb-2">
-                    {getRarityName(decoration.decoration.rarity)} {t("series")}
-                  </div>
-                  <div className="flex items-center gap-1 text-xs text-secondary">
-                    <svg
-                      className="size-3.5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    {decoration.isPermanent ? (
-                      <span>{t("permanent")}</span>
-                    ) : decoration.expiresAt ? (
-                      <span>
-                        {formatDate(decoration.expiresAt, t("locale"))}{" "}
-                        {t("expireAt")}
-                      </span>
-                    ) : (
-                      <span>{t("permanent")}</span>
-                    )}
+                {/* 中间信息 */}
+                <div className="flex-1 flex flex-col items-start gap-1 min-w-0 ">
+                  <span className="text-sm font-medium text-foreground truncate max-w-full">
+                    {decoration.decoration?.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground truncate max-w-full flex-1">
+                    {decoration.decoration?.description}
+                  </span>
+                  <div className="flex  items-center gap-1 mt-auto text-secondary">
+                    <Clock size={12} />
+                    <span className="text-xs">
+                      {decoration.isPermanent ? t("permanent") : t("limited")}
+                    </span>
                   </div>
                 </div>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       </div>

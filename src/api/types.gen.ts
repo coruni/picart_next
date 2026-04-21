@@ -11,6 +11,7 @@ export type Decoration = {
         type: string;
         imageUrl: string;
         rarity: string;
+        bubbleColor: string;
     };
     AVATAR_FRAME: {
         id: number;
@@ -18,6 +19,7 @@ export type Decoration = {
         type: string;
         imageUrl: string;
         rarity: string;
+        bubbleColor: string;
     };
     ACHIEVEMENT_BADGE: {
         id: number;
@@ -25,6 +27,7 @@ export type Decoration = {
         type: string;
         imageUrl: string;
         rarity: string;
+        bubbleColor: string;
     };
 };
 

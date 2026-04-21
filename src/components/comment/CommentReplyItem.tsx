@@ -168,7 +168,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   return (
     <section
       key={reply.id}
-      className={cn(onOpenModal && "cursor-pointer")}
+      className={cn("relative z-0",onOpenModal && "cursor-pointer")}
       onClick={handleItemClick}
     >
       <div>

@@ -50529,6 +50529,9 @@
               },
               "rarity": {
                 "type": "string"
+              },
+              "bubbleColor": {
+                "type": "string"
               }
             },
             "required": [
@@ -50536,7 +50539,8 @@
               "name",
               "type",
               "imageUrl",
-              "rarity"
+              "rarity",
+              "bubbleColor"
             ]
           },
           "AVATAR_FRAME": {
@@ -50556,6 +50560,9 @@
               },
               "rarity": {
                 "type": "string"
+              },
+              "bubbleColor": {
+                "type": "string"
               }
             },
             "required": [
@@ -50563,7 +50570,8 @@
               "name",
               "type",
               "imageUrl",
-              "rarity"
+              "rarity",
+              "bubbleColor"
             ]
           },
           "ACHIEVEMENT_BADGE": {
@@ -50583,6 +50591,9 @@
               },
               "rarity": {
                 "type": "string"
+              },
+              "bubbleColor": {
+                "type": "string"
               }
             },
             "required": [
@@ -50590,7 +50601,8 @@
               "name",
               "type",
               "imageUrl",
-              "rarity"
+              "rarity",
+              "bubbleColor"
             ]
           }
         },

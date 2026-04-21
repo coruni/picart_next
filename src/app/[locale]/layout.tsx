@@ -4,6 +4,9 @@ import { ContentAutoTranslateProvider } from "@/components/providers/ContentAuto
 import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
 import { ThemeSyncProvider } from "@/components/providers/ThemeSyncProvider";
 import { UserStateProvider } from "@/components/providers/UserStateProvider";
+import { UserAchievementDialog } from "@/components/layout/UserAchievementDialog";
+import { UserAvatarFarmeDialog } from "@/components/layout/UserAvatarFarmeDialog";
+import { UserCommentBubbleDialog } from "@/components/layout/UserCommentBubbleDialog";
 import { routing } from "@/i18n/routing";
 import {
   buildAuthHeaders,
@@ -85,6 +88,9 @@ export default async function LocaleLayout({
         >
           <AuthRouteGuard />
           <AppChrome categories={categories}>{children}</AppChrome>
+          <UserAvatarFarmeDialog />
+          <UserCommentBubbleDialog />
+          <UserAchievementDialog />
         </UserStateProvider>
         <ToastContainer />
       </NextIntlClientProvider>

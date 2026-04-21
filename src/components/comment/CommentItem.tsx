@@ -19,11 +19,11 @@ import {
   cn,
   formatCompactNumber,
   formatRelativeTime,
+  getErrorMessage,
   prepareCommentHtmlForDisplay,
   showToast,
-  getErrorMessage,
 } from "@/lib";
-import { openLoginDialog } from "@/lib/modal-helpers";
+import { MODAL_IDS, openLoginDialog, openModal } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
 import { type ImageInfo } from "@/types/image";
@@ -402,8 +402,21 @@ export const CommentItem = memo(function CommentItem({
             >
               {commentState.author.nickname || commentState.author.username}
             </span>
+
             {commentState.author?.equippedDecorations?.ACHIEVEMENT_BADGE && (
-              <span className="relative size-4">
+              <span
+                className="relative size-4 cursor-pointer"
+                data-guarded-link-ignore="true"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  openModal(MODAL_IDS.ACHIEVEMENT_BADGE, {
+                    achievementId:
+                      commentState.author?.equippedDecorations
+                        ?.ACHIEVEMENT_BADGE?.id,
+                  });
+                }}
+              >
                 <ImageWithFallback
                   src={
                     commentState.author.equippedDecorations.ACHIEVEMENT_BADGE
@@ -484,14 +497,62 @@ export const CommentItem = memo(function CommentItem({
       {/* Comment Content element */}
       <div className="py-2">
         <div className={cn("pl-17 pr-4", !compact && "md:pl-19 md:pr-6")}>
-          <div
-            key={renderKey}
-            className="whitespace-pre-wrap text-sm"
-            {...(shouldAutoTranslate
-              ? { "data-auto-translate-comment": true }
-              : {})}
-            dangerouslySetInnerHTML={{ __html: displayHtml }}
-          />
+          {commentState.author?.equippedDecorations?.COMMENT_BUBBLE ? (
+            <div className="relative mt-5 inline-block max-w-full">
+              {commentState.author.equippedDecorations.COMMENT_BUBBLE
+                .imageUrl && (
+                <div className="absolute -top-5 right-0 w-40 h-10 overflow-hidden cursor-pointer">
+                  <ImageWithFallback
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      openModal(MODAL_IDS.COMMENT_BUBBLE, {
+                        commentBubbleId:
+                          commentState.author?.equippedDecorations
+                            ?.COMMENT_BUBBLE?.id,
+                      });
+                    }}
+                    src={
+                      commentState.author.equippedDecorations.COMMENT_BUBBLE
+                        .imageUrl
+                    }
+                    alt={
+                      commentState.author.equippedDecorations.COMMENT_BUBBLE
+                        .name
+                    }
+                    fill
+                    className="object-contain object-right"
+                  />
+                </div>
+              )}
+              <div
+                className="min-w-40 p-4 pt-6 rounded-lg text-sm wrap-break-word"
+                style={{
+                  backgroundColor:
+                    commentState.author?.equippedDecorations?.COMMENT_BUBBLE
+                      ?.bubbleColor || "",
+                }}
+              >
+                <div
+                  key={renderKey}
+                  className="whitespace-pre-wrap text-sm wrap-break-word"
+                  {...(shouldAutoTranslate
+                    ? { "data-auto-translate-comment": true }
+                    : {})}
+                  dangerouslySetInnerHTML={{ __html: displayHtml }}
+                />
+              </div>
+            </div>
+          ) : (
+            <div
+              key={renderKey}
+              className="whitespace-pre-wrap text-sm"
+              {...(shouldAutoTranslate
+                ? { "data-auto-translate-comment": true }
+                : {})}
+              dangerouslySetInnerHTML={{ __html: displayHtml }}
+            />
+          )}
         </div>
         <CommentImageGallery
           images={commentState.images || []}

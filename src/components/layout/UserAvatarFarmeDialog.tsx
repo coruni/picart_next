@@ -2,6 +2,7 @@
 
 import {
   decorationControllerFindAll,
+  decorationControllerFindOne,
   decorationControllerUnuseDecoration,
   decorationControllerUseDecoration,
 } from "@/api";
@@ -20,6 +21,22 @@ import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogHeader } from "../ui/Dialog";
 
 type AvatarFrame = DecorationControllerFindAllResponse["data"]["data"][0];
+
+// Type for non-owned decoration details from API
+type DecorationDetail = {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string;
+  type: string;
+  isPermanent?: boolean;
+  expiresAt?: string;
+};
+
+// Union type for selected item
+ type SelectedFrame =
+  | ({ isOwned: true } & AvatarFrame)
+  | ({ isOwned: false; isUsing: false } & DecorationDetail);
 
 export function UserAvatarFarmeDialog() {
   const t = useTranslations("avatarFrameDialog");
@@ -40,8 +57,9 @@ export function UserAvatarFarmeDialog() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
-  const [selectedFrame, setSelectedFrame] = useState<AvatarFrame | null>(null);
+  const [selectedFrame, setSelectedFrame] = useState<SelectedFrame | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dialogLoading, setDialogLoading] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement>(null);
@@ -81,22 +99,48 @@ export function UserAvatarFarmeDialog() {
     }
   }, [isLoading, hasMore, page, avatarFrames.length]);
 
-  // 处理初始选中项
-  useEffect(() => {
-    if (!initialFrameId || avatarFrames.length === 0) return;
-
-    const targetFrame = avatarFrames.find((f) => f.id === initialFrameId);
-    if (targetFrame && !selectedFrame) {
-      setSelectedFrame(targetFrame);
+  // 获取非拥有的装饰品详情
+  const fetchDecorationDetail = async (decorationId: number) => {
+    try {
+      const response = await decorationControllerFindOne({
+        path: { id: String(decorationId) },
+      });
+      const decoration = response?.data?.data;
+      if (decoration) {
+        setSelectedFrame({
+          ...decoration as DecorationDetail,
+          isOwned: false,
+          isUsing: false,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch decoration detail:", error);
     }
-  }, [avatarFrames, initialFrameId, selectedFrame]);
+  };
 
   useEffect(() => {
     if (avatarFrameDialogOpen && avatarFrames.length === 0) {
-      loadAvatarFrames();
+      setDialogLoading(true);
+      loadAvatarFrames().then(() => {
+        setDialogLoading(false);
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatarFrameDialogOpen]);
+
+  // 处理初始选中项 - 在列表加载完成后检查
+  useEffect(() => {
+    if (!avatarFrameDialogOpen || !initialFrameId) return;
+
+    // 在已拥有的列表中查找
+    const targetFrame = avatarFrames.find((f) => f.id === initialFrameId);
+    if (targetFrame) {
+      setSelectedFrame({ ...targetFrame, isOwned: true });
+    } else if (avatarFrames.length > 0 || !dialogLoading) {
+      // 如果列表已加载但未找到，通过API获取
+      fetchDecorationDetail(initialFrameId);
+    }
+  }, [avatarFrameDialogOpen, initialFrameId, avatarFrames, dialogLoading]);
 
   useEffect(() => {
     if (!avatarFrameDialogOpen) {
@@ -120,7 +164,7 @@ export function UserAvatarFarmeDialog() {
   });
 
   const handleUseDecoration = async () => {
-    if (!selectedFrame || isSubmitting) return;
+    if (!selectedFrame || isSubmitting || !selectedFrame.isOwned) return;
 
     setIsSubmitting(true);
     try {
@@ -155,14 +199,74 @@ export function UserAvatarFarmeDialog() {
         );
       }
 
-      setSelectedFrame((prev) =>
-        prev ? { ...prev, isUsing: !prev.isUsing } : null,
-      );
+      setSelectedFrame((prev) => {
+        if (!prev) return null;
+        if (prev.isOwned) {
+          return { ...prev, isUsing: !prev.isUsing };
+        }
+        return prev;
+      });
     } catch (error) {
       console.error("Failed to use/unuse decoration:", error);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Helper functions to safely access frame properties
+  const getFrameId = (frame: SelectedFrame | AvatarFrame) => {
+    if ('isOwned' in frame && !frame.isOwned) {
+      return (frame as DecorationDetail).id;
+    }
+    return (frame as AvatarFrame).id;
+  };
+
+  const getFrameName = (frame: SelectedFrame | null) => {
+    if (!frame) return "";
+    if ('isOwned' in frame && !frame.isOwned) {
+      return (frame as DecorationDetail).name;
+    }
+    return (frame as AvatarFrame).name;
+  };
+
+  const getFrameImageUrl = (frame: SelectedFrame | null) => {
+    if (!frame) return "";
+    if ('isOwned' in frame && !frame.isOwned) {
+      return (frame as DecorationDetail).imageUrl;
+    }
+    return (frame as AvatarFrame).imageUrl;
+  };
+
+  const getFrameIsUsing = (frame: SelectedFrame | null) => {
+    if (!frame) return false;
+    if ('isOwned' in frame && !frame.isOwned) {
+      return false;
+    }
+    return (frame as AvatarFrame).isUsing;
+  };
+
+  const isFrameOwned = (frame: SelectedFrame | null) => {
+    if (!frame) return false;
+    return !('isOwned' in frame) || frame.isOwned;
+  };
+
+  const canFrameEquip = (frame: SelectedFrame | null) => {
+    if (!frame) return false;
+    if ('isOwned' in frame && !frame.isOwned) {
+      return false;
+    }
+    const f = frame as AvatarFrame;
+    return f.isOwned || f.canDirectEquip;
+  };
+
+  const getFrameExpiryInfo = (frame: SelectedFrame | null): { isPermanent?: boolean; userExpiresAt?: string } | null => {
+    if (!frame) return null;
+    if ('isOwned' in frame && !frame.isOwned) {
+      const d = frame as DecorationDetail;
+      return { isPermanent: d.isPermanent, userExpiresAt: d.expiresAt };
+    }
+    const f = frame as AvatarFrame;
+    return { isPermanent: f.userIsPermanent, userExpiresAt: f.userExpiresAt };
   };
 
   return (
@@ -174,7 +278,7 @@ export function UserAvatarFarmeDialog() {
 
         <div className="flex h-125">
           <div ref={scrollContainerRef} className="flex-1 overflow-auto px-4">
-            {avatarFrames.length === 0 && !isLoading ? (
+            {avatarFrames.length === 0 && !isLoading && !dialogLoading ? (
               <div className="flex h-full items-center justify-center text-muted-foreground">
                 {t("empty")}
               </div>
@@ -183,11 +287,11 @@ export function UserAvatarFarmeDialog() {
                 {avatarFrames.map((frame) => (
                   <button
                     key={frame.id}
-                    onClick={() => setSelectedFrame(frame)}
+                    onClick={() => setSelectedFrame({ ...frame, isOwned: true })}
                     className={cn(
                       "relative aspect-square cursor-pointer rounded-xl transition-all ring-0 outline-0",
                       "bg-border hover:bg-primary/15",
-                      selectedFrame?.id === frame.id &&
+                      selectedFrame && getFrameId(selectedFrame) === frame.id &&
                         "ring-2 ring-primary ring-offset-1",
                     )}
                   >
@@ -229,11 +333,11 @@ export function UserAvatarFarmeDialog() {
               <>
                 <Avatar
                   className="size-20"
-                  frameUrl={selectedFrame.imageUrl!}
+                  frameUrl={getFrameImageUrl(selectedFrame)!}
                 ></Avatar>
 
                 <p className="mt-4 text-center font-medium">
-                  {selectedFrame.name}
+                  {getFrameName(selectedFrame)}
                 </p>
 
                 <div className="mt-auto flex w-full items-center justify-between">
@@ -242,34 +346,36 @@ export function UserAvatarFarmeDialog() {
                       {t("duration")}
                     </p>
                     <span className="text-xs">
-                      {selectedFrame.isOwned
-                        ? selectedFrame.userIsPermanent
-                          ? t("permanent")
-                          : formatExpiryTime(
-                              selectedFrame.userExpiresAt,
+                      {isFrameOwned(selectedFrame)
+                        ? (() => {
+                            const expiryInfo = getFrameExpiryInfo(selectedFrame);
+                            if (expiryInfo?.isPermanent) {
+                              return t("permanent");
+                            }
+                            return formatExpiryTime(
+                              expiryInfo?.userExpiresAt,
                               t,
                               locale,
-                            )
-                        : selectedFrame.canDirectEquip
-                          ? t("canDirectEquip")
-                          : t("notOwned")}
+                            );
+                          })()
+                        : t("notOwned")}
                     </span>
                   </div>
 
-                  <Button
-                    className="min-w-18 rounded-full"
-                    onClick={handleUseDecoration}
-                    loading={isSubmitting}
-                    disabled={
-                      !selectedFrame.isOwned && !selectedFrame.canDirectEquip
-                    }
-                  >
-                    {selectedFrame.isUsing
-                      ? t("unequip")
-                      : selectedFrame.isOwned || selectedFrame.canDirectEquip
-                        ? t("equip")
-                        : t("get")}
-                  </Button>
+                  {isFrameOwned(selectedFrame) && (
+                    <Button
+                      className="min-w-18 rounded-full"
+                      onClick={handleUseDecoration}
+                      loading={isSubmitting}
+                      disabled={!canFrameEquip(selectedFrame)}
+                    >
+                      {getFrameIsUsing(selectedFrame)
+                        ? t("unequip")
+                        : canFrameEquip(selectedFrame)
+                          ? t("equip")
+                          : t("get")}
+                    </Button>
+                  )}
                 </div>
               </>
             ) : (

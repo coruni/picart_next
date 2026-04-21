@@ -14,6 +14,13 @@ export const MODAL_IDS = {
 } as const;
 
 /**
+ * 通用打开对话框函数
+ */
+export function openModal(id: string, data?: Record<string, unknown>) {
+  useModalStore.getState().openModal(id, data as Record<string, unknown>);
+}
+
+/**
  * 打开登录对话框
  */
 export function openLoginDialog() {
