@@ -6,9 +6,9 @@ import { CheckCircle2Icon, ChevronRight, Clock } from "lucide-react";
 import { decorationControllerGetMyDecorations } from "@/api/sdk.gen";
 import type { DecorationControllerGetMyDecorationsResponse } from "@/api/types.gen";
 import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
 import { useModalStore } from "@/stores/useModalStore";
 import { MODAL_IDS } from "@/lib/modal-helpers";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 type DecorationType = "AVATAR_FRAME" | "EMOJI" | "COMMENT_BUBBLE";
 
@@ -118,7 +118,7 @@ export function DecorationList({ type, showBanner = false }: DecorationListProps
                 key={decoration.id}
               >
                 <div className="flex items-center justify-center aspect-square rounded-xl bg-background relative shrink-0 relative">
-                  <Image
+                  <ImageWithFallback
                     fill
                     src={decoration.decoration.imageUrl}
                     alt={decoration.decoration.name}
@@ -182,7 +182,7 @@ export function DecorationList({ type, showBanner = false }: DecorationListProps
 
             <div className="flex items-start gap-4">
               <div className="relative size-20 shrink-0">
-                <Image
+                <ImageWithFallback
                   fill
                   src={decoration.decoration.imageUrl}
                   alt={decoration.decoration.name}

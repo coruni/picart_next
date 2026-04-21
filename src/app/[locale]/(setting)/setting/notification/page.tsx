@@ -7,6 +7,7 @@ import {
   userControllerUpdateNotificationSettings,
 } from "@/api";
 import { Switch } from "@/components/ui/Switch";
+import { showToast, getErrorMessage } from "@/lib";
 import { useUserStore } from "@/stores";
 import { useTranslations } from "next-intl";
 
@@ -140,6 +141,7 @@ export default function SettingNotificationPage() {
       });
     } catch (error) {
       console.error(`Failed to update notification config for ${key}:`, error);
+      showToast(getErrorMessage(error, "设置保存失败"));
       setConfig((prev) => ({
         ...prev,
         [key]: previousValue,

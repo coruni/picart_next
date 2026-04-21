@@ -77,6 +77,7 @@ export function MessageDropdown({
   const [dropdownTab, setDropdownTab] = useState<MessageTab>("all");
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
   const token = useUserStore((state) => state.token);
+  const userId = useUserStore((state) => state.user?.id);
   const unreadCount = useMessageNotificationStore((state) => state.unreadCount);
   const unreadSummary = useMessageNotificationStore(
     (state) => state.unreadSummary,
@@ -155,7 +156,10 @@ export function MessageDropdown({
       return;
     }
 
-    initializeSocket(token);
+    if (userId != null) {
+      initializeSocket(token);
+    }
+
     void fetchUnreadCount();
   }, [
     fetchUnreadCount,
@@ -163,6 +167,7 @@ export function MessageDropdown({
     isAuthenticated,
     resetNotifications,
     token,
+    userId,
   ]);
 
   useEffect(() => {
@@ -481,9 +486,9 @@ export function MessageDropdown({
         )}
       </div>
 
-      <Dialog open={isMobile && mobileOpen} onOpenChange={setMobileOpen}>
+      <Dialog open={isMobile && mobileOpen} onOpenChange={setMobileOpen} >
         <DialogContent
-          className="top-auto bottom-0 left-0 right-0 max-w-none translate-x-0 translate-y-0 overflow-hidden rounded-b-none rounded-t-2xl border-x-0 border-b-0 p-0 md:hidden"
+          className="top-auto bottom-0 left-0 right-0 max-w-none translate-x-0 translate-y-0 overflow-hidden rounded-b-none rounded-t-2xl border-x-0 border-b-0 p-0 md:hidden duration-0!"
           style={
             {
               height: `${mobileSheetHeight}vh`,

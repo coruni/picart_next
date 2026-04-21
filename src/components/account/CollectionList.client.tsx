@@ -237,7 +237,7 @@ export function CollectionListClient({
         {isSelf ? (
           <Button
             size="sm"
-            className=" rounded-full px-4"
+            className="rounded-full px-4 truncate"
             onClick={handleOpenCreateDialog}
           >
             <Plus className="size-4" />

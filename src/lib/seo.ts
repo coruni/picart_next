@@ -214,7 +214,7 @@ export async function generateSiteMetadata(locale: string = "zh"): Promise<Metad
       shortcut: config.site_favicon || "/favicon.ico",
       apple: config.site_logo || "/apple-touch-icon.png",
     },
-    manifest: "/site.webmanifest",
+    manifest: "/manifest.webmanifest",
     other: {
       "contact:email": config.site_mail || "",
     },

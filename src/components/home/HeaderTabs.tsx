@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import { CategoryList } from "@/types";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { useEffect } from "react";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 interface TabItem {
   label: string;
@@ -125,12 +125,11 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
                           >
                             <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full ring-1 ring-black/5">
                               {channel.avatar ? (
-                                <Image
+                                <ImageWithFallback
                                   src={channel.avatar}
                                   alt={channel.name}
                                   width={32}
                                   height={32}
-                                  quality={95}
                                   loading="eager"
                                   sizes="(max-width: 768px) 32px, 40px"
                                   className="h-full w-full rounded-full object-cover"

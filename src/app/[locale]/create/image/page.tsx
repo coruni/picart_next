@@ -5,6 +5,7 @@ import {
   articleControllerFindOne,
   articleControllerUpdate,
   categoryControllerFindAll,
+  uploadControllerGetUploadConfig,
   uploadControllerUploadFile,
 } from "@/api";
 import { Button } from "@/components/ui/Button";
@@ -16,7 +17,7 @@ import { TagSelect } from "@/components/ui/TagSelect";
 import { useForm } from "@/hooks/useForm";
 import { useImageCompression } from "@/hooks/useImageCompression";
 import { useRouter } from "@/i18n/routing";
-import { cn } from "@/lib";
+import { cn, showToast, getErrorMessage } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { getImageUrls, type ImageInfo } from "@/types/image";
 import { Loader2, Plus, Trash2 } from "lucide-react";
@@ -24,6 +25,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 
 type CreateImageFormData = {
   title: string;
@@ -141,9 +143,10 @@ export default function CreateImagePage() {
   const tTag = useTranslations("tagSelect");
   const { compressImages } = useImageCompression();
 
-  const [articleLoading, setArticleLoading] = useState(isEditMode);
+  const [articleLoading, setArticleLoading] = useState(false);
   const [imagesUploading, setImagesUploading] = useState(false);
   const [imageItems, setImageItems] = useState<UploadImageItem[]>([]);
+  const [maxImages, setMaxImages] = useState<number>(9);
   const [isImageDropping, setIsImageDropping] = useState(false);
   const [draggingImageIndex, setDraggingImageIndex] = useState<number | null>(
     null,
@@ -173,7 +176,7 @@ export default function CreateImagePage() {
   const parentSearchAbortControllerRef = useRef<AbortController | null>(null);
   const childSearchAbortControllerRef = useRef<AbortController | null>(null);
   const imageItemsRef = useRef<UploadImageItem[]>([]);
-  const articleFetchedRef = useRef(false);
+  const hasFetchedArticleRef = useRef(false);
 
   const {
     values,
@@ -232,23 +235,39 @@ export default function CreateImagePage() {
       } as unknown as Parameters<typeof articleControllerCreate>[0]["body"];
 
       let response;
-      if (isEditMode && articleId) {
-        response = await articleControllerUpdate({
-          path: { id: articleId },
-          body: body as Parameters<typeof articleControllerUpdate>[0]["body"],
-        });
-      } else {
-        response = await articleControllerCreate({ body });
+      let newArticleId: string | undefined;
+
+      try {
+        if (isEditMode && articleId) {
+          response = await articleControllerUpdate({
+            path: { id: articleId },
+            body: body as Parameters<typeof articleControllerUpdate>[0]["body"],
+          });
+          newArticleId = String(response.data?.data?.data?.id ?? articleId);
+        } else {
+          response = await articleControllerCreate({ body });
+          newArticleId = (response as any)?.data?.data?.id;
+        }
+      } catch (error) {
+        console.error("Failed to submit article:", error);
+        showToast(getErrorMessage(error, "提交失败"));
+        throw error;
       }
 
       // 跳转到详情页或首页
-      const newArticleId = (response as any)?.data?.data?.id;
-      if (newArticleId) {
-        router.push(`/article/${newArticleId}`);
-      } else if (articleId) {
-        router.push(`/article/${articleId}`);
-      } else {
-        router.push("/");
+      try {
+        if (newArticleId) {
+          await router.push(`/article/${newArticleId}`);
+        } else {
+          await router.push("/");
+        }
+      } catch {
+        // 跳转失败时尝试返回上一页或首页
+        try {
+          router.back();
+        } catch {
+          window.location.href = "/";
+        }
       }
     },
   });
@@ -267,11 +286,13 @@ export default function CreateImagePage() {
   );
 
   useEffect(() => {
-    if (!isEditMode || !articleId || articleFetchedRef.current) return;
+    if (!isEditMode || !articleId) return;
+    if (hasFetchedArticleRef.current) return;
+    hasFetchedArticleRef.current = true;
 
     const fetchArticle = async () => {
+      setArticleLoading(true);
       try {
-        articleFetchedRef.current = true;
         const response = await articleControllerFindOne({
           path: { id: articleId },
         });
@@ -414,6 +435,28 @@ export default function CreateImagePage() {
     };
 
     fetchCategories();
+  }, []);
+
+  // Fetch upload config on mount
+  useEffect(() => {
+    const fetchUploadConfig = async () => {
+      try {
+        const response = await uploadControllerGetUploadConfig({});
+        if (response.data?.data) {
+          const maxFileCount = parseInt(
+            response.data.data.limits.maxFileCount,
+            10,
+          );
+          setMaxImages(maxFileCount);
+        }
+      } catch (error) {
+        console.error("Failed to fetch upload config:", error);
+        // 使用默认值 9
+        setMaxImages(9);
+      }
+    };
+
+    void fetchUploadConfig();
   }, []);
 
   useEffect(() => {
@@ -660,7 +703,7 @@ export default function CreateImagePage() {
             if (targetIndex === -1) return;
 
             const remoteUrl = uploadedUrls[index];
-            if (!remoteUrl) {
+            if (!remoteUrl || remoteUrl.includes("/images/blocked.webp")) {
               if (next[targetIndex].previewUrl) {
                 URL.revokeObjectURL(next[targetIndex].previewUrl as string);
               }
@@ -681,6 +724,7 @@ export default function CreateImagePage() {
         });
       } catch (error) {
         console.error("Failed to upload images:", error);
+        showToast(getErrorMessage(error, "图片上传失败"));
 
         setImageItems((current) => {
           const next = current.filter((item) => {
@@ -830,6 +874,9 @@ export default function CreateImagePage() {
                   <p className="mb-2 text-xs text-secondary">
                     {tImage("form.imagesHint")}
                   </p>
+                  <p className="mb-2 text-xs text-muted-foreground/60">
+                    {tImage("form.maxImages", { count: maxImages })}
+                  </p>
 
                   <div className="space-y-3">
                     <input
@@ -898,7 +945,7 @@ export default function CreateImagePage() {
                                 unoptimized
                               />
                             ) : item.remoteUrl ? (
-                              <Image
+                              <ImageWithFallback
                                 src={item.remoteUrl}
                                 alt={`${item.fileName} ${index + 1}`}
                                 fill

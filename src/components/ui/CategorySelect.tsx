@@ -6,8 +6,8 @@ import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { cn } from "@/lib/utils";
 import { ChevronDown, Loader2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 export type CategoryOption = {
   value: string;
@@ -263,13 +263,14 @@ export const CategorySelect = ({
         {selectedOption && !searchQuery ? (
           <span className="inline-flex h-7.5 max-w-full shrink items-center gap-2 overflow-hidden rounded-full bg-muted px-2 py-1">
             {selectedOption.avatar ? (
-              <Image
-                src={selectedOption.avatar}
-                alt={selectedOption.label}
-                width={20}
-                height={20}
-                className="aspect-square shrink-0 rounded-full object-cover"
-              />
+              <span className="relative block size-5 shrink-0">
+                <ImageWithFallback
+                  src={selectedOption.avatar}
+                  alt={selectedOption.label}
+                  fill
+                  className="rounded-full object-cover"
+                />
+              </span>
             ) : null}
             <span
               className={cn(
@@ -381,13 +382,14 @@ export const CategorySelect = ({
                 )}
               >
                 {option.avatar ? (
-                  <Image
-                    src={option.avatar}
-                    alt={option.label}
-                    width={30}
-                    height={30}
-                    className="aspect-square shrink-0 rounded-full object-cover"
-                  />
+                  <span className="relative block size-7.5 shrink-0">
+                    <ImageWithFallback
+                      src={option.avatar}
+                      alt={option.label}
+                      fill
+                      className="rounded-full object-cover"
+                    />
+                  </span>
                 ) : null}
                 <span className="truncate">{option.label}</span>
               </button>

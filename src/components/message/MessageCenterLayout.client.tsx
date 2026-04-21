@@ -93,6 +93,7 @@ export function MessageCenterLayoutClient({
   );
   const token = useUserStore((state) => state.token);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  const userId = useUserStore((state) => state.user?.id);
   const selectedTab = useMessageNotificationStore((state) => state.selectedTab);
   const messages = useMessageNotificationStore(
     (state) => state.centerMessagesByTab[selectedTab],
@@ -205,7 +206,10 @@ export function MessageCenterLayoutClient({
       return;
     }
 
-    initializeSocket(token);
+    if (userId != null) {
+      initializeSocket(token);
+    }
+
     void fetchUnreadCount();
     setSelectedTab(initialTab);
     void fetchMessages(initialTab);
@@ -218,6 +222,7 @@ export function MessageCenterLayoutClient({
     resetNotifications,
     setSelectedTab,
     token,
+    userId,
   ]);
 
   // 检查通知权限状态

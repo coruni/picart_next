@@ -2,11 +2,12 @@
 
 /* eslint-disable @next/next/no-img-element */
 
+import ImageBlock from "@/assets/images/placeholder/image_blocked.webp";
 import { cn } from "@/lib";
 import { ArticleDetail, ArticleList } from "@/types";
 import { ChevronLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ComponentType, useCallback, useEffect, useRef, useState } from "react";
+import { ComponentType, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactDOMServer from "react-dom/server";
 import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
@@ -57,6 +58,12 @@ export function ImageViewer({
   const containerRef = useRef<HTMLDivElement>(null);
   const viewerContainerRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  // 处理被屏蔽的图片，替换为占位图
+  const processedImages = useMemo(
+    () => images.map((src) => (src === "/images/blocked.webp" ? ImageBlock.src : src)),
+    [images],
+  );
 
   const viewerRef = useRef<Viewer | null>(null);
   const isShownRef = useRef(false);
@@ -251,7 +258,6 @@ export function ImageViewer({
     const container = viewerContainerRef.current;
     if (!container) return;
 
-    const offset = isMobileViewport() ? "0px" : "112px";
     const prevButton = container.querySelector(
       ".custom-prev-btn",
     ) as HTMLButtonElement | null;
@@ -259,9 +265,26 @@ export function ImageViewer({
       ".custom-next-btn",
     ) as HTMLButtonElement | null;
 
-    if (prevButton) prevButton.style.left = offset;
-    if (nextButton) nextButton.style.right = offset;
-  }, []);
+    if (isMobileViewport()) {
+      // 移动端：按钮在边缘
+      if (prevButton) prevButton.style.left = "0px";
+      if (nextButton) nextButton.style.right = "0px";
+      return;
+    }
+
+    // 桌面端：根据侧边栏状态调整偏移量
+    if (enableSidePanel && panelExpandedRef.current) {
+      // 侧边栏展开时：按钮移到侧边栏外侧
+      const expandedOffset = "534px"; // 486px(侧边栏宽度) + 48px(间距)
+      if (prevButton) prevButton.style.left = expandedOffset;
+      if (nextButton) nextButton.style.right = expandedOffset;
+    } else {
+      // 侧边栏收起或未启用时：默认位置
+      const defaultOffset = "112px";
+      if (prevButton) prevButton.style.left = defaultOffset;
+      if (nextButton) nextButton.style.right = defaultOffset;
+    }
+  }, [enableSidePanel]);
 
   // Track last active index to avoid updating all thumbnails
   const lastActiveIndexRef = useRef<number>(-1);
@@ -420,7 +443,7 @@ export function ImageViewer({
     setupViewerCustomUI({
       viewer: viewerRef.current,
       container: viewerContainerRef.current,
-      images,
+      images: processedImages,
       totalImages,
       alt,
       getCurrentIndex,
@@ -444,7 +467,7 @@ export function ImageViewer({
       },
     });
   }, [
-    images,
+    processedImages,
     totalImages,
     alt,
     getCurrentIndex,
@@ -657,7 +680,7 @@ export function ImageViewer({
     };
   }, [
     visible,
-    images,
+    processedImages,
     alt,
     openViewerInstance,
     setupCustomUI,
@@ -750,7 +773,7 @@ export function ImageViewer({
   return (
     <>
       <div ref={containerRef} className="hidden">
-        {images.map((src, index) => (
+        {processedImages.map((src, index) => (
           <img
             key={`${src}-${index}`}
             src={src}

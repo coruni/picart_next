@@ -1,40 +1,6 @@
 import { AnalyticsScripts } from "@/components/providers/AnalyticsScripts";
-import localFont from "next/font/local";
 import { Suspense } from "react";
 import "./globals.css";
-
-const miSans = localFont({
-  src: [
-    {
-      path: "./fonts/MiSans-Normal.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "./fonts/MiSans-Regular.woff2",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "./fonts/MiSans-Semibold.woff2",
-      weight: "600",
-      style: "normal",
-    },
-  ],
-  fallback: [
-    "PingFang SC",
-    "Hiragino Sans GB",
-    "Microsoft YaHei",
-    "HarmonyOS Sans SC",
-    "Noto Sans SC",
-    "Segoe UI",
-    "Helvetica Neue",
-    "Arial",
-  ],
-  variable: "--font-misans",
-  display: "swap",
-  preload: false,
-});
 
 export default function RootLayout({
   children,
@@ -42,7 +8,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html suppressHydrationWarning className={miSans.className}>
+    <html suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/misans-webfont/misans/misans-normal/result.min.css"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/misans-webfont/misans/misans-regular/result.min.css"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/misans-webfont/misans/misans-semibold/result.min.css"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className="antialiased">
         <Suspense>
           <AnalyticsScripts />

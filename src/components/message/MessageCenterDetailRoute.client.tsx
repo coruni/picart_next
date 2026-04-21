@@ -24,6 +24,7 @@ import { MessagePrivateDetailRoutePane } from "@/components/message/MessagePriva
 import { useIsMobile } from "@/hooks";
 import { useImageCompression } from "@/hooks/useImageCompression";
 import { useRouter } from "@/i18n/routing";
+import { showToast, getErrorMessage } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { messageSocketClient } from "@/lib/message-socket";
 import {
@@ -819,11 +820,17 @@ export function MessageCenterDetailRouteClient() {
             }
 
             const uploadedUrl = uploadedItems[draftIndex]?.url;
-            if (!uploadedUrl) {
+            if (!uploadedUrl || uploadedUrl.includes("/images/blocked.webp")) {
               URL.revokeObjectURL(item.previewUrl);
-              console.error(
-                "Failed to upload private image: Missing uploaded file url",
-              );
+              if (uploadedUrl?.includes("/images/blocked.webp")) {
+                console.error(
+                  "Failed to upload private image: Image was blocked",
+                );
+              } else {
+                console.error(
+                  "Failed to upload private image: Missing uploaded file url",
+                );
+              }
               return [];
             }
 
@@ -844,6 +851,7 @@ export function MessageCenterDetailRouteClient() {
           current.filter((item) => !drafts.some((draft) => draft.id === item.id)),
         );
         console.error("Failed to upload private images:", error);
+        showToast(getErrorMessage(error, "图片上传失败"));
       } finally {
         setIsUploadingImages(false);
       }
@@ -990,6 +998,7 @@ export function MessageCenterDetailRouteClient() {
       });
     } catch (error) {
       console.error("Failed to report private user:", error);
+      showToast(getErrorMessage(error, "举报失败"));
       throw error;
     } finally {
       setReportSubmitting(false);
@@ -1054,6 +1063,7 @@ export function MessageCenterDetailRouteClient() {
       handleBackToList();
     } catch (error) {
       console.error("Failed to block private user:", error);
+      showToast(getErrorMessage(error, "屏蔽失败"));
     } finally {
       setBlockSubmitting(false);
     }

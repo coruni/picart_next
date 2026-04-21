@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/Switch";
 import { TagSelect } from "@/components/ui/TagSelect";
 import { useForm } from "@/hooks/useForm";
 import { useRouter } from "@/i18n/routing";
-import { cn } from "@/lib";
+import { cn, getErrorMessage, showToast } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { Loader2, Trash2, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -58,7 +58,7 @@ type UploadVideoItem = {
 const toNumericTagIds = (value: string[]) =>
   value.map((item) => Number(item)).filter((item) => Number.isFinite(item));
 
-// 从视频中提取帧
+// Extract preview frames from the uploaded video.
 async function extractVideoFrames(
   videoFile: File,
   frameCount: number = 7,
@@ -75,23 +75,58 @@ async function extractVideoFrames(
 
     const frames: VideoFrame[] = [];
     let frameIndex = 0;
+    let isSeeking = false;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+    // 设置超时处理
+    const setLoadingTimeout = () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        cleanup();
+        reject(new Error("视频预览提取超时"));
+      }, 30000); // 30秒超时
+    };
+
+    const cleanup = () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      video.src = "";
+      video.load();
+    };
 
     video.preload = "metadata";
     video.muted = true;
     video.playsInline = true;
+    video.crossOrigin = "anonymous";
 
-    video.onloadedmetadata = () => {
-      // 计算提取时间点：跳过前10%防止首帧无内容，均匀分布
+    // 视频可以播放时触发
+    video.oncanplay = () => {
+      if (isSeeking) return;
+      isSeeking = true;
+
+      // 计算提取时间点：跳过前10%防止首帧黑屏内容，均匀分布
       const duration = video.duration;
+      if (!duration || duration === Infinity) {
+        cleanup();
+        reject(new Error("无法获取视频时长"));
+        return;
+      }
+
       const skipStart = duration * 0.1;
       const usableDuration = duration - skipStart;
       const interval = usableDuration / frameCount;
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      // 限制预览帧最大分辨率，提高性能
+      const maxPreviewWidth = 480;
+      const scale = Math.min(1, maxPreviewWidth / video.videoWidth);
+      canvas.width = video.videoWidth * scale;
+      canvas.height = video.videoHeight * scale;
 
       const captureFrame = (index: number) => {
         if (index >= frameCount) {
+          cleanup();
           resolve(frames);
           return;
         }
@@ -101,32 +136,55 @@ async function extractVideoFrames(
       };
 
       video.onseeked = () => {
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
+        setLoadingTimeout();
+        try {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
 
-        frames.push({
-          id: `frame-${frameIndex}-${Date.now()}`,
-          dataUrl,
-          time: video.currentTime,
-        });
+          frames.push({
+            id: `frame-${frameIndex}-${Date.now()}`,
+            dataUrl,
+            time: video.currentTime,
+          });
 
-        frameIndex++;
-        captureFrame(frameIndex);
+          frameIndex++;
+          captureFrame(frameIndex);
+        } catch {
+          cleanup();
+          reject(new Error("绘制视频帧失败"));
+        }
       };
 
       // 开始捕获第一帧
       captureFrame(0);
     };
 
-    video.onerror = () => {
-      reject(new Error("Failed to load video"));
+    video.onloadedmetadata = () => {
+      setLoadingTimeout();
+      // 某些浏览器需要显式调用 play/pause 来确保 canplay 触发
+      video
+        .play()
+        .then(() => {
+          video.pause();
+        })
+        .catch(() => {
+          // play 失败也没关系，继续等待 canplay
+        });
     };
 
-    video.src = URL.createObjectURL(videoFile);
+    video.onerror = () => {
+      cleanup();
+      reject(new Error("视频加载失败"));
+    };
+
+    // 设置视频源
+    const objectUrl = URL.createObjectURL(videoFile);
+    video.src = objectUrl;
+    video.load();
   });
 }
 
-// 将 dataURL 转换为 File
+// 灏?dataURL 杞崲涓?File
 function dataUrlToFile(dataUrl: string, filename: string): File {
   const arr = dataUrl.split(",");
   const mime = arr[0].match(/:(.*?);/)?.[1] || "image/jpeg";
@@ -141,200 +199,7 @@ function dataUrlToFile(dataUrl: string, filename: string): File {
   return new File([u8arr], filename, { type: mime });
 }
 
-// 压缩视频到 720p 30fps，支持时长截断
-async function compressVideo(
-  videoFile: File,
-  maxFileSize: number, // 最大文件大小（字节）
-  onProgress?: (progress: number, step: string) => void,
-): Promise<{ blob: Blob; duration: number; wasTrimmed: boolean }> {
-  return new Promise((resolve, reject) => {
-    const video = document.createElement("video");
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    if (!ctx) {
-      reject(new Error("Failed to get canvas context"));
-      return;
-    }
-
-    video.preload = "auto";
-    video.muted = true;
-    video.playsInline = true;
-
-    // 计算目标时长（初始为完整时长）
-    let targetDuration = 0;
-    const startTime = 0;
-    let wasTrimmed = false;
-
-    const attemptCompression = () => {
-      const chunks: Blob[] = [];
-      let mediaRecorder: MediaRecorder | null = null;
-      let recordingStarted = false;
-
-      // 计算目标尺寸（720p，保持宽高比）
-      const targetHeight = 720;
-      const aspectRatio = video.videoWidth / video.videoHeight;
-      const targetWidth = Math.round(targetHeight * aspectRatio);
-
-      canvas.width = targetWidth;
-      canvas.height = targetHeight;
-
-      // 设置帧率
-      const targetFrameRate = 30;
-
-      // 尝试使用不同的 MIME 类型
-      const mimeTypes = [
-        'video/webm;codecs="vp9"',
-        'video/webm;codecs="vp8"',
-        "video/webm",
-        "video/mp4",
-      ];
-
-      let selectedMimeType = "";
-      for (const mime of mimeTypes) {
-        if (MediaRecorder.isTypeSupported(mime)) {
-          selectedMimeType = mime;
-          break;
-        }
-      }
-
-      if (!selectedMimeType) {
-        reject(new Error("No supported video MIME type found"));
-        return;
-      }
-
-      // 计算码率（720p 30fps 建议 2.5-5 Mbps）
-      const bitsPerPixel = 0.08; // 降低一点以控制文件大小
-      const videoBitrate = Math.round(
-        targetWidth * targetHeight * targetFrameRate * bitsPerPixel,
-      );
-
-      const stream = canvas.captureStream(targetFrameRate);
-      mediaRecorder = new MediaRecorder(stream, {
-        mimeType: selectedMimeType,
-        videoBitsPerSecond: videoBitrate,
-      });
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          chunks.push(e.data);
-        }
-      };
-
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: selectedMimeType });
-        const actualDuration =
-          targetDuration > 0 ? targetDuration : video.duration;
-
-        // 检查文件大小
-        if (blob.size > maxFileSize && actualDuration > 5) {
-          // 文件太大，需要截断时长
-          // 根据当前大小估算需要的时长
-          const currentSize = blob.size;
-          const targetSize = maxFileSize * 0.9; // 留 10% 余量
-          const estimatedDuration = (targetSize / currentSize) * actualDuration;
-
-          // 限制最小 5 秒，避免无限循环
-          targetDuration = Math.max(5, Math.floor(estimatedDuration));
-          wasTrimmed = true;
-
-          // 重置并重新压缩
-          chunks.length = 0;
-          attemptCompression();
-        } else {
-          // 文件大小符合要求或已经无法再截断
-          resolve({ blob, duration: actualDuration, wasTrimmed });
-        }
-      };
-
-      mediaRecorder.onerror = (e) => {
-        reject(new Error(`MediaRecorder error: ${e}`));
-      };
-
-      // 开始录制
-      mediaRecorder.start(100);
-      recordingStarted = true;
-
-      // 设置开始和结束时间
-      const effectiveStartTime = startTime;
-      const effectiveEndTime =
-        targetDuration > 0 ? startTime + targetDuration : video.duration;
-
-      // 跳转到开始时间
-      video.currentTime = effectiveStartTime;
-
-      const drawFrame = () => {
-        if (!recordingStarted) return;
-
-        // 检查是否到达结束时间
-        if (video.currentTime >= effectiveEndTime || video.ended) {
-          if (mediaRecorder && mediaRecorder.state === "recording") {
-            mediaRecorder.stop();
-          }
-          video.pause();
-          return;
-        }
-
-        // 绘制视频帧（保持比例并居中）
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        const scale = Math.min(
-          canvas.width / video.videoWidth,
-          canvas.height / video.videoHeight,
-        );
-        const x = (canvas.width - video.videoWidth * scale) / 2;
-        const y = (canvas.height - video.videoHeight * scale) / 2;
-
-        ctx.drawImage(
-          video,
-          x,
-          y,
-          video.videoWidth * scale,
-          video.videoHeight * scale,
-        );
-
-        // 更新进度
-        if (onProgress && video.duration) {
-          const currentProgress =
-            (video.currentTime - effectiveStartTime) /
-            (effectiveEndTime - effectiveStartTime);
-          const progress = Math.min(currentProgress * 100, 99);
-          const step = wasTrimmed ? "trimming" : "compressing";
-          onProgress(Math.round(progress), step);
-        }
-
-        requestAnimationFrame(drawFrame);
-      };
-
-      video.onseeked = () => {
-        if (!recordingStarted) return;
-        video.play();
-      };
-
-      video.onplay = () => {
-        drawFrame();
-      };
-
-      video.onerror = () => {
-        reject(new Error("Failed to play video"));
-      };
-    };
-
-    video.onloadedmetadata = () => {
-      targetDuration = 0; // 初始使用完整时长
-      attemptCompression();
-    };
-
-    video.onerror = () => {
-      reject(new Error("Failed to load video for compression"));
-    };
-
-    video.src = URL.createObjectURL(videoFile);
-  });
-}
-
-// 上传封面帧
+// Upload cover image selected from extracted frames.
 async function uploadFrame(dataUrl: string): Promise<string> {
   const file = dataUrlToFile(dataUrl, `cover-${Date.now()}.jpg`);
   const metadata = await buildUploadMetadata([file]);
@@ -356,7 +221,7 @@ export default function CreateVideoPage() {
   const tVideo = useTranslations("createVideo");
   const tTag = useTranslations("tagSelect");
 
-  const [articleLoading, setArticleLoading] = useState(isEditMode);
+  const [articleLoading, setArticleLoading] = useState(false);
   const [videoUploading, setVideoUploading] = useState(false);
   const [videoProcessing, setVideoProcessing] = useState(false);
   const [processingStep, setProcessingStep] = useState<string>("");
@@ -390,7 +255,12 @@ export default function CreateVideoPage() {
   const lastChildQueryRef = useRef<string | null>(null);
   const parentSearchAbortControllerRef = useRef<AbortController | null>(null);
   const childSearchAbortControllerRef = useRef<AbortController | null>(null);
-  const uploadConfigRef = useRef<{ maxFileSize: number } | null>(null);
+  const uploadConfigRef = useRef<{
+    maxFileSize: number;
+    maxVideoFileSize: number;
+  } | null>(null);
+  const [maxVideoSize, setMaxVideoSize] = useState<string>("100MB");
+  const hasFetchedArticleRef = useRef(false);
 
   const {
     values,
@@ -432,7 +302,7 @@ export default function CreateVideoPage() {
       categoryId: { required: tPost("form.categoryRequired") },
     },
     async onSubmit(formValues) {
-      // 检查是否选中了封面帧
+      // 妫€鏌ユ槸鍚﹂€変腑浜嗗皝闈㈠抚
       const selectedFrame = frames.find((f) => f.id === selectedFrameId);
       if (!selectedFrame && !isEditMode) {
         return;
@@ -440,12 +310,13 @@ export default function CreateVideoPage() {
 
       let coverUrl = formValues.cover;
 
-      // 如果选中了新的帧，上传作为封面
+      // Upload the selected frame as cover when needed.
       if (selectedFrame && !coverUrl) {
         try {
           coverUrl = await uploadFrame(selectedFrame.dataUrl);
         } catch (error) {
           console.error("Failed to upload cover frame:", error);
+          showToast(getErrorMessage(error, "封面上传失败"));
           return;
         }
       }
@@ -461,23 +332,39 @@ export default function CreateVideoPage() {
       } as unknown as Parameters<typeof articleControllerCreate>[0]["body"];
 
       let response;
-      if (isEditMode && articleId) {
-        response = await articleControllerUpdate({
-          path: { id: articleId },
-          body: body as Parameters<typeof articleControllerUpdate>[0]["body"],
-        });
-      } else {
-        response = await articleControllerCreate({ body });
+      let newArticleId: string | undefined;
+
+      try {
+        if (isEditMode && articleId) {
+          response = await articleControllerUpdate({
+            path: { id: articleId },
+            body: body as Parameters<typeof articleControllerUpdate>[0]["body"],
+          });
+          newArticleId = String(response?.data?.data?.data?.id ?? articleId);
+        } else {
+          response = await articleControllerCreate({ body });
+          newArticleId = (response as any)?.data?.data?.id;
+        }
+      } catch (error) {
+        console.error("Failed to submit article:", error);
+        showToast(getErrorMessage(error, "提交失败"));
+        throw error;
       }
 
-      // 跳转到详情页或首页
-      const newArticleId = (response as any)?.data?.data?.id;
-      if (newArticleId) {
-        router.push(`/article/${newArticleId}`);
-      } else if (articleId) {
-        router.push(`/article/${articleId}`);
-      } else {
-        router.push("/");
+      // Navigate to the article or fallback route after submit.
+      try {
+        if (newArticleId) {
+          await router.push(`/article/${newArticleId}`);
+        } else {
+          await router.push("/");
+        }
+      } catch {
+        // 璺宠浆澶辫触鏃跺皾璇曡繑鍥炰笂涓€椤垫垨棣栭〉
+        try {
+          router.back();
+        } catch {
+          window.location.href = "/";
+        }
       }
     },
   });
@@ -485,14 +372,18 @@ export default function CreateVideoPage() {
   // Fetch article data in edit mode
   useEffect(() => {
     if (!isEditMode || !articleId) return;
+    if (hasFetchedArticleRef.current) return;
+    hasFetchedArticleRef.current = true;
 
     const fetchArticle = async () => {
+      setArticleLoading(true);
       try {
         const response = await articleControllerFindOne({
           path: { id: articleId },
         });
         const article = response.data?.data;
         if (article) {
+          const videoUrl = (article as { videoUrl?: string }).videoUrl || "";
           setFieldValues({
             title: article.title || "",
             content: article.content || "",
@@ -500,7 +391,7 @@ export default function CreateVideoPage() {
             tagIds: article.tags?.map((tag) => String(tag.id)) || [],
             tagNames: [],
             cover: article.cover || "",
-            videoUrl: (article as any).videoUrl || "",
+            videoUrl,
             requireLogin: article.requireLogin || false,
             requireFollow: article.requireFollow || false,
             requirePayment: article.requirePayment || false,
@@ -510,6 +401,17 @@ export default function CreateVideoPage() {
             sort: article.sort || 0,
             type: "video",
           });
+
+          // Set video item if videoUrl exists
+          if (videoUrl) {
+            setVideoItem({
+              id: `video-${Date.now()}`,
+              fileName: tVideo("form.existingVideo"),
+              remoteUrl: videoUrl,
+              status: "ready",
+            });
+          }
+
           setInitialTagOptions(
             article.tags?.map((tag) => ({
               value: String(tag.id),
@@ -581,7 +483,7 @@ export default function CreateVideoPage() {
     };
 
     fetchArticle();
-  }, [articleId, isEditMode, setFieldValues]);
+  }, [articleId, isEditMode, setFieldValues, tVideo]);
 
   // Fetch categories on mount
   useEffect(() => {
@@ -628,14 +530,24 @@ export default function CreateVideoPage() {
       try {
         const response = await uploadControllerGetUploadConfig({});
         if (response.data?.data) {
+          const limits = response.data.data.limits;
+          const videoSizeBytes = limits.maxSize.video.bytes;
           uploadConfigRef.current = {
-            maxFileSize: response.data.data.limits.maxFileSize,
+            maxFileSize: limits.maxSize.image.bytes,
+            maxVideoFileSize: videoSizeBytes,
           };
+          // 转换为 MB 显示
+          const sizeInMB = Math.round(videoSizeBytes / (1024 * 1024));
+          setMaxVideoSize(`${sizeInMB}MB`);
         }
       } catch (error) {
         console.error("Failed to fetch upload config:", error);
-        // 使用默认值 10MB
-        uploadConfigRef.current = { maxFileSize: 10 * 1024 * 1024 };
+        // 使用默认值
+        uploadConfigRef.current = {
+          maxFileSize: 10 * 1024 * 1024,
+          maxVideoFileSize: 100 * 1024 * 1024,
+        };
+        setMaxVideoSize("100MB");
       }
     };
 
@@ -675,7 +587,6 @@ export default function CreateVideoPage() {
       setVideoItem(newItem);
 
       try {
-        // 1. 提取帧
         const extractedFrames = await extractVideoFrames(file, 7);
         setFrames(extractedFrames);
 
@@ -683,39 +594,12 @@ export default function CreateVideoPage() {
           setSelectedFrameId(extractedFrames[0].id);
         }
 
-        // 2. 压缩视频
-        setProcessingStep("compressing");
-        setProcessingProgress(0);
-
-        const maxFileSize =
-          uploadConfigRef.current?.maxFileSize || 10 * 1024 * 1024;
-        const {
-          blob: compressedBlob,
-          duration,
-          wasTrimmed,
-        } = await compressVideo(file, maxFileSize, (progress, step) => {
-          setProcessingStep(step === "trimming" ? "compressing" : step);
-          setProcessingProgress(Math.round(progress));
-        });
-
-        // 如果视频被截断了，记录日志（后续可以添加UI提示）
-        if (wasTrimmed) {
-          console.warn(
-            `视频被截断: 原始时长未知 -> ${duration.toFixed(1)}秒 (文件大小限制)`,
-          );
-        }
-
-        // 3. 上传压缩后的视频
         setProcessingStep("uploading");
         setProcessingProgress(0);
 
-        const compressedFile = new File([compressedBlob], file.name, {
-          type: compressedBlob.type,
-        });
-
-        const metadata = await buildUploadMetadata([compressedFile]);
+        const metadata = await buildUploadMetadata([file]);
         const { data } = await uploadControllerUploadFile({
-          body: { file: compressedFile, metadata },
+          body: { file, metadata },
         });
 
         const videoUrl = data?.data?.[0]?.url || "";
@@ -731,6 +615,7 @@ export default function CreateVideoPage() {
         setFieldValues({ videoUrl });
       } catch (error) {
         console.error("Failed to process video:", error);
+        showToast(getErrorMessage(error, "视频处理失败"));
         setVideoItem(null);
       } finally {
         setVideoUploading(false);
@@ -741,7 +626,6 @@ export default function CreateVideoPage() {
     },
     [setFieldValues],
   );
-
   const handleVideoChange = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -753,13 +637,12 @@ export default function CreateVideoPage() {
     [handleVideoUpload],
   );
 
-  // 切换选中的封面帧 - 只更新本地状态，提交时再上传
+  // 鍒囨崲閫変腑鐨勫皝闈㈠抚 - 鍙洿鏂版湰鍦扮姸鎬侊紝鎻愪氦鏃跺啀涓婁紶
   const handleFrameSelect = useCallback(
     (frameId: string) => {
       if (frameId === selectedFrameId) return;
       setSelectedFrameId(frameId);
-      // 清空已上传的 cover，标记需要重新上传
-      setFieldValues({ cover: "" });
+      // 娓呯┖宸蹭笂浼犵殑 cover锛屾爣璁伴渶瑕侀噸鏂颁笂浼?      setFieldValues({ cover: "" });
     },
     [selectedFrameId, setFieldValues],
   );
@@ -845,6 +728,9 @@ export default function CreateVideoPage() {
                         <p className="text-sm text-muted-foreground">
                           {tVideo("form.videoHint")}
                         </p>
+                        <p className="text-xs text-muted-foreground/60">
+                          {tVideo("form.maxVideoSize", { size: maxVideoSize })}
+                        </p>
                       </div>
                       <label
                         htmlFor="video-upload"
@@ -862,17 +748,17 @@ export default function CreateVideoPage() {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="relative size-16 overflow-hidden rounded-lg bg-muted">
-                            {values.cover ? (
+                            {values.cover && (
                               <Image
                                 src={values.cover}
                                 alt={videoItem.fileName}
                                 fill
                                 className="object-cover"
                               />
-                            ) : null}
+                            )}
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-medium">
+                            <p className="text-sm line-clamp-1 text-ellipsis">
                               {videoItem.fileName}
                             </p>
                             <p className="text-xs text-muted-foreground">

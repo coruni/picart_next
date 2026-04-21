@@ -259,7 +259,7 @@ export function CollectionEditDialog({
         }
       }}
     >
-      <DialogContent className="flex max-h-[85vh] max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-card p-0!">
+      <DialogContent className="flex max-h-[80vh] max-w-md flex-col overflow-hidden rounded-2xl border border-border bg-card p-0!">
         <DialogHeader className="mb-0 shrink-0 space-y-1 ">
           <DialogTitle className="font-semibold">
             {editorMode ? editorTitle : t(`${mode}.title`)}

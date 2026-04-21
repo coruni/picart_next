@@ -26,9 +26,11 @@ import { useForm } from "@/hooks/useForm";
 import { useRouter } from "@/i18n/routing";
 import {
   cn,
+  getErrorMessage,
   hasMeaningfulRichTextContent,
   prepareRichTextHtmlForDisplay,
   sanitizeRichTextHtml,
+  showToast,
 } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { useUserStore } from "@/stores";
@@ -83,61 +85,40 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     const editorHtml = sanitizeRichTextHtml(
       editorRef.current?.root.innerHTML || "",
     );
-
     return (
       editorHtml ||
       sanitizeRichTextHtml(latestContentRef.current || value || "")
     );
   };
 
-  // Article loading state for edit mode
-  const [articleLoading, setArticleLoading] = useState(isEditMode);
+  const [articleLoading, setArticleLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
-  // Cover editor states
   const [showCoverEditor, setShowCoverEditor] = useState(false);
-  const [selectedCoverImage, setSelectedCoverImage] = useState<File | null>(
-    null,
-  );
+  const [selectedCoverImage, setSelectedCoverImage] = useState<File | null>(null);
   const [coverScale, setCoverScale] = useState(1);
   const [coverUploading, setCoverUploading] = useState(false);
 
-  // Category states
-  const [parentCategories, setParentCategories] = useState<CategoryOption[]>(
-    [],
-  );
+  const [parentCategories, setParentCategories] = useState<CategoryOption[]>([]);
   const [childCategories, setChildCategories] = useState<CategoryOption[]>([]);
   const [selectedParentId, setSelectedParentId] = useState<string>("");
-  const [initialTagOptions, setInitialTagOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
-  // 独立控制子分类框的显示，不依赖 childCategories.length，避免搜索无结果时隐藏
+  const [initialTagOptions, setInitialTagOptions] = useState<{ value: string; label: string }[]>([]);
   const [showChildSelect, setShowChildSelect] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [_parentSearching, setParentSearching] = useState(false);
   const [_childSearching, setChildSearching] = useState(false);
 
-  // Store initial categories and children map in ref to avoid re-fetching
   const initialParentCategoriesRef = useRef<CategoryOption[]>([]);
   const childrenMapRef = useRef<Map<number, CategoryOption[]>>(new Map());
-
-  // Debounce timers for search，用 ref 避免闭包问题
-  const parentSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-
-  // 用 ref 跟踪请求序号，丢弃过期响应（防止竞态）
+  const parentSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const childSearchSeqRef = useRef(0);
   const parentSearchSeqRef = useRef(0);
-
-  // 记录上一次实际发起请求的 query，相同值直接跳过
   const lastParentQueryRef = useRef<string | null>(null);
   const lastChildQueryRef = useRef<string | null>(null);
   const parentSearchAbortControllerRef = useRef<AbortController | null>(null);
   const childSearchAbortControllerRef = useRef<AbortController | null>(null);
+  const hasFetchedArticleRef = useRef(false);
 
   const {
     values,
@@ -180,10 +161,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       categoryId: { required: t("form.categoryRequired") },
     },
     async onSubmit(values) {
-      // 优先使用表单中的 content，因为它通过 onChange 保持同步
-      // fallback 到编辑器实时获取的内容
       const sanitizedContent = getLatestEditorContent(values.content);
-
       const body = {
         ...values,
         content: sanitizedContent,
@@ -194,20 +172,37 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         tagNames: values.tagNames,
       } as unknown as Parameters<typeof articleControllerCreate>[0]["body"];
 
-      if (isEditMode && articleId) {
-        await articleControllerUpdate({
-          path: { id: articleId },
-          body,
-        });
-      } else {
-        await articleControllerCreate({ body });
-      }
-      // 返回上一页
+      let newArticleId: string | undefined;
+
       try {
-        router.back();
+        if (isEditMode && articleId) {
+          const response = await articleControllerUpdate({
+            path: { id: articleId },
+            body,
+          });
+          newArticleId = String(response?.data?.data?.data?.id ?? articleId);
+        } else {
+          const response = await articleControllerCreate({ body });
+          newArticleId = (response as { data?: { data?: { id?: string } } })?.data?.data?.id;
+        }
+      } catch (error) {
+        console.error("提交文章失败:", error);
+        showToast(getErrorMessage(error, "提交失败"));
+        throw error;
+      }
+
+      try {
+        if (newArticleId) {
+          await router.push(`/article/${newArticleId}`);
+        } else {
+          await router.push("/");
+        }
       } catch {
-        // 无法返回时重定向首页
-        router.push("/");
+        try {
+          router.back();
+        } catch {
+          window.location.href = "/";
+        }
       }
     },
   });
@@ -227,26 +222,23 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     [childCategories, values.categoryId],
   );
 
-  // Fetch article data in edit mode
   useEffect(() => {
     if (!isEditMode || !articleId) return;
-
-    let isCancelled = false;
+    if (hasFetchedArticleRef.current) return;
+    hasFetchedArticleRef.current = true;
 
     const fetchArticle = async () => {
+      setArticleLoading(true);
       try {
         const response = await articleControllerFindOne({
           path: { id: articleId },
         });
         const article = response.data?.data;
-        if (article && !isCancelled) {
-          // Set form values
+        if (article) {
           setFieldValues({
             cover: article.cover || "",
             title: article.title || "",
-            content: (latestContentRef.current = sanitizeRichTextHtml(
-              article.content || "",
-            )),
+            content: (latestContentRef.current = sanitizeRichTextHtml(article.content || "")),
             categoryId: String(article.category.id || ""),
             tagIds: article.tags?.map((tag) => String(tag.id)) || [],
             tagNames: [],
@@ -266,52 +258,39 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
             })) || [],
           );
 
-          // Handle article category - add to lists if not present
           const category = article.category;
           const parentIdNum = category.parentId;
           const categoryIdStr = String(category.id);
 
           if (parentIdNum && parentIdNum !== 0) {
-            // Category is a child - ensure parent and child are in lists
             const parentOption: CategoryOption = {
               value: String(parentIdNum),
               label: category.parent?.name || "",
-              ...(category.parent?.avatar
-                ? { avatar: category.parent.avatar }
-                : {}),
+              ...(category.parent?.avatar ? { avatar: category.parent.avatar } : {}),
             };
 
-            // Add parent to parentCategories if not present
             setParentCategories((prev) => {
-              if (prev.some((p) => p.value === String(parentIdNum)))
-                return prev;
+              if (prev.some((p) => p.value === String(parentIdNum))) return prev;
               const updated = [...prev, parentOption];
               initialParentCategoriesRef.current = updated;
               return updated;
             });
 
-            // Add child to childrenMap
             const childOption: CategoryOption = {
               value: categoryIdStr,
               label: category.name,
               ...(category.avatar ? { avatar: category.avatar } : {}),
             };
 
-            const existingChildren =
-              childrenMapRef.current.get(parentIdNum) || [];
+            const existingChildren = childrenMapRef.current.get(parentIdNum) || [];
             if (!existingChildren.some((c) => c.value === categoryIdStr)) {
-              childrenMapRef.current.set(parentIdNum, [
-                ...existingChildren,
-                childOption,
-              ]);
+              childrenMapRef.current.set(parentIdNum, [...existingChildren, childOption]);
             }
 
-            // Set selected parent and children
             setSelectedParentId(String(parentIdNum));
             setChildCategories(childrenMapRef.current.get(parentIdNum) || []);
             setShowChildSelect(true);
           } else {
-            // Category is a parent - ensure it's in parent list
             const parentOption: CategoryOption = {
               value: categoryIdStr,
               label: category.name,
@@ -327,21 +306,14 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           }
         }
       } catch (error) {
-        console.error("Failed to fetch article:", error);
+        console.error("获取文章失败:", error);
       } finally {
-        if (!isCancelled) {
-          setArticleLoading(false);
-        }
+        setArticleLoading(false);
       }
     };
     fetchArticle();
-
-    return () => {
-      isCancelled = true;
-    };
   }, [isEditMode, articleId]);
 
-  // Fetch categories on mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -371,7 +343,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           });
         }
       } catch (error) {
-        console.error("Failed to fetch categories:", error);
+        console.error("获取分类失败:", error);
       } finally {
         setCategoriesLoading(false);
       }
@@ -383,29 +355,21 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     return () => {
       parentSearchAbortControllerRef.current?.abort();
       childSearchAbortControllerRef.current?.abort();
-      if (parentSearchTimerRef.current) {
-        clearTimeout(parentSearchTimerRef.current);
-      }
-      if (childSearchTimerRef.current) {
-        clearTimeout(childSearchTimerRef.current);
-      }
+      if (parentSearchTimerRef.current) clearTimeout(parentSearchTimerRef.current);
+      if (childSearchTimerRef.current) clearTimeout(childSearchTimerRef.current);
     };
   }, []);
 
-  // Handle parent category change
   const handleParentCategoryChange = (value: string) => {
     setSelectedParentId(value);
     const parentId = parseInt(value, 10);
     const children = childrenMapRef.current.get(parentId) || [];
     setChildCategories(children);
     setFieldValues({ categoryId: "" });
-    // 有子分类数据时才显示子分类框
     setShowChildSelect(children.length > 0);
-    // 重置子分类搜索去重记录
     lastChildQueryRef.current = null;
   };
 
-  // Handle child category change
   const handleChildCategoryChange = (value: string) => {
     setFieldValues({ categoryId: value });
   };
@@ -418,15 +382,11 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     setFieldValues({ tagNames: value });
   };
 
-  // Search parent categories — debounced 300ms，竞态安全
   const _handleSearchParentCategories = (query: string) => {
-    // query 未变化时跳过，防止重渲染引起的重复调用
     if (query === lastParentQueryRef.current) return;
     lastParentQueryRef.current = query;
 
-    if (parentSearchTimerRef.current) {
-      clearTimeout(parentSearchTimerRef.current);
-    }
+    if (parentSearchTimerRef.current) clearTimeout(parentSearchTimerRef.current);
 
     if (!query.trim()) {
       setParentCategories(initialParentCategoriesRef.current);
@@ -444,12 +404,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           query: { name: query },
           signal: abortController.signal,
         });
-        // 丢弃过期响应
-        if (
-          seq !== parentSearchSeqRef.current ||
-          parentSearchAbortControllerRef.current !== abortController
-        )
-          return;
+        if (seq !== parentSearchSeqRef.current || parentSearchAbortControllerRef.current !== abortController) return;
         if (response.data?.data?.data) {
           const parents = response.data.data.data
             .filter((cat) => !cat.parentId || cat.parentId === 0)
@@ -462,12 +417,9 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         }
       } catch (error) {
         if (abortController.signal.aborted) return;
-        console.error("Failed to search categories:", error);
+        console.error("搜索父分类失败:", error);
       } finally {
-        if (
-          seq === parentSearchSeqRef.current &&
-          parentSearchAbortControllerRef.current === abortController
-        ) {
+        if (seq === parentSearchSeqRef.current && parentSearchAbortControllerRef.current === abortController) {
           parentSearchAbortControllerRef.current = null;
           setParentSearching(false);
         }
@@ -475,31 +427,19 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     }, 300);
   };
 
-  // Search child categories — debounced 300ms，竞态安全
-  // 搜索无结果时保留子分类框（showChildSelect 不变），仅清空列表
   const _handleSearchChildCategories = (query: string) => {
     if (!selectedParentId) return;
-
-    // query 未变化时跳过，防止重渲染引起的重复调用
     if (query === lastChildQueryRef.current) return;
     lastChildQueryRef.current = query;
 
-    if (childSearchTimerRef.current) {
-      clearTimeout(childSearchTimerRef.current);
-    }
+    if (childSearchTimerRef.current) clearTimeout(childSearchTimerRef.current);
 
     if (!query.trim()) {
-      // 恢复缓存的子分类列表，同时保留当前已选中项
       const parentId = parseInt(selectedParentId, 10);
       const cached = childrenMapRef.current.get(parentId) || [];
       const currentSelectedId = values.categoryId;
-      if (
-        currentSelectedId &&
-        !cached.find((c) => c.value === currentSelectedId)
-      ) {
-        const selectedChild = childCategories.find(
-          (c) => c.value === currentSelectedId,
-        );
+      if (currentSelectedId && !cached.find((c) => c.value === currentSelectedId)) {
+        const selectedChild = childCategories.find((c) => c.value === currentSelectedId);
         if (selectedChild) {
           setChildCategories([...cached, selectedChild]);
           return;
@@ -522,12 +462,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           query: { name: query, parentId },
           signal: abortController.signal,
         });
-        // 丢弃过期响应
-        if (
-          seq !== childSearchSeqRef.current ||
-          childSearchAbortControllerRef.current !== abortController
-        )
-          return;
+        if (seq !== childSearchSeqRef.current || childSearchAbortControllerRef.current !== abortController) return;
         if (response.data?.data?.data) {
           const results = response.data.data.data
             .filter((cat) => cat.parentId === parentId)
@@ -537,30 +472,18 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
               ...(cat.avatar ? { avatar: cat.avatar } : {}),
             }));
 
-          // 确保当前选中项始终在列表中，避免选中态丢失
-          if (
-            currentSelectedId &&
-            !results.find((c) => c.value === currentSelectedId)
-          ) {
-            const selectedChild = childCategories.find(
-              (c) => c.value === currentSelectedId,
-            );
-            if (selectedChild) {
-              results.push(selectedChild);
-            }
+          if (currentSelectedId && !results.find((c) => c.value === currentSelectedId)) {
+            const selectedChild = childCategories.find((c) => c.value === currentSelectedId);
+            if (selectedChild) results.push(selectedChild);
           }
 
-          // 无论搜索结果是否为空，都更新列表；showChildSelect 不改变
           setChildCategories(results);
         }
       } catch (error) {
         if (abortController.signal.aborted) return;
-        console.error("Failed to search child categories:", error);
+        console.error("搜索子分类失败:", error);
       } finally {
-        if (
-          seq === childSearchSeqRef.current &&
-          childSearchAbortControllerRef.current === abortController
-        ) {
+        if (seq === childSearchSeqRef.current && childSearchAbortControllerRef.current === abortController) {
           childSearchAbortControllerRef.current = null;
           setChildSearching(false);
         }
@@ -568,7 +491,6 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     }, 300);
   };
 
-  // Cover handlers
   const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -590,17 +512,10 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     try {
       const canvas = coverEditorRef.current.getImageScaledToCanvas();
       const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => {
-          resolve(blob!);
-        }, "image/png");
+        canvas.toBlob((blob) => { resolve(blob!); }, "image/png");
       });
-      const croppedFile = new File([blob], selectedCoverImage.name, {
-        type: "image/png",
-      });
-
-      // 计算裁剪后文件的 hash（与上传的文件保持一致）
+      const croppedFile = new File([blob], selectedCoverImage.name, { type: "image/png" });
       const metadata = await buildUploadMetadata([croppedFile]);
-
       const { data } = await uploadControllerUploadFile({
         body: { file: croppedFile, metadata },
       });
@@ -610,7 +525,8 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         setSelectedCoverImage(null);
       }
     } catch (error) {
-      console.error("Failed to upload cover:", error);
+      console.error("封面上传失败:", error);
+      showToast(getErrorMessage(error, "封面上传失败"));
     } finally {
       setCoverUploading(false);
     }
@@ -653,12 +569,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                     className="hidden"
                     id="cover-upload"
                   />
-                  <div
-                    className={cn(
-                      "flex items-center gap-4",
-                      values.cover && "-mx-6",
-                    )}
-                  >
+                  <div className={cn("flex items-center gap-4", values.cover && "-mx-6")}>
                     {values.cover ? (
                       <div className="relative w-full aspect-21/9">
                         <ImageWithFallback
@@ -731,11 +642,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                     className="min-h-75"
                   />
                 </FormField>
-                <FormField
-                  name="categoryId"
-                  label={t("form.publishTo")}
-                  className="pt-4"
-                >
+                <FormField name="categoryId" label={t("form.publishTo")} className="pt-4">
                   <div className="flex items-stretch gap-2 min-w-0">
                     <CategorySelect
                       value={selectedParentId}
@@ -746,7 +653,6 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                       className="flex-1 min-w-0"
                       inputClassName="min-h-12"
                     />
-                    {/* 用独立的 showChildSelect 控制显隐，与搜索结果数量解耦 */}
                     {selectedParentId && showChildSelect && (
                       <>
                         <span className="relative w-3 shrink-0 before:absolute mx-1 before:top-1/2 before:left-0 before:right-0 before:h-px before:bg-[#b2bdce]" />
@@ -788,9 +694,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                         </label>
                         <Switch
                           checked={values.requireLogin}
-                          onCheckedChange={(checked) =>
-                            setFieldValues({ requireLogin: checked })
-                          }
+                          onCheckedChange={(checked) => setFieldValues({ requireLogin: checked })}
                         />
                       </div>
                     </FormField>
@@ -801,9 +705,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                         </label>
                         <Switch
                           checked={values.requireFollow}
-                          onCheckedChange={(checked) =>
-                            setFieldValues({ requireFollow: checked })
-                          }
+                          onCheckedChange={(checked) => setFieldValues({ requireFollow: checked })}
                         />
                       </div>
                     </FormField>
@@ -815,9 +717,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                           </label>
                           <Switch
                             checked={values.requirePayment}
-                            onCheckedChange={(checked) =>
-                              setFieldValues({ requirePayment: checked })
-                            }
+                            onCheckedChange={(checked) => setFieldValues({ requirePayment: checked })}
                           />
                         </div>
                         {values.requirePayment && (
@@ -831,9 +731,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                               placeholder={t("settings.pricePlaceholder")}
                               value={values.viewPrice}
                               onChange={(value) =>
-                                setFieldValues({
-                                  viewPrice: Number(value.target.value),
-                                })
+                                setFieldValues({ viewPrice: Number(value.target.value) })
                               }
                             />
                           </div>
@@ -847,9 +745,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                         </label>
                         <Switch
                           checked={values.requireMembership}
-                          onCheckedChange={(checked) =>
-                            setFieldValues({ requireMembership: checked })
-                          }
+                          onCheckedChange={(checked) => setFieldValues({ requireMembership: checked })}
                         />
                       </div>
                     </FormField>
@@ -880,7 +776,6 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         </div>
       </div>
 
-      {/* Cover Editor Modal */}
       <Dialog open={showCoverEditor} onOpenChange={setShowCoverEditor}>
         <DialogContent className="max-w-2xl pt-4!">
           <DialogHeader>
@@ -906,9 +801,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                     style={{ width: "100%", height: "100%" }}
                   />
                 </div>
-                <p className="text-xs text-gray-500 text-center">
-                  {t("cover.cropHint")}
-                </p>
+                <p className="text-xs text-gray-500 text-center">{t("cover.cropHint")}</p>
                 <div className="flex gap-3 w-full">
                   <Button
                     type="button"
@@ -955,9 +848,8 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                   <X />
                 </Button>
               </div>
-
-              <div className="relative flex h-full w-full max-w-6xl items-center justify-center overflow-hidden rounded-[28px]  ">
-                <div className="pointer-events-none absolute inset-0 " />
+              <div className="relative flex h-full w-full max-w-6xl items-center justify-center overflow-hidden rounded-[28px]">
+                <div className="pointer-events-none absolute inset-0" />
                 <div className="relative flex h-full w-full items-center justify-center p-6">
                   <div className="relative w-full max-w-90 rounded-[38px] border-[6px] border-white/85 bg-[#f5f7fb] p-2 shadow-[0_28px_80px_rgba(15,23,42,0.22)] dark:border-white/15 dark:bg-[#0f1724] aspect-9/16">
                     <div className="absolute left-1/2 top-2 h-1.5 w-24 -translate-x-1/2 rounded-full bg-black/12 dark:bg-white/12 z-10" />
@@ -985,11 +877,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                               {currentUser?.avatar ? (
                                 <ImageWithFallback
                                   src={currentUser.avatar}
-                                  alt={
-                                    currentUser.nickname ||
-                                    currentUser.username ||
-                                    "User"
-                                  }
+                                  alt={currentUser.nickname || currentUser.username || "User"}
                                   fill
                                   sizes="40px"
                                   className="object-cover"
@@ -998,15 +886,11 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                             </div>
                             <div className="min-w-0">
                               <div className="truncate text-sm font-semibold text-foreground">
-                                {currentUser?.nickname ||
-                                  currentUser?.username ||
-                                  t("title")}
+                                {currentUser?.nickname || currentUser?.username || t("title")}
                               </div>
                               <div className="text-xs text-muted-foreground">
                                 {selectedParentCategory?.label}
-                                {selectedChildCategory?.label
-                                  ? ` · ${selectedChildCategory.label}`
-                                  : ""}
+                                {selectedChildCategory?.label ? ` · ${selectedChildCategory.label}` : ""}
                               </div>
                             </div>
                           </div>

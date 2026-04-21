@@ -224,6 +224,7 @@
     "viewImages": "View images",
     "like": "Like",
     "authorLiked": "Liked by author",
+    "pendingReview": "Pending review",
     "floor": "{floor}F",
     "unknownFloor": "Unknown floor",
     "sortOptions": {
@@ -407,7 +408,8 @@
       "cropBackground": "Crop Background",
       "backgroundPreview": "Background Preview",
       "backgroundEditorHint": "Drag to reposition, scroll to zoom",
-      "selectImage": "Select Image"
+      "selectImage": "Select Image",
+      "reselectImage": "Reselect"
     }
   },
   "editor": {
@@ -534,7 +536,8 @@
       "images": "Images",
       "imagesPlaceholder": "Select images",
       "imagesRequired": "Please upload at least one image",
-      "imagesHint": "Batch upload is supported. Select multiple files at once."
+      "imagesHint": "Batch upload is supported. Select multiple files at once."},
+      "maxImages": "Select up to {count} images at a time"
     }
   },
   "createVideo": {
@@ -544,6 +547,7 @@
       "video": "Video",
       "selectVideo": "Select Video",
       "videoHint": "Supports MP4, WebM, MOV and other common video formats",
+      "maxVideoSize": "Maximum file size: {size}",
       "uploading": "Uploading...",
       "processing": "Processing...",
       "ready": "Ready",
@@ -551,7 +555,8 @@
       "coverRequired": "Please select a video cover",
       "stepExtracting": "Extracting preview frames...",
       "stepCompressing": "Compressing video (720p 30fps)...",
-      "stepUploading": "Uploading video..."
+      "stepUploading": "Uploading video...",
+      "existingVideo": "Existing video"
     }
   },
   "imageViewer": {

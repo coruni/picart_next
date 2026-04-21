@@ -111,7 +111,7 @@ export const ArticleCard = ({
           />
           {isVideo ? (
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-12 h-12 bg-black/50 rounded-full flex items-center justify-center text-white backdrop-blur-sm">
+              <div className="w-12 h-12 bg-black/50 rounded-full flex items-center justify-center text-white backdrop-blur-sm!">
                 <Play size={24} fill="white" />
               </div>
             </div>

@@ -4,7 +4,7 @@ import {
     articleControllerFavoriteArticle,
     articleControllerUnfavoriteArticle,
 } from "@/api";
-import { formatCompactNumber } from "@/lib";
+import { formatCompactNumber, showToast, getErrorMessage } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { ExternalLink, MessageCircleMore, Star } from "lucide-react";
@@ -155,6 +155,7 @@ export function ArticleActions({
       setCurrentFavoriteCount((prev) =>
         Math.max(prev + (previousIsFavorited ? 1 : -1), 0),
       );
+      showToast(getErrorMessage(error, "操作失败"));
     } finally {
       setFavoriteSubmitting(false);
     }

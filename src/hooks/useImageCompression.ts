@@ -6,18 +6,57 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export interface CompressionConfig {
   maxWidth: number;
   quality: number;
-  format: "jpeg" | "webp" | "auto";
+  format: "jpeg" | "webp" | "auto" | "string";
 }
 
 export interface UploadLimits {
-  maxFileSize: number;
-  maxFileCount: number;
+  maxSize: {
+    image: { mb: string; bytes: number };
+    video: { mb: string; bytes: number };
+    audio: { mb: string; bytes: number };
+    other: { mb: string; bytes: number };
+  };
+  maxFileCount: string;
+}
+
+export interface AllowedMimeTypes {
+  image: string[];
+  video: string[];
+  audio: string[];
+  document: string[];
 }
 
 export interface UploadConfig {
-  compression: CompressionConfig;
+  storage: { type: string };
+  compression: {
+    image: CompressionConfig;
+    video: {
+      enabled: boolean;
+      maxWidth: number;
+      maxHeight: number;
+      crf: number;
+    };
+  };
   limits: UploadLimits;
-  allowedMimeTypes: string[];
+  allowedMimeTypes: AllowedMimeTypes;
+  imageProcessing: {
+    compressionEnabled: boolean;
+    format: string;
+    quality: number;
+    maxWidth: number;
+    maxHeight: number;
+    keepOriginal: boolean;
+  };
+  videoProcessing: {
+    compressionEnabled: boolean;
+    preset: string;
+    crf: number;
+    maxWidth: number;
+    maxHeight: number;
+    videoBitrate: string;
+    audioBitrate: string;
+    minCompressSize: number;
+  };
 }
 
 export interface CompressedImageResult {
@@ -90,7 +129,18 @@ const workerCode = `
     const { maxWidth, quality, format } = config;
 
     const blob = new Blob([arrayBuffer], { type: fileType });
-    const bitmap = await createImageBitmap(blob);
+    let bitmap;
+    try {
+      bitmap = await createImageBitmap(blob);
+    } catch (e) {
+      throw new Error("Failed to create image bitmap: " + (e.message || e));
+    }
+
+    // 验证 bitmap 尺寸
+    if (!bitmap.width || !bitmap.height) {
+      bitmap.close?.();
+      throw new Error("Invalid image dimensions");
+    }
 
     let { width, height } = bitmap;
     const originalWidth = width;
@@ -157,12 +207,22 @@ const workerCode = `
       });
     } catch (e) {
       // 如果指定格式失败，回退到 JPEG
-      mimeType = "image/jpeg";
-      outputExtension = ".jpg";
-      compressedBlob = await canvas.convertToBlob({
-        type: mimeType,
-        quality: quality / 100,
-      });
+      try {
+        mimeType = "image/jpeg";
+        outputExtension = ".jpg";
+        compressedBlob = await canvas.convertToBlob({
+          type: mimeType,
+          quality: quality / 100,
+        });
+      } catch (e2) {
+        // 如果 JPEG 也失败，返回原文件
+        throw new Error("Canvas to Blob failed after fallback");
+      }
+    }
+
+    // 验证 compressedBlob 是否有效
+    if (!compressedBlob || compressedBlob.size === 0) {
+      throw new Error("Compressed blob is null or empty");
     }
 
     // 如果压缩后比原文件大，返回原文件
@@ -181,6 +241,11 @@ const workerCode = `
     }
 
     const compressedArrayBuffer = await compressedBlob.arrayBuffer();
+
+    // 验证压缩后的 ArrayBuffer
+    if (!compressedArrayBuffer || compressedArrayBuffer.byteLength === 0) {
+      throw new Error("Compressed ArrayBuffer is empty");
+    }
 
     return {
       file: compressedArrayBuffer,
@@ -237,11 +302,38 @@ export function useImageCompression() {
           const duration = Date.now() - task.startTime;
 
           if (success && result) {
+            // 验证压缩结果是否有效
+            if (!result.file || result.file.byteLength === 0) {
+              console.error(`[ImageCompression] Compressed file is empty, using original`);
+              // 使用原文件
+              task.resolve({
+                file: task.file,
+                originalSize: task.file.size,
+                compressedSize: task.file.size,
+                compressionRatio: 1,
+              });
+              tasksRef.current.delete(id);
+              return;
+            }
+
             // Reconstruct File from ArrayBuffer
             const file = new File([result.file], result.fileName, {
               type: result.fileType,
               lastModified: result.lastModified,
             });
+
+            // 再次验证文件大小
+            if (file.size === 0) {
+              console.error(`[ImageCompression] Reconstructed file has 0 size, using original`);
+              task.resolve({
+                file: task.file,
+                originalSize: task.file.size,
+                compressedSize: task.file.size,
+                compressionRatio: 1,
+              });
+              tasksRef.current.delete(id);
+              return;
+            }
 
             // 开发环境下输出压缩信息
             if (process.env.NODE_ENV === "development") {
@@ -305,7 +397,7 @@ export function useImageCompression() {
         task.startTime = Date.now();
 
         task.file.arrayBuffer().then((fileArrayBuffer) => {
-          const compressionConfig = configRef.current?.compression || {
+          const compressionConfig = configRef.current?.compression.image || {
             maxWidth: 1920,
             quality: 85,
             format: "auto",
@@ -344,16 +436,53 @@ export function useImageCompression() {
       console.error("[ImageCompression] Failed to fetch upload config:", error);
       // 使用默认配置
       const defaultConfig = {
+        storage: { type: "local" },
         compression: {
-          maxWidth: 1920,
-          quality: 85,
-          format: "jpeg" as const,
+          image: {
+            maxWidth: 1920,
+            quality: 85,
+            format: "jpeg",
+          },
+          video: {
+            enabled: true,
+            maxWidth: 1920,
+            maxHeight: 1080,
+            crf: 23,
+          },
         },
         limits: {
-          maxFileSize: 10 * 1024 * 1024, // 10MB
-          maxFileCount: 9,
+          maxSize: {
+            image: { mb: "10", bytes: 10 * 1024 * 1024 },
+            video: { mb: "100", bytes: 100 * 1024 * 1024 },
+            audio: { mb: "20", bytes: 20 * 1024 * 1024 },
+            other: { mb: "10", bytes: 10 * 1024 * 1024 },
+          },
+          maxFileCount: "9",
         },
-        allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
+        allowedMimeTypes: {
+          image: ["image/jpeg", "image/png", "image/webp", "image/gif"],
+          video: [],
+          audio: [],
+          document: [],
+        },
+        imageProcessing: {
+          compressionEnabled: true,
+          format: "jpeg",
+          quality: 85,
+          maxWidth: 1920,
+          maxHeight: 1080,
+          keepOriginal: false,
+        },
+        videoProcessing: {
+          compressionEnabled: true,
+          preset: "medium",
+          crf: 23,
+          maxWidth: 1920,
+          maxHeight: 1080,
+          videoBitrate: "1000k",
+          audioBitrate: "128k",
+          minCompressSize: 1024 * 1024,
+        },
       } satisfies UploadConfig;
       setConfig(defaultConfig);
       configRef.current = defaultConfig;
@@ -375,7 +504,7 @@ export function useImageCompression() {
       file: File,
       customConfig?: CompressionConfig,
     ): Promise<CompressedImageResult> => {
-      const compressionConfig = customConfig || configRef.current?.compression;
+      const compressionConfig = customConfig || configRef.current?.compression.image;
 
       // 如果不是图片，直接返回
       if (!file.type.startsWith("image/")) {
@@ -484,7 +613,8 @@ export function useImageCompression() {
       }
 
       // 检查文件数量
-      if (files.length > limits.maxFileCount) {
+      const maxFileCount = parseInt(limits.maxFileCount, 10);
+      if (files.length > maxFileCount) {
         return {
           valid: false,
           error: `最多只能上传 ${limits.maxFileCount} 个文件`,
@@ -493,17 +623,17 @@ export function useImageCompression() {
 
       // 检查每个文件大小
       for (const file of files) {
-        if (file.size > limits.maxFileSize) {
+        if (file.size > limits.maxSize.image.bytes) {
           const sizeType = isCompressed ? "压缩后" : "";
           return {
             valid: false,
-            error: `${sizeType}文件大小不能超过 ${formatFileSize(limits.maxFileSize)}`,
+            error: `${sizeType}文件大小不能超过 ${formatFileSize(limits.maxSize.image.bytes)}`,
           };
         }
       }
 
       // 检查文件类型
-      const allowedTypes = configRef.current?.allowedMimeTypes;
+      const allowedTypes = configRef.current?.allowedMimeTypes.image;
       if (allowedTypes && allowedTypes.length > 0) {
         for (const file of files) {
           if (!allowedTypes.includes(file.type)) {

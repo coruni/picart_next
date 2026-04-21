@@ -13,11 +13,11 @@ import { useModalStore } from "@/stores/useModalStore";
 import { DecorationControllerFindAllResponse } from "@/types";
 import { CheckCircle2Icon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogHeader } from "../ui/Dialog";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 type AvatarFrame = DecorationControllerFindAllResponse["data"]["data"][0];
 
@@ -198,7 +198,7 @@ export function UserAvatarFarmeDialog() {
                     )}
 
                     <div className="absolute inset-0 flex items-center justify-center p-2">
-                      <Image
+                      <ImageWithFallback
                         src={frame.imageUrl!}
                         alt={frame.name!}
                         width={64}

@@ -6,7 +6,7 @@ import { decorationControllerGetMyDecorations } from "@/api/sdk.gen";
 import type { DecorationControllerGetMyDecorationsResponse } from "@/api/types.gen";
 import { ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 type Decoration =
   DecorationControllerGetMyDecorationsResponse["data"]["data"][0];
@@ -121,7 +121,7 @@ export function CommentBubbleList() {
 
               <div className="flex items-start gap-4">
                 <div className="relative size-20 shrink-0">
-                  <Image
+                  <ImageWithFallback
                     fill
                     src={decoration.decoration.imageUrl}
                     alt={decoration.decoration.name}

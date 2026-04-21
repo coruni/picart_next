@@ -1,6 +1,7 @@
 ﻿import { Action, ToolbarButton } from "@enzedonline/quill-blot-formatter2";
 import type BlotFormatter from "@enzedonline/quill-blot-formatter2";
 import { uploadControllerUploadFile } from "@/api/sdk.gen";
+import { showToast, getErrorMessage } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 
 export class ReplaceAction extends Action {
@@ -37,10 +38,16 @@ export class ReplaceAction extends Action {
         });
 
         if (response.data?.data?.[0]?.url) {
-          img.src = response.data.data[0].url;
+          const uploadedUrl = response.data.data[0].url;
+          if (uploadedUrl.includes("/images/blocked.webp")) {
+            showToast("图片上传失败");
+            return;
+          }
+          img.src = uploadedUrl;
         }
       } catch (error) {
-      console.error("Upload failed:", error);
+        console.error("Upload failed:", error);
+        showToast(getErrorMessage(error, "上传失败"));
       }
     };
   };

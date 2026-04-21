@@ -335,7 +335,18 @@ export async function compressImageWithCanvas(
 
   // 创建图片
   const blob = new Blob([buffer], { type: file.type });
-  const bitmap = await createImageBitmap(blob);
+  let bitmap;
+  try {
+    bitmap = await createImageBitmap(blob);
+  } catch (e) {
+    throw new Error(`Failed to create image bitmap: ${e}`);
+  }
+
+  // 验证 bitmap 尺寸
+  if (!bitmap.width || !bitmap.height) {
+    bitmap.close?.();
+    throw new Error("Invalid image dimensions");
+  }
 
   // 计算尺寸
   let { width, height } = bitmap;
@@ -376,8 +387,10 @@ export async function compressImageWithCanvas(
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => {
-        if (blob) {
+        if (blob && blob.size > 0) {
           resolve(blob);
+        } else if (blob && blob.size === 0) {
+          reject(new Error("Canvas to Blob returned empty blob"));
         } else {
           reject(new Error("Canvas to Blob failed"));
         }

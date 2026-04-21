@@ -11,6 +11,7 @@ import Image from "next/image";
 import { GuardedLink } from "../shared";
 import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 // 根据用户数据生成标语
 const getUserSlogan = (
@@ -103,7 +104,7 @@ export const RecommendUserWidget = async () => {
               className="size-24 relative rounded-lg overflow-hidden"
               key={article.id}
             >
-              <Image
+              <ImageWithFallback
                 src={article.cover || article.images || ""}
                 fill
                 sizes="96px"

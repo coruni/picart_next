@@ -1,5 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+
+/* 确保 700 字重使用 SemiBold，并使用 swap 避免阻塞渲染 */
+@font-face {
+  font-family: "MiSans";
+  font-weight: 700;
+  src: local("MiSans SemiBold");
+  font-display: swap;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
@@ -7,22 +16,20 @@
   --foreground: #171717;
   --header-height: 60px;
   --font-geist-sans:
-    var(--font-misans),
-    "Inter",
+    "MiSans",
+    -apple-system,
+    BlinkMacSystemFont,
     "Segoe UI",
-    "Helvetica Neue",
-    Arial,
-    "PingFang SC",
-    "Hiragino Sans GB",
     "Microsoft YaHei",
-    "HarmonyOS Sans SC",
-    "Noto Sans SC",
+    Helvetica,
     sans-serif;
   --font-geist-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 *{
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 ::-webkit-scrollbar {
@@ -68,16 +75,12 @@
   --color-member: #6c5ce7;
   /* 自定义字体 */
   --font-sans:
-    var(--font-misans),
-    "Inter",
+    "MiSans",
+    -apple-system,
+    BlinkMacSystemFont,
     "Segoe UI",
-    "Helvetica Neue",
-    Arial,
-    "PingFang SC",
-    "Hiragino Sans GB",
     "Microsoft YaHei",
-    "HarmonyOS Sans SC",
-    "Noto Sans SC",
+    Helvetica,
     sans-serif;
 }
 
@@ -101,8 +104,18 @@
 
 body {
   @apply font-sans;
+  font-weight: 400;
   background: var(--background);
   color: var(--foreground);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
+  font-synthesis: none;
+  font-optical-sizing: auto;
+}
+
+html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -513,24 +526,16 @@ body.viewer-open .fixed {
   opacity: 1;
 }
 
-.ql-editor .ql-image-wrapper > img.ql-image,
+.ql-editor .ql-image-wrapper .ql-image,
 .ql-editor video {
-  max-width: 100%;
-  height: auto;
-}
-
-.ql-editor .ql-image-wrapper > img.ql-image {
-  margin: 0.18rem 0;
-  border-radius: 12px;
-}
-
-.ql-editor .ql-image-wrapper {
-  display: inline-block;
-  max-width: 100%;
+  max-width: 100% !important;
+  height: auto !important;
 }
 
 .ql-editor .ql-image-wrapper .ql-image {
-  display: block;
+  margin: 0.18rem 0 !important;
+  border-radius: 12px !important;
+  display: block !important;
 }
 
 .ql-editor table {

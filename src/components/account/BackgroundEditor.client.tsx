@@ -4,6 +4,7 @@ import { uploadControllerUploadFile, userControllerUpdate } from "@/api";
 import { Button } from "@/components/ui/Button";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/Dialog";
 import { useRouter } from "@/i18n/routing";
+import { showToast, getErrorMessage } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import type { UserDetail } from "@/types";
 import { useTranslations } from "next-intl";
@@ -87,7 +88,14 @@ export const BackgroundEditor = ({
         router.refresh();
       }
     } catch (error) {
+      // 审核不通过或其他错误时关闭对话框
+      onOpenChange(false);
+      setSelectedImage(null);
+      setScale(1);
+      setUploading(false);
+      setLastTouchDistance(null);
       console.error("Failed to upload background:", error);
+      showToast(getErrorMessage(error, "背景图上传失败"));
     } finally {
       setUploading(false);
     }
@@ -97,6 +105,8 @@ export const BackgroundEditor = ({
     onOpenChange(false);
     setSelectedImage(null);
     setScale(1);
+    setUploading(false);
+    setLastTouchDistance(null);
   };
 
   const handleWheel = (e: React.WheelEvent) => {
@@ -132,14 +142,25 @@ export const BackgroundEditor = ({
     }
   };
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      // Dialog 关闭时（点击X或遮罩层）重置状态
+      setSelectedImage(null);
+      setScale(1);
+      setUploading(false);
+      setLastTouchDistance(null);
+    }
+    onOpenChange(open);
+  };
+
   const handleTouchEnd = () => {
     setLastTouchDistance(null);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl p-0! border-0">
-        <DialogHeader className="mb-0">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-2xl p-0! border-0 overflow-hidden">
+        <DialogHeader className="mb-0 p-0">
           <div
             style={{ backgroundImage: `url(${user?.background})` }}
             className="h-46 bg-center bg-no-repeat bg-cover relative"
@@ -168,7 +189,7 @@ export const BackgroundEditor = ({
             <>
               {/* Crop area */}
               <div
-                className="w-full aspect-21/9 rounded-lg overflow-hidden cursor-move touch-none"
+                className="w-full h-56 md:h-[300px] rounded-lg overflow-hidden cursor-move touch-none"
                 onWheel={handleWheel}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
@@ -177,8 +198,8 @@ export const BackgroundEditor = ({
                 <AvatarEditor
                   ref={editorRef}
                   image={selectedImage}
-                  width={1050}
-                  height={450}
+                  width={700}
+                  height={300}
                   border={0}
                   borderRadius={0}
                   color={[0, 0, 0, 0.6]}

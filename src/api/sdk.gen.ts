@@ -2496,7 +2496,14 @@ export const contentAuditControllerReviewArticle = <ThrowOnError extends boolean
 /**
  * 测试文本审核
  */
-export const contentAuditControllerAuditText = <ThrowOnError extends boolean = false>(options?: Options<ContentAuditControllerAuditTextData, ThrowOnError>) => (options?.client ?? client).post<ContentAuditControllerAuditTextResponses, unknown, ThrowOnError>({ url: '/content-audit/text', ...options });
+export const contentAuditControllerAuditText = <ThrowOnError extends boolean = false>(options?: Options<ContentAuditControllerAuditTextData, ThrowOnError>) => (options?.client ?? client).post<ContentAuditControllerAuditTextResponses, unknown, ThrowOnError>({
+    url: '/content-audit/text',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
 
 /**
  * 测试图片审核

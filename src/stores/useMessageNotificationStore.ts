@@ -1,4 +1,4 @@
-﻿import {
+import {
   messageControllerGetPrivateConversations,
   messageControllerGetUnreadCount,
   messageControllerMarkAllAsRead,
@@ -57,6 +57,8 @@ export interface MessageDropdownItem {
 
 let removeSocketListeners: (() => void) | null = null;
 let socketToken: string | null = null;
+let centerMessagesRequestVersion = 0;
+let dropdownMessagesRequestVersion = 0;
 
 interface MessageNotificationState {
   centerMessages: MessageDropdownItem[];
@@ -131,6 +133,81 @@ function markMessagesAsRead(
       unreadCount: 0,
     };
   });
+}
+
+function markUnreadSummaryAsRead(
+  summary: UnreadCount | null,
+  tab: MessageTab,
+): UnreadCount | null {
+  if (!summary) {
+    return summary;
+  }
+
+  if (tab === "all") {
+    return {
+      ...summary,
+      total: 0,
+      personal: 0,
+      notification: 0,
+      broadcast: 0,
+    };
+  }
+
+  const nextSummary: UnreadCount = { ...summary };
+
+  if (tab === "private") {
+    nextSummary.personal = 0;
+  }
+
+  if (tab === "notification") {
+    nextSummary.notification = 0;
+  }
+
+  if (tab === "system") {
+    nextSummary.broadcast = 0;
+  }
+
+  nextSummary.total = Math.max(
+    0,
+    Number(nextSummary.personal || 0) +
+      Number(nextSummary.notification || 0) +
+      Number(nextSummary.broadcast || 0),
+  );
+
+  return nextSummary;
+}
+
+const IGNORABLE_ERROR_CODES = [
+  "USER_NOT_FOUND",
+  "CONVERSATION_NOT_FOUND",
+];
+
+function getSocketErrorMessage(payload: unknown): string | null {
+  if (typeof payload === "string" && payload.trim()) {
+    return payload;
+  }
+
+  if (payload instanceof Error && payload.message.trim()) {
+    return payload.message;
+  }
+
+  if (
+    payload &&
+    typeof payload === "object" &&
+    "message" in payload &&
+    typeof payload.message === "string" &&
+    payload.message.trim()
+  ) {
+    // Check if this is an ignorable error code
+    if ("code" in payload && typeof payload.code === "string") {
+      if (IGNORABLE_ERROR_CODES.includes(payload.code)) {
+        return null; // Don't log ignorable errors
+      }
+    }
+    return payload.message;
+  }
+
+  return null;
 }
 
 function applyPrivateMessagePreview(
@@ -359,6 +436,7 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
       }
 
       const isTabSwitch = tab !== get().selectedTab;
+      const requestVersion = ++centerMessagesRequestVersion;
 
       set({
         isLoading: true,
@@ -369,6 +447,11 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
 
       try {
         const messages = await fetchMessageList(tab);
+
+        if (requestVersion !== centerMessagesRequestVersion) {
+          return;
+        }
+
         set({
           centerMessagesByTab: updateDropdownCache(
             get().centerMessagesByTab,
@@ -397,6 +480,8 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
         return;
       }
 
+      const requestVersion = ++dropdownMessagesRequestVersion;
+
       set({
         dropdownIsLoading: true,
         dropdownLoadedTab: tab,
@@ -405,6 +490,11 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
 
       try {
         const messages = await fetchMessageList(tab);
+
+        if (requestVersion !== dropdownMessagesRequestVersion) {
+          return;
+        }
+
         set({
           dropdownMessagesByTab: updateDropdownCache(
             get().dropdownMessagesByTab,
@@ -458,39 +548,43 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
       }
 
       try {
-        const socket = messageSocketClient.instance;
+        centerMessagesRequestVersion++;
+        dropdownMessagesRequestVersion++;
 
-        if (socket?.connected) {
-          socket.emit("markAllAsRead", tab === "all" ? {} : { type: tab });
-        } else {
-          await messageControllerMarkAllAsRead({
-            body: tab === "all" ? {} : { type: tab },
-          });
-        }
+        await messageControllerMarkAllAsRead({
+          body: tab === "all" ? {} : { type: tab },
+        });
 
-        set((state) => ({
-          centerMessages: markMessagesAsRead(state.centerMessages, tab),
-          centerMessagesByTab: Object.fromEntries(
-            (Object.entries(state.centerMessagesByTab) as Array<
-              [MessageTab, MessageDropdownItem[]]
-            >).map(([cacheTab, messages]) => [
-              cacheTab,
-              markMessagesAsRead(messages, tab),
-            ]),
-          ) as MessageTabCache,
-          dropdownMessages: markMessagesAsRead(state.dropdownMessages, tab),
-          dropdownMessagesByTab: Object.fromEntries(
-            (Object.entries(state.dropdownMessagesByTab) as Array<
-              [MessageTab, MessageDropdownItem[]]
-            >).map(([cacheTab, messages]) => [
-              cacheTab,
-              markMessagesAsRead(messages, tab),
-            ]),
-          ) as MessageTabCache,
-        }));
+        set((state) => {
+          const nextUnreadSummary = markUnreadSummaryAsRead(state.unreadSummary, tab);
+
+          return {
+            centerMessages: markMessagesAsRead(state.centerMessages, tab),
+            centerMessagesByTab: Object.fromEntries(
+              (Object.entries(state.centerMessagesByTab) as Array<
+                [MessageTab, MessageDropdownItem[]]
+              >).map(([cacheTab, messages]) => [
+                cacheTab,
+                markMessagesAsRead(messages, tab),
+              ]),
+            ) as MessageTabCache,
+            dropdownMessages: markMessagesAsRead(state.dropdownMessages, tab),
+            dropdownMessagesByTab: Object.fromEntries(
+              (Object.entries(state.dropdownMessagesByTab) as Array<
+                [MessageTab, MessageDropdownItem[]]
+              >).map(([cacheTab, messages]) => [
+                cacheTab,
+                markMessagesAsRead(messages, tab),
+              ]),
+            ) as MessageTabCache,
+            unreadSummary: nextUnreadSummary,
+            unreadCount: nextUnreadSummary?.total ?? 0,
+          };
+        });
 
         void get().fetchUnreadCount();
 
+        const socket = messageSocketClient.instance;
         if (socket?.connected) {
           socket.emit("getUnreadCount");
         }
@@ -508,7 +602,9 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
         return;
       }
 
-      if (!token || !useUserStore.getState().isAuthenticated) {
+      const currentUser = useUserStore.getState().user;
+
+      if (!token || !useUserStore.getState().isAuthenticated || !currentUser?.id) {
         get().teardownSocket();
         return;
       }
@@ -542,8 +638,21 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
         void get().fetchMessages();
       };
 
-      const handleError = (payload: MessageSocketErrorPayload) => {
-        console.error("Message websocket error:", payload);
+      const handleError = (payload: MessageSocketErrorPayload | unknown) => {
+        const message = getSocketErrorMessage(payload);
+
+        if (message) {
+          console.error("Message websocket error:", message, payload);
+          return;
+        }
+
+        if (
+          payload &&
+          typeof payload === "object" &&
+          Object.keys(payload).length > 0
+        ) {
+          console.warn("Message websocket emitted non-standard error payload:", payload);
+        }
       };
 
       const handleUnreadCount = (payload: MessageSocketUnreadPayload) => {
@@ -770,6 +879,8 @@ export const useMessageNotificationStore = create<MessageNotificationState>()(
 
     reset: () => {
       get().teardownSocket();
+      centerMessagesRequestVersion++;
+      dropdownMessagesRequestVersion++;
       set({
         centerMessages: [],
         centerMessagesByTab: createEmptyDropdownCache(),

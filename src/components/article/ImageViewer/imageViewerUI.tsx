@@ -1,11 +1,12 @@
+import ImageBlock from "@/assets/images/placeholder/image_blocked.webp";
 import {
-  ChevronLeft,
-  ChevronRight,
-  Minus,
-  Plus,
-  RotateCcwSquare,
-  Square,
-  X,
+    ChevronLeft,
+    ChevronRight,
+    Minus,
+    Plus,
+    RotateCcwSquare,
+    Square,
+    X,
 } from "lucide-react";
 import { ComponentType, Dispatch, SetStateAction } from "react";
 import ReactDOMServer from "react-dom/server";
@@ -186,6 +187,9 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
     const endIdx = Math.min(images.length, startIdx + MAX_VISIBLE_THUMBNAILS);
 
     const renderThumbnail = (src: string, idx: number) => {
+      // 处理被屏蔽的图片
+      const processedSrc = src === "/images/blocked.webp" ? ImageBlock.src : src;
+
       const thumbWrapper = document.createElement("div");
       thumbWrapper.className =
         "custom-thumbnail-item box-border size-15 shrink-0 cursor-pointer overflow-hidden rounded-md border-2 border-solid transition-all";
@@ -195,7 +199,7 @@ export function setupViewerCustomUI(options: SetupViewerCustomUIOptions) {
       thumbWrapper.style.opacity = idx === currentIndex ? "1" : "0.6";
 
       const thumbImg = document.createElement("img");
-      thumbImg.src = src;
+      thumbImg.src = processedSrc;
       thumbImg.alt = `${alt} ${idx + 1}`;
       thumbImg.className = "block size-full object-cover";
       thumbImg.loading = "lazy";

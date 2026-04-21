@@ -24,7 +24,7 @@ import {
   DialogTitle,
 } from "@/components/ui/Dialog";
 import { usePathname, useRouter } from "@/i18n/routing";
-import { cn } from "@/lib";
+import { cn, showToast, getErrorMessage } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import {
@@ -146,6 +146,7 @@ export function ArticleMenu({
       setBlockDialogOpen(false);
     } catch (error) {
       console.error("Failed to block user:", error);
+      showToast(getErrorMessage(error, "屏蔽失败"));
     } finally {
       setBlockSubmitting(false);
     }
@@ -162,6 +163,7 @@ export function ArticleMenu({
       });
     } catch (error) {
       console.error("Failed to dislike article:", error);
+      showToast(getErrorMessage(error, "操作失败"));
     } finally {
       setDislikeSubmitting(false);
     }
@@ -169,10 +171,14 @@ export function ArticleMenu({
 
   const handleEditArticle = () => {
     if (!canEdit) return;
-    const editPath =
-      articleType === "image"
-        ? `/create/image?articleId=${articleId}`
-        : `/create/post?articleId=${articleId}`;
+    let editPath: string;
+    if (articleType === "video") {
+      editPath = `/create/video?articleId=${articleId}`;
+    } else if (articleType === "image") {
+      editPath = `/create/image?articleId=${articleId}`;
+    } else {
+      editPath = `/create/post?articleId=${articleId}`;
+    }
     router.push(editPath);
   };
 
@@ -190,6 +196,7 @@ export function ArticleMenu({
       router.refresh();
     } catch (error) {
       console.error("Failed to update article featured state:", error);
+      showToast(getErrorMessage(error, "操作失败"));
     } finally {
       setFeatureSubmitting(false);
     }
@@ -209,6 +216,7 @@ export function ArticleMenu({
       router.refresh();
     } catch (error) {
       console.error("Failed to update article profile pin state:", error);
+      showToast(getErrorMessage(error, "操作失败"));
     } finally {
       setPinSubmitting(false);
     }
@@ -232,6 +240,7 @@ export function ArticleMenu({
       window.location.reload();
     } catch (error) {
       console.error("Failed to delete article:", error);
+      showToast(getErrorMessage(error, "删除失败"));
     } finally {
       setDeleteSubmitting(false);
     }

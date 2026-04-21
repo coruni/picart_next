@@ -11,7 +11,7 @@ import {
 import { useIsMobile } from "@/hooks";
 import { useAuthNavigation } from "@/hooks/useAuthNavigation";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
-import { cn, formatCompactNumber } from "@/lib";
+import { cn, formatCompactNumber, showToast, getErrorMessage } from "@/lib";
 import { isAccountSectionHidden } from "@/lib/account-privacy";
 import { buildMessageCenterHref } from "@/lib/message-routes";
 import { openLoginDialog } from "@/lib/modal-helpers";
@@ -129,6 +129,7 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
       setShowReportDialog(false);
     } catch (error) {
       console.error("Failed to report user:", error);
+      showToast(getErrorMessage(error, "举报失败"));
     } finally {
       setReportSubmitting(false);
     }
@@ -275,13 +276,15 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                   {user.nickname || user.username}
                 </span>
                 {user?.equippedDecorations?.ACHIEVEMENT_BADGE && (
-                  <span className="relative size-4" data-auto-translate-conten>
+                  <span className="relative block size-4" data-auto-translate-conten>
                     <ImageWithFallback
                       src={
                         user?.equippedDecorations?.ACHIEVEMENT_BADGE?.imageUrl
                       }
                       alt={user?.equippedDecorations?.ACHIEVEMENT_BADGE?.name}
                       title={user?.equippedDecorations?.ACHIEVEMENT_BADGE?.name}
+                      fill
+                      className="object-cover"
                     />
                   </span>
                 )}

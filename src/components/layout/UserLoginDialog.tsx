@@ -79,8 +79,7 @@ export function UserLoginDialog() {
   const loginLogo = siteConfig?.site_logo || loginLogoPng;
 
   // 使用 selector 获取所需状态方法
-  const setToken = useUserStore((state) => state.setToken);
-  const setUser = useUserStore((state) => state.setUser);
+  const login = useUserStore((state) => state.login);
 
   // 是否需要邮箱验证
   const needEmailVerification = siteConfig?.user_email_verification === true;
@@ -127,13 +126,8 @@ export function UserLoginDialog() {
           return;
         }
 
-        setToken(data?.data.token || "");
-        setUser(
-          Object.assign({}, data?.data, {
-            token: undefined,
-            refreshToken: undefined,
-          }),
-        );
+        const { token, refreshToken, ...userData } = data.data;
+        login(userData as Parameters<typeof login>[0], token, refreshToken || "");
         window.location.reload();
       } catch (error) {
         const message = getLoginErrorMessage(error);
@@ -208,14 +202,11 @@ export function UserLoginDialog() {
           },
         });
 
-        setToken(data?.data.token || "");
-        setUser(
-          Object.assign({}, data?.data, {
-            token: undefined,
-            refreshToken: undefined,
-          }),
-        );
-        window.location.reload();
+        if (data?.data) {
+          const { token: regToken, refreshToken: regRefreshToken, ...regUserData } = data.data;
+          login(regUserData as Parameters<typeof login>[0], regToken, regRefreshToken || "");
+          window.location.reload();
+        }
       } catch (error) {
         console.error(tReg("registerFailed"), error);
         setIsSubmitting(false);

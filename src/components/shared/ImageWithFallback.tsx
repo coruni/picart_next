@@ -1,6 +1,8 @@
 "use client";
 
+import ImageBlock from "@/assets/images/placeholder/image_blocked.webp";
 import imageError from "@/assets/images/placeholder/image_error.webp";
+import ImagePending from "@/assets/images/placeholder/image_pending.webp";
 import imagePlaceholder from "@/assets/images/placeholder/image_placeholder.webp";
 import { cn } from "@/lib";
 import type { StaticImageData } from "next/image";
@@ -10,6 +12,13 @@ import { useEffect, useRef, useState } from "react";
 const DEFAULT_PLACEHOLDER = imagePlaceholder;
 const DEFAULT_ERROR = imageError;
 const UNOPTIMIZED_HOSTS = new Set(["cf-s3.coslark.org"]);
+
+// Helper to extract string URL from src (string or StaticImageData)
+const getSrcString = (src: string | StaticImageData | undefined): string => {
+  if (!src) return "";
+  if (typeof src === "string") return src;
+  return src.src;
+};
 
 // 全局图片缓存 - 存储已加载成功的图片URL
 const imageCache = new Map<string, "loaded" | "error">();
@@ -55,13 +64,33 @@ export function ImageWithFallback({
   lazyThreshold = 0,
   ...rest
 }: ImageWithFallbackProps) {
-  const srcString = typeof src === "string" ? src : src?.toString() || "";
+  // Handle src as string or StaticImageData object
+  let srcString: string;
+  if (typeof src === "string") {
+    srcString = src;
+  } else if (src && typeof src === "object" && "src" in src) {
+    // StaticImageData object
+    srcString = (src as StaticImageData).src;
+  } else {
+    srcString = String(src ?? "");
+  }
+
+  // 如果图片被屏蔽，使用错误占位图
+  if (srcString.includes("/images/blocked.webp")) {
+    srcString = ImageBlock.src;
+  }
+  // 如果图片是pending状态，使用pending占位图
+  if (srcString.includes("/images/pending.webp")) {
+    srcString = ImagePending.src;
+  }
 
   // 从缓存获取初始状态
   const cachedStatus = imageCache.get(srcString);
   const [status, setStatus] = useState<"loading" | "loaded" | "error">(
     cachedStatus || "loading",
   );
+  // 实际图片是否已渲染（用于缓存命中时的淡入效果）
+  const [imageRendered, setImageRendered] = useState(false);
   const [shouldLoad, setShouldLoad] = useState(!lazy);
   const wrapperRef = useRef<HTMLSpanElement | null>(null);
 
@@ -99,12 +128,18 @@ export function ImageWithFallback({
 
     // 如果已有缓存，直接使用缓存状态
     if (imageCache.has(srcString)) {
-      setStatus(imageCache.get(srcString)!);
+      const cached = imageCache.get(srcString)!;
+      setStatus(cached);
+      // 缓存命中且已成功加载时，标记为已渲染
+      if (cached === "loaded") {
+        setImageRendered(true);
+      }
       return;
     }
 
     // 重置为加载中状态
     setStatus("loading");
+    setImageRendered(false);
 
     // 预加载图片并更新缓存
     preloadImage(srcString)
@@ -121,6 +156,7 @@ export function ImageWithFallback({
   const handleLoad: ImageProps["onLoad"] = (event) => {
     imageCache.set(srcString, "loaded");
     setStatus("loaded");
+    setImageRendered(true);
     onLoad?.(event);
   };
 
@@ -131,21 +167,38 @@ export function ImageWithFallback({
   };
 
   const fallbackSrc = status === "error" ? errorSrc : placeholderSrc;
-  const imageClassName = cn(className, status === "loaded" ? "" : "opacity-0");
+  const fallbackSrcString = getSrcString(fallbackSrc);
+  const placeholderSrcString = getSrcString(placeholderSrc);
+  // 图片真正显示的条件：状态为 loaded 且实际已渲染
+  const isImageVisible = status === "loaded" && imageRendered;
+  // 添加过渡动画类，避免加载图到实际图的闪烁
+  const imageClassName = cn(
+    className,
+    "transition-opacity duration-300",
+    isImageVisible ? "opacity-100" : "opacity-0",
+  );
+  const placeholderClassName = cn(
+    "pointer-events-none absolute inset-0 block select-none bg-cover bg-center transition-opacity duration-300",
+    isImageVisible ? "opacity-0" : "opacity-100",
+  );
+
+  // 判断是否为本地图片（StaticImageData）
+  const isLocalImage = typeof src !== "string";
 
   const shouldDisableOptimization =
-    typeof src === "string" &&
-    (() => {
-      try {
-        const parsed = new URL(src, "http://localhost");
-        return (
-          parsed.searchParams.has("url") ||
-          UNOPTIMIZED_HOSTS.has(parsed.hostname)
-        );
-      } catch {
-        return false;
-      }
-    })();
+    isLocalImage ||
+    (typeof src === "string" &&
+      (() => {
+        try {
+          const parsed = new URL(src, "http://localhost");
+          return (
+            parsed.searchParams.has("url") ||
+            UNOPTIMIZED_HOSTS.has(parsed.hostname)
+          );
+        } catch {
+          return false;
+        }
+      })());
 
   // 未开始加载时显示占位符
   if (!shouldLoad) {
@@ -168,8 +221,8 @@ export function ImageWithFallback({
       >
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 block select-none bg-cover bg-center"
-          style={{ backgroundImage: `url(${placeholderSrc})` }}
+          className={cn(placeholderClassName)}
+          style={{ backgroundImage: `url(${placeholderSrcString})` }}
         />
       </span>
     );
@@ -186,7 +239,7 @@ export function ImageWithFallback({
         )}
       >
         <Image
-          src={src}
+          src={srcString}
           alt={alt}
           fill
           unoptimized={shouldDisableOptimization}
@@ -195,11 +248,11 @@ export function ImageWithFallback({
           onError={handleError}
           {...rest}
         />
-        {status !== "loaded" && (
+        {!isImageVisible && (
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-0 block select-none bg-cover bg-center"
-            style={{ backgroundImage: `url(${fallbackSrc})` }}
+            className={cn(placeholderClassName)}
+            style={{ backgroundImage: `url(${fallbackSrcString})` }}
           />
         )}
       </span>
@@ -223,7 +276,7 @@ export function ImageWithFallback({
       >
         <Image
           {...rest}
-          src={src}
+          src={srcString}
           alt={alt}
           width={1}
           height={1}
@@ -232,11 +285,11 @@ export function ImageWithFallback({
           onLoad={handleLoad}
           onError={handleError}
         />
-        {status !== "loaded" && (
+        {!isImageVisible && (
           <span
             aria-hidden
-            className="pointer-events-none absolute inset-0 block select-none bg-cover bg-center"
-            style={{ backgroundImage: `url(${fallbackSrc})` }}
+            className={cn(placeholderClassName)}
+            style={{ backgroundImage: `url(${fallbackSrcString})` }}
           />
         )}
       </span>
@@ -254,24 +307,22 @@ export function ImageWithFallback({
     >
       <Image
         {...rest}
-        src={src}
+        src={srcString}
         alt={alt}
         width={width}
         height={height}
         unoptimized={shouldDisableOptimization}
         className={cn("h-auto max-w-full", imageClassName)}
         style={{
-          width: "auto",
-          height: "auto",
           ...style,
         }}
         onLoad={handleLoad}
         onError={handleError}
       />
-      {status !== "loaded" && (
+      {!isImageVisible && (
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-0 block select-none bg-cover bg-center"
+          className={cn(placeholderClassName)}
           style={{ backgroundImage: `url(${fallbackSrc})` }}
         />
       )}
