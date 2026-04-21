@@ -356,7 +356,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
             </label>
             <button
               type="button"
-              onClick={() => openModal(MODAL_IDS.AVATAR_FRAME, { avatarFrameId: user.avatarFrameId })}
+              onClick={() => openModal(MODAL_IDS.AVATAR_FRAME, { avatarFrameId: user.equippedDecorations?.AVATAR_FRAME?.id })}
               className="text-sm bg-[#EDF1F7] hover:bg-[#8592A3] text-black/60 hover:text-white leading-7 rounded-full cursor-pointer px-4"
             >
               {t("changeAvatarFrame")}

@@ -135,9 +135,7 @@ export function DropdownMenu({
             position === "right"
               ? "right-0 origin-top-right"
               : "left-0 origin-top-left",
-            isOpen
-              ? "opacity-100"
-              : "pointer-events-none hidden -z-10!",
+            isOpen ? "opacity-100" : "pointer-events-none hidden -z-10!",
             menuClassName,
           )}
           role="menu"
@@ -163,13 +161,13 @@ export function DropdownMenu({
                   "flex items-center gap-2 rounded-xl p-2 text-sm whitespace-nowrap",
                   item.disabled
                     ? "cursor-not-allowed opacity-50"
-                    : "group cursor-pointer text-black/75 hover:bg-primary/12 hover:text-primary dark:text-white/75",
+                    : "group cursor-pointer  hover:bg-primary/12 hover:text-primary ",
                   item.className,
                 )}
                 onClick={() => handleItemClick(item)}
               >
-                {item.icon && <span>{item.icon}</span>}
-                <span className="whitespace-nowrap">{item.label}</span>
+                {item.icon && <span className="text-secondary">{item.icon}</span>}
+                <span className="whitespace-nowrap  text-muted-foreground">{item.label}</span>
               </div>
             ))}
           </div>

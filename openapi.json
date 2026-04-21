@@ -39526,6 +39526,9 @@
                               "rarity": {
                                 "type": "string"
                               },
+                              "bubbleColor": {
+                                "type": "string"
+                              },
                               "obtainMethod": {
                                 "type": "string"
                               },
@@ -39551,7 +39554,8 @@
                                 "type": "integer"
                               },
                               "achievementId": {
-                                "type": "integer"
+                                "type": "integer",
+                                "nullable": true
                               },
                               "requiredLikes": {
                                 "type": "integer"
@@ -39575,7 +39579,7 @@
                                 "type": "boolean"
                               },
                               "userExpiresAt": {
-                                "type": "integer"
+                                "type": "string"
                               },
                               "userIsPermanent": {
                                 "type": "boolean"
@@ -39589,6 +39593,7 @@
                               "imageUrl",
                               "previewUrl",
                               "rarity",
+                              "bubbleColor",
                               "obtainMethod",
                               "isPurchasable",
                               "price",
@@ -39833,6 +39838,9 @@
                         "rarity": {
                           "type": "string"
                         },
+                        "bubbleColor": {
+                          "type": "string"
+                        },
                         "obtainMethod": {
                           "type": "string"
                         },
@@ -39899,6 +39907,7 @@
                         "imageUrl",
                         "previewUrl",
                         "rarity",
+                        "bubbleColor",
                         "obtainMethod",
                         "isPurchasable",
                         "price",
@@ -40237,6 +40246,9 @@
                                   "rarity": {
                                     "type": "string"
                                   },
+                                  "bubbleColor": {
+                                    "type": "string"
+                                  },
                                   "obtainMethod": {
                                     "type": "string"
                                   },
@@ -40262,7 +40274,8 @@
                                     "type": "integer"
                                   },
                                   "achievementId": {
-                                    "type": "integer"
+                                    "type": "integer",
+                                    "nullable": true
                                   },
                                   "requiredLikes": {
                                     "type": "integer"
@@ -40285,6 +40298,7 @@
                                   "imageUrl",
                                   "previewUrl",
                                   "rarity",
+                                  "bubbleColor",
                                   "obtainMethod",
                                   "isPurchasable",
                                   "price",
@@ -40322,7 +40336,8 @@
                                 "type": "integer"
                               },
                               "remark": {
-                                "type": "string"
+                                "type": "string",
+                                "nullable": true
                               },
                               "createdAt": {
                                 "type": "string"
@@ -45931,19 +45946,9 @@
         "requestBody": {
           "content": {
             "multipart/form-data": {
-              "encoding": {
-                "file": {
-                  "contentType": "multipart/form-data"
-                }
-              },
               "schema": {
                 "type": "object",
                 "properties": {
-                  "file": {
-                    "format": "binary",
-                    "type": "string",
-                    "description": "表情图片文件"
-                  },
                   "name": {
                     "type": "string",
                     "description": "表情名称",
@@ -45973,7 +45978,6 @@
                 },
                 "required": [
                   "name",
-                  "file",
                   "isPublic"
                 ]
               }
@@ -52659,6 +52663,10 @@
           "imageUrl": {
             "type": "string",
             "description": "装饰品图片URL"
+          },
+          "bubbleColor": {
+            "type": "string",
+            "description": "评论颜色"
           },
           "previewUrl": {
             "type": "string",

@@ -15,18 +15,14 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Link } from "@/i18n/routing";
 import { prepareCommentHtmlForDisplay } from "@/lib";
 import {
-  BadgeCheck,
   FileCog,
   FileText,
-  Images,
-  KeyRound,
   Medal,
   MessageSquareText,
   ReceiptText,
+  Search,
   ShieldUser,
   Sparkles,
-  Tags,
-  TriangleAlert,
   Trophy,
   UserRoundCog,
 } from "lucide-react";
@@ -231,121 +227,59 @@ export function DashboardClientPage() {
   }, [copy.summary, data]);
 
   if (!ready || loading) {
-    return <DashboardLoadingView text={copy.common.loading} />;
+    return (
+      <DashboardPageFrame title={copy.pages.overview.title}>
+        <DashboardLoadingView text={copy.common.loading} />
+      </DashboardPageFrame>
+    );
   }
 
   if (error || !data) {
     return (
-      <DashboardErrorView
-        title={copy.pages.overview.title}
-        description={permissionWarning || copy.common.noPermission}
-        retryLabel={copy.common.retry}
-        onRetry={() => window.location.reload()}
-      />
+      <DashboardPageFrame title={copy.pages.overview.title}>
+        <DashboardErrorView
+          title={copy.pages.overview.title}
+          description={permissionWarning || copy.common.noPermission}
+          retryLabel={copy.common.retry}
+          onRetry={() => window.location.reload()}
+        />
+      </DashboardPageFrame>
     );
   }
 
   return (
-    <DashboardPageFrame className="h-full overflow-y-auto">
+    <DashboardPageFrame
+      title={copy.pages.overview.title}
+      description={copy.pages.overview.description}
+    >
       {permissionWarning ? (
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-700">
+        <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-700">
           {permissionWarning}
         </div>
       ) : null}
 
       <DashboardStatCards items={summaryItems} locale={locale} />
 
-      <div className="grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
-        <div className="space-y-6">
+      <div className="grid gap-6 lg:grid-cols-3">
+        {/* 左侧主要内容区 */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* 快捷入口 */}
           <DashboardPanel
-            title={copy.sections.recentChanges}
-            description={copy.shell.description}
+            title={copy.sections.moduleShortcuts}
+            collapsible
+            defaultCollapsed={false}
           >
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {[
-                {
-                  href: "/dashboard/users",
-                  label: copy.nav.users,
-                  text: copy.shortcuts.users,
-                  value: data.summary.usersTotal,
-                  icon: ShieldUser,
-                },
-                {
-                  href: "/dashboard/articles",
-                  label: copy.nav.articles,
-                  text: copy.shortcuts.articles,
-                  value: data.summary.articlesTotal,
-                  icon: FileText,
-                },
-                {
-                  href: "/dashboard/comments",
-                  label: copy.nav.comments,
-                  text: copy.shortcuts.comments,
-                  value: data.summary.commentsTotal,
-                  icon: MessageSquareText,
-                },
-                {
-                  href: "/dashboard/points",
-                  label: copy.nav.points,
-                  text: copy.shortcuts.points,
-                  icon: Medal,
-                },
-                {
-                  href: "/dashboard/orders",
-                  label: copy.nav.orders,
-                  text: copy.shortcuts.orders,
-                  value: data.summary.ordersTotal,
-                  icon: ReceiptText,
-                },
-                {
-                  href: "/dashboard/tags",
-                  label: copy.nav.tags,
-                  text: copy.shortcuts.tags,
-                  icon: Tags,
-                },
-                {
-                  href: "/dashboard/roles",
-                  label: copy.nav.roles,
-                  text: copy.shortcuts.roles,
-                  icon: BadgeCheck,
-                },
-                {
-                  href: "/dashboard/permissions",
-                  label: copy.nav.permissions,
-                  text: copy.shortcuts.permissions,
-                  icon: KeyRound,
-                },
-                {
-                  href: "/dashboard/banners",
-                  label: copy.nav.banners,
-                  text: copy.shortcuts.banners,
-                  icon: Images,
-                },
-                {
-                  href: "/dashboard/reports",
-                  label: copy.nav.reports,
-                  text: copy.shortcuts.reports,
-                  icon: TriangleAlert,
-                },
-                {
-                  href: "/dashboard/decorations",
-                  label: copy.nav.decorations,
-                  text: copy.shortcuts.decorations,
-                  icon: Sparkles,
-                },
-                {
-                  href: "/dashboard/achievements",
-                  label: copy.nav.achievements,
-                  text: copy.shortcuts.achievements,
-                  icon: Trophy,
-                },
-                {
-                  href: "/dashboard/configs",
-                  label: copy.nav.configs,
-                  text: copy.shortcuts.configs,
-                  value: data.summary.configsTotal,
-                  icon: FileCog,
-                },
+                { href: "/dashboard/users", label: copy.nav.users, icon: ShieldUser, desc: copy.shortcuts.users },
+                { href: "/dashboard/articles", label: copy.nav.articles, icon: FileText, desc: copy.shortcuts.articles },
+                { href: "/dashboard/comments", label: copy.nav.comments, icon: MessageSquareText, desc: copy.shortcuts.comments },
+                { href: "/dashboard/orders", label: copy.nav.orders, icon: ReceiptText, desc: copy.shortcuts.orders },
+                { href: "/dashboard/points", label: copy.nav.points, icon: Medal, desc: copy.shortcuts.points },
+                { href: "/dashboard/decorations", label: copy.nav.decorations, icon: Sparkles, desc: copy.shortcuts.decorations },
+                { href: "/dashboard/achievements", label: copy.nav.achievements, icon: Trophy, desc: copy.shortcuts.achievements },
+                { href: "/dashboard/configs", label: copy.nav.configs, icon: FileCog, desc: copy.shortcuts.configs },
+                { href: "/dashboard/search", label: copy.nav.search, icon: Search, desc: copy.pages.search.description },
               ].map((item) => {
                 const Icon = item.icon;
 
@@ -353,32 +287,28 @@ export function DashboardClientPage() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="rounded-xl border border-border bg-background px-4 py-4 transition-colors hover:border-primary/40 hover:bg-primary/5"
+                    className="group flex flex-col gap-2 rounded-lg border border-border bg-card p-4 transition-all hover:border-primary/30 hover:bg-primary/5 hover:shadow-sm"
                   >
-                    <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                      <Icon className="size-4 text-primary" />
-                      {item.label}
-                    </div>
-                  <div className="mt-1 text-sm text-muted-foreground">
-                    {item.text}
-                  </div>
-                    {typeof item.value === "number" ? (
-                      <div className="mt-3 text-lg font-semibold text-primary">
-                        {formatDashboardCount(item.value, locale)}
+                    <div className="flex items-center gap-2">
+                      <div className="flex size-8 items-center justify-center rounded-md bg-primary/10 text-primary">
+                        <Icon className="size-4" />
                       </div>
-                    ) : null}
+                      <span className="font-medium text-foreground">{item.label}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground line-clamp-2">{item.desc}</p>
                   </Link>
                 );
               })}
             </div>
           </DashboardPanel>
 
+          {/* 最近用户 */}
           <DashboardPanel
             title={copy.sections.latestUsers}
             action={
               <Link
                 href="/dashboard/users"
-                className="text-sm font-medium text-primary"
+                className="text-sm font-medium text-primary hover:underline"
               >
                 {copy.nav.users}
               </Link>
@@ -400,7 +330,7 @@ export function DashboardClientPage() {
                       <Avatar
                         url={item.avatar}
                         frameUrl={item.equippedDecorations?.AVATAR_FRAME?.imageUrl}
-                        className="size-10 shrink-0"
+                        className="size-9 shrink-0"
                         alt={item.nickname || item.username}
                       />
                       <div className="min-w-0">
@@ -434,12 +364,13 @@ export function DashboardClientPage() {
             />
           </DashboardPanel>
 
+          {/* 最近文章 */}
           <DashboardPanel
             title={copy.sections.latestArticles}
             action={
               <Link
                 href="/dashboard/articles"
-                className="text-sm font-medium text-primary"
+                className="text-sm font-medium text-primary hover:underline"
               >
                 {copy.nav.articles}
               </Link>
@@ -458,11 +389,11 @@ export function DashboardClientPage() {
                       <Link
                         href={`/article/${item.id}`}
                         prefetch={false}
-                        className="line-clamp-2 text-sm font-medium text-foreground hover:text-primary"
+                        className="line-clamp-1 text-sm font-medium text-foreground hover:text-primary"
                       >
                         {item.title}
                       </Link>
-                      <div className="mt-1 text-xs text-muted-foreground">
+                      <div className="mt-0.5 text-xs text-muted-foreground">
                         {item.author?.nickname || item.author?.username || "-"}
                       </div>
                     </div>
@@ -489,13 +420,15 @@ export function DashboardClientPage() {
           </DashboardPanel>
         </div>
 
+        {/* 右侧边栏 */}
         <div className="space-y-6">
+          {/* 最新评论 */}
           <DashboardPanel
             title={copy.sections.latestComments}
             action={
               <Link
                 href="/dashboard/comments"
-                className="text-sm font-medium text-primary"
+                className="text-sm font-medium text-primary hover:underline"
               >
                 {copy.nav.comments}
               </Link>
@@ -503,42 +436,47 @@ export function DashboardClientPage() {
           >
             <div className="space-y-3">
               {data.comments.length ? (
-                data.comments.map((item) => (
+                data.comments.slice(0, 5).map((item) => (
                   <article
                     key={item.id}
-                    className="rounded-xl border border-border bg-background px-4 py-3"
+                    className="rounded-lg border border-border bg-background p-3 transition-colors hover:bg-muted/30"
                   >
-                    <div className="text-sm font-medium text-foreground">
-                      {item.author?.nickname || item.author?.username || "-"}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm font-medium text-foreground">
+                        {item.author?.nickname || item.author?.username || "-"}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDashboardDate(item.createdAt)}
+                      </span>
                     </div>
                     <div
-                      className="mt-1 line-clamp-3 overflow-hidden text-sm leading-6 text-muted-foreground [&_p]:m-0 [&_span]:align-middle [&_img]:inline-block [&_img]:align-middle"
+                      className="mt-1 line-clamp-2 text-sm text-muted-foreground"
                       dangerouslySetInnerHTML={{
                         __html: prepareCommentHtmlForDisplay(
                           String(item.content || ""),
                         ),
                       }}
                     />
-                    <div className="mt-2 flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                      <span>{item.article?.title || "-"}</span>
-                      <span>{formatDashboardDate(item.createdAt)}</span>
+                    <div className="mt-2 truncate text-xs text-muted-foreground">
+                      {item.article?.title || "-"}
                     </div>
                   </article>
                 ))
               ) : (
-                <div className="rounded-xl border border-dashed border-border bg-muted/30 px-4 py-10 text-center text-sm text-muted-foreground">
+                <div className="rounded-lg border border-dashed border-border bg-muted/30 py-8 text-center text-sm text-muted-foreground">
                   {copy.empty.comments}
                 </div>
               )}
             </div>
           </DashboardPanel>
 
+          {/* 最近订单 */}
           <DashboardPanel
             title={copy.sections.latestOrders}
             action={
               <Link
                 href="/dashboard/orders"
-                className="text-sm font-medium text-primary"
+                className="text-sm font-medium text-primary hover:underline"
               >
                 {copy.nav.orders}
               </Link>
@@ -546,184 +484,132 @@ export function DashboardClientPage() {
           >
             <div className="space-y-3">
               {data.orders.length ? (
-                data.orders.map((item) => (
+                data.orders.slice(0, 5).map((item) => (
                   <article
                     key={item.id}
-                    className="rounded-xl border border-border bg-background px-4 py-3"
+                    className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background p-3 transition-colors hover:bg-muted/30"
                   >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="truncate text-sm font-medium text-foreground">
-                          {item.orderNo}
-                        </div>
-                        <div className="mt-1 line-clamp-2 text-sm text-muted-foreground">
-                          {item.title}
-                        </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-medium text-foreground">
+                        {item.orderNo}
                       </div>
-                      <DashboardStatusBadge value={item.status} />
+                      <div className="mt-0.5 truncate text-xs text-muted-foreground">
+                        {item.title}
+                      </div>
                     </div>
-                    <div className="mt-2 flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                      <span>{item.amount}</span>
-                      <span>{formatDashboardDate(item.createdAt)}</span>
+                    <div className="text-right">
+                      <DashboardStatusBadge value={item.status} size="sm" />
+                      <div className="mt-1 text-xs text-muted-foreground">
+                        {formatDashboardDate(item.createdAt)}
+                      </div>
                     </div>
                   </article>
                 ))
               ) : (
-                <div className="rounded-xl border border-dashed border-border bg-muted/30 px-4 py-10 text-center text-sm text-muted-foreground">
+                <div className="rounded-lg border border-dashed border-border bg-muted/30 py-8 text-center text-sm text-muted-foreground">
                   {copy.empty.orders}
                 </div>
               )}
             </div>
           </DashboardPanel>
 
+          {/* 配置概览 */}
           <DashboardPanel
             title={copy.sections.latestConfigs}
-            action={
-              <Link
-                href="/dashboard/configs"
-                className="text-sm font-medium text-primary"
-              >
-                {copy.nav.configs}
-              </Link>
-            }
+            collapsible
+            defaultCollapsed={true}
           >
             <div className="space-y-3">
               {data.publicConfig ? (
-                <article className="rounded-xl border border-border bg-background px-4 py-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="text-sm font-medium text-foreground">
-                        {overviewText.publicConfig}
-                      </div>
-                      <div className="mt-1 text-xs text-muted-foreground">
-                        {overviewText.site}: {data.publicConfig.site_name || "-"}
-                      </div>
-                    </div>
+                <article className="rounded-lg border border-border bg-background p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm font-medium text-foreground">
+                      {overviewText.publicConfig}
+                    </span>
                     <DashboardStatusBadge
-                      value={
-                        data.publicConfig.maintenance_mode ? "inactive" : "active"
-                      }
+                      value={data.publicConfig.maintenance_mode ? "inactive" : "active"}
+                      size="sm"
                     />
                   </div>
-                  <div className="mt-3 grid gap-2 text-sm text-muted-foreground">
-                    <div>
-                      {overviewText.maintenance}:{" "}
-                      {data.publicConfig.maintenance_mode
-                        ? copy.status.active
-                        : copy.status.inactive}
+                  <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                    <div className="flex justify-between">
+                      <span>{overviewText.site}</span>
+                      <span className="text-foreground">{data.publicConfig.site_name || "-"}</span>
                     </div>
-                    <div>
-                      {overviewText.membership}:{" "}
-                      {data.publicConfig.membership_enabled
-                        ? copy.status.active
-                        : copy.status.inactive}
-                    </div>
-                    <div className="truncate">
-                      {overviewText.contact}: {data.publicConfig.site_contact || "-"}
+                    <div className="flex justify-between">
+                      <span>{overviewText.maintenance}</span>
+                      <span>{data.publicConfig.maintenance_mode ? copy.status.active : copy.status.inactive}</span>
                     </div>
                   </div>
                 </article>
               ) : null}
 
               {data.advertisementConfig ? (
-                <article className="rounded-xl border border-border bg-background px-4 py-3">
+                <article className="rounded-lg border border-border bg-background p-3">
                   <div className="text-sm font-medium text-foreground">
                     {overviewText.advertisement}
                   </div>
-                  <div className="mt-3 grid gap-2 text-sm text-muted-foreground">
-                    <div className="flex items-center justify-between gap-3">
-                      <span>{overviewText.homepageAd}</span>
-                      <DashboardStatusBadge
-                        value={
-                          data.advertisementConfig.homepage.enabled
-                            ? "active"
-                            : "inactive"
-                        }
-                      />
-                    </div>
-                    <div className="flex items-center justify-between gap-3">
-                      <span>{overviewText.articleTopAd}</span>
-                      <DashboardStatusBadge
-                        value={
-                          data.advertisementConfig.articleTop.enabled
-                            ? "active"
-                            : "inactive"
-                        }
-                      />
-                    </div>
-                    <div className="flex items-center justify-between gap-3">
-                      <span>{overviewText.articleBottomAd}</span>
-                      <DashboardStatusBadge
-                        value={
-                          data.advertisementConfig.articleBottom.enabled
-                            ? "active"
-                            : "inactive"
-                        }
-                      />
-                    </div>
-                    <div className="flex items-center justify-between gap-3">
-                      <span>{overviewText.globalAd}</span>
-                      <DashboardStatusBadge
-                        value={
-                          data.advertisementConfig.global.enabled
-                            ? "active"
-                            : "inactive"
-                        }
-                      />
-                    </div>
+                  <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                    {[
+                      { key: "homepage", label: overviewText.homepageAd },
+                      { key: "articleTop", label: overviewText.articleTopAd },
+                      { key: "articleBottom", label: overviewText.articleBottomAd },
+                      { key: "global", label: overviewText.globalAd },
+                    ].map(({ key, label }) => {
+                      const config = data.advertisementConfig?.[key as keyof typeof data.advertisementConfig];
+                      const enabled = config?.enabled ?? false;
+                      return (
+                        <div key={key} className="flex items-center justify-between">
+                          <span className="text-muted-foreground">{label}</span>
+                          <span className={enabled ? "text-emerald-600" : "text-muted-foreground"}>
+                            {enabled ? copy.status.active : copy.status.inactive}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </article>
               ) : null}
 
-              <article className="rounded-xl border border-border bg-background px-4 py-3">
-                <div className="text-sm font-medium text-foreground">
-                  {overviewText.pendingQueue}
-                </div>
-                <div className="mt-3 space-y-2">
-                  {data.pendingOrderNos.length ? (
-                    data.pendingOrderNos.slice(0, 6).map((orderNo) => (
+              {data.pendingOrderNos.length > 0 && (
+                <article className="rounded-lg border border-border bg-background p-3">
+                  <div className="text-sm font-medium text-foreground">
+                    {overviewText.pendingQueue}
+                  </div>
+                  <div className="mt-2 space-y-1">
+                    {data.pendingOrderNos.slice(0, 3).map((orderNo) => (
                       <div
                         key={orderNo}
-                        className="rounded-lg border border-border/70 px-3 py-2 text-sm text-muted-foreground"
+                        className="truncate rounded bg-muted/50 px-2 py-1 text-xs text-muted-foreground font-mono"
                       >
                         {orderNo}
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-sm text-muted-foreground">
-                      {overviewText.noPendingOrders}
-                    </div>
-                  )}
-                </div>
-              </article>
-
-              {data.configs.length ? (
-                data.configs.map((item) => (
-                  <article
-                    key={item.id}
-                    className="rounded-xl border border-border bg-background px-4 py-3"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="truncate text-sm font-medium text-foreground">
-                          {item.key}
-                        </div>
-                        <div className="mt-1 text-xs text-muted-foreground">
-                          {item.group}
-                        </div>
+                    ))}
+                    {data.pendingOrderNos.length > 3 && (
+                      <div className="text-xs text-muted-foreground">
+                        +{data.pendingOrderNos.length - 3} more
                       </div>
-                      <DashboardStatusBadge value={item.public} />
-                    </div>
-                    <div className="mt-2 text-sm text-muted-foreground">
-                      {compactText(item.description || item.value, 90)}
-                    </div>
-                  </article>
-                ))
-              ) : (
-                <div className="rounded-xl border border-dashed border-border bg-muted/30 px-4 py-10 text-center text-sm text-muted-foreground">
-                  {copy.empty.configs}
-                </div>
+                    )}
+                  </div>
+                </article>
               )}
+
+              {data.configs.slice(0, 3).map((item) => (
+                <article
+                  key={item.id}
+                  className="rounded-lg border border-border bg-background p-3"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="truncate text-sm font-medium text-foreground">
+                      {item.key}
+                    </span>
+                    <DashboardStatusBadge value={item.public} size="sm" />
+                  </div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    {compactText(item.description || item.value, 50)}
+                  </div>
+                </article>
+              ))}
             </div>
           </DashboardPanel>
         </div>

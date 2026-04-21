@@ -11,7 +11,7 @@ import {
 import { useIsMobile } from "@/hooks";
 import { useAuthNavigation } from "@/hooks/useAuthNavigation";
 import { useScrollThreshold } from "@/hooks/useScrollThreshold";
-import { cn, formatCompactNumber, showToast, getErrorMessage } from "@/lib";
+import { cn, formatCompactNumber, getErrorMessage, showToast } from "@/lib";
 import { isAccountSectionHidden } from "@/lib/account-privacy";
 import { buildMessageCenterHref } from "@/lib/message-routes";
 import { openLoginDialog } from "@/lib/modal-helpers";
@@ -270,13 +270,16 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                 <span
                   className={cn(
                     "text-base text-white md:text-xl",
-                    user?.isMember ,
+                    user?.isMember,
                   )}
                 >
                   {user.nickname || user.username}
                 </span>
                 {user?.equippedDecorations?.ACHIEVEMENT_BADGE && (
-                  <span className="relative block size-4" data-auto-translate-conten>
+                  <span
+                    className="relative block size-4"
+                    data-auto-translate-conten
+                  >
                     <ImageWithFallback
                       src={
                         user?.equippedDecorations?.ACHIEVEMENT_BADGE?.imageUrl
@@ -382,13 +385,13 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                   >
                     <GuardedLink
                       onClick={() => setShowEditMenu(false)}
-                      className="flex cursor-pointer items-center gap-2 rounded-xl p-2 text-sm transition-colors hover:bg-primary/15 hover:text-primary"
+                      className="flex cursor-pointer items-center gap-2 rounded-xl text-muted-foreground p-2 text-sm transition-colors hover:bg-primary/15 hover:text-primary"
                       href={`/account/${user.id}/edit`}
                     >
                       <span>{t("editProfile")}</span>
                     </GuardedLink>
                     <div
-                      className="flex cursor-pointer items-center gap-2 truncate rounded-xl p-2 text-sm transition-colors hover:bg-primary/15 hover:text-primary"
+                      className="flex cursor-pointer items-center gap-2 truncate rounded-xl p-2 text-sm transition-colors text-muted-foreground  hover:bg-primary/15 hover:text-primary"
                       onClick={() => {
                         setShowEditMenu(false);
                         setShowBackgroundEditor(true);

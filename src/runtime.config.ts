@@ -7,7 +7,7 @@ import { resilientFetch } from "./lib/resilient-fetch";
 
 export const createClientConfig: CreateClientConfig = (config) => ({
   ...config,
-  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api",
+  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api/v1",
   fetch: resilientFetch,
 });
 
@@ -37,57 +37,25 @@ export function initializeInterceptors(): Promise<void> {
 
       client.interceptors.error.use(async (error) => {
         if (process.env.NODE_ENV === "development") {
-          console.warn("[auth][interceptor] response error", {
-            error,
-          });
+          console.warn("[auth][interceptor] response error", { error });
         }
 
         // 尝试从 error 中获取 response
-        const err = error as { code?: number; response?: { code?: number }; request?: { url?: string } };
+        const err = error as { code?: number; response?: { code?: number } };
         const status = err?.code ?? err?.response?.code;
-        const requestUrl = err?.request?.url ?? "";
-
-        // 跳过 refresh token 端点本身的错误（防止无限循环）
-        if (requestUrl.includes("/refresh-token")) {
-          console.warn("[auth] Refresh token request failed, clearing auth state");
-          try {
-            const { useUserStore } = await import("./stores/useUserStore");
-            await useUserStore.getState().logout();
-          } catch (logoutError) {
-            console.error("[auth] Error during logout:", logoutError);
-          }
-          return error;
-        }
 
         // 处理 401 未授权错误
         if (status === 401 && typeof window !== "undefined") {
-          // 先检查是否有 refreshToken，没有则直接退出
-          const { useUserStore } = await import("./stores/useUserStore");
-          const { refreshToken } = useUserStore.getState();
-
-          if (!refreshToken) {
-            console.warn("[auth] No refresh token available, logging out");
-            await useUserStore.getState().logout();
-            return error;
-          }
-
-          // 尝试刷新 token
+          // 尝试刷新 token（refreshAccessToken 内部使用原生 fetch，不会被拦截）
           try {
+            const { useUserStore } = await import("./stores/useUserStore");
             const refreshed = await useUserStore.getState().refreshAccessToken();
             console.log("[auth] Token refresh result:", refreshed);
             if (!refreshed) {
-              console.warn("[auth] Token refresh failed, logging out");
-              // 显式调用 logout 确保状态被清空
-              await useUserStore.getState().logout();
+              console.warn("[auth] Token refresh failed, user logged out");
             }
           } catch (refreshError) {
             console.error("[auth] Error during token refresh:", refreshError);
-            // 刷新过程中出错，也需要登出
-            try {
-              await useUserStore.getState().logout();
-            } catch (logoutError) {
-              console.error("[auth] Error during logout:", logoutError);
-            }
           }
         }
 

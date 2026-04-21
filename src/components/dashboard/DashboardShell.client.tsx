@@ -6,6 +6,7 @@ import { cn } from "@/lib";
 import { useUserStore } from "@/stores/useUserStore";
 import {
   BadgeCheck,
+  ChevronRight,
   FileCog,
   FileText,
   FolderTree,
@@ -26,7 +27,7 @@ import {
   X,
 } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import { getRoleLabels, looksLikeAdminRole } from "./utils";
 
@@ -38,124 +39,128 @@ function stripLocalePrefix(pathname: string) {
   return pathname.replace(/^\/(zh|en)(?=\/|$)/, "") || "/";
 }
 
+function useMediaQuery(query: string): boolean {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) {
+      setMatches(media.matches);
+    }
+    const listener = () => setMatches(media.matches);
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }, [matches, query]);
+
+  return matches;
+}
+
 export function DashboardShell({ children }: DashboardShellProps) {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
   const pathname = usePathname();
   const user = useUserStore((state) => state.user);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const currentPath = stripLocalePrefix(pathname);
   const roleLabels = getRoleLabels(user?.roles);
+  const isXl = useMediaQuery("(min-width: 1280px)");
 
   const navItems = [
     {
       href: "/dashboard",
       label: copy.nav.overview,
-      description: copy.pages.overview.description,
       icon: LayoutDashboard,
     },
     {
       href: "/dashboard/users",
       label: copy.nav.users,
-      description: copy.pages.users.description,
       icon: ShieldUser,
     },
     {
       href: "/dashboard/articles",
       label: copy.nav.articles,
-      description: copy.pages.articles.description,
       icon: FileText,
     },
     {
       href: "/dashboard/comments",
       label: copy.nav.comments,
-      description: copy.pages.comments.description,
       icon: MessageSquareText,
+    },
+    {
+      href: "/dashboard/orders",
+      label: copy.nav.orders,
+      icon: ReceiptText,
     },
     {
       href: "/dashboard/points",
       label: copy.nav.points,
-      description: copy.pages.points.description,
       icon: Medal,
     },
     {
       href: "/dashboard/tags",
       label: copy.nav.tags,
-      description: copy.pages.tags.description,
       icon: Tags,
     },
     {
       href: "/dashboard/categories",
       label: copy.nav.categories,
-      description: copy.pages.categories.description,
       icon: FolderTree,
     },
     {
       href: "/dashboard/roles",
       label: copy.nav.roles,
-      description: copy.pages.roles.description,
       icon: BadgeCheck,
     },
     {
       href: "/dashboard/permissions",
       label: copy.nav.permissions,
-      description: copy.pages.permissions.description,
       icon: KeyRound,
     },
     {
       href: "/dashboard/banners",
       label: copy.nav.banners,
-      description: copy.pages.banners.description,
       icon: Images,
     },
     {
       href: "/dashboard/reports",
       label: copy.nav.reports,
-      description: copy.pages.reports.description,
       icon: TriangleAlert,
     },
     {
       href: "/dashboard/decorations",
       label: copy.nav.decorations,
-      description: copy.pages.decorations.description,
       icon: Sparkles,
     },
     {
       href: "/dashboard/emojis",
       label: copy.nav.emojis,
-      description: copy.pages.emojis.description,
       icon: Smile,
     },
     {
       href: "/dashboard/achievements",
       label: copy.nav.achievements,
-      description: copy.pages.achievements.description,
       icon: Trophy,
-    },
-    {
-      href: "/dashboard/orders",
-      label: copy.nav.orders,
-      description: copy.pages.orders.description,
-      icon: ReceiptText,
     },
     {
       href: "/dashboard/configs",
       label: copy.nav.configs,
-      description: copy.pages.configs.description,
       icon: FileCog,
     },
     {
       href: "/dashboard/search",
       label: copy.nav.search,
-      description: copy.pages.search.description,
       icon: Search,
     },
   ];
 
-  const isActivePath = (href: string) =>
-    href === "/dashboard"
-      ? currentPath === href
-      : currentPath === href || currentPath.startsWith(`${href}/`);
+  const isActivePath = useCallback(
+    (href: string) =>
+      href === "/dashboard"
+        ? currentPath === href
+        : currentPath === href || currentPath.startsWith(`${href}/`),
+    [currentPath],
+  );
 
   const activeItem =
     navItems.find((item) => isActivePath(item.href)) || navItems[0];
@@ -164,8 +169,15 @@ export function DashboardShell({ children }: DashboardShellProps) {
     setMobileMenuOpen(false);
   }, [pathname]);
 
-  const navContent = (
-    <nav className="space-y-1">
+  // 同步 sidebar collapsed 状态
+  useEffect(() => {
+    if (isXl) {
+      setSidebarCollapsed(false);
+    }
+  }, [isXl]);
+
+  const renderNavContent = (isCollapsed: boolean) => (
+    <nav className="space-y-1 px-2">
       {navItems.map((item) => {
         const Icon = item.icon;
         const active = isActivePath(item.href);
@@ -175,14 +187,33 @@ export function DashboardShell({ children }: DashboardShellProps) {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors",
+              "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
+              "hover:bg-primary/10 hover:text-primary",
               active
-                ? "bg-primary/15 text-primary"
-                : "text-muted-foreground hover:bg-primary/8 hover:text-primary",
+                ? "bg-primary/15 text-primary shadow-sm"
+                : "text-muted-foreground",
             )}
+            title={isCollapsed ? item.label : undefined}
           >
-            <Icon className="size-4.5" />
-            <span>{item.label}</span>
+            <Icon
+              className={cn(
+                "size-5 shrink-0 transition-colors",
+                active
+                  ? "text-primary"
+                  : "text-muted-foreground group-hover:text-primary",
+              )}
+            />
+            <span
+              className={cn(
+                "transition-all duration-200",
+                isCollapsed && "hidden",
+              )}
+            >
+              {item.label}
+            </span>
+            {active && (
+              <ChevronRight className="ml-auto size-4 text-primary opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
+            )}
           </Link>
         );
       })}
@@ -190,137 +221,186 @@ export function DashboardShell({ children }: DashboardShellProps) {
   );
 
   return (
-    <div className="h-screen overflow-hidden">
-      <div className="flex h-full">
-        <aside className="hidden h-screen w-56 shrink-0 overflow-y-auto border-r border-border/80 bg-card/90 backdrop-blur xl:flex xl:flex-col">
-          <div className="border-b border-border p-3">
-            <p className="text-xs font-medium uppercase tracking-[0.24em] text-primary/70">
-              {copy.shell.eyebrow}
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold text-foreground">
-              {copy.shell.title}
-            </h2>
-            {/* <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              {copy.shell.description}
-            </p> */}
-          </div>
-
-          <div className="min-h-0 flex-1 overflow-y-auto px-1 py-3">
-            {navContent}
-          </div>
-        </aside>
-
-        {mobileMenuOpen ? (
-          <>
+    <div className="flex h-screen overflow-hidden bg-background">
+      {/* 桌面端侧边栏 */}
+      <aside
+        className={cn(
+          "hidden h-full shrink-0 flex-col border-r border-border bg-card",
+          "transition-all duration-300 ease-in-out",
+          "xl:flex",
+          sidebarCollapsed ? "w-16" : "w-60",
+        )}
+      >
+        {/* Logo/Title 区域 */}
+        <div className="flex h-14 items-center gap-3 border-b border-border px-4">
+          {sidebarCollapsed ? (
             <button
               type="button"
-              className="fixed inset-0 z-40 bg-black/45 animate-in fade-in-0 duration-200 xl:hidden"
-              onClick={() => setMobileMenuOpen(false)}
-              aria-label="Close dashboard menu"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className={cn(
+                "ml-auto rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-all",
+              )}
+            >
+              <ChevronRight className="size-4" />
+            </button>
+          ) : (
+            <div
+              className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            >
+              A
+            </div>
+          )}
+
+          <span
+            className={cn(
+              "font-semibold text-foreground truncate transition-all duration-300",
+              sidebarCollapsed && "w-0 opacity-0",
+            )}
+          >
+            {copy.shell.title}
+          </span>
+          <button
+            type="button"
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className={cn(
+              "ml-auto rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-all",
+              sidebarCollapsed && "rotate-180 ml-0",
+            )}
+          >
+            <ChevronRight className="size-4" />
+          </button>
+        </div>
+
+        {/* 导航区域 */}
+        <div className="flex-1 overflow-y-auto py-3">{renderNavContent(sidebarCollapsed)}</div>
+
+        {/* 底部用户信息 */}
+        <div
+          className={cn(
+            "border-t border-border p-3",
+            sidebarCollapsed && "px-2",
+          )}
+        >
+          <Link
+            href={user?.id ? `/account/${user.id}` : "/"}
+            className={cn(
+              "flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-muted",
+              sidebarCollapsed && "justify-center",
+            )}
+            title={user?.nickname || user?.username}
+          >
+            <Avatar
+              url={user?.avatar}
+              frameUrl={user?.equippedDecorations?.AVATAR_FRAME?.imageUrl}
+              className="size-8 shrink-0"
+              alt={user?.nickname || user?.username || "User"}
             />
-            <aside className="fixed inset-y-0 left-0 z-50 flex w-76 max-w-[84vw] flex-col border-r border-border/80 bg-card animate-in slide-in-from-left-8 duration-200 xl:hidden">
-              <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-5">
-                <div>
-                  <p className="text-xs font-medium uppercase tracking-[0.24em] text-primary/70">
-                    {copy.shell.eyebrow}
-                  </p>
-                  <h2 className="mt-2 text-xl font-semibold text-foreground">
-                    {copy.shell.title}
-                  </h2>
+            {!sidebarCollapsed && (
+              <div className="min-w-0">
+                <div className="truncate text-sm font-medium text-foreground">
+                  {user?.nickname || user?.username || "-"}
                 </div>
-                <button
-                  type="button"
-                  className="inline-flex size-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:text-foreground"
-                  onClick={() => setMobileMenuOpen(false)}
-                  aria-label="Close dashboard menu"
-                >
-                  <X className="size-4.5" />
-                </button>
+                <div className="truncate text-xs text-muted-foreground">
+                  {roleLabels.length > 0
+                    ? roleLabels[0]
+                    : copy.shell.noRoleHint}
+                </div>
               </div>
+            )}
+          </Link>
+        </div>
+      </aside>
 
-              <div className="min-h-0 flex-1 overflow-y-auto px-4 py-5">
-                {navContent}
+      {/* 移动端菜单 */}
+      {mobileMenuOpen && (
+        <>
+          <button
+            type="button"
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm animate-in fade-in-0 duration-200 xl:hidden"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <aside className="fixed inset-y-0 left-0 z-50 flex w-64 max-w-[85vw] flex-col border-r border-border bg-card animate-in slide-in-from-left-full duration-200 xl:hidden">
+            <div className="flex h-14 items-center justify-between border-b border-border px-4">
+              <div className="flex items-center gap-3">
+                <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm">
+                  A
+                </div>
+                <span className="font-semibold text-foreground">
+                  {copy.shell.title}
+                </span>
               </div>
-            </aside>
-          </>
-        ) : null}
-
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-          <div className="shrink-0 border-b border-border/80 bg-background/85 backdrop-blur">
-            <div className="px-4 py-4 md:px-6">
-              <div className="flex  gap-4 lg:flex-row justify-between">
-                <div>
-                  <div className="flex items-center gap-3">
-                    <button
-                      type="button"
-                      className="inline-flex size-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:text-foreground xl:hidden"
-                      onClick={() => setMobileMenuOpen(true)}
-                      aria-label="Open dashboard menu"
-                    >
-                      <Menu className="size-4.5" />
-                    </button>
-                    <div>
-                      <p className="text-xs font-medium uppercase tracking-[0.24em] text-primary/70">
-                        {copy.shell.eyebrow}
-                      </p>
-                      <h2 className="text-lg font-semibold text-foreground">
-                        {activeItem.label}
-                      </h2>
-                    </div>
+              <button
+                type="button"
+                className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto py-3 px-2">{renderNavContent(false)}</div>
+            <div className="border-t border-border p-3">
+              <div className="flex items-center gap-3 rounded-lg p-2">
+                <Avatar
+                  url={user?.avatar}
+                  frameUrl={user?.equippedDecorations?.AVATAR_FRAME?.imageUrl}
+                  className="size-8"
+                  alt={user?.nickname || user?.username || "User"}
+                />
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-medium text-foreground">
+                    {user?.nickname || user?.username || "-"}
+                  </div>
+                  <div className="truncate text-xs text-muted-foreground">
+                    {roleLabels.length > 0
+                      ? roleLabels[0]
+                      : copy.shell.noRoleHint}
                   </div>
                 </div>
-
-                <div className="flex flex-wrap items-center gap-3">
-                  {roleLabels.length ? (
-                    roleLabels.map((role) => (
-                      <span
-                        key={role}
-                        className="rounded-full border border-border bg-card px-3 py-1 text-xs font-medium text-muted-foreground"
-                      >
-                        {role}
-                      </span>
-                    ))
-                  ) : (
-                    <span
-                      className={cn(
-                        "rounded-full border px-3 py-1 text-xs font-medium",
-                        looksLikeAdminRole(user?.roles)
-                          ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-700"
-                          : "border-amber-500/20 bg-amber-500/10 text-amber-700",
-                      )}
-                    >
-                      {copy.shell.noRoleHint}
-                    </span>
-                  )}
-
-                  <Link
-                    href={user?.id ? `/account/${user.id}` : "/"}
-                    className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2"
-                  >
-                    <Avatar
-                      url={user?.avatar}
-                      frameUrl={
-                        user?.equippedDecorations?.AVATAR_FRAME?.imageUrl
-                      }
-                      className="size-6 shrink-0"
-                      alt={user?.nickname || user?.username || "dashboard user"}
-                    />
-                    <div className="hidden min-w-0 sm:block">
-                      <div className="truncate text-sm font-medium text-foreground">
-                        {user?.nickname || user?.username || "-"}
-                      </div>
-                      {/* <div className="truncate text-xs text-muted-foreground">
-                        {copy.shell.accountEntry}
-                      </div> */}
-                    </div>
-                  </Link>
-                </div>
               </div>
+            </div>
+          </aside>
+        </>
+      )}
 
+      {/* 主内容区域 */}
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        {/* Header */}
+        <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-card/50 backdrop-blur-sm px-4">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="inline-flex size-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground transition-colors hover:text-foreground xl:hidden"
+              onClick={() => setMobileMenuOpen(true)}
+            >
+              <Menu className="size-5" />
+            </button>
+            <div>
+              <h1 className="text-base font-semibold text-foreground">
+                {activeItem.label}
+              </h1>
             </div>
           </div>
-          <div className="min-h-0 flex-1 overflow-hidden">{children}</div>
-        </div>
+
+          <div className="flex items-center gap-2">
+            {roleLabels.slice(0, 2).map((role, idx) => (
+              <span
+                key={role}
+                className={cn(
+                  "hidden rounded-full border px-2.5 py-1 text-xs font-medium sm:inline-flex",
+                  idx === 0 && looksLikeAdminRole(user?.roles)
+                    ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-700"
+                    : "border-border bg-card text-muted-foreground",
+                )}
+              >
+                {role}
+              </span>
+            ))}
+          </div>
+        </header>
+
+        {/* 页面内容 */}
+        <main className="flex-1 overflow-auto bg-muted/30">{children}</main>
       </div>
     </div>
   );

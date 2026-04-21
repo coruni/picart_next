@@ -213,7 +213,7 @@ export function DashboardTable<T>({
 
   return (
     <div
-      className={`relative flex min-h-0 flex-1 flex-col overflow-hidden border border-border/70 bg-card ${className || ""}`}
+      className={`relative flex min-h-0 flex-1 flex-col h-full overflow-hidden border border-border/70 bg-card ${className || ""}`}
     >
       {loading ? (
         <>
@@ -277,106 +277,108 @@ export function DashboardTable<T>({
         </div>
       </div>
 
-      <div className="relative hidden min-h-0 flex-1 overflow-auto md:block">
-        <table className="min-w-full table-fixed border-separate border-spacing-0">
-          <thead ref={theadRef}>
-            <tr>
-              {expandable && (
-                <th className="sticky top-0 z-10 w-12 border-b border-border bg-card px-3 py-3 text-left text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  {/* 展开列 */}
-                </th>
-              )}
-              {columns.map((column) =>
-                (() => {
-                  return (
-                    <th
-                      key={column.key}
-                      style={getColumnWidth(column)}
-                      className={cn(
-                        "sticky top-0 z-10 border-b border-border bg-card text-left text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground",
-                        cellPadding,
-                        isActionColumn(column) && "text-right",
-                        column.className,
-                        getEllipsisWidthClass(column),
-                      )}
-                    >
-                      {column.header}
-                    </th>
-                  );
-                })(),
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => {
-              const rowKey = getRowKey(row);
-              const isExpanded = expandedKeys.has(rowKey);
-              const isExpandable = expandable?.rowExpandable?.(row) ?? true;
-
-              return (
-                <React.Fragment key={rowKey}>
-                  <tr className="align-top transition-colors hover:bg-foreground/[0.02]">
-                    {expandable && (
-                      <td className="border-b border-border/70 px-3 py-3">
-                        {expandable.expandIcon ? (
-                          expandable.expandIcon({
-                            expanded: isExpanded,
-                            onExpand: () => toggleExpand(row),
-                            record: row,
-                            expandable: isExpandable,
-                          })
-                        ) : (
-                          <DefaultExpandIcon
-                            expanded={isExpanded}
-                            onExpand={() => toggleExpand(row)}
-                            expandable={isExpandable}
-                          />
+      <div className="relative hidden min-h-0 flex-1 flex-col md:flex">
+        <div className="flex-1 overflow-auto">
+          <table className="min-w-full table-fixed border-separate border-spacing-0">
+            <thead ref={theadRef} className="sticky top-0 z-10">
+              <tr>
+                {expandable && (
+                  <th className="w-12 border-b border-border bg-card px-3 py-3 text-left text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    {/* 展开列 */}
+                  </th>
+                )}
+                {columns.map((column) =>
+                  (() => {
+                    return (
+                      <th
+                        key={column.key}
+                        style={getColumnWidth(column)}
+                        className={cn(
+                          "border-b border-border bg-card text-left text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground",
+                          cellPadding,
+                          isActionColumn(column) && "text-right",
+                          column.className,
+                          getEllipsisWidthClass(column),
                         )}
-                      </td>
-                    )}
-                    {columns.map((column) => {
-                      return (
-                        <td
-                          key={column.key}
-                          style={getColumnWidth(column)}
-                          className={cn(
-                            "border-b border-border/70 last:border-b-0",
-                            cellPadding,
-                            isActionColumn(column) &&
-                              "[&>*]:ml-auto [&>*]:w-fit",
-                            column.className,
-                            getEllipsisWidthClass(column),
-                          )}
-                        >
-                          {column.ellipsis ? (
-                            <div
-                              className="min-w-0 max-w-full overflow-hidden"
-                              title={column.getTooltip?.(row)}
-                            >
-                              {column.render(row)}
-                            </div>
+                      >
+                        {column.header}
+                      </th>
+                    );
+                  })(),
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => {
+                const rowKey = getRowKey(row);
+                const isExpanded = expandedKeys.has(rowKey);
+                const isExpandable = expandable?.rowExpandable?.(row) ?? true;
+
+                return (
+                  <React.Fragment key={rowKey}>
+                    <tr className="align-top transition-colors hover:bg-foreground/[0.02]">
+                      {expandable && (
+                        <td className="border-b border-border/70 px-3 py-3">
+                          {expandable.expandIcon ? (
+                            expandable.expandIcon({
+                              expanded: isExpanded,
+                              onExpand: () => toggleExpand(row),
+                              record: row,
+                              expandable: isExpandable,
+                            })
                           ) : (
-                            column.render(row)
+                            <DefaultExpandIcon
+                              expanded={isExpanded}
+                              onExpand={() => toggleExpand(row)}
+                              expandable={isExpandable}
+                            />
                           )}
                         </td>
-                      );
-                    })}
-                  </tr>
-                  {expandable?.expandedRowRender && isExpanded && (
-                    <tr className="bg-muted/30">
-                      <td
-                        colSpan={columns.length + 1}
-                        className="border-b border-border/70 px-3 py-3"
-                      >
-                        {expandable.expandedRowRender(row)}
-                      </td>
+                      )}
+                      {columns.map((column) => {
+                        return (
+                          <td
+                            key={column.key}
+                            style={getColumnWidth(column)}
+                            className={cn(
+                              "border-b border-border/70 last:border-b-0",
+                              cellPadding,
+                              isActionColumn(column) &&
+                                "[&>*]:ml-auto [&>*]:w-fit",
+                              column.className,
+                              getEllipsisWidthClass(column),
+                            )}
+                          >
+                            {column.ellipsis ? (
+                              <div
+                                className="min-w-0 max-w-full overflow-hidden"
+                                title={column.getTooltip?.(row)}
+                              >
+                                {column.render(row)}
+                              </div>
+                            ) : (
+                              column.render(row)
+                            )}
+                          </td>
+                        );
+                      })}
                     </tr>
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </tbody>
-        </table>
+                    {expandable?.expandedRowRender && isExpanded && (
+                      <tr className="bg-muted/30">
+                        <td
+                          colSpan={columns.length + 1}
+                          className="border-b border-border/70 px-3 py-3"
+                        >
+                          {expandable.expandedRowRender(row)}
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {pagination && paginationLabels ? (

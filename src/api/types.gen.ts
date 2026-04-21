@@ -1386,6 +1386,10 @@ export type CreateDecorationDto = {
      */
     imageUrl: string;
     /**
+     * 评论颜色
+     */
+    bubbleColor?: string;
+    /**
      * 预览图URL
      */
     previewUrl?: string;
@@ -13167,6 +13171,7 @@ export type DecorationControllerFindAllResponses = {
                 imageUrl: string;
                 previewUrl: string;
                 rarity: string;
+                bubbleColor: string;
                 obtainMethod: string;
                 isPurchasable: boolean;
                 price: string;
@@ -13175,7 +13180,7 @@ export type DecorationControllerFindAllResponses = {
                 sort: number;
                 status: string;
                 activityId: number;
-                achievementId: number;
+                achievementId: number | null;
                 requiredLikes: number;
                 requiredComments: number;
                 createdAt: string;
@@ -13183,7 +13188,7 @@ export type DecorationControllerFindAllResponses = {
                 isOwned: boolean;
                 isUsing: boolean;
                 canDirectEquip: boolean;
-                userExpiresAt: number;
+                userExpiresAt: string;
                 userIsPermanent: boolean;
             }>;
             meta: {
@@ -13270,6 +13275,7 @@ export type DecorationControllerFindOneResponses = {
             imageUrl: string;
             previewUrl: string;
             rarity: string;
+            bubbleColor: string;
             obtainMethod: string;
             isPurchasable: boolean;
             price: string;
@@ -13360,6 +13366,7 @@ export type DecorationControllerGetMyDecorationsResponses = {
                     imageUrl: string;
                     previewUrl: string;
                     rarity: string;
+                    bubbleColor: string;
                     obtainMethod: string;
                     isPurchasable: boolean;
                     price: string;
@@ -13368,7 +13375,7 @@ export type DecorationControllerGetMyDecorationsResponses = {
                     sort: number;
                     status: string;
                     activityId: number;
-                    achievementId: number;
+                    achievementId: number | null;
                     requiredLikes: number;
                     requiredComments: number;
                     createdAt: string;
@@ -13381,7 +13388,7 @@ export type DecorationControllerGetMyDecorationsResponses = {
                 giftFromUserId: number;
                 orderId: number;
                 activityId: number;
-                remark: string;
+                remark: string | null;
                 createdAt: string;
                 updatedAt: string;
             }>;
@@ -15072,10 +15079,6 @@ export type EmojiControllerAddToFavoritesResponses = {
 
 export type EmojiControllerUploadData = {
     body: {
-        /**
-         * 表情图片文件
-         */
-        file: Blob | File;
         /**
          * 表情名称
          */

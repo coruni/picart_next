@@ -1,7 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocale } from "next-intl";
+import {
+  configControllerFindAll,
+  configControllerUpdateAll,
+  uploadControllerUploadFile,
+} from "@/api";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
+import { Switch } from "@/components/ui/Switch";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
+import { useImageCompression } from "@/hooks/useImageCompression";
+import { cn } from "@/lib";
+import { buildUploadMetadata } from "@/lib/file-hash";
 import {
   Check,
   ChevronDown,
@@ -10,22 +22,14 @@ import {
   Save,
   X,
 } from "lucide-react";
-import {
-  configControllerFindAll,
-  configControllerUpdateAll,
-  uploadControllerUploadFile,
-} from "@/api";
-import type { ConfigSchema, ConfigValueType, ConfigItem } from "./config-schema";
+import { useLocale } from "next-intl";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ConfigItem, ConfigSchema, ConfigValueType } from "./config-schema";
 import {
   getConfigDefaultValue,
-  validateConfigValue,
   getConfigSchemaByKey,
+  validateConfigValue,
 } from "./config-schema";
-import { cn } from "@/lib";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Switch } from "@/components/ui/Switch";
-import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { getDashboardCopy } from "./copy";
 import {
   DashboardErrorView,
@@ -34,10 +38,6 @@ import {
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardPanel } from "./DashboardPanel";
 import { useDashboardGuard } from "./useDashboardGuard";
-import { useImageCompression } from "@/hooks/useImageCompression";
-import { buildUploadMetadata } from "@/lib/file-hash";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
-import { Select } from "@/components/ui/Select";
 
 type ConfigEditorProps = {
   schema: ConfigSchema;
@@ -801,7 +801,7 @@ export function DashboardConfigsPageV2() {
         action={null}
         className="flex min-h-0 flex-1 flex-col"
         headerClassName="sticky top-0 z-20"
-        contentClassName="flex min-h-0 flex-1 flex-col px-0 py-0"
+        contentClassName="flex min-h-0 flex-1 flex-col px-0 py-0 flex-1"
         headerExtra={
           <div className="bg-card">
             {/* 头部工具栏 */}

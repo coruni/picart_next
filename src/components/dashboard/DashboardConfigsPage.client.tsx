@@ -1,9 +1,9 @@
 "use client";
 
 import {
-    configControllerFindAll,
-    configControllerUpdateAll,
-    uploadControllerUploadFile,
+  configControllerFindAll,
+  configControllerUpdateAll,
+  uploadControllerUploadFile,
 } from "@/api";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
@@ -18,8 +18,8 @@ import { useLocale } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import {
-    DashboardErrorView,
-    DashboardLoadingView,
+  DashboardErrorView,
+  DashboardLoadingView,
 } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardPanel } from "./DashboardPanel";
@@ -527,7 +527,7 @@ export function DashboardConfigsPage() {
         action={null}
         className="flex min-h-0 flex-1 flex-col"
         headerClassName="sticky top-0 z-20"
-        contentClassName="flex min-h-0 flex-1 flex-col px-0 py-0"
+        contentClassName="flex min-h-0 flex-1 flex-col px-0 py-0 flex-1"
         headerExtra={
           <div className="bg-card">
             <div className="flex items-center justify-between gap-3 border-b border-border/70 px-3 py-3">

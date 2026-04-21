@@ -62,7 +62,7 @@ export default function RootError({
         <button
           onClick={handleRetry}
           className={cn(
-            "flex items-center justify-center gap-2 px-6 py-3 rounded-full",
+            "flex items-center justify-center gap-2 px-6 py-2 rounded-full",
             "bg-primary text-white hover:opacity-90 transition-all duration-300",
             "hover:shadow-lg"
           )}
@@ -73,7 +73,7 @@ export default function RootError({
         <Link
           href="/"
           className={cn(
-            "flex items-center justify-center gap-2 px-6 py-3 rounded-full",
+            "flex items-center justify-center gap-2 px-6 py-2 rounded-full",
             "text-primary border border-primary hover:opacity-90 transition-all duration-300",
             "hover:bg-primary hover:text-white"
           )}

@@ -1,4 +1,4 @@
-import { userControllerLogout, userControllerRefreshToken } from "@/api";
+import { userControllerLogout } from "@/api";
 import { removeCookie, setCookie } from "@/lib/cookies";
 import type { UserProfile } from "@/types";
 import { create } from "zustand";
@@ -169,26 +169,18 @@ export const useUserStore = create<UserState>()(
         }
 
         try {
-          const response = await userControllerRefreshToken({
-            body: { refreshToken: currentRefreshToken },
+          // 使用原始 fetch 避免被拦截器拦截导致循环
+          const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api/v1";
+          const response = await fetch(`${baseUrl}/user/refresh-token`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ refreshToken: currentRefreshToken }),
           });
 
-          if (response.data?.data?.token) {
-            const { token } = response.data.data;
-            syncTokenToCookie(token);
-            set({
-              token,
-              isAuthenticated: true,
-            });
-            console.log("[auth] Token refreshed successfully");
-            return true;
-          }
-        } catch (error: any) {
-          console.error("[auth] Failed to refresh token:", error);
-
-          // 如果刷新失败（401），清空登录状态
-          if (error?.status === 401 || error?.response?.status === 401) {
-            console.warn("[auth] Refresh token expired, logging out");
+          if (response.status === 401) {
+            console.warn("[auth] Refresh token expired (401), logging out");
             syncTokenToCookie(null);
             syncRefreshTokenToCookie(null);
             set({
@@ -200,7 +192,27 @@ export const useUserStore = create<UserState>()(
             if (typeof window !== "undefined") {
               localStorage.removeItem("user-storage");
             }
+            return false;
           }
+
+          if (!response.ok) {
+            console.error("[auth] Refresh token request failed:", response.status);
+            return false;
+          }
+
+          const data = await response.json();
+          if (data?.data?.token) {
+            const { token } = data.data;
+            syncTokenToCookie(token);
+            set({
+              token,
+              isAuthenticated: true,
+            });
+            console.log("[auth] Token refreshed successfully");
+            return true;
+          }
+        } catch (error) {
+          console.error("[auth] Failed to refresh token:", error);
         }
 
         return false;
