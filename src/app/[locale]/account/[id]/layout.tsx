@@ -1,4 +1,5 @@
 import { AccountUserProvider } from "@/components/account/AccountUserProvider";
+import { UserAvatarFarmeDialog } from "@/components/layout/UserAvatarFarmeDialog";
 import { ReactNode } from "react";
 
 import { notFound } from "next/navigation";
@@ -17,5 +18,10 @@ export default async function AccountIdLayout({
     return notFound();
   }
 
-  return <AccountUserProvider user={user}>{children}</AccountUserProvider>;
+  return (
+    <AccountUserProvider user={user}>
+      {children}
+      <UserAvatarFarmeDialog />
+    </AccountUserProvider>
+  );
 }

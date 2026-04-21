@@ -57,15 +57,6 @@ export function AvatarFrameList() {
     );
   }
 
-  if (decorations.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-40 text-secondary">
-        <div className="text-4xl mb-2">-</div>
-        <div>{t("emptyByType", { type: t("types.avatarFrame") })}</div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col h-full">
       <div
@@ -89,7 +80,9 @@ export function AvatarFrameList() {
             <span className="text-xl font-bold text-[#3db8f5]">
               {t("types.avatarFrame")}
             </span>
-            <span className="text-xs text-secondary">{t("ownedHint", { count: decorations.length })}</span>
+            <span className="text-xs text-secondary">
+              {t("ownedHint", { count: decorations.length })}
+            </span>
           </div>
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3db8f566] text-white">
             <ChevronRight size={16} />

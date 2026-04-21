@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { cn, formatDate } from "@/lib/utils";
 import { decorationControllerGetMyDecorations } from "@/api/sdk.gen";
 import type { DecorationControllerGetMyDecorationsResponse } from "@/api/types.gen";
+import { cn, formatDate } from "@/lib/utils";
 import { ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 type Decoration =
@@ -16,7 +16,8 @@ export function CommentBubbleList() {
   const tc = useTranslations("common");
   const [decorations, setDecorations] = useState<Decoration[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedDecoration, setSelectedDecoration] = useState<Decoration | null>(null);
+  const [selectedDecoration, setSelectedDecoration] =
+    useState<Decoration | null>(null);
 
   const getRarityName = (rarity?: string) => {
     if (rarity === "COMMON") return t("rarity.common");
@@ -58,15 +59,6 @@ export function CommentBubbleList() {
     );
   }
 
-  if (decorations.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-40 text-secondary">
-        <div className="text-4xl mb-2">-</div>
-        <div>{t("emptyByType", { type: t("types.commentBubble") })}</div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex h-full flex-col">
       <div className="mb-4">
@@ -75,7 +67,9 @@ export function CommentBubbleList() {
           style={{
             backgroundImage: "url(/account/decoration/avatar_frame_banner.png)",
           }}
-          onClick={() => decorations[0] && setSelectedDecoration(decorations[0])}
+          onClick={() =>
+            decorations[0] && setSelectedDecoration(decorations[0])
+          }
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
@@ -88,7 +82,9 @@ export function CommentBubbleList() {
             <span className="text-xl font-bold text-[#3db8f5]">
               {t("types.commentBubble")}
             </span>
-            <span className="text-xs text-secondary">{t("ownedHint", { count: decorations.length })}</span>
+            <span className="text-xs text-secondary">
+              {t("ownedHint", { count: decorations.length })}
+            </span>
           </div>
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3db8f566] text-white">
             <ChevronRight size={16} />

@@ -14,10 +14,10 @@ import { DecorationControllerFindAllResponse } from "@/types";
 import { CheckCircle2Icon } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Dialog, DialogContent, DialogHeader } from "../ui/Dialog";
-import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 type AvatarFrame = DecorationControllerFindAllResponse["data"]["data"][0];
 
@@ -143,7 +143,7 @@ export function UserAvatarFarmeDialog() {
           prev.map((frame) => ({
             ...frame,
             isUsing: frame.id === selectedFrame.id,
-          }))
+          })),
         );
       } else {
         // 卸载当前装饰品：仅将选中的设为未使用
@@ -151,12 +151,12 @@ export function UserAvatarFarmeDialog() {
           prev.map((frame) => ({
             ...frame,
             isUsing: frame.id === selectedFrame.id ? false : frame.isUsing,
-          }))
+          })),
         );
       }
 
       setSelectedFrame((prev) =>
-        prev ? { ...prev, isUsing: !prev.isUsing } : null
+        prev ? { ...prev, isUsing: !prev.isUsing } : null,
       );
     } catch (error) {
       console.error("Failed to use/unuse decoration:", error);
@@ -185,8 +185,8 @@ export function UserAvatarFarmeDialog() {
                     key={frame.id}
                     onClick={() => setSelectedFrame(frame)}
                     className={cn(
-                      "relative aspect-square cursor-pointer rounded-xl transition-all",
-                      "bg-border hover:bg-primary/20",
+                      "relative aspect-square cursor-pointer rounded-xl transition-all ring-0 outline-0",
+                      "bg-border hover:bg-primary/15",
                       selectedFrame?.id === frame.id &&
                         "ring-2 ring-primary ring-offset-1",
                     )}
@@ -227,18 +227,29 @@ export function UserAvatarFarmeDialog() {
           <div className="flex flex-1 flex-col items-center border-l border-border p-4">
             {selectedFrame ? (
               <>
-                <Avatar className="size-20" frameUrl={selectedFrame.imageUrl!}></Avatar>
+                <Avatar
+                  className="size-20"
+                  frameUrl={selectedFrame.imageUrl!}
+                ></Avatar>
 
-                <p className="mt-4 text-center font-medium">{selectedFrame.name}</p>
+                <p className="mt-4 text-center font-medium">
+                  {selectedFrame.name}
+                </p>
 
                 <div className="mt-auto flex w-full items-center justify-between">
                   <div className="flex flex-col">
-                    <p className="text-xs font-semibold text-secondary">{t("duration")}</p>
+                    <p className="text-xs font-semibold text-secondary">
+                      {t("duration")}
+                    </p>
                     <span className="text-xs">
                       {selectedFrame.isOwned
                         ? selectedFrame.userIsPermanent
                           ? t("permanent")
-                            : formatExpiryTime(selectedFrame.userExpiresAt, t, locale)
+                          : formatExpiryTime(
+                              selectedFrame.userExpiresAt,
+                              t,
+                              locale,
+                            )
                         : selectedFrame.canDirectEquip
                           ? t("canDirectEquip")
                           : t("notOwned")}
@@ -249,7 +260,9 @@ export function UserAvatarFarmeDialog() {
                     className="min-w-18 rounded-full"
                     onClick={handleUseDecoration}
                     loading={isSubmitting}
-                    disabled={!selectedFrame.isOwned && !selectedFrame.canDirectEquip}
+                    disabled={
+                      !selectedFrame.isOwned && !selectedFrame.canDirectEquip
+                    }
                   >
                     {selectedFrame.isUsing
                       ? t("unequip")
@@ -260,7 +273,9 @@ export function UserAvatarFarmeDialog() {
                 </div>
               </>
             ) : (
-              <div className="text-sm text-muted-foreground">{t("selectHint")}</div>
+              <div className="text-sm text-muted-foreground">
+                {t("selectHint")}
+              </div>
             )}
           </div>
         </div>

@@ -14,6 +14,8 @@ import { Select } from "@/components/ui/Select";
 import { useRouter } from "@/i18n/routing";
 import { showToast, getErrorMessage } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
+import { MODAL_IDS } from "@/lib/modal-helpers";
+import { useModalStore } from "@/stores/useModalStore";
 import type { UserDetail } from "@/types";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
@@ -30,6 +32,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
   const router = useRouter();
   const avatarEditorRef = useRef<AvatarEditor>(null);
   const backgroundEditorRef = useRef<AvatarEditor>(null);
+  const openModal = useModalStore((state) => state.openModal);
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -351,12 +354,13 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
             >
               {t("changeAvatar")}
             </label>
-            <label
-              htmlFor="background-upload"
+            <button
+              type="button"
+              onClick={() => openModal(MODAL_IDS.AVATAR_FRAME, { avatarFrameId: user.avatarFrameId })}
               className="text-sm bg-[#EDF1F7] hover:bg-[#8592A3] text-black/60 hover:text-white leading-7 rounded-full cursor-pointer px-4"
             >
               {t("changeAvatarFrame")}
-            </label>
+            </button>
             <input
               id="background-upload"
               type="file"
