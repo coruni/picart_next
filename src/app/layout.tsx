@@ -18,11 +18,6 @@ export default function RootLayout({
         />
         <link
           rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/misans-webfont/misans/misans-regular/result.min.css"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/misans-webfont/misans/misans-semibold/result.min.css"
           crossOrigin="anonymous"
         />

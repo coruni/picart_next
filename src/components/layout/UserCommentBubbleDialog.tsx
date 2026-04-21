@@ -13,7 +13,7 @@ import { MODAL_IDS } from "@/lib/modal-helpers";
 import { useModalStore } from "@/stores/useModalStore";
 import { useUserStore } from "@/stores/useUserStore";
 import { DecorationControllerFindAllResponse } from "@/types";
-import { CheckCircle2Icon } from "lucide-react";
+import { CheckCircle2Icon, ChevronLeft } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -65,6 +65,7 @@ export function UserCommentBubbleDialog() {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dialogLoading, setDialogLoading] = useState(false);
+  const [showMobileDetail, setShowMobileDetail] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement>(null);
@@ -117,6 +118,8 @@ export function UserCommentBubbleDialog() {
           isOwned: false,
           isUsing: false,
         });
+        // 移动端有初始数据时直接展示详情
+        setShowMobileDetail(true);
       }
     } catch (error) {
       console.error("Failed to fetch decoration detail:", error);
@@ -131,6 +134,8 @@ export function UserCommentBubbleDialog() {
     const targetBubble = commentBubbles.find((b) => b.id === initialBubbleId);
     if (targetBubble) {
       setSelectedBubble({ ...targetBubble, isOwned: true });
+      // 移动端有初始数据时直接展示详情
+      setShowMobileDetail(true);
     } else if (commentBubbles.length > 0 || !dialogLoading) {
       // 如果列表已加载但未找到，通过API获取
       fetchDecorationDetail(initialBubbleId);
@@ -155,6 +160,8 @@ export function UserCommentBubbleDialog() {
     const targetBubble = commentBubbles.find((b) => b.id === initialBubbleId);
     if (targetBubble) {
       setSelectedBubble({ ...targetBubble, isOwned: true });
+      // 移动端有初始数据时直接展示详情
+      setShowMobileDetail(true);
     } else if (commentBubbles.length > 0 || !dialogLoading) {
       // 如果列表已加载但未找到，通过API获取
       fetchDecorationDetail(initialBubbleId);
@@ -167,6 +174,7 @@ export function UserCommentBubbleDialog() {
       setPage(1);
       setHasMore(true);
       setSelectedBubble(null);
+      setShowMobileDetail(false);
     }
   }, [commentBubbleDialogOpen]);
 
@@ -300,13 +308,31 @@ export function UserCommentBubbleDialog() {
 
   return (
     <Dialog open={commentBubbleDialogOpen} onOpenChange={handleDialogClose}>
-      <DialogContent className="max-w-2xl rounded-2xl p-0 sm:max-w-2xl max-w-full sm:h-auto h-[90vh]">
-        <DialogHeader className="mb-0 border-b border-border px-6 py-4 text-sm font-semibold">
+      <DialogContent className="max-w-2xl rounded-2xl p-0 overflow-hidden h-[80vh] flex flex-col">
+        <DialogHeader className="mb-0 border-b border-border px-6 py-4 text-sm flex-row font-semibold flex items-center">
+          {/* 移动端返回按钮 */}
+          <button
+            onClick={() => setShowMobileDetail(false)}
+            className={cn(
+              "mr-2 -ml-2 p-1 rounded-full hover:bg-muted transition-colors sm:hidden",
+              !showMobileDetail && "hidden",
+            )}
+          >
+            <ChevronLeft size={20} />
+          </button>
           {t("title")}
         </DialogHeader>
 
-        <div className="flex sm:flex-row flex-col sm:h-125 h-[calc(90vh-64px)]">
-          <div ref={scrollContainerRef} className="flex-1 overflow-auto px-4">
+        <div className="flex md:flex-row flex-col flex-1">
+          {/* 列表区域 - 移动端根据 showMobileDetail 隐藏/显示 */}
+          <div
+            ref={scrollContainerRef}
+            className={cn(
+              "flex-1 overflow-auto px-4",
+              "sm:block",
+              showMobileDetail ? "hidden" : "block",
+            )}
+          >
             {commentBubbles.length === 0 && !isLoading && !dialogLoading ? (
               <div className="flex h-full items-center justify-center text-muted-foreground">
                 {t("empty")}
@@ -316,9 +342,10 @@ export function UserCommentBubbleDialog() {
                 {commentBubbles.map((bubble) => (
                   <button
                     key={bubble.id}
-                    onClick={() =>
-                      setSelectedBubble({ ...bubble, isOwned: true })
-                    }
+                    onClick={() => {
+                      setSelectedBubble({ ...bubble, isOwned: true });
+                      setShowMobileDetail(true);
+                    }}
                     className={cn(
                       "relative h-27.5 w-full cursor-pointer rounded-xl transition-all ring-0 outline-0",
                       "hover:bg-primary/15",
@@ -374,7 +401,14 @@ export function UserCommentBubbleDialog() {
             />
           </div>
 
-          <div className="flex flex-1 flex-col items-center border-l border-border bg-background sm:border-t-0 border-t sm:max-w-none max-w-full sm:h-auto h-auto">
+          {/* 详情区域 - 移动端根据 showMobileDetail 隐藏/显示 */}
+          <div
+            className={cn(
+              "flex flex-1 flex-col items-center border-l border-border bg-background sm:border-t-0 border-t",
+              "sm:flex",
+              showMobileDetail ? "flex" : "hidden",
+            )}
+          >
             {selectedBubble ? (
               <>
                 <div className="p-4 w-full flex-1">

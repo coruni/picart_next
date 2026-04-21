@@ -9,6 +9,14 @@
   font-display: swap;
 }
 
+/* 400 字重使用 Normal 字体 */
+@font-face {
+  font-family: "MiSans";
+  font-weight: 400;
+  src: local("MiSans Normal");
+  font-display: swap;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
