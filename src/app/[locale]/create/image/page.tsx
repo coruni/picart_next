@@ -5,7 +5,6 @@ import {
   articleControllerFindOne,
   articleControllerUpdate,
   categoryControllerFindAll,
-  uploadControllerGetUploadConfig,
   uploadControllerUploadFile,
 } from "@/api";
 import { Button } from "@/components/ui/Button";
@@ -16,6 +15,7 @@ import { Switch } from "@/components/ui/Switch";
 import { TagSelect } from "@/components/ui/TagSelect";
 import { useForm } from "@/hooks/useForm";
 import { useImageCompression } from "@/hooks/useImageCompression";
+import { useUploadConfig } from "@/components/providers/UploadConfigProvider";
 import { useRouter } from "@/i18n/routing";
 import { cn, showToast, getErrorMessage } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
@@ -24,7 +24,7 @@ import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 
 type CreateImageFormData = {
@@ -142,11 +142,19 @@ export default function CreateImagePage() {
   const tImage = useTranslations("createImage");
   const tTag = useTranslations("tagSelect");
   const { compressImages } = useImageCompression();
+  const { config: uploadConfig } = useUploadConfig();
+
+  // 使用 SSR 获取的配置初始化 maxImages，避免默认值跳动
+  const maxImages = useMemo(() => {
+    if (uploadConfig?.limits?.maxFileCount) {
+      return parseInt(uploadConfig.limits.maxFileCount, 10);
+    }
+    return 9; // 默认值
+  }, [uploadConfig]);
 
   const [articleLoading, setArticleLoading] = useState(false);
   const [imagesUploading, setImagesUploading] = useState(false);
   const [imageItems, setImageItems] = useState<UploadImageItem[]>([]);
-  const [maxImages, setMaxImages] = useState<number>(9);
   const [isImageDropping, setIsImageDropping] = useState(false);
   const [draggingImageIndex, setDraggingImageIndex] = useState<number | null>(
     null,
@@ -435,28 +443,6 @@ export default function CreateImagePage() {
     };
 
     fetchCategories();
-  }, []);
-
-  // Fetch upload config on mount
-  useEffect(() => {
-    const fetchUploadConfig = async () => {
-      try {
-        const response = await uploadControllerGetUploadConfig({});
-        if (response.data?.data) {
-          const maxFileCount = parseInt(
-            response.data.data.limits.maxFileCount,
-            10,
-          );
-          setMaxImages(maxFileCount);
-        }
-      } catch (error) {
-        console.error("Failed to fetch upload config:", error);
-        // 使用默认值 9
-        setMaxImages(9);
-      }
-    };
-
-    void fetchUploadConfig();
   }, []);
 
   useEffect(() => {

@@ -1,6 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { uploadControllerGetUploadConfig } from "@/api";
+import { UploadConfigProvider } from "@/components/providers/UploadConfigProvider";
 
 type CreateArticleLayoutProps = {
   children: ReactNode;
@@ -22,6 +24,23 @@ export async function generateMetadata({
   };
 }
 
-export default function CreateArticleLayout({ children }: CreateArticleLayoutProps) {
-  return <>{children}</>;
+export default async function CreateArticleLayout({ children, params }: CreateArticleLayoutProps) {
+  const { locale } = await params;
+
+  // 在 SSR 层获取上传配置，避免客户端请求导致的默认值跳动
+  let uploadConfig = null;
+  try {
+    const response = await uploadControllerGetUploadConfig({
+      headers: {
+        "Accept-Language": locale,
+      },
+    });
+    if (response.data?.data) {
+      uploadConfig = response.data.data;
+    }
+  } catch (error) {
+    console.error("[CreateLayout] Failed to fetch upload config:", error);
+  }
+
+  return <UploadConfigProvider config={uploadConfig}>{children}</UploadConfigProvider>;
 }
