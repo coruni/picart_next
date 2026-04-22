@@ -195,6 +195,22 @@ export const useUserStore = create<UserState>()(
             return false;
           }
 
+          if (response.status === 400) {
+            console.warn("[auth] Refresh token invalid (400), logging out");
+            syncTokenToCookie(null);
+            syncRefreshTokenToCookie(null);
+            set({
+              user: null,
+              token: null,
+              refreshToken: null,
+              isAuthenticated: false,
+            });
+            if (typeof window !== "undefined") {
+              localStorage.removeItem("user-storage");
+            }
+            return false;
+          }
+
           if (!response.ok) {
             console.error("[auth] Refresh token request failed:", response.status);
             return false;

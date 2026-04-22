@@ -9,7 +9,7 @@ import {
 } from "@/api";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
-import { Dialog, DialogContent } from "@/components/ui/Dialog";
+import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/Dialog";
 import { formatDate } from "@/lib/utils";
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { useModalStore } from "@/stores/useModalStore";
@@ -212,8 +212,9 @@ export function UserAchievementDialog() {
 
   return (
     <Dialog open={achievementDialogOpen} onOpenChange={handleCloseDialog}>
+      <DialogOverlay className="z-500!" />
       <DialogContent
-        className="h-full max-h-[65vh]! overflow-hidden rounded-2xl border-0 p-0 md:max-w-lg"
+        className="w-[calc(100vw-1rem)] h-full max-h-[65vh]! overflow-hidden rounded-2xl border-0 p-0 md:max-w-lg z-501!"
         showClose={true}
       >
         {dialogLoading ? (

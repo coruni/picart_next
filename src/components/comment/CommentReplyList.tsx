@@ -22,7 +22,7 @@ import {
   formatRelativeTime,
   prepareCommentHtmlForDisplay,
 } from "@/lib";
-import { openLoginDialog } from "@/lib/modal-helpers";
+import { MODAL_IDS, openLoginDialog, openModal } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
 import {
@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
 import { CommentImageGallery } from "./CommentImageGallery";
@@ -404,7 +405,7 @@ export function CommentReplyList({
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogOverlay className="z-400!" />
 
-        <DialogContent className="w-[calc(100vw-1rem)] max-w-2xl rounded-xl p-0 z-401! flex flex-col max-h-[85vh] min-h-0">
+        <DialogContent className="w-[calc(100vw-1rem)] md:max-w-2xl rounded-xl p-0 z-401! flex flex-col max-h-[85vh] min-h-0">
           <DialogHeader className="px-6 py-4 mb-0!">
             <DialogTitle className="text-sm font-semibold text-left">
               {tComment.has("viewCommentTitle")
@@ -472,14 +473,62 @@ export function CommentReplyList({
                 </div>
               </div>
               <div className="py-2">
-                <div
-                  key={modalRenderKey}
-                  className="whitespace-pre-wrap text-sm"
-                  {...(shouldAutoTranslateModal
-                    ? { "data-auto-translate-comment": true }
-                    : {})}
-                  dangerouslySetInnerHTML={{ __html: modalDisplayHtml }}
-                />
+                {data.author?.equippedDecorations?.COMMENT_BUBBLE ? (
+                  <div className="relative mt-5 inline-block max-w-full">
+                    {data.author.equippedDecorations.COMMENT_BUBBLE
+                      .imageUrl && (
+                      <div className="absolute -top-5 right-0 w-40 h-10 overflow-hidden cursor-pointer">
+                        <ImageWithFallback
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            openModal(MODAL_IDS.COMMENT_BUBBLE, {
+                              commentBubbleId:
+                                data.author?.equippedDecorations
+                                  ?.COMMENT_BUBBLE?.id,
+                            });
+                          }}
+                          src={
+                            data.author.equippedDecorations.COMMENT_BUBBLE
+                              .imageUrl
+                          }
+                          alt={
+                            data.author.equippedDecorations.COMMENT_BUBBLE
+                              .name
+                          }
+                          fill
+                          className="object-contain object-right"
+                        />
+                      </div>
+                    )}
+                    <div
+                      className="min-w-40 p-4 pt-6 rounded-lg text-sm wrap-break-word"
+                      style={{
+                        backgroundColor:
+                          data.author?.equippedDecorations?.COMMENT_BUBBLE
+                            ?.bubbleColor || "",
+                      }}
+                    >
+                      <div
+                        key={modalRenderKey}
+                        className="whitespace-pre-wrap text-sm wrap-break-word"
+                        {...(shouldAutoTranslateModal
+                          ? { "data-auto-translate-comment": true }
+                          : {})}
+                        dangerouslySetInnerHTML={{ __html: modalDisplayHtml }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    key={modalRenderKey}
+                    className="whitespace-pre-wrap text-sm"
+                    {...(shouldAutoTranslateModal
+                      ? { "data-auto-translate-comment": true }
+                      : {})}
+                    dangerouslySetInnerHTML={{ __html: modalDisplayHtml }}
+                  />
+                )}
                 <CommentImageGallery
                   images={data.images || []}
                   imageAltPrefix={`Comment image ${data.id}`}
@@ -591,6 +640,7 @@ export function CommentReplyList({
                       onReplyClick={onReplyClick}
                       avatarClassName={replyAvatarClassName}
                       compact={compact}
+                      showBubble
                     />
                   ))}
                 </div>

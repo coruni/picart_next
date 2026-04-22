@@ -8,7 +8,7 @@ import {
   formatRelativeTime,
   prepareCommentHtmlForDisplay,
 } from "@/lib";
-import { openLoginDialog } from "@/lib/modal-helpers";
+import { openLoginDialog, openModal, MODAL_IDS } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
 import { getImageUrls, type ImageInfo } from "@/types/image";
@@ -47,6 +47,7 @@ type CommentReplyItemProps = {
   showTranslateButton?: boolean;
   avatarClassName?: string;
   compact?: boolean;
+  showBubble?: boolean;
 };
 
 export const CommentReplyItem = memo(function CommentReplyItem({
@@ -64,6 +65,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   showTranslateButton = false,
   avatarClassName = "size-5",
   compact = false,
+  showBubble = false,
 }: CommentReplyItemProps) {
   const tComment = useTranslations("commentList");
   const tAccountInfo = useTranslations("accountInfo");
@@ -230,41 +232,146 @@ export const CommentReplyItem = memo(function CommentReplyItem({
         </div>
         <div className={cn("text-sm", compact ? "mt-1" : "mt-1.5")}>
           {replyTarget?.id && replyTarget.name ? (
-            <p className="whitespace-pre-wrap text-sm py-1">
-              <span className="text-secondary">
-                {tComment("replyToPrefix")}
-              </span>{" "}
-              <Link
-                href={`/account/${replyTarget.id}`}
-                className="font-medium text-primary hover:opacity-80"
-                onClick={(event) => event.stopPropagation()}
-              >
-                {replyTarget.name}
-              </Link>
-              <span className="text-secondary">
-                {tComment("replyToSuffix")}
-              </span>
-              <span
-                key={renderKey}
-                {...(shouldAutoTranslate
-                  ? { "data-auto-translate-comment": true }
-                  : {})}
-                dangerouslySetInnerHTML={{
-                  __html: displayHtml,
-                }}
-              />
-            </p>
+            <div className="whitespace-pre-wrap text-sm py-1">
+              <div className="text-secondary">
+                <span>
+                  {tComment("replyToPrefix")}
+                </span>{" "}
+                <Link
+                  href={`/account/${replyTarget.id}`}
+                  className="font-medium text-primary hover:opacity-80"
+                  onClick={(event) => event.stopPropagation()}
+                >
+                  {replyTarget.name}
+                </Link>
+                <span>
+                  {tComment("replyToSuffix")}
+                </span>
+              </div>
+              {showBubble && reply.author?.equippedDecorations?.COMMENT_BUBBLE ? (
+                <div className="relative mt-5 inline-block max-w-full">
+                  {reply.author.equippedDecorations.COMMENT_BUBBLE
+                    .imageUrl && (
+                    <div className="absolute -top-5 right-0 w-40 h-10 overflow-hidden cursor-pointer">
+                      <ImageWithFallback
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          openModal(MODAL_IDS.COMMENT_BUBBLE, {
+                            commentBubbleId:
+                              reply.author?.equippedDecorations
+                                ?.COMMENT_BUBBLE?.id,
+                          });
+                        }}
+                        src={
+                          reply.author.equippedDecorations.COMMENT_BUBBLE
+                            .imageUrl
+                        }
+                        alt={
+                          reply.author.equippedDecorations.COMMENT_BUBBLE
+                            .name
+                        }
+                        fill
+                        className="object-contain object-right"
+                      />
+                    </div>
+                  )}
+                  <div
+                    className="min-w-40 p-4 pt-6 rounded-lg text-sm wrap-break-word"
+                    style={{
+                      backgroundColor:
+                        reply.author?.equippedDecorations?.COMMENT_BUBBLE
+                          ?.bubbleColor || "",
+                    }}
+                  >
+                    <span
+                      key={renderKey}
+                      className="whitespace-pre-wrap text-sm wrap-break-word"
+                      {...(shouldAutoTranslate
+                        ? { "data-auto-translate-comment": true }
+                        : {})}
+                      dangerouslySetInnerHTML={{
+                        __html: displayHtml,
+                      }}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div
+                  key={renderKey}
+                  className="whitespace-pre-wrap text-sm py-1"
+                  {...(shouldAutoTranslate
+                    ? { "data-auto-translate-comment": true }
+                    : {})}
+                  dangerouslySetInnerHTML={{
+                    __html: displayHtml,
+                  }}
+                />
+              )}
+            </div>
           ) : (
-            <div
-              key={renderKey}
-              className="whitespace-pre-wrap text-sm py-1"
-              {...(shouldAutoTranslate
-                ? { "data-auto-translate-comment": true }
-                : {})}
-              dangerouslySetInnerHTML={{
-                __html: displayHtml,
-              }}
-            />
+            <div>
+              {showBubble && reply.author?.equippedDecorations?.COMMENT_BUBBLE ? (
+                <div className="relative mt-5 inline-block max-w-full">
+                  {reply.author.equippedDecorations.COMMENT_BUBBLE
+                    .imageUrl && (
+                    <div className="absolute -top-5 right-0 w-40 h-10 overflow-hidden cursor-pointer">
+                      <ImageWithFallback
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          openModal(MODAL_IDS.COMMENT_BUBBLE, {
+                            commentBubbleId:
+                              reply.author?.equippedDecorations
+                                ?.COMMENT_BUBBLE?.id,
+                          });
+                        }}
+                        src={
+                          reply.author.equippedDecorations.COMMENT_BUBBLE
+                            .imageUrl
+                        }
+                        alt={
+                          reply.author.equippedDecorations.COMMENT_BUBBLE
+                            .name
+                        }
+                        fill
+                        className="object-contain object-right"
+                      />
+                    </div>
+                  )}
+                  <div
+                    className="min-w-40 p-4 pt-6 rounded-lg text-sm wrap-break-word"
+                    style={{
+                      backgroundColor:
+                        reply.author?.equippedDecorations?.COMMENT_BUBBLE
+                          ?.bubbleColor || "",
+                    }}
+                  >
+                    <div
+                      key={renderKey}
+                      className="whitespace-pre-wrap text-sm wrap-break-word"
+                      {...(shouldAutoTranslate
+                        ? { "data-auto-translate-comment": true }
+                        : {})}
+                      dangerouslySetInnerHTML={{
+                        __html: displayHtml,
+                      }}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div
+                  key={renderKey}
+                  className="whitespace-pre-wrap text-sm py-1"
+                  {...(shouldAutoTranslate
+                    ? { "data-auto-translate-comment": true }
+                    : {})}
+                  dangerouslySetInnerHTML={{
+                    __html: displayHtml,
+                  }}
+                />
+              )}
+            </div>
           )}
           {reply.images?.length && imageDisplayMode === "gallery" ? (
             <CommentImageGallery
