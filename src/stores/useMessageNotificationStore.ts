@@ -315,6 +315,13 @@ function normalizeMessageItem(
       ? message.type
       : "notification";
 
+  // 检查消息 metadata 中是否有 articleId，如果有则跳转到文章详情页
+  const metadata = (message as { metadata?: { articleId?: number } }).metadata;
+  const articleId = metadata?.articleId;
+  const href = articleId
+    ? `/article/${articleId}`
+    : buildMessageCenterHref(type, message.id);
+
   return {
     id: message.id,
     type,
@@ -322,7 +329,7 @@ function normalizeMessageItem(
     content: message.content || "",
     createdAt: message.createdAt || "",
     isRead: Boolean(message.isRead),
-    href: buildMessageCenterHref(type, message.id),
+    href,
     messageKind: "messageKind" in message ? message.messageKind : undefined,
     payload:
       "payload" in message
