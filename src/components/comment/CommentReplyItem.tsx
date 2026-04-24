@@ -8,11 +8,12 @@ import {
   formatRelativeTime,
   prepareCommentHtmlForDisplay,
 } from "@/lib";
-import { openLoginDialog, openModal, MODAL_IDS } from "@/lib/modal-helpers";
+import { MODAL_IDS, openLoginDialog, openModal } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import { CommentList } from "@/types";
 import { getImageUrls, type ImageInfo } from "@/types/image";
 import {
+  Crown,
   Image as ImageIcon,
   Languages,
   LoaderCircle,
@@ -30,6 +31,7 @@ export type CommentReply = NonNullable<CommentList[number]["replies"]>[number];
 
 type CommentReplyItemProps = {
   articleId: string;
+  articleAuthorId?: string | number;
   rootCommentId: number;
   reply: CommentReply & { images?: (string | ImageInfo)[] };
   isReplyEditorOpen: boolean;
@@ -52,6 +54,7 @@ type CommentReplyItemProps = {
 
 export const CommentReplyItem = memo(function CommentReplyItem({
   articleId,
+  articleAuthorId,
   rootCommentId,
   reply,
   isReplyEditorOpen,
@@ -170,7 +173,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
   return (
     <section
       key={reply.id}
-      className={cn("relative z-0",onOpenModal && "cursor-pointer")}
+      className={cn("relative z-0", onOpenModal && "cursor-pointer")}
       onClick={handleItemClick}
     >
       <div>
@@ -185,10 +188,11 @@ export const CommentReplyItem = memo(function CommentReplyItem({
                 className={cn(avatarClassName, "shrink-0")}
               />
             </GuardedLink>
-            <div className="font-semibold text-foreground space-x-1 flex items-center">
-              <span className={cn(reply.author?.isMember )}>
+            <div className="text-foreground space-x-1 flex items-center">
+              <span className={cn(reply.author?.isMember, "font-semibold")}>
                 {reply.author?.nickname || reply.author?.username}
               </span>
+
               {reply.author?.equippedDecorations?.ACHIEVEMENT_BADGE && (
                 <span className="relative size-4 inline-flex items-center justify-center">
                   <ImageWithFallback
@@ -209,6 +213,17 @@ export const CommentReplyItem = memo(function CommentReplyItem({
                   />
                 </span>
               )}
+
+              {articleAuthorId &&
+                reply.author?.id === Number(articleAuthorId) && (
+                  <span
+                    className="truncate leading-3 inline-flex items-center gap-1 px-1 py-0.5 text-xs border border-[#12adb3] rounded-full text-[#12adb3]"
+                    title={tComment("originalPoster")}
+                  >
+                    <Crown size={12} className="-rotate-45" />
+                    {tComment("originalPoster")}
+                  </span>
+                )}
             </div>
           </div>
           {showTranslateButton && !contentMatchesLocale ? (
@@ -234,9 +249,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
           {replyTarget?.id && replyTarget.name ? (
             <div className="whitespace-pre-wrap text-sm py-1">
               <div className="text-secondary">
-                <span>
-                  {tComment("replyToPrefix")}
-                </span>{" "}
+                <span>{tComment("replyToPrefix")}</span>{" "}
                 <Link
                   href={`/account/${replyTarget.id}`}
                   className="font-medium text-primary hover:opacity-80"
@@ -244,14 +257,12 @@ export const CommentReplyItem = memo(function CommentReplyItem({
                 >
                   {replyTarget.name}
                 </Link>
-                <span>
-                  {tComment("replyToSuffix")}
-                </span>
+                <span>{tComment("replyToSuffix")}</span>
               </div>
-              {showBubble && reply.author?.equippedDecorations?.COMMENT_BUBBLE ? (
+              {showBubble &&
+              reply.author?.equippedDecorations?.COMMENT_BUBBLE ? (
                 <div className="relative mt-5 inline-block max-w-full">
-                  {reply.author.equippedDecorations.COMMENT_BUBBLE
-                    .imageUrl && (
+                  {reply.author.equippedDecorations.COMMENT_BUBBLE.imageUrl && (
                     <div className="absolute -top-5 right-0 w-40 h-10 overflow-hidden cursor-pointer">
                       <ImageWithFallback
                         onClick={(e) => {
@@ -259,8 +270,8 @@ export const CommentReplyItem = memo(function CommentReplyItem({
                           e.stopPropagation();
                           openModal(MODAL_IDS.COMMENT_BUBBLE, {
                             commentBubbleId:
-                              reply.author?.equippedDecorations
-                                ?.COMMENT_BUBBLE?.id,
+                              reply.author?.equippedDecorations?.COMMENT_BUBBLE
+                                ?.id,
                           });
                         }}
                         src={
@@ -268,8 +279,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
                             .imageUrl
                         }
                         alt={
-                          reply.author.equippedDecorations.COMMENT_BUBBLE
-                            .name
+                          reply.author.equippedDecorations.COMMENT_BUBBLE.name
                         }
                         fill
                         className="object-contain object-right"
@@ -311,10 +321,10 @@ export const CommentReplyItem = memo(function CommentReplyItem({
             </div>
           ) : (
             <div>
-              {showBubble && reply.author?.equippedDecorations?.COMMENT_BUBBLE ? (
+              {showBubble &&
+              reply.author?.equippedDecorations?.COMMENT_BUBBLE ? (
                 <div className="relative mt-5 inline-block max-w-full">
-                  {reply.author.equippedDecorations.COMMENT_BUBBLE
-                    .imageUrl && (
+                  {reply.author.equippedDecorations.COMMENT_BUBBLE.imageUrl && (
                     <div className="absolute -top-5 right-0 w-40 h-10 overflow-hidden cursor-pointer">
                       <ImageWithFallback
                         onClick={(e) => {
@@ -322,8 +332,8 @@ export const CommentReplyItem = memo(function CommentReplyItem({
                           e.stopPropagation();
                           openModal(MODAL_IDS.COMMENT_BUBBLE, {
                             commentBubbleId:
-                              reply.author?.equippedDecorations
-                                ?.COMMENT_BUBBLE?.id,
+                              reply.author?.equippedDecorations?.COMMENT_BUBBLE
+                                ?.id,
                           });
                         }}
                         src={
@@ -331,8 +341,7 @@ export const CommentReplyItem = memo(function CommentReplyItem({
                             .imageUrl
                         }
                         alt={
-                          reply.author.equippedDecorations.COMMENT_BUBBLE
-                            .name
+                          reply.author.equippedDecorations.COMMENT_BUBBLE.name
                         }
                         fill
                         className="object-contain object-right"

@@ -219,6 +219,7 @@
     "pendingReview": "审核中",
     "floor": "{floor}楼",
     "unknownFloor": "未知楼层",
+    "originalPoster": "原帖作者",
     "sortOptions": {
       "all": "全部评论",
       "hot": "点赞最多",

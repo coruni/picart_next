@@ -154,7 +154,10 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
   const content = prepareRichTextHtmlForDisplay(contentWithTocMarkup, locale);
 
   // Detect original content language once on server side
-  const articleTextForDetection = [article?.title, stripHtmlTags(article?.content || "")]
+  const articleTextForDetection = [
+    article?.title,
+    stripHtmlTags(article?.content || ""),
+  ]
     .filter(Boolean)
     .join(" ");
   const originalLanguage = detectContentLanguage(articleTextForDetection);
@@ -358,6 +361,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           />
         </div>
         <ArticleCommentList
+          commentCount={article?.commentCount || 0}
           articleId={id}
           articleAuthorId={article.author?.id}
         />

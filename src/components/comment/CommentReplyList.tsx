@@ -58,6 +58,7 @@ function dedupeRepliesById(
 
 type CommentReplyListProps = {
   articleId: string;
+  articleAuthorId?: string | number;
   data: CommentList[number];
   activeReplyParentId: number | null;
   onToggleReplyEditor: (parentId: number | undefined) => void;
@@ -78,6 +79,7 @@ type CommentSortKey = "all" | "hot" | "oldest" | "latest" | "rootOnly";
 
 export function CommentReplyList({
   articleId,
+  articleAuthorId,
   data,
   activeReplyParentId,
   onToggleReplyEditor,
@@ -376,6 +378,7 @@ export function CommentReplyList({
             <CommentReplyItem
               key={reply.id}
               articleId={articleId}
+              articleAuthorId={articleAuthorId}
               rootCommentId={data.id}
               reply={reply}
               isReplyEditorOpen={activeReplyParentId === reply.id}
@@ -626,6 +629,7 @@ export function CommentReplyList({
                     <CommentReplyItem
                       key={`modal-${reply.id}`}
                       articleId={articleId}
+                      articleAuthorId={articleAuthorId}
                       rootCommentId={data.id}
                       reply={reply}
                       isReplyEditorOpen={activeReplyParentId === reply.id}

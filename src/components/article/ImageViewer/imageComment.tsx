@@ -8,6 +8,7 @@ import {
   DialogOverlay,
   DialogTitle,
 } from "@/components/ui/Dialog";
+import { useRouter } from "@/i18n/routing";
 import { ArticleDetail, ArticleList } from "@/types";
 import { ChevronRight, FileText, MessageCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -34,7 +35,7 @@ export const ImageComment = memo(function ImageComment({
   const t = useTranslations("commentEditor");
   const tImageViewer = useTranslations("imageViewer");
   const articleId = String(article.id);
-
+  const router = useRouter();
   // 使用 useMemo 缓存作者信息
   const authorInfo = useMemo(
     () => ({
@@ -80,6 +81,10 @@ export const ImageComment = memo(function ImageComment({
     setDialogOpen(true);
   }, []);
 
+  const handleToOriginalPost = () => {
+    router.push(`/article/${articleId}`);
+  };
+
   return (
     <>
       <div className="flex flex-col w-full min-h-0">
@@ -101,7 +106,10 @@ export const ImageComment = memo(function ImageComment({
           </div>
         </div>
 
-        <div className="mx-4 my-2 py-1 px-2 bg-muted flex items-center rounded-md text-secondary justify-between cursor-pointer">
+        <div
+          className="mx-4 my-2 py-1 px-2 bg-muted flex items-center rounded-md text-secondary justify-between cursor-pointer"
+          onClick={handleToOriginalPost}
+        >
           <div className="flex items-center flex-1 text-sm gap-2">
             <FileText size={14} />
             <span>{tImageViewer("viewOriginal")}</span>
@@ -115,8 +123,9 @@ export const ImageComment = memo(function ImageComment({
           <ArticleCommentList
             key={refreshKey}
             articleId={articleId}
+            articleAuthorId={article?.author?.id}
             pageSize={10}
-            commentCount={article.commentCount || 0}
+            commentCount={article?.commentCount || 0}
             sortClassName="pb-2!"
             showTopCommentEditor={false}
             stickySort={true}
@@ -144,7 +153,7 @@ export const ImageComment = memo(function ImageComment({
       <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
         <DialogOverlay className="z-400!" />
 
-      <DialogContent className="max-w-lg w-[calc(100vw-1rem)] p-0 overflow-visible z-401!">
+        <DialogContent className="max-w-lg w-[calc(100vw-1rem)] p-0 overflow-visible z-401!">
           <DialogHeader className="">
             <DialogTitle className=" font-semibold">{t("send")}</DialogTitle>
           </DialogHeader>

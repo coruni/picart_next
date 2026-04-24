@@ -29,6 +29,7 @@ import { CommentList } from "@/types";
 import { type ImageInfo } from "@/types/image";
 import {
   Clock,
+  Crown,
   EllipsisVertical,
   Languages,
   LoaderCircle,
@@ -436,6 +437,16 @@ export const CommentItem = memo(function CommentItem({
                 />
               </span>
             )}
+            {articleAuthorId &&
+              commentState.author.id === Number(articleAuthorId) && (
+                <span
+                  className="truncate leading-3 inline-flex items-center gap-1 px-1 py-0.5 text-xs border border-[#12adb3] rounded-full text-[#12adb3]"
+                  title={tComment("originalPoster")}
+                >
+                  <Crown size={12} className="-rotate-45" />
+                  {tComment("originalPoster")}
+                </span>
+              )}
           </Link>
           <span className="text-xs flex-1 text-muted-foreground">
             {/* {formatRelativeTime(commentState.createdAt, tTime)} */}
@@ -640,6 +651,7 @@ export const CommentItem = memo(function CommentItem({
       {/* Replies element */}
       <CommentReplyList
         articleId={articleId}
+        articleAuthorId={articleAuthorId}
         data={commentState}
         activeReplyParentId={activeReplyParentId}
         onToggleReplyEditor={toggleReplyEditor}

@@ -227,6 +227,7 @@
     "pendingReview": "Pending review",
     "floor": "{floor}F",
     "unknownFloor": "Unknown floor",
+    "originalPoster": "OP",
     "sortOptions": {
       "all": "All comments",
       "hot": "Most liked",
