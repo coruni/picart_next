@@ -268,6 +268,7 @@ const copy = {
       roles: {
         title: "角色管理",
         description: "查看角色状态、系统角色标记和权限数量。",
+        assignPermissions: "配置权限",
       },
       permissions: {
         title: "权限管理",
@@ -751,6 +752,7 @@ const copy = {
       roles: {
         title: "Role Management",
         description: "Review role status, system flags, and permission counts.",
+        assignPermissions: "Assign Permissions",
       },
       permissions: {
         title: "Permission Management",

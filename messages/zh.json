@@ -195,7 +195,8 @@
     "tabs": {
       "hot": "热门",
       "new": "最新"
-    }
+    },
+    "joinedTopics": "加入的话题"
   },
   "commentList": {
     "loading": "加载中...",

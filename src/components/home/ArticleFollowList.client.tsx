@@ -10,6 +10,7 @@ import { useUserStore } from "@/stores";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { Button } from "../ui/Button";
 import { useTranslations } from "next-intl";
+import { FollowedTopicsWidget } from "./FollowedTopicsWidget";
 
 type ArticleListClientProps = {
   initArticles: ArticleList;
@@ -25,14 +26,17 @@ export const ArticleFollowList = (props: ArticleListClientProps) => {
   return (
     <>
       {isAuthenticated ? (
-        <SharedArticleListClient
-          showFollow={props.showFollow}
-          initArticles={props.initArticles}
-          initPage={props.initPage}
-          initTotal={props.initTotal}
-          fetchArticles={articleControllerFindAll}
-          cacheKey="home-follow-articles"
-        />
+        <>
+          <FollowedTopicsWidget />
+          <SharedArticleListClient
+            showFollow={props.showFollow}
+            initArticles={props.initArticles}
+            initPage={props.initPage}
+            initTotal={props.initTotal}
+            fetchArticles={articleControllerFindAll}
+            cacheKey="home-follow-articles"
+          />
+        </>
       ) : (
         <EmptyState
           message={t("loginPrompt")}

@@ -1,13 +1,14 @@
 "use client";
 
 import {
+  bannerControllerCreate,
   bannerControllerFindAll,
   bannerControllerRemove,
   bannerControllerUpdate,
 } from "@/api";
 import { DropdownMenu } from "@/components/shared";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
-import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
+import { MoreHorizontal, PencilLine, Plus, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
@@ -36,6 +37,7 @@ export function DashboardBannersPage() {
   const [submitting, setSubmitting] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isCreating, setIsCreating] = useState(false);
 
   const statusValueEnum = useMemo(
     () => ({
@@ -210,6 +212,16 @@ export function DashboardBannersPage() {
       <DashboardProTable
         key={refreshKey}
         title={copy.pages.banners.title}
+        action={
+          <button
+            type="button"
+            className="inline-flex h-8 items-center justify-center gap-1.5 rounded-full bg-primary px-4 text-sm font-medium text-white transition-colors hover:opacity-90"
+            onClick={() => setIsCreating(true)}
+          >
+            <Plus size={16} />
+            {copy.common.create}
+          </button>
+        }
         columns={columns}
         request={async ({ current, pageSize, keyword, status }) => {
           const response = await bannerControllerFindAll({
@@ -291,6 +303,45 @@ export function DashboardBannersPage() {
               },
             });
             setEditingItem(null);
+            setRefreshKey((current) => current + 1);
+          } finally {
+            setSubmitting(false);
+          }
+        }}
+      />
+      <DashboardEditDialog
+        open={isCreating}
+        title={`${copy.common.create} · ${copy.pages.banners.title}`}
+        fields={editFields}
+        initialValues={{
+          title: "",
+          description: "",
+          imageUrl: "",
+          linkUrl: "",
+          sortOrder: 0,
+          status: "active",
+        }}
+        loading={submitting}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsCreating(false);
+          }
+        }}
+        onSubmit={async (values) => {
+          setSubmitting(true);
+
+          try {
+            await bannerControllerCreate({
+              body: {
+                title: String(values.title || ""),
+                description: String(values.description || ""),
+                imageUrl: String(values.imageUrl || ""),
+                linkUrl: values.linkUrl ? String(values.linkUrl) : undefined,
+                sortOrder: Number(values.sortOrder) || 0,
+                status: values.status as "active" | "inactive",
+              },
+            });
+            setIsCreating(false);
             setRefreshKey((current) => current + 1);
           } finally {
             setSubmitting(false);

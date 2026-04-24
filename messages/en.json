@@ -203,7 +203,8 @@
     "tabs": {
       "hot": "Hot",
       "new": "New"
-    }
+    },
+    "joinedTopics": "Joined Topics"
   },
   "commentList": {
     "loading": "Loading...",

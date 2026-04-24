@@ -3,6 +3,7 @@
 import {
     permissionControllerFindAll,
     roleControllerAssignPermissions,
+    roleControllerCreate,
     roleControllerFindWithPagination,
     roleControllerRemove,
     roleControllerUpdate,
@@ -16,9 +17,9 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/Dialog";
-import { MoreHorizontal, PencilLine, Shield, Trash2 } from "lucide-react";
+import { MoreHorizontal, PencilLine, Plus, Shield, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import { DashboardEditDialog, type DashboardEditField } from "./DashboardEditDialog.client";
 import { DashboardLoadingView } from "./DashboardFeedback";
@@ -35,6 +36,7 @@ export function DashboardRolesPage() {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
   const { ready } = useDashboardGuard();
+  const [creating, setCreating] = useState(false);
   const [editingItem, setEditingItem] = useState<DashboardRoleItem | null>(null);
   const [editingPermissionsItem, setEditingPermissionsItem] = useState<DashboardRoleItem | null>(null);
   const [deletingItem, setDeletingItem] = useState<DashboardRoleItem | null>(null);
@@ -66,7 +68,7 @@ export function DashboardRolesPage() {
     [copy],
   );
 
-  const loadPermissions = async () => {
+  const loadPermissions = useCallback(async () => {
     setPermissionsLoading(true);
     try {
       const response = await permissionControllerFindAll();
@@ -77,15 +79,15 @@ export function DashboardRolesPage() {
     } finally {
       setPermissionsLoading(false);
     }
-  };
+  }, []);
 
-  const handleOpenPermissionsDialog = async (item: DashboardRoleItem) => {
+  const handleOpenPermissionsDialog = useCallback(async (item: DashboardRoleItem) => {
     setEditingPermissionsItem(item);
     // 设置已选中的权限
     const currentIds = item.permissions?.map((p) => p.id) || [];
     setSelectedPermissions(currentIds);
     await loadPermissions();
-  };
+  }, [loadPermissions]);
 
   const handleTogglePermission = (permissionId: number) => {
     setSelectedPermissions((prev) =>
@@ -187,7 +189,7 @@ export function DashboardRolesPage() {
               onClick: () => setEditingItem(item),
             },
             {
-              label: "配置权限",
+              label: copy.pages.roles.assignPermissions,
               icon: <Shield size={16} />,
               onClick: () => handleOpenPermissionsDialog(item),
             },
@@ -222,7 +224,7 @@ export function DashboardRolesPage() {
         },
       },
     ],
-    [copy, statusValueEnum],
+    [copy, handleOpenPermissionsDialog, statusValueEnum],
   );
 
   const handleDelete = async () => {
@@ -240,6 +242,29 @@ export function DashboardRolesPage() {
     }
   };
 
+  const handleCreate = async (values: Record<string, unknown>) => {
+    setSubmitting(true);
+    try {
+      await roleControllerCreate({
+        body: {
+          name: String(values.name || ""),
+          displayName: values.displayName
+            ? String(values.displayName)
+            : undefined,
+          description: String(values.description || ""),
+          isActive:
+            typeof values.isActive === "boolean" ? values.isActive : true,
+          isSystem:
+            typeof values.isSystem === "boolean" ? values.isSystem : false,
+        },
+      });
+      setCreating(false);
+      setRefreshKey((current) => current + 1);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (!ready) {
     return <DashboardLoadingView text={copy.common.loading} />;
   }
@@ -249,6 +274,16 @@ export function DashboardRolesPage() {
       <DashboardProTable
         key={refreshKey}
         title={copy.pages.roles.title}
+        action={
+          <Button
+            variant="primary"
+            className="h-7 rounded-full px-2"
+            onClick={() => setCreating(true)}
+          >
+            <Plus className="mr-2 size-4" />
+            {copy.common.create}
+          </Button>
+        }
         columns={columns}
         request={async ({ current, pageSize, name, isActive }) => {
           const response = await roleControllerFindWithPagination({
@@ -270,6 +305,25 @@ export function DashboardRolesPage() {
         getRowKey={(item) => item.id}
         emptyText={copy.empty.roles}
         className="h-full"
+      />
+      <DashboardEditDialog
+        open={creating}
+        title={`${copy.common.create} · ${copy.pages.roles.title}`}
+        fields={editFields}
+        initialValues={{
+          name: "",
+          displayName: "",
+          description: "",
+          isActive: true,
+          isSystem: false,
+        }}
+        loading={submitting}
+        onOpenChange={(open) => {
+          if (!open) {
+            setCreating(false);
+          }
+        }}
+        onSubmit={handleCreate}
       />
       <DashboardEditDialog
         open={Boolean(editingItem)}
@@ -327,17 +381,18 @@ export function DashboardRolesPage() {
           <DialogHeader className="px-6 py-4 mb-0! border-b border-border">
             <DialogTitle className="flex items-center gap-2 text-base">
               <Shield className="size-5 text-primary" />
-              配置权限 · {editingPermissionsItem?.displayName || editingPermissionsItem?.name}
+              {copy.pages.permissions.title} ·{" "}
+              {editingPermissionsItem?.displayName || editingPermissionsItem?.name}
             </DialogTitle>
           </DialogHeader>
           <div className="py-4 px-6 overflow-y-auto max-h-[60vh]">
             {permissionsLoading ? (
               <div className="flex items-center justify-center py-10">
-                <div className="text-sm text-muted-foreground">加载中...</div>
+                <div className="text-sm text-muted-foreground">{copy.common.loading}</div>
               </div>
             ) : permissions.length === 0 ? (
               <div className="text-center py-10 text-sm text-muted-foreground">
-                暂无权限数据
+                {copy.empty.permissions}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

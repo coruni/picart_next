@@ -1,10 +1,10 @@
 "use client";
 
-import { tagControllerFindAll, tagControllerRemove, tagControllerUpdate } from "@/api";
+import { tagControllerCreate, tagControllerFindAll, tagControllerRemove, tagControllerUpdate } from "@/api";
 import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { Avatar } from "@/components/ui/Avatar";
 import { Link } from "@/i18n/routing";
-import { MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
+import { MoreHorizontal, PencilLine, Plus, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
@@ -30,6 +30,7 @@ export function DashboardTagsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isCreating, setIsCreating] = useState(false);
 
   const editFields = useMemo<DashboardEditField[]>(
     () => [
@@ -183,6 +184,16 @@ export function DashboardTagsPage() {
       <DashboardProTable
         key={refreshKey}
         title={copy.pages.tags.title}
+        action={
+          <button
+            type="button"
+            className="inline-flex h-8 items-center justify-center gap-1.5 rounded-full bg-primary px-4 text-sm font-medium text-white transition-colors hover:opacity-90"
+            onClick={() => setIsCreating(true)}
+          >
+            <Plus size={16} />
+            {copy.common.create}
+          </button>
+        }
         columns={columns}
         request={async ({ current, pageSize, name }) => {
           const response = await tagControllerFindAll({
@@ -243,6 +254,45 @@ export function DashboardTagsPage() {
               },
             });
             setEditingItem(null);
+            setRefreshKey((current) => current + 1);
+          } finally {
+            setSubmitting(false);
+          }
+        }}
+      />
+      <DashboardEditDialog
+        open={isCreating}
+        title={`${copy.common.create} · ${copy.pages.tags.title}`}
+        fields={editFields}
+        initialValues={{
+          name: "",
+          description: "",
+          avatar: "",
+          background: "",
+          cover: "",
+          sort: 0,
+        }}
+        loading={submitting}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsCreating(false);
+          }
+        }}
+        onSubmit={async (values) => {
+          setSubmitting(true);
+
+          try {
+            await tagControllerCreate({
+              body: {
+                name: String(values.name || ""),
+                description: values.description ? String(values.description) : undefined,
+                avatar: values.avatar ? String(values.avatar) : undefined,
+                background: values.background ? String(values.background) : undefined,
+                cover: values.cover ? String(values.cover) : undefined,
+                sort: Number(values.sort) || 0,
+              },
+            });
+            setIsCreating(false);
             setRefreshKey((current) => current + 1);
           } finally {
             setSubmitting(false);
