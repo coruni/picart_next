@@ -220,6 +220,8 @@ export default function CreateVideoPage() {
   const tPost = useTranslations("createPost");
   const tVideo = useTranslations("createVideo");
   const tTag = useTranslations("tagSelect");
+  const currentUser = useUserStore((state) => state.user);
+  const canRequirePayment = currentUser?.isMember === true;
 
   const [articleLoading, setArticleLoading] = useState(false);
   const [videoUploading, setVideoUploading] = useState(false);
@@ -368,6 +370,12 @@ export default function CreateVideoPage() {
       }
     },
   });
+
+  useEffect(() => {
+    if (!canRequirePayment && values.requirePayment) {
+      setFieldValues({ requirePayment: false, viewPrice: 0 });
+    }
+  }, [canRequirePayment, values.requirePayment, setFieldValues]);
 
   // Fetch article data in edit mode
   useEffect(() => {
@@ -957,40 +965,42 @@ export default function CreateVideoPage() {
                       </div>
                     </FormField>
 
-                    <FormField name="requirePayment">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center justify-between w-full">
-                          <label className="text-black/65 dark:text-white text-sm">
-                            {tPost("settings.requirePayment")}
-                          </label>
-                          <Switch
-                            checked={values.requirePayment}
-                            onCheckedChange={(checked) =>
-                              setFieldValues({ requirePayment: checked })
-                            }
-                          />
-                        </div>
-
-                        {values.requirePayment && (
-                          <div className="mt-2 flex justify-end">
-                            <Input
-                              className="h-9 w-full max-w-36 text-right tabular-nums"
-                              type="number"
-                              min={1}
-                              step={1}
-                              max={999}
-                              placeholder={tPost("settings.pricePlaceholder")}
-                              value={values.viewPrice}
-                              onChange={(value) =>
-                                setFieldValues({
-                                  viewPrice: Number(value.target.value),
-                                })
+                    {canRequirePayment && (
+                      <FormField name="requirePayment">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center justify-between w-full">
+                            <label className="text-black/65 dark:text-white text-sm">
+                              {tPost("settings.requirePayment")}
+                            </label>
+                            <Switch
+                              checked={values.requirePayment}
+                              onCheckedChange={(checked) =>
+                                setFieldValues({ requirePayment: checked })
                               }
                             />
                           </div>
-                        )}
-                      </div>
-                    </FormField>
+
+                          {values.requirePayment && (
+                            <div className="mt-2 flex justify-end">
+                              <Input
+                                className="h-9 w-full max-w-36 text-right tabular-nums"
+                                type="number"
+                                min={1}
+                                step={1}
+                                max={999}
+                                placeholder={tPost("settings.pricePlaceholder")}
+                                value={values.viewPrice}
+                                onChange={(value) =>
+                                  setFieldValues({
+                                    viewPrice: Number(value.target.value),
+                                  })
+                                }
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </FormField>
+                    )}
 
                     <FormField name="requireMembership">
                       <div className="flex items-center justify-between">

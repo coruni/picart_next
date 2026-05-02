@@ -225,7 +225,7 @@ export function DialogContent({
       className={cn(
         "fixed left-[50%] top-[50%] z-101 w-full max-w-lg",
         "translate-x-[-50%] translate-y-[-50%]",
-        "rounded-lg border bg-card border-border p-6 shadow-xl",
+        "rounded-lg border bg-card border-border p-4 shadow-xl",
         "animate-in fade-in-0 zoom-in-95 duration-200 ",
         className,
       )}
@@ -266,7 +266,7 @@ export function DialogHeader({ className, children }: DialogHeaderProps) {
   return (
     <div
       className={cn(
-        "flex px-6 py-4 flex-col space-y-1.5 text-center sm:text-left text-sm",
+        "flex  py-4 flex-col space-y-1.5 text-center sm:text-left text-sm",
         className,
       )}
     >

@@ -35,14 +35,13 @@ export function initializeInterceptors(): Promise<void> {
 
       client.interceptors.response.use(async (response) => response);
 
-      client.interceptors.error.use(async (error) => {
+      client.interceptors.error.use(async (error, response) => {
         if (process.env.NODE_ENV === "development") {
-          console.warn("[auth][interceptor] response error", { error });
+          console.warn("[auth][interceptor] response error", { error, response });
         }
 
-        // 尝试从 error 中获取 response
-        const err = error as { code?: number; response?: { code?: number } };
-        const status = err?.code ?? err?.response?.code;
+        const apiCode = error && typeof error === "object" && "code" in error ? (error as { code?: number }).code : undefined;
+        const status = response?.status ?? apiCode;
 
         // 处理 401 未授权错误
         if (status === 401 && typeof window !== "undefined") {

@@ -79,6 +79,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   const tTag = useTranslations("tagSelect");
   const coverEditorRef = useRef<AvatarEditor>(null);
   const currentUser = useUserStore((state) => state.user);
+  const canRequirePayment = currentUser?.isMember === true;
   const editorRef = useRef<Quill | null>(null);
   const latestContentRef = useRef("");
   const getLatestEditorContent = (value?: string) => {
@@ -206,6 +207,12 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       }
     },
   });
+
+  useEffect(() => {
+    if (!canRequirePayment && values.requirePayment) {
+      setFieldValues({ requirePayment: false, viewPrice: 0 });
+    }
+  }, [canRequirePayment, values.requirePayment, setFieldValues]);
 
   const previewHtml = useMemo(
     () => prepareRichTextHtmlForDisplay(values.content || ""),
@@ -709,35 +716,37 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                         />
                       </div>
                     </FormField>
-                    <FormField name="requirePayment">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center justify-between w-full">
-                          <label className="text-black/65 dark:text-white text-sm">
-                            {t("settings.requirePayment")}
-                          </label>
-                          <Switch
-                            checked={values.requirePayment}
-                            onCheckedChange={(checked) => setFieldValues({ requirePayment: checked })}
-                          />
-                        </div>
-                        {values.requirePayment && (
-                          <div className="mt-2 flex justify-end">
-                            <Input
-                              className="h-9 w-full max-w-36 text-right tabular-nums"
-                              type="number"
-                              min={1}
-                              step={1}
-                              max={999}
-                              placeholder={t("settings.pricePlaceholder")}
-                              value={values.viewPrice}
-                              onChange={(value) =>
-                                setFieldValues({ viewPrice: Number(value.target.value) })
-                              }
+                    {canRequirePayment && (
+                      <FormField name="requirePayment">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center justify-between w-full">
+                            <label className="text-black/65 dark:text-white text-sm">
+                              {t("settings.requirePayment")}
+                            </label>
+                            <Switch
+                              checked={values.requirePayment}
+                              onCheckedChange={(checked) => setFieldValues({ requirePayment: checked })}
                             />
                           </div>
-                        )}
-                      </div>
-                    </FormField>
+                          {values.requirePayment && (
+                            <div className="mt-2 flex justify-end">
+                              <Input
+                                className="h-9 w-full max-w-36 text-right tabular-nums"
+                                type="number"
+                                min={1}
+                                step={1}
+                                max={999}
+                                placeholder={t("settings.pricePlaceholder")}
+                                value={values.viewPrice}
+                                onChange={(value) =>
+                                  setFieldValues({ viewPrice: Number(value.target.value) })
+                                }
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </FormField>
+                    )}
                     <FormField name="requireMembership">
                       <div className="flex items-center justify-between">
                         <label className="text-black/65 dark:text-white text-sm">
