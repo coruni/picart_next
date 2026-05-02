@@ -573,6 +573,10 @@ export type CreateArticleDto = {
      * 是否在个人主页置顶，作者或管理员可设置
      */
     isPinnedOnProfile?: boolean;
+    /**
+     * 是否允许转载
+     */
+    allowReprint?: boolean;
 };
 
 export type UpdateArticleDto = {
@@ -692,19 +696,19 @@ export type CreateTagDto = {
     /**
      * 标签头像
      */
-    avatar: string;
+    avatar?: string;
     /**
      * 标签背景
      */
-    background: string;
+    background?: string;
     /**
      * 标签封面
      */
-    cover: string;
+    cover?: string;
     /**
      * 排序
      */
-    sort: number;
+    sort?: number;
 };
 
 export type UpdateTagDto = {
@@ -5129,6 +5133,7 @@ export type ArticleControllerFindOneResponses = {
             isHot: boolean;
             hotScore: number;
             isFeatured: boolean;
+            allowReprint: boolean;
         };
     };
 };

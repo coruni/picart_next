@@ -10586,6 +10586,9 @@
                         },
                         "isFeatured": {
                           "type": "boolean"
+                        },
+                        "allowReprint": {
+                          "type": "boolean"
                         }
                       },
                       "required": [
@@ -10628,7 +10631,8 @@
                         "isHot",
                         "hotScore",
                         "isFeatured",
-                        "videoUrl"
+                        "videoUrl",
+                        "allowReprint"
                       ]
                     }
                   },
@@ -51424,6 +51428,10 @@
             "type": "boolean",
             "description": "是否在个人主页置顶，作者或管理员可设置",
             "default": false
+          },
+          "allowReprint": {
+            "type": "boolean",
+            "description": "是否允许转载"
           }
         },
         "required": [
@@ -51664,11 +51672,7 @@
           }
         },
         "required": [
-          "name",
-          "avatar",
-          "background",
-          "cover",
-          "sort"
+          "name"
         ]
       },
       "UpdateTagDto": {

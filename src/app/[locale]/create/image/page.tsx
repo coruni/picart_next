@@ -7,6 +7,8 @@ import {
   categoryControllerFindAll,
   uploadControllerUploadFile,
 } from "@/api";
+import { useUploadConfig } from "@/components/providers/UploadConfigProvider";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
 import { CategoryOption, CategorySelect } from "@/components/ui/CategorySelect";
 import { Form, FormField } from "@/components/ui/Form";
@@ -15,17 +17,16 @@ import { Switch } from "@/components/ui/Switch";
 import { TagSelect } from "@/components/ui/TagSelect";
 import { useForm } from "@/hooks/useForm";
 import { useImageCompression } from "@/hooks/useImageCompression";
-import { useUploadConfig } from "@/components/providers/UploadConfigProvider";
 import { useRouter } from "@/i18n/routing";
-import { cn, showToast, getErrorMessage } from "@/lib";
+import { cn, getErrorMessage, showToast } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
+import { useUserStore } from "@/stores/useUserStore";
 import { getImageUrls, type ImageInfo } from "@/types/image";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 
 type CreateImageFormData = {
   title: string;
@@ -42,6 +43,7 @@ type CreateImageFormData = {
   viewPrice: number;
   sort: number;
   type: "image";
+  allowReprint: boolean;
 };
 
 type UploadImageItem = {
@@ -213,6 +215,7 @@ export default function CreateImagePage() {
       viewPrice: 0,
       sort: 0,
       type: "image",
+      allowReprint: false,
     },
     validationRules: {
       title: {
@@ -940,7 +943,7 @@ export default function CreateImagePage() {
                             className={cn(
                               "relative aspect-square overflow-hidden rounded-xl border border-border transition-transform",
                               draggingImageIndex === index &&
-                                "scale-[0.98] opacity-70",
+                              "scale-[0.98] opacity-70",
                             )}
                           >
                             {item.previewUrl ? (
@@ -992,7 +995,7 @@ export default function CreateImagePage() {
                             "border-border bg-muted-foreground text-white",
                             "transition-colors",
                             imagesUploading &&
-                              "pointer-events-none opacity-70 cursor-not-allowed",
+                            "pointer-events-none opacity-70 cursor-not-allowed",
                           )}
                         >
                           <Plus className="size-6" />
@@ -1081,6 +1084,17 @@ export default function CreateImagePage() {
                           onCheckedChange={(checked) =>
                             setFieldValues({ requireFollow: checked })
                           }
+                        />
+                      </div>
+                    </FormField>
+                    <FormField name="allowReprint">
+                      <div className="flex items-center justify-between">
+                        <label className="text-black/65 dark:text-white text-sm">
+                          {tPost("settings.allowReprint")}
+                        </label>
+                        <Switch
+                          checked={values.allowReprint}
+                          onCheckedChange={(checked) => setFieldValues({ allowReprint: checked })}
                         />
                       </div>
                     </FormField>

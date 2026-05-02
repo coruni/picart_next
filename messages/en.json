@@ -538,7 +538,8 @@
       "requireFollow": "Require Follow",
       "requirePayment": "Require Payment",
       "requireMembership": "Require Membership",
-      "pricePlaceholder": "Enter price"
+      "pricePlaceholder": "Enter price",
+      "allowReprint": "Allow Reprint"
     },
     "actions": {
       "preview": "Preview",
@@ -700,6 +701,7 @@
   "articleDetail": {
     "pageTitle": "Post Detail",
     "repostable": "Repost allowed",
+    "notRepostable": "Repost not allowed",
     "translatedBy": "Translated by {provider}",
     "viewOriginal": "View original",
     "viewTranslation": "View translation",
@@ -1131,7 +1133,7 @@
       "achievementNotFound": "Achievement not found",
       "achievementNotCompleted": "Achievement not completed",
       "achievementAlreadyClaimed": "Achievement reward already claimed",
-       "createAlipayPaymentFailed": "Create Alipay payment failed",
+      "createAlipayPaymentFailed": "Create Alipay payment failed",
       "createWechatPaymentFailed": "Create Wechat payment failed"
     },
     "success": {
@@ -1190,7 +1192,6 @@
       "achievementDelete": "Achievement deleted successfully",
       "achievementClaimed": "Achievement reward claimed successfully",
       "achievementClaimedAll": "All achievement rewards claimed successfully"
-     
     }
   },
   "sitePages": {

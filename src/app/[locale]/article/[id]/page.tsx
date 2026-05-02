@@ -23,6 +23,7 @@ import {
 } from "@/lib";
 import { serverApi } from "@/lib/server-api";
 import {
+  Ban,
   ChevronLeft,
   ChevronRight,
   Forward,
@@ -284,8 +285,18 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           </div>
 
           <div className="mt-2 flex items-center space-x-1 text-secondary text-xs leading-4">
-            <Forward size={16} />
-            <span>{t("repostable")}</span>
+            {article?.allowReprint ? (
+              <>
+                <Forward size={14} />
+                <span>{t("repostable")}</span>
+              </>
+            ) : (
+              <>
+                <Ban size={14}/>
+                <span>{t("notRepostable")}</span>
+              </>
+            )}
+
           </div>
           {article.tags?.length > 0 && (
             <div

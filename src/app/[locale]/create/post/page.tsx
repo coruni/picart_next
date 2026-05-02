@@ -56,6 +56,7 @@ type CreatePostFormData = {
   viewPrice: number;
   sort: number;
   type: "mixed" | "image";
+  allowReprint: boolean;
 };
 
 type CreatePostPageProps = {
@@ -146,6 +147,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       viewPrice: 0,
       sort: 0,
       type: "mixed",
+      allowReprint:false,
     },
     validationRules: {
       title: {
@@ -713,6 +715,17 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                         <Switch
                           checked={values.requireFollow}
                           onCheckedChange={(checked) => setFieldValues({ requireFollow: checked })}
+                        />
+                      </div>
+                    </FormField>
+                    <FormField name="allowReprint">
+                      <div className="flex items-center justify-between">
+                        <label className="text-black/65 dark:text-white text-sm">
+                          {t("settings.allowReprint")}
+                        </label>
+                        <Switch
+                          checked={values.allowReprint}
+                          onCheckedChange={(checked) => setFieldValues({ allowReprint: checked })}
                         />
                       </div>
                     </FormField>

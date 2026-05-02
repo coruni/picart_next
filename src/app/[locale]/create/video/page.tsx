@@ -18,6 +18,7 @@ import { useForm } from "@/hooks/useForm";
 import { useRouter } from "@/i18n/routing";
 import { cn, getErrorMessage, showToast } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
+import { useUserStore } from "@/stores/useUserStore";
 import { Loader2, Trash2, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -40,6 +41,7 @@ type CreateVideoFormData = {
   viewPrice: number;
   sort: number;
   type: "video";
+  allowReprint: boolean;
 };
 
 type VideoFrame = {
@@ -290,6 +292,7 @@ export default function CreateVideoPage() {
       viewPrice: 0,
       sort: 0,
       type: "video",
+      allowReprint: false,
     },
     validationRules: {
       title: {
@@ -614,10 +617,10 @@ export default function CreateVideoPage() {
         setVideoItem((prev) =>
           prev
             ? {
-                ...prev,
-                remoteUrl: videoUrl,
-                status: "ready",
-              }
+              ...prev,
+              remoteUrl: videoUrl,
+              status: "ready",
+            }
             : null,
         );
         setFieldValues({ videoUrl });
@@ -961,6 +964,17 @@ export default function CreateVideoPage() {
                           onCheckedChange={(checked) =>
                             setFieldValues({ requireFollow: checked })
                           }
+                        />
+                      </div>
+                    </FormField>
+                    <FormField name="allowReprint">
+                      <div className="flex items-center justify-between">
+                        <label className="text-black/65 dark:text-white text-sm">
+                          {tPost("settings.allowReprint")}
+                        </label>
+                        <Switch
+                          checked={values.allowReprint}
+                          onCheckedChange={(checked) => setFieldValues({ allowReprint: checked })}
                         />
                       </div>
                     </FormField>

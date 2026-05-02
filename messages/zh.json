@@ -531,7 +531,8 @@
       "requireFollow": "需要关注",
       "requirePayment": "需要付费",
       "requireMembership": "需要会员",
-      "pricePlaceholder": "请输入价格"
+      "pricePlaceholder": "请输入价格",
+      "allowReprint": "允许转载"
     },
     "actions": {
       "preview": "预览",
@@ -693,6 +694,7 @@
   "articleDetail": {
     "pageTitle": "帖子详情",
     "repostable": "允许转载",
+    "notRepostable": "不允许转载",
     "translatedBy": "由 {provider} 翻译",
     "viewOriginal": "查看原文",
     "viewTranslation": "\u67e5\u770b\u8bd1\u6587",
