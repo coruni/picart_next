@@ -1,6 +1,6 @@
 import { cn } from "@/lib";
 import { getCurrentUser } from "@/lib/current-user";
-import { ArticleDetail } from "@/types";
+import { ArticleDetail, UserProfile } from "@/types";
 import { Banner } from "../ui/Banner";
 import { ArticleCreateWidget } from "./ArticleCreateWidget";
 import { AuthorInfoWidget } from "./AuthorInfoWidget";
@@ -24,7 +24,7 @@ type SidebarProps = {
   showBanner?: boolean;
   showUserInfo?: boolean;
   randomBanner?: boolean;
-  author?: ArticleDetail["author"];
+  author?: ArticleDetail["author"] | UserProfile;
   showSiteContact?: boolean;
   showCollectionList?: boolean;
   collectionId?: number;
@@ -67,7 +67,9 @@ export async function Sidebar({
     ),
     showRecommendUser && <RecommendUserWidget key="recommend-user" />,
     showRecommendTag && <RecommendTagWidget key="recommend-tag" />,
-    showUserInfo && <UserInfoWidget author={author} key="userinfo" />,
+    showUserInfo && (
+      <UserInfoWidget author={author as UserProfile} key="userinfo" />
+    ),
   ].filter(Boolean);
 
   return (
@@ -75,7 +77,9 @@ export async function Sidebar({
       <div className="space-y-4">
         {showLogin && <LoginWidget />}
 
-        {showAuthorInfo && author && <AuthorInfoWidget author={author} />}
+        {showAuthorInfo && author && (
+          <AuthorInfoWidget author={author as ArticleDetail["author"]} />
+        )}
 
         {showCollectionList && collectionId && author && (
           <CollectionListWidget
