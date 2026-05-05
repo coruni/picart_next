@@ -132,11 +132,17 @@ export const ArticleCard = ({
     if (imageCount === 1) {
       const img = previewImages[0];
       const imgUrl = typeof img === "string" ? img : getImageUrl(img, "medium");
+      const image = typeof img === "string" ? undefined : img;
+      const aspectRatio =
+        image?.width && image?.height ? image.width / image.height : 16 / 9;
 
       return (
         <div
-          className="mt-3 rounded-xl overflow-hidden w-62/100 min-w-56 min-h-32.5 relative"
-          style={{ paddingTop: "35%" }}
+          className="mt-3 rounded-xl overflow-hidden w-50/100 min-w-56 min-h-32.5 relative"
+          style={{
+            aspectRatio: `${aspectRatio}`,
+            maxHeight: "520px",
+          }}
         >
           <div
             role="button"
@@ -304,7 +310,7 @@ export const ArticleCard = ({
                   data-auto-translate-content
                   data-guarded-link-ignore="true"
                   onClick={(e) => {
-                    e.preventDefault();  
+                    e.preventDefault();
                     e.stopPropagation();
                     openModal(MODAL_IDS.ACHIEVEMENT_BADGE, {
                       achievementId:
