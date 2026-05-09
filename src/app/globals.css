@@ -1,12 +1,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/* 确保 700 字重使用 SemiBold，并使用 swap 避免阻塞渲染 */
+/* 优化字体加载策略 - 使用 font-display: optional 避免布局偏移 */
 @font-face {
   font-family: "MiSans";
   font-weight: 700;
   src: local("MiSans SemiBold");
-  font-display: swap;
+  font-display: optional;
+  /* optional: 如果字体在极短时间内未加载完成，使用 fallback 字体，避免文字闪烁 */
 }
 
 /* 400 字重使用 Normal 字体 */
@@ -14,7 +15,7 @@
   font-family: "MiSans";
   font-weight: 400;
   src: local("MiSans Normal");
-  font-display: swap;
+  font-display: optional;
 }
 
 @custom-variant dark (&:where(.dark, .dark *));

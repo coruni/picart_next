@@ -126,22 +126,6 @@ export function UserCommentBubbleDialog() {
     }
   };
 
-  // 处理初始选中项 - 在列表加载完成后检查
-  useEffect(() => {
-    if (!commentBubbleDialogOpen || !initialBubbleId) return;
-
-    // 在已拥有的列表中查找
-    const targetBubble = commentBubbles.find((b) => b.id === initialBubbleId);
-    if (targetBubble) {
-      setSelectedBubble({ ...targetBubble, isOwned: true });
-      // 移动端有初始数据时直接展示详情
-      setShowMobileDetail(true);
-    } else if (commentBubbles.length > 0 || !dialogLoading) {
-      // 如果列表已加载但未找到，通过API获取
-      fetchDecorationDetail(initialBubbleId);
-    }
-  }, [commentBubbleDialogOpen, initialBubbleId, commentBubbles, dialogLoading]);
-
   useEffect(() => {
     if (commentBubbleDialogOpen && commentBubbles.length === 0) {
       setDialogLoading(true);
@@ -154,7 +138,7 @@ export function UserCommentBubbleDialog() {
 
   // 处理初始选中项 - 在列表加载完成后检查
   useEffect(() => {
-    if (!commentBubbleDialogOpen || !initialBubbleId) return;
+    if (!commentBubbleDialogOpen || !initialBubbleId || selectedBubble) return;
 
     // 在已拥有的列表中查找
     const targetBubble = commentBubbles.find((b) => b.id === initialBubbleId);
@@ -162,11 +146,12 @@ export function UserCommentBubbleDialog() {
       setSelectedBubble({ ...targetBubble, isOwned: true });
       // 移动端有初始数据时直接展示详情
       setShowMobileDetail(true);
-    } else if (commentBubbles.length > 0 || !dialogLoading) {
+    } else if (commentBubbles.length > 0 && !dialogLoading) {
       // 如果列表已加载但未找到，通过API获取
       fetchDecorationDetail(initialBubbleId);
     }
-  }, [commentBubbleDialogOpen, initialBubbleId, commentBubbles, dialogLoading]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [commentBubbleDialogOpen, initialBubbleId, commentBubbles.length, dialogLoading]);
 
   useEffect(() => {
     if (!commentBubbleDialogOpen) {

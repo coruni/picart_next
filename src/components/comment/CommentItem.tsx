@@ -538,17 +538,29 @@ export const CommentItem = memo(function CommentItem({
             <div className="relative mt-5 inline-block max-w-full">
               {commentState.author.equippedDecorations.COMMENT_BUBBLE
                 .imageUrl && (
-                <div className="absolute -top-5 right-0 w-40 h-10 overflow-hidden cursor-pointer">
+                <div
+                  className="absolute -top-5 right-0 w-40 h-10 overflow-hidden cursor-pointer"
+                  onClick={(e) => {
+                    stopLinkNavigationEvent(e);
+                    openModal(MODAL_IDS.COMMENT_BUBBLE, {
+                      commentBubbleId:
+                        commentState.author.equippedDecorations.COMMENT_BUBBLE
+                          .id,
+                    });
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key !== "Enter" && e.key !== " ") return;
+                    stopLinkNavigationEvent(e);
+                    openModal(MODAL_IDS.COMMENT_BUBBLE, {
+                      commentBubbleId:
+                        commentState.author.equippedDecorations.COMMENT_BUBBLE
+                          .id,
+                    });
+                  }}
+                  role="button"
+                  tabIndex={0}
+                >
                   <ImageWithFallback
-                    onClick={(e) => {
-                      stopLinkNavigationEvent(e);
-
-                      openModal(MODAL_IDS.COMMENT_BUBBLE, {
-                        commentBubbleId:
-                          commentState.author?.equippedDecorations
-                            ?.COMMENT_BUBBLE?.id,
-                      });
-                    }}
                     src={
                       commentState.author.equippedDecorations.COMMENT_BUBBLE
                         .imageUrl

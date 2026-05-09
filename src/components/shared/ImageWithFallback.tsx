@@ -90,9 +90,11 @@ export function ImageWithFallback({
     cachedStatus || "loading",
   );
   // 实际图片是否已渲染（用于缓存命中时的淡入效果）
-  const [imageRendered, setImageRendered] = useState(false);
+  // 如果缓存中已有成功加载的记录，直接设置为已渲染
+  const [imageRendered, setImageRendered] = useState(cachedStatus === "loaded");
   const [shouldLoad, setShouldLoad] = useState(!lazy);
   const wrapperRef = useRef<HTMLSpanElement | null>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
 
   // 懒加载：使用 Intersection Observer
   useEffect(() => {
@@ -171,6 +173,17 @@ export function ImageWithFallback({
     },
     [srcString, onError],
   );
+
+  // 检查图片是否已经在浏览器缓存中完成加载
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth > 0) {
+      // 图片已经在浏览器缓存中，立即标记为已渲染
+      imageCache.set(srcString, "loaded");
+      setStatus("loaded");
+      setImageRendered(true);
+    }
+  }, [srcString]);
 
   const fallbackSrc = status === "error" ? errorSrc : placeholderSrc;
   const fallbackSrcString = getSrcString(fallbackSrc);
@@ -256,6 +269,7 @@ export function ImageWithFallback({
         )}
       >
         <Image
+          ref={imgRef}
           src={srcString}
           alt={alt}
           fill
@@ -293,6 +307,7 @@ export function ImageWithFallback({
       >
         <Image
           {...rest}
+          ref={imgRef}
           src={srcString}
           alt={alt}
           width={1}
@@ -324,6 +339,7 @@ export function ImageWithFallback({
     >
       <Image
         {...rest}
+        ref={imgRef}
         src={srcString}
         alt={alt}
         width={width}
