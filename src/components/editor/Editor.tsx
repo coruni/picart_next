@@ -8,7 +8,14 @@ import { useTranslations } from "next-intl";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { SizeClass, SizeStyle } from "quill/formats/size";
-import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import "./inline-article.css";
 
 import { articleControllerFindByAuthor, articleControllerFindOne } from "@/api";
@@ -199,34 +206,37 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       onChangeRef.current?.(html);
     }, []);
 
-    const ensureImageCaptions = useCallback((root: HTMLElement) => {
-      const wrappers = root.querySelectorAll(".ql-image-wrapper");
+    const ensureImageCaptions = useCallback(
+      (root: HTMLElement) => {
+        const wrappers = root.querySelectorAll(".ql-image-wrapper");
 
-      wrappers.forEach((wrapper) => {
-        const imageWrapper = wrapper as HTMLElement;
-        const img = imageWrapper.querySelector("img.ql-image, img");
-        if (!img) return;
+        wrappers.forEach((wrapper) => {
+          const imageWrapper = wrapper as HTMLElement;
+          const img = imageWrapper.querySelector("img.ql-image, img");
+          if (!img) return;
 
-        let caption = imageWrapper.querySelector(
-          ".ql-image-caption",
-        ) as HTMLParagraphElement | null;
+          let caption = imageWrapper.querySelector(
+            ".ql-image-caption",
+          ) as HTMLParagraphElement | null;
 
-        if (!caption) {
-          caption = document.createElement("p");
-          caption.className = "ql-image-caption";
-          caption.setAttribute("contenteditable", "true");
-          caption.setAttribute(
-            "data-placeholder",
-            t("imageCaptionPlaceholder"),
-          );
-          imageWrapper.appendChild(caption);
-        }
+          if (!caption) {
+            caption = document.createElement("p");
+            caption.className = "ql-image-caption";
+            caption.setAttribute("contenteditable", "true");
+            caption.setAttribute(
+              "data-placeholder",
+              t("imageCaptionPlaceholder"),
+            );
+            imageWrapper.appendChild(caption);
+          }
 
-        if (!caption.textContent?.trim()) {
-          caption.textContent = img.getAttribute("alt") || "";
-        }
-      });
-    }, [t]);
+          if (!caption.textContent?.trim()) {
+            caption.textContent = img.getAttribute("alt") || "";
+          }
+        });
+      },
+      [t],
+    );
 
     // 初始化 Quill
     useEffect(() => {
@@ -645,223 +655,6 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quill.root.addEventListener("keydown", handleKeyDown);
 
-        // 拦截 Quill clipboard 模块的 onPaste 方法
-        const clipboard = quill.getModule("clipboard") as any;
-        const originalOnPaste = clipboard.onPaste.bind(clipboard);
-
-        clipboard.onPaste = (e: ClipboardEvent) => {
-          const files = e.clipboardData?.files;
-          if (files && files.length > 0) {
-            // 检查是否有图片文件
-            const imageFiles = Array.from(files).filter((file: File) =>
-              file.type.startsWith("image/"),
-            );
-
-            if (imageFiles.length > 0) {
-              e.preventDefault();
-
-              const range = quill.getSelection(true);
-              const startIndex = range?.index || quill.getLength();
-
-              const uploadItems: {
-                file: File;
-                originalFile: File;
-                index: number;
-                previewUrl: string;
-                wrapper: HTMLDivElement | null;
-                img: HTMLImageElement | null;
-                overlay: HTMLDivElement | null;
-                progressText: HTMLSpanElement | null;
-              }[] = [];
-
-              // 处理所有粘贴的图片
-              const processImages = async () => {
-                if (imageFiles.length === 0) return;
-
-                // 先创建所有占位
-                for (let i = 0; i < imageFiles.length; i++) {
-                  const originalFile = imageFiles[i];
-                  const currentIndex = startIndex + i;
-                  const previewUrl = URL.createObjectURL(originalFile);
-
-                  quill.insertEmbed(currentIndex, "image", previewUrl);
-                  quill.setSelection(currentIndex + 1, 0);
-
-                  await new Promise((resolve) => setTimeout(resolve, 50));
-
-                  const wrappers = Array.from(
-                    quill.root.querySelectorAll("div.ql-image-wrapper"),
-                  ) as HTMLDivElement[];
-                  let targetWrapper: HTMLDivElement | null = null;
-                  let targetImg: HTMLImageElement | null = null;
-
-                  for (const wrapper of wrappers) {
-                    const img = wrapper.querySelector(
-                      "img.ql-image",
-                    ) as HTMLImageElement | null;
-                    if (
-                      img &&
-                      img.src === previewUrl &&
-                      !img.dataset.uploaded
-                    ) {
-                      targetWrapper = wrapper as HTMLDivElement;
-                      targetImg = img;
-                      break;
-                    }
-                  }
-
-                  if (targetWrapper && targetImg) {
-                    targetWrapper.style.position = "relative";
-                    targetWrapper.style.display = "inline-block";
-
-                    const overlay = document.createElement("div");
-                    overlay.className = "image-upload-overlay";
-                    overlay.innerHTML = `
-                    <div class="image-upload-pill">
-                      <div class="progress">
-                        <div class="spinner"></div>
-                        <span class="progress-text">0%</span>
-                      </div>
-                      <button type="button" class="cancel-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                      </button>
-                    </div>
-                  `;
-
-                    targetWrapper.appendChild(overlay);
-
-                    const progressText = overlay.querySelector(
-                      ".progress-text",
-                    ) as HTMLSpanElement;
-                    progressText.textContent = "0%";
-
-                    uploadItems.push({
-                      file: originalFile,
-                      originalFile,
-                      index: currentIndex,
-                      previewUrl,
-                      wrapper: targetWrapper,
-                      img: targetImg,
-                      overlay,
-                      progressText,
-                    });
-
-                    const cancelBtn = overlay.querySelector(
-                      ".cancel-btn",
-                    ) as HTMLButtonElement;
-                    cancelBtn.onclick = () => {
-                      const item = uploadItems.find(
-                        (u) => u.index === currentIndex,
-                      );
-                      if (item) {
-                        if (item.previewUrl.startsWith("blob:")) {
-                          URL.revokeObjectURL(item.previewUrl);
-                        }
-                        item.wrapper = null;
-                        item.img = null;
-                      }
-                      overlay.remove();
-                      quill.deleteText(currentIndex, 1);
-                    };
-                  } else {
-                    URL.revokeObjectURL(previewUrl);
-                  }
-                }
-
-                // 压缩图片
-                const compressionResults = await compressImages(imageFiles);
-
-                // 验证压缩后的文件大小
-                const validation = validateFiles(
-                  compressionResults.map((r) => r.file),
-                  true,
-                );
-                if (!validation.valid) {
-                  console.error(validation.error);
-                  uploadItems.forEach((item) => {
-                    item.overlay?.remove();
-                    if (item.previewUrl.startsWith("blob:")) {
-                      URL.revokeObjectURL(item.previewUrl);
-                    }
-                    if (item.wrapper) {
-                      quill.deleteText(item.index, 1);
-                    }
-                  });
-                  return;
-                }
-
-                // 计算原始文件的 hash 并构建 metadata
-                const metadata = await buildUploadMetadata(imageFiles);
-                compressionResults.forEach((result, index) => {
-                  const item = uploadItems[index];
-                  if (!item) return;
-                  item.file = result.file;
-                  if (item.progressText) {
-                    item.progressText.textContent = "0%";
-                  }
-                });
-
-                // Batch upload all compressed files
-                const abortController = new AbortController();
-                uploadAbortControllerRef.current = abortController;
-
-                try {
-                  const compressedFiles = compressionResults.map((r) => r.file);
-                  const response = await uploadControllerUploadFile({
-                    body: { file: compressedFiles as any, metadata },
-                  });
-
-                  const uploadedUrls = response.data?.data || [];
-
-                  // Update each uploaded image
-                  uploadItems.forEach((item, idx) => {
-                    if (!item.wrapper || !item.img) return;
-
-                    const uploadedUrl = uploadedUrls[idx]?.url;
-                    if (
-                      uploadedUrl &&
-                      !uploadedUrl.includes("/images/blocked.webp")
-                    ) {
-                      item.img.src = uploadedUrl;
-                      item.img.dataset.uploaded = "true";
-                      if (item.previewUrl.startsWith("blob:")) {
-                        URL.revokeObjectURL(item.previewUrl);
-                      }
-                      if (item.progressText) {
-                        item.progressText.textContent = "100%";
-                      }
-                    } else {
-                      quill.deleteText(item.index, 1);
-                    }
-                    item.overlay?.remove();
-                  });
-                } catch (error) {
-                  if ((error as Error).name === "AbortError") {
-                    return;
-                  }
-                  console.error("Upload failed:", error);
-                  showToast(getErrorMessage(error, "上传失败"));
-                  uploadItems.forEach((item) => {
-                    item.overlay?.remove();
-                    if (item.previewUrl.startsWith("blob:")) {
-                      URL.revokeObjectURL(item.previewUrl);
-                    }
-                    if (item.wrapper) {
-                      quill.deleteText(item.index, 1);
-                    }
-                  });
-                }
-              };
-
-              processImages();
-              return;
-            }
-          }
-
-          // 没有图片，使用原始的 onPaste 处理
-          originalOnPaste(e);
-        };
-
         // 处理代码块粘贴
         const handleCodePaste = (e: ClipboardEvent) => {
           const clipboardData = e.clipboardData;
@@ -884,8 +677,16 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             quill.deleteText(index, selection.length, "user");
           }
 
-          const codeHtml = `<pre>${escapeHtml(normalizedText)}</pre>`;
-          quill.clipboard.dangerouslyPasteHTML(index, codeHtml, "user");
+          // 使用 Quill 的 insertText 方法插入代码块，保持换行符
+          quill.insertText(index, normalizedText, "user");
+          quill.formatText(
+            index,
+            normalizedText.length,
+            "code-block",
+            true,
+            "user",
+          );
+          quill.setSelection(index + normalizedText.length, 0);
         };
 
         quill.root.addEventListener("paste", handleCodePaste, true);
@@ -1289,33 +1090,36 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       setDraggingIndex(index);
     }, []);
 
-    const handleDragOver = useCallback((
-      e: React.DragEvent<HTMLDivElement>,
-      index: number,
-    ) => {
-      e.preventDefault();
-      if (draggingIndex === null || draggingIndex === index) return;
-      setDragOverIndex(index);
-    }, [draggingIndex]);
+    const handleDragOver = useCallback(
+      (e: React.DragEvent<HTMLDivElement>, index: number) => {
+        e.preventDefault();
+        if (draggingIndex === null || draggingIndex === index) return;
+        setDragOverIndex(index);
+      },
+      [draggingIndex],
+    );
 
-    const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>, index: number) => {
-      e.preventDefault();
-      if (draggingIndex === null || draggingIndex === index) {
+    const handleDrop = useCallback(
+      (e: React.DragEvent<HTMLDivElement>, index: number) => {
+        e.preventDefault();
+        if (draggingIndex === null || draggingIndex === index) {
+          setDraggingIndex(null);
+          setDragOverIndex(null);
+          return;
+        }
+
+        setSelectedArticles((prev) => {
+          const newList = [...prev];
+          const [draggedItem] = newList.splice(draggingIndex, 1);
+          newList.splice(index, 0, draggedItem);
+          return newList;
+        });
+
         setDraggingIndex(null);
         setDragOverIndex(null);
-        return;
-      }
-
-      setSelectedArticles((prev) => {
-        const newList = [...prev];
-        const [draggedItem] = newList.splice(draggingIndex, 1);
-        newList.splice(index, 0, draggedItem);
-        return newList;
-      });
-
-      setDraggingIndex(null);
-      setDragOverIndex(null);
-    }, [draggingIndex]);
+      },
+      [draggingIndex],
+    );
 
     const handleDragEnd = useCallback(() => {
       setDraggingIndex(null);
@@ -1417,7 +1221,10 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
     const modalContentClassName = useMemo(() => "max-w-2xl pt-4!", []);
     const modalBodyClassName = useMemo(() => "space-y-4 px-4 pb-4", []);
-    const modalActionsClassName = useMemo(() => "flex justify-center gap-8", []);
+    const modalActionsClassName = useMemo(
+      () => "flex justify-center gap-8",
+      [],
+    );
     const modalCancelButtonClassName = useMemo(
       () => "rounded-full bg-[#EDF1F7] hover:bg-[#8592A3] text-secondary",
       [],
