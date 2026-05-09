@@ -7,7 +7,7 @@ import imagePlaceholder from "@/assets/images/placeholder/image_placeholder.webp
 import { cn } from "@/lib";
 import type { StaticImageData } from "next/image";
 import Image, { type ImageProps } from "next/image";
-import { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const DEFAULT_PLACEHOLDER = imagePlaceholder;
 const DEFAULT_ERROR = imageError;
@@ -251,8 +251,14 @@ export function ImageWithFallback({
       >
         <span
           aria-hidden
-          className={cn(placeholderClassName)}
-          style={{ backgroundImage: `url(${placeholderSrcString})` }}
+          className={cn(
+            !fill && !(width && height) ? "block w-full" : undefined,
+            placeholderClassName,
+          )}
+          style={{
+            backgroundImage: `url(${placeholderSrcString})`,
+            ...(!fill && !(width && height) ? { paddingBottom: "56.25%" } : undefined),
+          }}
         />
       </span>
     );
@@ -305,6 +311,16 @@ export function ImageWithFallback({
           wrapperClassName,
         )}
       >
+        {!isImageVisible && (
+          <span
+            aria-hidden
+            className={cn(
+              "block w-full bg-cover bg-center",
+              placeholderClassName,
+            )}
+            style={{ backgroundImage: `url(${fallbackSrcString})`, paddingBottom: "56.25%" }}
+          />
+        )}
         <Image
           {...rest}
           ref={imgRef}
@@ -317,13 +333,6 @@ export function ImageWithFallback({
           onLoad={handleLoad}
           onError={handleError}
         />
-        {!isImageVisible && (
-          <span
-            aria-hidden
-            className={cn(placeholderClassName)}
-            style={{ backgroundImage: `url(${fallbackSrcString})` }}
-          />
-        )}
       </span>
     );
   }

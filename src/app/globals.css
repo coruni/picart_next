@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "quill/dist/quill.snow.css";
 
 /* 优化字体加载策略 - 使用 font-display: optional 避免布局偏移 */
 @font-face {
@@ -406,11 +407,10 @@ body.viewer-open .fixed {
 
 .ql-editor p {
   margin: 0;
+  font-size: 14px;
+  line-height: 22px;
 }
 
-.ql-editor p + p {
-  margin-top: 0.5rem;
-}
 
 .ql-editor h1,
 .ql-editor h2,
@@ -508,32 +508,7 @@ body.viewer-open .fixed {
   border-radius: 0 10px 10px 0;
 }
 
-.ql-editor pre {
-  margin: 0.78rem 0;
-  padding: 0.85rem 1rem;
-  overflow-x: auto;
-  border: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--foreground) 4%, transparent);
-  box-shadow: none;
-  color: color-mix(in srgb, var(--foreground) 88%, transparent);
-  font-size: 0.88rem;
-  line-height: 1.72;
-}
 
-.ql-editor code {
-  padding: 0.08rem 0.38rem;
-  border-radius: 6px;
-  background: color-mix(in srgb, var(--foreground) 5%, transparent);
-  font-size: 0.88em;
-}
-
-.ql-editor pre code {
-  padding: 0;
-  background: transparent;
-  border-radius: 0;
-  color: inherit;
-}
 
 .ql-editor hr {
   margin: 1.2rem 0;
@@ -588,13 +563,13 @@ body.viewer-open .fixed {
   text-align: justify;
 }
 
-.ql-editor .ql-size-12px { font-size: 12px; }
-.ql-editor .ql-size-14px { font-size: 14px; }
-.ql-editor .ql-size-16px { font-size: 16px; }
-.ql-editor .ql-size-18px { font-size: 18px; }
-.ql-editor .ql-size-20px { font-size: 20px; }
-.ql-editor .ql-size-24px { font-size: 24px; }
-.ql-editor .ql-size-32px { font-size: 32px; }
+.ql-editor .ql-size-12px { font-size: 12px; line-height: 16px; }
+.ql-editor .ql-size-14px { font-size: 14px; line-height: 22px; }
+.ql-editor .ql-size-16px { font-size: 16px;}
+.ql-editor .ql-size-18px { font-size: 18px; line-height: 24px;}
+.ql-editor .ql-size-20px { font-size: 20px;}
+.ql-editor .ql-size-24px { font-size: 24px; line-height: 34px;}
+.ql-editor .ql-size-32px { font-size: 32px; line-height: 42px;}
 
 .ql-emoji-embed {
   display: inline-flex;

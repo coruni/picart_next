@@ -8,7 +8,8 @@
       "WebFetch(domain:juejin.cn)",
       "Bash(xargs grep -L \"memo\")",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(node *)"
     ]
   }
 }

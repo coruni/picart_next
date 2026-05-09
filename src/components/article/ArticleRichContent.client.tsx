@@ -91,7 +91,7 @@ function parseHtmlToReact(html: string): ParseResult {
         className,
         lazy: index > 0,
         unoptimized: true,
-        style: { maxWidth: "100%", height: "auto" },
+        style: { maxWidth: "100%", height: "auto",width: "100%" },
         wrapperClassName: "ql-image-wrapper-inner", // 标记内部wrapper
       });
     }

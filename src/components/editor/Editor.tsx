@@ -65,32 +65,8 @@ import {
   uploadControllerUploadFile,
 } from "./types";
 
-const CODE_BLOCK_HINT_REGEX =
-  /(^\s{2,}|\t)|[{}[\];]|=>|<\/?[a-z][\s\S]*?>|^\s*(const|let|var|function|class|import|export|if|else|for|while|switch|try|catch|return|def|public|private|async|await)\b/m;
-
-const normalizeClipboardText = (value: string) =>
-  value.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-
 const escapeHtml = (value: string) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-const shouldPasteAsCodeBlock = (plainText: string, htmlText: string) => {
-  const normalized = normalizeClipboardText(plainText).trimEnd();
-  if (!normalized.includes("\n")) return false;
-
-  if (/<(pre|code)\b/i.test(htmlText)) return true;
-
-  const nonEmptyLines = normalized
-    .split("\n")
-    .filter((line) => line.trim().length > 0);
-
-  if (nonEmptyLines.length < 2) return false;
-
-  return (
-    nonEmptyLines.some((line) => /^\s{2,}|\t/.test(line)) ||
-    CODE_BLOCK_HINT_REGEX.test(normalized)
-  );
-};
 
 declare global {
   interface Window {
@@ -514,7 +490,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           }
         };
 
-        // 监听粘贴事件处理图片
+        // 监听粘贴事件处理图片和代码
         quill.root.addEventListener(
           "paste",
           (e: ClipboardEvent) => {
@@ -532,10 +508,145 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               const range = quill.getSelection(true);
               const index = range?.index ?? quill.getLength();
               handleImageUpload(imageFiles, index);
+              return;
             }
           },
           true,
         );
+
+        // 监听拖放事件处理图片上传
+        quill.root.addEventListener(
+          "dragover",
+          (e: DragEvent) => {
+            e.preventDefault();
+          },
+          false,
+        );
+
+        quill.root.addEventListener(
+          "drop",
+          (e: DragEvent) => {
+            const dataTransfer = e.dataTransfer;
+            if (!dataTransfer) return;
+
+            const files = Array.from(dataTransfer.files || []);
+            const imageFiles = files.filter((file) =>
+              file.type.startsWith("image/"),
+            );
+
+            if (imageFiles.length > 0) {
+              e.preventDefault();
+              e.stopPropagation();
+              e.stopImmediatePropagation();
+
+              const range = quill.getSelection(true);
+              const index = range?.index ?? quill.getLength();
+              handleImageUpload(imageFiles, index);
+              return;
+            }
+          },
+          true, // 使用捕获阶段，在 Quill 处理之前拦截
+        );
+
+        // 设置初始值由第二个 effect 处理
+
+        // 监听内容变化
+        const handleTextChange = () => {
+          if (isApplyingExternalValueRef.current) return;
+          ensureImageCaptions(quill.root);
+          emitSanitizedContent(quill.root);
+        };
+        quill.on("text-change", handleTextChange);
+
+        // 键盘快捷键：Ctrl+C 复制图片
+        const handleKeyDown = (e: KeyboardEvent) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === "c") {
+            // 检查是否有选中的图片 blot
+            const selection = quill.getSelection();
+            if (selection && selection.length > 0) {
+              const delta = quill.getContents(
+                selection.index,
+                selection.length,
+              );
+              // 检查是否包含图片
+              const hasImage = delta.ops.some(
+                (op: any) =>
+                  op.insert &&
+                  typeof op.insert === "object" &&
+                  "image" in op.insert,
+              );
+              if (hasImage) {
+                // 存储到全局变量
+                (window as any).__quillClipboardImage = delta;
+              }
+            }
+          }
+
+          // Ctrl+V 粘贴图片
+          if ((e.ctrlKey || e.metaKey) && e.key === "v") {
+            const clipImage = (window as any).__quillClipboardImage;
+            if (clipImage) {
+              e.preventDefault();
+              const selection = quill.getSelection();
+              const index = selection ? selection.index : quill.getLength();
+              quill.updateContents(
+                new (Quill.import("delta"))().retain(index).concat(clipImage),
+                "user",
+              );
+              quill.setSelection(index + clipImage.length(), 0);
+            }
+          }
+        };
+
+        quill.root.addEventListener("keydown", handleKeyDown, true);
+
+        // 监听图片 caption 输入，同步到 alt 属性
+        const handleCaptionInput = (e: Event) => {
+          const target = e.target as HTMLElement;
+          if (target.classList.contains("ql-image-caption")) {
+            const wrapper = target.closest(".ql-image-wrapper");
+            if (wrapper) {
+              const img = wrapper.querySelector("img.ql-image");
+              if (img) {
+                const text = target.textContent || "";
+                if (text.trim()) {
+                  img.setAttribute("alt", text);
+                } else {
+                  img.removeAttribute("alt");
+                }
+                emitSanitizedContent(quill.root);
+              }
+            }
+          }
+        };
+
+        quill.root.addEventListener("input", handleCaptionInput, true);
+
+        // 阻止 caption 上的键盘事件冒泡到 Quill
+        const handleCaptionKeyDown = (e: KeyboardEvent) => {
+          const target = e.target as HTMLElement;
+          if (target.classList.contains("ql-image-caption")) {
+            // 允许基本的编辑操作
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              // 移动光标到图片后面
+              const wrapper = target.closest(".ql-image-wrapper");
+              if (wrapper) {
+                const blot = quill.scroll.find(wrapper);
+                if (blot) {
+                  const index = quill.getIndex(blot);
+                  quill.setSelection(index + 1, 0);
+                }
+              }
+            }
+            // 阻止删除键删除图片本身
+            if (e.key === "Backspace" && target.textContent === "") {
+              e.preventDefault();
+            }
+          }
+        };
+
+        quill.root.addEventListener("keydown", handleCaptionKeyDown, true);
 
         // 渲染自定义 toolbar
         renderToolbar({
@@ -603,148 +714,12 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           }
         }
 
-        // 设置初始值由第二个 effect 处理
-
-        // 监听内容变化
-        const handleTextChange = () => {
-          if (isApplyingExternalValueRef.current) return;
-          ensureImageCaptions(quill.root);
-          emitSanitizedContent(quill.root);
-        };
-        quill.on("text-change", handleTextChange);
-
-        // 键盘快捷键：Ctrl+C 复制图片
-        const handleKeyDown = (e: KeyboardEvent) => {
-          if ((e.ctrlKey || e.metaKey) && e.key === "c") {
-            // 检查是否有选中的图片 blot
-            const selection = quill.getSelection();
-            if (selection && selection.length > 0) {
-              const delta = quill.getContents(
-                selection.index,
-                selection.length,
-              );
-              // 检查是否包含图片
-              const hasImage = delta.ops.some(
-                (op: any) =>
-                  op.insert &&
-                  typeof op.insert === "object" &&
-                  "image" in op.insert,
-              );
-              if (hasImage) {
-                // 存储到全局变量
-                (window as any).__quillClipboardImage = delta;
-              }
-            }
-          }
-
-          // Ctrl+V 粘贴图片
-          if ((e.ctrlKey || e.metaKey) && e.key === "v") {
-            const clipImage = (window as any).__quillClipboardImage;
-            if (clipImage) {
-              e.preventDefault();
-              const selection = quill.getSelection();
-              const index = selection ? selection.index : quill.getLength();
-              quill.updateContents(
-                new (Quill.import("delta"))().retain(index).concat(clipImage),
-                "user",
-              );
-              quill.setSelection(index + clipImage.length(), 0);
-            }
-          }
-        };
-
-        quill.root.addEventListener("keydown", handleKeyDown);
-
-        // 处理代码块粘贴
-        const handleCodePaste = (e: ClipboardEvent) => {
-          const clipboardData = e.clipboardData;
-          if (!clipboardData) return;
-
-          const plainText = clipboardData.getData("text/plain");
-          const htmlText = clipboardData.getData("text/html");
-          if (!plainText || !shouldPasteAsCodeBlock(plainText, htmlText))
-            return;
-
-          e.preventDefault();
-          e.stopPropagation();
-          e.stopImmediatePropagation();
-
-          const normalizedText = normalizeClipboardText(plainText);
-          const selection = quill.getSelection(true);
-          const index = selection?.index ?? quill.getLength();
-
-          if (selection?.length) {
-            quill.deleteText(index, selection.length, "user");
-          }
-
-          // 使用 Quill 的 insertText 方法插入代码块，保持换行符
-          quill.insertText(index, normalizedText, "user");
-          quill.formatText(
-            index,
-            normalizedText.length,
-            "code-block",
-            true,
-            "user",
-          );
-          quill.setSelection(index + normalizedText.length, 0);
-        };
-
-        quill.root.addEventListener("paste", handleCodePaste, true);
-
-        // 监听图片 caption 输入，同步到 alt 属性
-        const handleCaptionInput = (e: Event) => {
-          const target = e.target as HTMLElement;
-          if (target.classList.contains("ql-image-caption")) {
-            const wrapper = target.closest(".ql-image-wrapper");
-            if (wrapper) {
-              const img = wrapper.querySelector("img.ql-image");
-              if (img) {
-                const text = target.textContent || "";
-                if (text.trim()) {
-                  img.setAttribute("alt", text);
-                } else {
-                  img.removeAttribute("alt");
-                }
-                emitSanitizedContent(quill.root);
-              }
-            }
-          }
-        };
-
-        quill.root.addEventListener("input", handleCaptionInput);
-
-        // 阻止 caption 上的键盘事件冒泡到 Quill
-        const handleCaptionKeyDown = (e: KeyboardEvent) => {
-          const target = e.target as HTMLElement;
-          if (target.classList.contains("ql-image-caption")) {
-            // 允许基本的编辑操作
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              // 移动光标到图片后面
-              const wrapper = target.closest(".ql-image-wrapper");
-              if (wrapper) {
-                const blot = quill.scroll.find(wrapper);
-                if (blot) {
-                  const index = quill.getIndex(blot);
-                  quill.setSelection(index + 1, 0);
-                }
-              }
-            }
-            // 阻止删除键删除图片本身
-            if (e.key === "Backspace" && target.textContent === "") {
-              e.preventDefault();
-            }
-          }
-        };
-
-        quill.root.addEventListener("keydown", handleCaptionKeyDown, true);
-
         return () => {
           uploadAbortControllerRef.current?.abort();
           quill.off("text-change", handleTextChange);
-          quill.root.removeEventListener("keydown", handleKeyDown);
-          quill.root.removeEventListener("paste", handleCodePaste, true);
-          quill.root.removeEventListener("input", handleCaptionInput);
+          quill.root.removeEventListener("keydown", handleKeyDown, true);
+
+          quill.root.removeEventListener("input", handleCaptionInput, true);
           quill.root.removeEventListener("keydown", handleCaptionKeyDown, true);
         };
       }
