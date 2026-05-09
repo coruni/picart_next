@@ -6,6 +6,7 @@ import { cn, formatDateYMD, prepareRichTextHtmlForSummary } from "@/lib";
 import { getImageUrl } from "@/types/image";
 import { Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { memo } from "react";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 type ActivityItem =
@@ -31,7 +32,7 @@ function isActivityActive(start?: string, end?: string): boolean {
  * 活动卡片组件
  * 展示活动封面图、状态标签、标题、摘要和时间范围
  */
-export function ActivityCard({ activity, className }: ActivityCardProps) {
+export const ActivityCard = memo(function ActivityCard({ activity, className }: ActivityCardProps) {
   const t = useTranslations("activity");
   const active = isActivityActive(activity.startTime, activity.endTime);
 
@@ -112,4 +113,4 @@ export function ActivityCard({ activity, className }: ActivityCardProps) {
       </Link>
     </article>
   );
-}
+});

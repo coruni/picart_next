@@ -6,13 +6,14 @@ import { FollowButtonWithStatus } from "@/components/ui/FollowButtonWithStatus";
 import { cn } from "@/lib";
 import { UserList } from "@/types";
 import { useTranslations } from "next-intl";
+import { memo } from "react";
 
 type AccountUserCardProps = {
   user: UserList[number];
   border?: boolean;
 };
 
-export function AccountUserCard({ user, border }: AccountUserCardProps) {
+export const AccountUserCard = memo(function AccountUserCard({ user, border }: AccountUserCardProps) {
   const t = useTranslations("userList");
   const displayName = user.nickname || user.username;
   const bio = user.description?.trim();
@@ -57,4 +58,4 @@ export function AccountUserCard({ user, border }: AccountUserCardProps) {
       </GuardedLink>
     </article>
   );
-}
+});

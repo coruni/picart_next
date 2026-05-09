@@ -11,16 +11,11 @@ import {
 import { formatRelativeTime } from "@/lib/utils";
 import { CommentList, UserCommentList } from "@/types";
 import { getImageUrl, type ImageInfo } from "@/types/image";
-import {
-  Languages,
-  LoaderCircle,
-  MessageCircle,
-  ThumbsUp,
-} from "lucide-react";
+import { Languages, LoaderCircle, MessageCircle, ThumbsUp } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
-import { Avatar } from "../ui/Avatar";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
+import { Avatar } from "../ui/Avatar";
 
 interface CommentCardProps {
   comment: UserCommentList[number];
@@ -43,13 +38,16 @@ export function CommentCard({
   const tAccountInfo = useTranslations("accountInfo");
   const locale = useLocale();
   const tComment = useTranslations("commentList");
-  const compactNumberLabels = {
-    thousand: tAccountInfo("numberUnits.thousand"),
-    tenThousand: tAccountInfo("numberUnits.tenThousand"),
-    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
-    million: tAccountInfo("numberUnits.million"),
-    billion: tAccountInfo("numberUnits.billion"),
-  };
+  const compactNumberLabels = useMemo(
+    () => ({
+      thousand: tAccountInfo("numberUnits.thousand"),
+      tenThousand: tAccountInfo("numberUnits.tenThousand"),
+      hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+      million: tAccountInfo("numberUnits.million"),
+      billion: tAccountInfo("numberUnits.billion"),
+    }),
+    [tAccountInfo],
+  );
 
   const isUserComment = "author" in comment;
   const user = isUserComment
@@ -60,7 +58,10 @@ export function CommentCard({
   const [isLiked, setIsLiked] = useState(isLikedValue || false);
   const [likeCount, setLikeCount] = useState(comment.likes || 0);
 
-  const contentHtml = prepareCommentHtmlForDisplay(String(comment.content || ""));
+  const contentHtml = useMemo(
+    () => prepareCommentHtmlForDisplay(String(comment.content || "")),
+    [comment.content],
+  );
   const {
     displayHtml,
     isTranslated,
@@ -74,20 +75,28 @@ export function CommentCard({
     resetKey: `account-comment-${comment.id}-${comment.content}`,
   });
 
-  const safeParentContentHtml = sanitizeHtmlForRender(
-    String(comment.parent?.content || ""),
+  const safeParentContentHtml = useMemo(
+    () => sanitizeHtmlForRender(String(comment.parent?.content || "")),
+    [comment.parent?.content],
   );
 
-  const handleLike = () => {
-    const newIsLiked = !isLiked;
-    setIsLiked(newIsLiked);
-    setLikeCount((prev) => (newIsLiked ? prev + 1 : prev - 1));
-    onLike?.(comment?.id || 0);
-  };
+  const commentIdRef = useRef(comment?.id);
+  useEffect(() => {
+    commentIdRef.current = comment?.id;
+  }, [comment?.id]);
 
-  const handleReply = () => {
-    onReply?.(comment?.id || 0);
-  };
+  const handleLike = useCallback(() => {
+    setIsLiked((prev) => !prev);
+    setLikeCount((prev) => {
+      const newIsLiked = !prev;
+      return newIsLiked ? prev + 1 : prev - 1;
+    });
+    onLike?.(commentIdRef.current || 0);
+  }, [onLike]);
+
+  const handleReply = useCallback(() => {
+    onReply?.(commentIdRef.current || 0);
+  }, [onReply]);
 
   return (
     <div className={cn("border-b border-border pb-4", className)}>
@@ -141,9 +150,7 @@ export function CommentCard({
               comment?.parent?.author?.username ||
               ""}
             :
-            <span
-              dangerouslySetInnerHTML={{ __html: safeParentContentHtml }}
-            />
+            <span dangerouslySetInnerHTML={{ __html: safeParentContentHtml }} />
           </p>
         </div>
       )}
@@ -155,7 +162,10 @@ export function CommentCard({
           className="flex h-12.5 items-center overflow-hidden rounded-lg bg-gray-50 dark:bg-gray-600"
         >
           {(() => {
-            const rawImages = (comment?.article?.images || []) as (string | ImageInfo)[];
+            const rawImages = (comment?.article?.images || []) as (
+              | string
+              | ImageInfo
+            )[];
             const cover = comment?.article?.cover;
             let imageUrl: string | undefined;
 
@@ -163,7 +173,10 @@ export function CommentCard({
               imageUrl = cover;
             } else if (rawImages.length > 0) {
               const firstImg = rawImages[0];
-              imageUrl = typeof firstImg === "string" ? firstImg : getImageUrl(firstImg, "small");
+              imageUrl =
+                typeof firstImg === "string"
+                  ? firstImg
+                  : getImageUrl(firstImg, "small");
             }
 
             if (!imageUrl) return null;

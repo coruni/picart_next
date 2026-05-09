@@ -8,7 +8,7 @@ import { useTranslations } from "next-intl";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import { SizeClass, SizeStyle } from "quill/formats/size";
-import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "./inline-article.css";
 
 import { articleControllerFindByAuthor, articleControllerFindOne } from "@/api";
@@ -193,13 +193,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       onChangeRef.current = onChange;
     }, [onChange]);
 
-    const emitSanitizedContent = (root: HTMLElement) => {
+    const emitSanitizedContent = useCallback((root: HTMLElement) => {
       const html = sanitizeRichTextHtml(root.innerHTML || "");
       lastSyncedValueRef.current = html;
       onChangeRef.current?.(html);
-    };
+    }, []);
 
-    const ensureImageCaptions = (root: HTMLElement) => {
+    const ensureImageCaptions = useCallback((root: HTMLElement) => {
       const wrappers = root.querySelectorAll(".ql-image-wrapper");
 
       wrappers.forEach((wrapper) => {
@@ -226,7 +226,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           caption.textContent = img.getAttribute("alt") || "";
         }
       });
-    };
+    }, [t]);
 
     // 初始化 Quill
     useEffect(() => {
@@ -1119,7 +1119,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     }, []);
 
     // 插入视频的处理函数
-    const handleInsertVideo = () => {
+    const handleInsertVideo = useCallback(() => {
       const quill = quillRef.current;
       if (quill && videoUrl) {
         const parsed = parseVideoUrl(videoUrl);
@@ -1140,7 +1140,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       setVideoUrl("");
       // 恢复焦点
       setTimeout(() => restoreFocus(), 0);
-    };
+    }, [videoUrl, restoreFocus]);
 
     // 加载用户的文章列表
     const loadUserArticles = useCallback(
@@ -1274,7 +1274,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     );
 
     // 切换文章选中状态
-    const toggleArticleSelection = (article: ArticleItem) => {
+    const toggleArticleSelection = useCallback((article: ArticleItem) => {
       setSelectedArticles((prev) => {
         const exists = prev.find((a) => a.id === article.id);
         if (exists) {
@@ -1282,23 +1282,23 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         }
         return [...prev, article];
       });
-    };
+    }, []);
 
     // 拖拽排序处理
-    const handleDragStart = (index: number) => {
+    const handleDragStart = useCallback((index: number) => {
       setDraggingIndex(index);
-    };
+    }, []);
 
-    const handleDragOver = (
+    const handleDragOver = useCallback((
       e: React.DragEvent<HTMLDivElement>,
       index: number,
     ) => {
       e.preventDefault();
       if (draggingIndex === null || draggingIndex === index) return;
       setDragOverIndex(index);
-    };
+    }, [draggingIndex]);
 
-    const handleDrop = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+    const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>, index: number) => {
       e.preventDefault();
       if (draggingIndex === null || draggingIndex === index) {
         setDraggingIndex(null);
@@ -1315,15 +1315,15 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
       setDraggingIndex(null);
       setDragOverIndex(null);
-    };
+    }, [draggingIndex]);
 
-    const handleDragEnd = () => {
+    const handleDragEnd = useCallback(() => {
       setDraggingIndex(null);
       setDragOverIndex(null);
-    };
+    }, []);
 
     // 插入已选文章
-    const handleInsertSelectedArticles = () => {
+    const handleInsertSelectedArticles = useCallback(() => {
       const quill = quillRef.current;
       if (!quill || selectedArticles.length === 0) return;
 
@@ -1373,7 +1373,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       setSelectedArticles([]);
       // 重置编辑索引
       inlineArticleEditIndexRef.current = null;
-    };
+    }, [selectedArticles, t]);
 
     // Dialog 打开时加载文章
     useEffect(() => {
@@ -1385,7 +1385,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     }, [showArticleModal, user?.id, loadUserArticles]);
 
     // 插入链接的处理函数
-    const handleInsertLink = () => {
+    const handleInsertLink = useCallback(() => {
       const quill = quillRef.current;
       if (quill && linkUrl) {
         const selection = savedSelection.current || quill.getSelection();
@@ -1413,14 +1413,16 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       setLinkUrl("");
       setLinkText("");
       savedSelection.current = null;
-    };
+    }, [linkUrl, linkText]);
 
-    const modalContentClassName = "max-w-2xl pt-4!";
-    const modalBodyClassName = "space-y-4 px-4 pb-4";
-    const modalActionsClassName = "flex justify-center gap-8";
-    const modalCancelButtonClassName =
-      "rounded-full bg-[#EDF1F7] hover:bg-[#8592A3] text-secondary";
-    const modalConfirmButtonClassName = "rounded-full";
+    const modalContentClassName = useMemo(() => "max-w-2xl pt-4!", []);
+    const modalBodyClassName = useMemo(() => "space-y-4 px-4 pb-4", []);
+    const modalActionsClassName = useMemo(() => "flex justify-center gap-8", []);
+    const modalCancelButtonClassName = useMemo(
+      () => "rounded-full bg-[#EDF1F7] hover:bg-[#8592A3] text-secondary",
+      [],
+    );
+    const modalConfirmButtonClassName = useMemo(() => "rounded-full", []);
 
     return (
       <>

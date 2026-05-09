@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib";
 import { Loader2 } from "lucide-react";
-import { RefObject } from "react";
+import { memo, RefObject } from "react";
 
 type InfiniteScrollStatusProps = {
   observerRef: RefObject<HTMLDivElement | null>;
@@ -24,7 +24,7 @@ type InfiniteScrollStatusProps = {
   emptyClassName?: string;
 };
 
-export function InfiniteScrollStatus({
+export const InfiniteScrollStatus = memo(function InfiniteScrollStatus({
   observerRef,
   hasMore,
   loading,
@@ -103,4 +103,4 @@ export function InfiniteScrollStatus({
       )}
     </>
   );
-}
+});

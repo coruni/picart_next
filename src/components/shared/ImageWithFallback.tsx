@@ -7,7 +7,7 @@ import imagePlaceholder from "@/assets/images/placeholder/image_placeholder.webp
 import { cn } from "@/lib";
 import type { StaticImageData } from "next/image";
 import Image, { type ImageProps } from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 
 const DEFAULT_PLACEHOLDER = imagePlaceholder;
 const DEFAULT_ERROR = imageError;
@@ -153,18 +153,24 @@ export function ImageWithFallback({
       });
   }, [srcString, shouldLoad]);
 
-  const handleLoad: ImageProps["onLoad"] = (event) => {
-    imageCache.set(srcString, "loaded");
-    setStatus("loaded");
-    setImageRendered(true);
-    onLoad?.(event);
-  };
+  const handleLoad: ImageProps["onLoad"] = useCallback(
+    (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+      imageCache.set(srcString, "loaded");
+      setStatus("loaded");
+      setImageRendered(true);
+      onLoad?.(event);
+    },
+    [srcString, onLoad],
+  );
 
-  const handleError: ImageProps["onError"] = (event) => {
-    imageCache.set(srcString, "error");
-    setStatus("error");
-    onError?.(event);
-  };
+  const handleError: ImageProps["onError"] = useCallback(
+    (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+      imageCache.set(srcString, "error");
+      setStatus("error");
+      onError?.(event);
+    },
+    [srcString, onError],
+  );
 
   const fallbackSrc = status === "error" ? errorSrc : placeholderSrc;
   const fallbackSrcString = getSrcString(fallbackSrc);
@@ -172,33 +178,44 @@ export function ImageWithFallback({
   // 图片真正显示的条件：状态为 loaded 且实际已渲染
   const isImageVisible = status === "loaded" && imageRendered;
   // 添加过渡动画类，避免加载图到实际图的闪烁
-  const imageClassName = cn(
-    className,
-    "transition-opacity duration-300",
-    isImageVisible ? "opacity-100" : "opacity-0",
+  const imageClassName = useMemo(
+    () =>
+      cn(
+        className,
+        "transition-opacity duration-300",
+        isImageVisible ? "opacity-100" : "opacity-0",
+      ),
+    [className, isImageVisible],
   );
-  const placeholderClassName = cn(
-    "pointer-events-none absolute inset-0 block select-none bg-cover bg-center transition-opacity duration-300",
-    isImageVisible ? "opacity-0" : "opacity-100",
+  const placeholderClassName = useMemo(
+    () =>
+      cn(
+        "pointer-events-none absolute inset-0 block select-none bg-cover bg-center transition-opacity duration-300",
+        isImageVisible ? "opacity-0" : "opacity-100",
+      ),
+    [isImageVisible],
   );
 
   // 判断是否为本地图片（StaticImageData）
   const isLocalImage = typeof src !== "string";
 
-  const shouldDisableOptimization =
-    isLocalImage ||
-    (typeof src === "string" &&
-      (() => {
-        try {
-          const parsed = new URL(src, "http://localhost");
-          return (
-            parsed.searchParams.has("url") ||
-            UNOPTIMIZED_HOSTS.has(parsed.hostname)
-          );
-        } catch {
-          return false;
-        }
-      })());
+  const shouldDisableOptimization = useMemo(
+    () =>
+      isLocalImage ||
+      (typeof src === "string" &&
+        (() => {
+          try {
+            const parsed = new URL(src, "http://localhost");
+            return (
+              parsed.searchParams.has("url") ||
+              UNOPTIMIZED_HOSTS.has(parsed.hostname)
+            );
+          } catch {
+            return false;
+          }
+        })()),
+    [isLocalImage, src],
+  );
 
   // 未开始加载时显示占位符
   if (!shouldLoad) {

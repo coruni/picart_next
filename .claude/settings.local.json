@@ -5,7 +5,8 @@
       "mcp__ide__getDiagnostics",
       "WebSearch",
       "WebFetch(domain:quilljs.com)",
-      "WebFetch(domain:juejin.cn)"
+      "WebFetch(domain:juejin.cn)",
+      "Bash(xargs grep -L \"memo\")"
     ]
   }
 }

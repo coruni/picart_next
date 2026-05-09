@@ -25,7 +25,7 @@ import {
   Play,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useCallback, useMemo, memo } from "react";
 import { ArticleMenu } from "./ArticleMenu";
 import { ImageViewer } from "./ImageViewer";
 import { ReactionPanel } from "./ReactionPanel.client";
@@ -37,11 +37,11 @@ type ArticleCardProps = {
   showProfilePinLabel?: boolean;
 };
 
-export const ArticleCard = ({
+export const ArticleCard = memo(function ArticleCard({
   article,
   showFollow = true,
   showProfilePinLabel = false,
-}: ArticleCardProps) => {
+}: ArticleCardProps) {
   const currentUser = useUserStore((state) => state.user);
   const t = useTranslations("time");
   const tArticleCard = useTranslations("articleCard");
@@ -67,20 +67,23 @@ export const ArticleCard = ({
     return url && url !== coverUrl;
   });
 
-  const compactNumberLabels = {
-    thousand: tAccountInfo("numberUnits.thousand"),
-    tenThousand: tAccountInfo("numberUnits.tenThousand"),
-    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
-    million: tAccountInfo("numberUnits.million"),
-    billion: tAccountInfo("numberUnits.billion"),
-  };
+  const compactNumberLabels = useMemo(
+    () => ({
+      thousand: tAccountInfo("numberUnits.thousand"),
+      tenThousand: tAccountInfo("numberUnits.tenThousand"),
+      hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+      million: tAccountInfo("numberUnits.million"),
+      billion: tAccountInfo("numberUnits.billion"),
+    }),
+    [tAccountInfo],
+  );
 
-  const openImageViewer = (index: number) => {
+  const openImageViewer = useCallback((index: number) => {
     setViewerIndex(index);
     setViewerVisible(true);
-  };
+  }, []);
 
-  const stopLinkNavigationEvent = (e: {
+  const stopLinkNavigationEvent = useCallback((e: {
     preventDefault: () => void;
     stopPropagation: () => void;
     nativeEvent: Event & { stopImmediatePropagation?: () => void };
@@ -88,7 +91,7 @@ export const ArticleCard = ({
     e.preventDefault();
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation?.();
-  };
+  }, []);
 
   const renderMediaElement = () => {
     if (article.cover) {
@@ -310,14 +313,24 @@ export const ArticleCard = ({
                   data-auto-translate-content
                   data-guarded-link-ignore="true"
                   onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                    stopLinkNavigationEvent(e);
                     openModal(MODAL_IDS.ACHIEVEMENT_BADGE, {
                       achievementId:
                         article.author?.equippedDecorations?.ACHIEVEMENT_BADGE
                           ?.id,
                     });
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key !== "Enter" && e.key !== " ") return;
+                    stopLinkNavigationEvent(e);
+                    openModal(MODAL_IDS.ACHIEVEMENT_BADGE, {
+                      achievementId:
+                        article.author?.equippedDecorations?.ACHIEVEMENT_BADGE
+                          ?.id,
+                    });
+                  }}
+                  role="button"
+                  tabIndex={0}
                 >
                   <ImageWithFallback
                     src={
@@ -474,4 +487,4 @@ export const ArticleCard = ({
       )}
     </article>
   );
-};
+});

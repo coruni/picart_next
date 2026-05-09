@@ -145,6 +145,19 @@ export const CommentItem = memo(function CommentItem({
     [commentState.id, commentState.author?.id],
   );
 
+  const stopLinkNavigationEvent = useCallback(
+    (e: {
+      preventDefault: () => void;
+      stopPropagation: () => void;
+      nativeEvent: Event & { stopImmediatePropagation?: () => void };
+    }) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.nativeEvent.stopImmediatePropagation?.();
+    },
+    [],
+  );
+
   // 使用 useMemo 缓存内容处理结果
   const contentHtml = useMemo(
     () => prepareCommentHtmlForDisplay(commentState.content || ""),
@@ -411,12 +424,25 @@ export const CommentItem = memo(function CommentItem({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
+                  e.nativeEvent.stopImmediatePropagation?.();
                   openModal(MODAL_IDS.ACHIEVEMENT_BADGE, {
                     achievementId:
                       commentState.author?.equippedDecorations
                         ?.ACHIEVEMENT_BADGE?.id,
                   });
                 }}
+                onKeyDown={(e) => {
+                  if (e.key !== "Enter" && e.key !== " ") return;
+                  e.preventDefault();
+                  e.stopPropagation();
+                  e.nativeEvent.stopImmediatePropagation?.();
+                  openModal(MODAL_IDS.ACHIEVEMENT_BADGE, {
+                    achievementId:
+                      commentState.author?.equippedDecorations
+                        ?.ACHIEVEMENT_BADGE?.id,
+                  });
+                }}
+                role="button"
               >
                 <ImageWithFallback
                   src={
@@ -515,8 +541,8 @@ export const CommentItem = memo(function CommentItem({
                 <div className="absolute -top-5 right-0 w-40 h-10 overflow-hidden cursor-pointer">
                   <ImageWithFallback
                     onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
+                      stopLinkNavigationEvent(e);
+
                       openModal(MODAL_IDS.COMMENT_BUBBLE, {
                         commentBubbleId:
                           commentState.author?.equippedDecorations

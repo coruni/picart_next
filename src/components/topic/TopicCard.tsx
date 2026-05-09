@@ -5,6 +5,7 @@ import { formatCompactNumber } from "@/lib";
 import { TagList } from "@/types";
 import { ChevronRight, Hash } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import { useMemo, memo } from "react";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 import noTag from "@/assets/images/placeholder/no_tag.webp";
 
@@ -14,22 +15,25 @@ type TopicCardProps = {
   showMembers?: boolean;
   loading?: "eager" | "lazy";
 };
-export const TopicCard = ({
+export const TopicCard = memo(function TopicCard({
   tag,
   showAvatar = false,
   showMembers: _showMembers = false,
   loading = "lazy",
-}: TopicCardProps) => {
+}: TopicCardProps) {
   const t = useTranslations("tagCard");
   const tAccountInfo = useTranslations("accountInfo");
   const locale = useLocale();
-  const compactNumberLabels = {
-    thousand: tAccountInfo("numberUnits.thousand"),
-    tenThousand: tAccountInfo("numberUnits.tenThousand"),
-    hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
-    million: tAccountInfo("numberUnits.million"),
-    billion: tAccountInfo("numberUnits.billion"),
-  };
+  const compactNumberLabels = useMemo(
+    () => ({
+      thousand: tAccountInfo("numberUnits.thousand"),
+      tenThousand: tAccountInfo("numberUnits.tenThousand"),
+      hundredMillion: tAccountInfo("numberUnits.hundredMillion"),
+      million: tAccountInfo("numberUnits.million"),
+      billion: tAccountInfo("numberUnits.billion"),
+    }),
+    [tAccountInfo],
+  );
 
   return (
     <article className="border-b border-border last-of-type:border-b-0">
@@ -88,4 +92,4 @@ export const TopicCard = ({
       </Link>
     </article>
   );
-};
+});
