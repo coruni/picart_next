@@ -9,6 +9,7 @@ export const createClientConfig: CreateClientConfig = (config) => ({
   ...config,
   baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api/v1",
   fetch: resilientFetch,
+  throwOnError: true,
 });
 
 let interceptorsInitialized = false;

@@ -2,6 +2,7 @@
 
 import {
   userControllerLogin,
+  UserControllerLoginResponse,
   userControllerRegisterUser,
   userControllerResetPassword,
   userControllerSendVerificationCode,
@@ -12,6 +13,7 @@ import { Link } from "@/i18n/routing";
 import { cn } from "@/lib";
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { useAppStore, useModalStore, useUserStore } from "@/stores";
+import { UserProfile } from "@/types";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "../ui/Button";
@@ -65,11 +67,12 @@ export function UserLoginDialog() {
   const tReg = useTranslations("register");
   const tReset = useTranslations("resetPassword");
   const tForm = useTranslations("form");
+  const tError = useTranslations("response.error");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mode, setMode] = useState<"login" | "register" | "reset">("login");
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [countdown, setCountdown] = useState(0);
-  const [loginError, setLoginError] = useState("");
+  const [error, setError] = useState("");
 
   const loginDialogOpen = useModalStore((state) =>
     state.isOpen(MODAL_IDS.LOGIN),
@@ -84,17 +87,14 @@ export function UserLoginDialog() {
   // 是否需要邮箱验证
   const needEmailVerification = siteConfig?.user_email_verification === true;
 
-  const getLoginErrorMessage = (error: unknown) => {
+  const getLoginErrorMessage = (error: { message: string }) => {
     const message = extractApiMessage(error);
 
-    if (message === "response.error.passwordError") {
-      return t("passwordError");
+    if (message && message.startsWith("response.error.")) {
+      // 取最后一个.的内容
+      const msg = error?.message?.split(".").pop();
+      return tError(msg!);
     }
-
-    if (message && !message.startsWith("response.error.")) {
-      return message;
-    }
-
     return t("loginFailed");
   };
 
@@ -114,25 +114,18 @@ export function UserLoginDialog() {
     },
     async onSubmit(values) {
       setIsSubmitting(true);
-      setLoginError("");
+      setError("");
       try {
-        const { data, error } = await userControllerLogin({
+        const { data } = await userControllerLogin({
           body: values,
         });
-
-        if (error || !data?.data?.token) {
-          const message = getLoginErrorMessage(error);
-          setLoginError(message);
-          return;
-        }
-
-        const { token, refreshToken, ...userData } = data.data;
-        login(userData as Parameters<typeof login>[0], token, refreshToken || "");
+        const { token, refreshToken, ...userData } =
+          data?.data as UserControllerLoginResponse["data"];
+        login(userData as UserProfile, token, refreshToken || "");
         window.location.reload();
       } catch (error) {
-        const message = getLoginErrorMessage(error);
-        setLoginError(message);
-        console.error(t("loginFailed"), error);
+        const message = getLoginErrorMessage(error as { message: string });
+        setError(message!);
       } finally {
         setIsSubmitting(false);
       }
@@ -203,12 +196,23 @@ export function UserLoginDialog() {
         });
 
         if (data?.data) {
-          const { token: regToken, refreshToken: regRefreshToken, ...regUserData } = data.data;
-          login(regUserData as Parameters<typeof login>[0], regToken, regRefreshToken || "");
+          const {
+            token: regToken,
+            refreshToken: regRefreshToken,
+            ...regUserData
+          } = data.data;
+          login(
+            regUserData as Parameters<typeof login>[0],
+            regToken,
+            regRefreshToken || "",
+          );
           window.location.reload();
         }
       } catch (error) {
-        console.error(tReg("registerFailed"), error);
+        // 抛出异常
+        const message = getLoginErrorMessage(error as { message: string });
+        setError(message);
+      } finally {
         setIsSubmitting(false);
       }
     },
@@ -267,7 +271,8 @@ export function UserLoginDialog() {
         setMode("login");
         resetForm.reset();
       } catch (error) {
-        console.error(tReset("resetFailed"), error);
+        const message = getLoginErrorMessage(error as { message: string });
+        setError(message);
       } finally {
         setIsSubmitting(false);
       }
@@ -299,7 +304,8 @@ export function UserLoginDialog() {
       }, 1000);
     } catch (error) {
       setCountdown(0);
-      console.error("Failed to send verification code:", error);
+      const message = getLoginErrorMessage(error as { message: string });
+      setError(message);
     } finally {
       setIsSendingCode(false);
     }
@@ -312,7 +318,7 @@ export function UserLoginDialog() {
       registerForm.reset();
       resetForm.reset();
       setIsSubmitting(false);
-      setLoginError("");
+      setError("");
       setMode("login");
       setCountdown(0);
     }
@@ -323,7 +329,7 @@ export function UserLoginDialog() {
     loginForm.reset();
     resetForm.reset();
     setIsSubmitting(false);
-    setLoginError("");
+    setError("");
   };
 
   const switchToLogin = () => {
@@ -331,7 +337,7 @@ export function UserLoginDialog() {
     registerForm.reset();
     resetForm.reset();
     setIsSubmitting(false);
-    setLoginError("");
+    setError("");
   };
 
   const switchToReset = () => {
@@ -339,7 +345,7 @@ export function UserLoginDialog() {
     loginForm.reset();
     registerForm.reset();
     setIsSubmitting(false);
-    setLoginError("");
+    setError("");
   };
 
   if (!loginDialogOpen) {
@@ -392,9 +398,9 @@ export function UserLoginDialog() {
                   autoComplete="current-password"
                 />
               </FormField>
-              {loginError && (
+              {error && (
                 <p className="text-sm text-red-500 dark:text-red-400">
-                  {loginError}
+                  {error}
                 </p>
               )}
               <div className="mt-12">
@@ -522,32 +528,37 @@ export function UserLoginDialog() {
                 </FormField>
               )}
 
-              {/* 隐私协议和服务条款 */}
-              <div className="flex items-start gap-2 text-xs text-muted-foreground px-2">
-                <input
-                  type="checkbox"
-                  id="agreeTerms"
-                  className={cn(
-                    "size-4 shrink-0 cursor-pointer appearance-none rounded-full border-2",
-                    "border-muted-foreground bg-transparent",
-                    "checked:bg-primary checked:border-primary",
-                    "relative transition-colors duration-200",
+              {error && (
+                <p className="text-sm text-red-500 dark:text-red-400">
+                  {error}
+                </p>
+              )}
 
-                    // 勾
-                    "after:absolute after:hidden after:content-['']",
-                    "after:left-1/2 after:top-1/2",
-                    "after:size-2 after:-translate-x-1/2 after:-translate-y-1/2",
-                    "after:bg-white after:rounded-sm",
-                    "checked:after:block",
+              {/* 隐私协议和服务条款 */}
+              <button
+                type="button"
+                className="group flex w-full cursor-pointer items-center gap-2 text-xs text-muted-foreground px-2 text-left"
+                onClick={() =>
+                  registerForm.setFieldValues({
+                    agreeTerms: !registerForm.values.agreeTerms,
+                  })
+                }
+              >
+                <div
+                  className={cn(
+                    "relative flex size-4 shrink-0 items-center justify-center rounded-full border-2 box-border border-gray-400 transition-colors dark:border-gray-600",
+                    "group-hover:border-primary",
+                    registerForm.values.agreeTerms && "border-primary",
                   )}
-                  checked={registerForm.values.agreeTerms}
-                  onChange={(e) =>
-                    registerForm.setFieldValues({
-                      agreeTerms: e.target.checked,
-                    })
-                  }
-                />
-                <label htmlFor="agreeTerms" className="cursor-pointer">
+                >
+                  <span
+                    className={cn(
+                      "size-2 rounded-full bg-primary opacity-0 transition-opacity",
+                      registerForm.values.agreeTerms && "opacity-100",
+                    )}
+                  />
+                </div>
+                <label className="cursor-pointer">
                   {tReg("agreePrefix")}
                   <Link
                     href="/service/privacy"
@@ -569,7 +580,7 @@ export function UserLoginDialog() {
                     {tReg("termsOfService")}
                   </Link>
                 </label>
-              </div>
+              </button>
 
               <div className="mt-12">
                 <Button
