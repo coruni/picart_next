@@ -2,6 +2,7 @@
 
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { prepareRichTextHtmlForDisplay } from "@/lib";
+import { ArticleDetail, ArticleList } from "@/types";
 import { useLocale } from "next-intl";
 import { parse } from "node-html-parser";
 import {
@@ -15,9 +16,10 @@ import {
   type ReactNode,
 } from "react";
 import { ImageViewer } from "./ImageViewer";
-
+type Article = ArticleList[number] | ArticleDetail;
 type ArticleRichContentProps = {
   html: string;
+  article?: Article;
 };
 
 interface ParseResult {
@@ -44,7 +46,9 @@ function parseHtmlToReact(html: string): ParseResult {
     if (!tagName) return null;
 
     // 获取属性
-    const props: Record<string, unknown> = { key: `${tagName}-${depth}-${Math.random()}` };
+    const props: Record<string, unknown> = {
+      key: `${tagName}-${depth}-${Math.random()}`,
+    };
     const attributes = node.attributes || {};
 
     for (const [key, value] of Object.entries(attributes)) {
@@ -54,13 +58,24 @@ function parseHtmlToReact(html: string): ParseResult {
         props.style = value;
       } else if (key.startsWith("data-")) {
         props[key] = value;
-      } else if (key === "src" || key === "alt" || key === "title" || key === "href" || key === "target" || key === "rel") {
+      } else if (
+        key === "src" ||
+        key === "alt" ||
+        key === "title" ||
+        key === "href" ||
+        key === "target" ||
+        key === "rel"
+      ) {
         props[key] = value;
       }
     }
 
     // 处理图片：将img.ql-image替换为ImageWithFallback
-    if (tagName === "img" && node.classList?.contains("ql-image") && !node.classList?.contains("ql-emoji-embed__img")) {
+    if (
+      tagName === "img" &&
+      node.classList?.contains("ql-image") &&
+      !node.classList?.contains("ql-emoji-embed__img")
+    ) {
       const src = node.getAttribute("src") || "";
       const alt = node.getAttribute("alt") || "";
       const className = node.getAttribute("class") || "";
@@ -82,22 +97,28 @@ function parseHtmlToReact(html: string): ParseResult {
     }
 
     // 递归处理子节点
-    const children = node.childNodes?.map((child: any, i: number) =>
-      convertNode(child, depth + 1 + i)
-    ).filter(Boolean);
+    const children = node.childNodes
+      ?.map((child: any, i: number) => convertNode(child, depth + 1 + i))
+      .filter(Boolean);
 
     // 处理 ql-image-wrapper：如果子内容也包含 ql-image-wrapper，则不创建当前层（避免嵌套）
     if (tagName === "div" && node.classList?.contains("ql-image-wrapper")) {
       // 检查子内容是否包含 ql-image-wrapper
-      const hasNestedWrapper = children?.some(
-        (child: any) => child?.props?.className?.includes("ql-image-wrapper")
+      const hasNestedWrapper = children?.some((child: any) =>
+        child?.props?.className?.includes("ql-image-wrapper"),
       );
       if (hasNestedWrapper) {
         // 直接返回子内容，不创建额外的 wrapper
-        return children.length === 1 ? children[0] : createElement("div", { key: `merged-${depth}` }, ...children);
+        return children.length === 1
+          ? children[0]
+          : createElement("div", { key: `merged-${depth}` }, ...children);
       }
       // 保留一层 wrapper
-      return createElement("div", { key: `wrapper-${depth}`, className: "ql-image-wrapper" }, ...children);
+      return createElement(
+        "div",
+        { key: `wrapper-${depth}`, className: "ql-image-wrapper" },
+        ...children,
+      );
     }
 
     // 创建元素
@@ -108,15 +129,18 @@ function parseHtmlToReact(html: string): ParseResult {
     return createElement(tagName, props, ...children);
   }
 
-  const result = root.childNodes?.map((node: any, i: number) => convertNode(node, i)).filter(Boolean);
+  const result = root.childNodes
+    ?.map((node: any, i: number) => convertNode(node, i))
+    .filter(Boolean);
 
   // 直接返回子元素数组，避免创建额外的 div 包裹层
-  const content = result?.length === 1 ? result[0] : createElement(Fragment, {}, ...result);
+  const content =
+    result?.length === 1 ? result[0] : createElement(Fragment, {}, ...result);
 
   return { content, images };
 }
 
-export function ArticleRichContent({ html }: ArticleRichContentProps) {
+export function ArticleRichContent({ html, article }: ArticleRichContentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [viewerVisible, setViewerVisible] = useState(false);
   const [images, setImages] = useState<string[]>([]);
@@ -157,7 +181,7 @@ export function ArticleRichContent({ html }: ArticleRichContentProps) {
 
       // 计算索引
       const allImages = container.querySelectorAll<HTMLImageElement>(
-        "img.ql-image:not(.ql-emoji-embed__img)"
+        "img.ql-image:not(.ql-emoji-embed__img)",
       );
       const index = Array.from(allImages).indexOf(image);
 
@@ -182,7 +206,8 @@ export function ArticleRichContent({ html }: ArticleRichContentProps) {
       {viewerVisible && images.length > 0 && (
         <ImageViewer
           images={images}
-          enableSidePanel={false}
+          article={article}
+          enableSidePanel={true}
           initialIndex={activeIndex}
           visible={viewerVisible}
           onClose={handleCloseViewer}

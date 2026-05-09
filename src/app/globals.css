@@ -496,7 +496,7 @@ body.viewer-open .fixed {
 }
 
 .ql-editor li::marker {
-  color: color-mix(in srgb, var(--foreground) 54%, transparent);
+  font-size:14px;
 }
 
 .ql-editor blockquote {

@@ -272,7 +272,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
                     shouldTranslateArticleDetail ? true : undefined
                   }
                 >
-                  <ArticleRichContent html={content} />
+                  <ArticleRichContent html={content} article={article} />
                 </div>
               ))}
           </div>
