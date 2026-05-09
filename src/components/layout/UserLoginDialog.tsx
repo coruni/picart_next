@@ -79,7 +79,7 @@ export function UserLoginDialog() {
   );
   const closeModal = useModalStore((state) => state.closeModal);
   const siteConfig = useAppStore((state) => state.siteConfig);
-  const loginLogo = siteConfig?.site_logo || loginLogoPng;
+  const loginLogo = siteConfig?.site_logo || loginLogoPng.src;
 
   // 使用 selector 获取所需状态方法
   const login = useUserStore((state) => state.login);
