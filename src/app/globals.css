@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "quill/dist/quill.snow.css";
 
 /* 优化字体加载策略 - 使用 font-display: optional 避免布局偏移 */
 @font-face {
