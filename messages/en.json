@@ -498,6 +498,7 @@
       "loading": "Loading...",
       "noArticles": "No posts",
       "noSelectedArticles": "No posts selected",
+      "allLoaded": "No more articles",
       "cancel": "Cancel",
       "insert": "Insert ({count})"
     },

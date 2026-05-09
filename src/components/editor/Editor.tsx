@@ -1671,8 +1671,8 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                             hasMore={articleHasMore}
                             loading={articleLoading}
                             isEmpty={articles.length === 0}
-                            loadingText="加载中..."
-                            allLoadedText="没有更多文章了"
+                            loadingText={t("articleSelector.loading")}
+                            allLoadedText={t("articleSelector.allLoaded")}
                           />
                         </div>
                       )}

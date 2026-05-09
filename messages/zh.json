@@ -491,6 +491,7 @@
       "loading": "加载中...",
       "noArticles": "暂无帖子",
       "noSelectedArticles": "未选择帖子",
+      "allLoaded": "没有更多文章了",
       "cancel": "取消",
       "insert": "插入 ({count})"
     },
