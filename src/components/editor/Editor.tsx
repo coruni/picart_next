@@ -320,7 +320,10 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         quillRef.current = quill;
 
         // 自定义图片粘贴上传处理
-        const handleImageUpload = async (imageFiles: File[], startIndex: number) => {
+        const handleImageUpload = async (
+          imageFiles: File[],
+          startIndex: number,
+        ) => {
           const uploadItems: {
             file: File;
             originalFile: File;
@@ -466,7 +469,10 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               if (!item.wrapper || !item.img) return;
 
               const uploadedUrl = uploadedUrls[idx]?.url;
-              if (uploadedUrl && !uploadedUrl.includes("/images/blocked.webp")) {
+              if (
+                uploadedUrl &&
+                !uploadedUrl.includes("/images/blocked.webp")
+              ) {
                 item.img.src = uploadedUrl;
                 item.img.dataset.uploaded = "true";
                 if (item.previewUrl.startsWith("blob:")) {
@@ -675,38 +681,42 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 // 先创建所有占位
                 for (let i = 0; i < imageFiles.length; i++) {
                   const originalFile = imageFiles[i];
-                const currentIndex = startIndex + i;
-                const previewUrl = URL.createObjectURL(originalFile);
+                  const currentIndex = startIndex + i;
+                  const previewUrl = URL.createObjectURL(originalFile);
 
-                quill.insertEmbed(currentIndex, "image", previewUrl);
-                quill.setSelection(currentIndex + 1, 0);
+                  quill.insertEmbed(currentIndex, "image", previewUrl);
+                  quill.setSelection(currentIndex + 1, 0);
 
-                await new Promise((resolve) => setTimeout(resolve, 50));
+                  await new Promise((resolve) => setTimeout(resolve, 50));
 
-                const wrappers = Array.from(
-                  quill.root.querySelectorAll("div.ql-image-wrapper"),
-                ) as HTMLDivElement[];
-                let targetWrapper: HTMLDivElement | null = null;
-                let targetImg: HTMLImageElement | null = null;
+                  const wrappers = Array.from(
+                    quill.root.querySelectorAll("div.ql-image-wrapper"),
+                  ) as HTMLDivElement[];
+                  let targetWrapper: HTMLDivElement | null = null;
+                  let targetImg: HTMLImageElement | null = null;
 
-                for (const wrapper of wrappers) {
-                  const img = wrapper.querySelector(
-                    "img.ql-image",
-                  ) as HTMLImageElement | null;
-                  if (img && img.src === previewUrl && !img.dataset.uploaded) {
-                    targetWrapper = wrapper as HTMLDivElement;
-                    targetImg = img;
-                    break;
+                  for (const wrapper of wrappers) {
+                    const img = wrapper.querySelector(
+                      "img.ql-image",
+                    ) as HTMLImageElement | null;
+                    if (
+                      img &&
+                      img.src === previewUrl &&
+                      !img.dataset.uploaded
+                    ) {
+                      targetWrapper = wrapper as HTMLDivElement;
+                      targetImg = img;
+                      break;
+                    }
                   }
-                }
 
-                if (targetWrapper && targetImg) {
-                  targetWrapper.style.position = "relative";
-                  targetWrapper.style.display = "inline-block";
+                  if (targetWrapper && targetImg) {
+                    targetWrapper.style.position = "relative";
+                    targetWrapper.style.display = "inline-block";
 
-                  const overlay = document.createElement("div");
-                  overlay.className = "image-upload-overlay";
-                  overlay.innerHTML = `
+                    const overlay = document.createElement("div");
+                    overlay.className = "image-upload-overlay";
+                    overlay.innerHTML = `
                     <div class="image-upload-pill">
                       <div class="progress">
                         <div class="spinner"></div>
@@ -718,78 +728,78 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                     </div>
                   `;
 
-                  targetWrapper.appendChild(overlay);
+                    targetWrapper.appendChild(overlay);
 
-                  const progressText = overlay.querySelector(
-                    ".progress-text",
-                  ) as HTMLSpanElement;
-                  progressText.textContent = "0%";
+                    const progressText = overlay.querySelector(
+                      ".progress-text",
+                    ) as HTMLSpanElement;
+                    progressText.textContent = "0%";
 
-                  uploadItems.push({
-                    file: originalFile,
-                    originalFile,
-                    index: currentIndex,
-                    previewUrl,
-                    wrapper: targetWrapper,
-                    img: targetImg,
-                    overlay,
-                    progressText,
-                  });
+                    uploadItems.push({
+                      file: originalFile,
+                      originalFile,
+                      index: currentIndex,
+                      previewUrl,
+                      wrapper: targetWrapper,
+                      img: targetImg,
+                      overlay,
+                      progressText,
+                    });
 
-                  const cancelBtn = overlay.querySelector(
-                    ".cancel-btn",
-                  ) as HTMLButtonElement;
-                  cancelBtn.onclick = () => {
-                    const item = uploadItems.find(
-                      (u) => u.index === currentIndex,
-                    );
-                    if (item) {
-                      if (item.previewUrl.startsWith("blob:")) {
-                        URL.revokeObjectURL(item.previewUrl);
+                    const cancelBtn = overlay.querySelector(
+                      ".cancel-btn",
+                    ) as HTMLButtonElement;
+                    cancelBtn.onclick = () => {
+                      const item = uploadItems.find(
+                        (u) => u.index === currentIndex,
+                      );
+                      if (item) {
+                        if (item.previewUrl.startsWith("blob:")) {
+                          URL.revokeObjectURL(item.previewUrl);
+                        }
+                        item.wrapper = null;
+                        item.img = null;
                       }
-                      item.wrapper = null;
-                      item.img = null;
-                    }
-                    overlay.remove();
-                    quill.deleteText(currentIndex, 1);
-                  };
-                } else {
-                  URL.revokeObjectURL(previewUrl);
+                      overlay.remove();
+                      quill.deleteText(currentIndex, 1);
+                    };
+                  } else {
+                    URL.revokeObjectURL(previewUrl);
+                  }
                 }
-              }
 
                 // 压缩图片
                 const compressionResults = await compressImages(imageFiles);
 
-              // 验证压缩后的文件大小
-              const validation = validateFiles(
-                compressionResults.map((r) => r.file),
-                true,
-              );
-              if (!validation.valid) {
-                console.error(validation.error);
-                uploadItems.forEach((item) => {
-                  item.overlay?.remove();
-                  if (item.previewUrl.startsWith("blob:")) {
-                    URL.revokeObjectURL(item.previewUrl);
-                  }
-                  if (item.wrapper) {
-                    quill.deleteText(item.index, 1);
-                  }
-                });
-                return;
-              }
+                // 验证压缩后的文件大小
+                const validation = validateFiles(
+                  compressionResults.map((r) => r.file),
+                  true,
+                );
+                if (!validation.valid) {
+                  console.error(validation.error);
+                  uploadItems.forEach((item) => {
+                    item.overlay?.remove();
+                    if (item.previewUrl.startsWith("blob:")) {
+                      URL.revokeObjectURL(item.previewUrl);
+                    }
+                    if (item.wrapper) {
+                      quill.deleteText(item.index, 1);
+                    }
+                  });
+                  return;
+                }
 
                 // 计算原始文件的 hash 并构建 metadata
                 const metadata = await buildUploadMetadata(imageFiles);
-              compressionResults.forEach((result, index) => {
-                const item = uploadItems[index];
-                if (!item) return;
-                item.file = result.file;
-                if (item.progressText) {
-                  item.progressText.textContent = "0%";
-                }
-              });
+                compressionResults.forEach((result, index) => {
+                  const item = uploadItems[index];
+                  if (!item) return;
+                  item.file = result.file;
+                  if (item.progressText) {
+                    item.progressText.textContent = "0%";
+                  }
+                });
 
                 // Batch upload all compressed files
                 const abortController = new AbortController();
@@ -1627,7 +1637,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                                   <div className="relative aspect-4/3 h-14">
                                     <ImageWithFallback
                                       fill
-                                      src={coverUrl}
+                                      src={coverUrl || ""}
                                       alt={article.title}
                                       className="object-cover rounded-md shrink-0"
                                     />
