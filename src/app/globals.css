@@ -473,19 +473,26 @@ body.viewer-open .fixed {
 .ql-editor ol {
   margin: 0.58rem 0;
   padding-left: 1.35rem;
+  list-style-position: outside;
 }
 
-.ql-editor ul {
-  list-style: disc;
+.ql-editor ul li{
+  list-style-type: disc !important;
 }
 
-.ql-editor ol {
-  list-style: decimal;
+.ql-editor ol li{
+  list-style-type: decimal !important;
 }
 
 .ql-editor li {
   margin: 0.22rem 0;
-  padding-left: 0.05rem;
+  padding-left: 0.05rem !important;
+  display: list-item !important;
+}
+
+/* 隐藏 Quill UI 元素，避免影响列表符号显示 */
+.ql-editor li .ql-ui {
+  display: none;
 }
 
 .ql-editor li::marker {
