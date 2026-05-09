@@ -716,7 +716,7 @@ export function ImageViewer({
       applyCanvasLayout();
       applyNavigationButtonLayout();
       updateIndexDisplay(getSafeIndex(getCurrentIndex()));
-      window.dispatchEvent(new Event("resize"));
+      // 不需要触发 update 或 resize，布局调整已经在上面完成
     };
 
     panelEl.addEventListener("transitionend", handleTransitionEnd);
@@ -811,6 +811,18 @@ export function ImageViewer({
             id="right-panel"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
+            onWheel={(e) => {
+              // 检查事件是否来自嵌套的 viewer
+              const target = e.target as HTMLElement;
+              const isFromNestedViewer = target.closest('.custom-viewer-wrapper');
+
+              // 如果事件来自嵌套的 viewer，阻止传播到当前 viewer
+              // 这样嵌套 viewer 可以独立处理缩放，不会影响底层 viewer
+              if (isFromNestedViewer && isFromNestedViewer !== viewerContainerRef.current?.closest('.custom-viewer-wrapper')) {
+                e.stopPropagation();
+                return;
+              }
+            }}
           >
             {panelContentVisible && <ImageComment article={article} commentAvatarClassName="size-8" />}
           </div>
