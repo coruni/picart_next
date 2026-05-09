@@ -1,13 +1,17 @@
 import { AppChrome } from "@/components/layout/AppChrome.client";
-import { AuthRouteGuard } from "@/components/providers/AuthRouteGuard";
-import { ContentAutoTranslateProvider } from "@/components/providers/ContentAutoTranslateProvider";
-import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
-import { ThemeSyncProvider } from "@/components/providers/ThemeSyncProvider";
-import { UserStateProvider } from "@/components/providers/UserStateProvider";
 import { UserAchievementDialog } from "@/components/layout/UserAchievementDialog";
 import { UserAvatarFarmeDialog } from "@/components/layout/UserAvatarFarmeDialog";
 import { UserCommentBubbleDialog } from "@/components/layout/UserCommentBubbleDialog";
+import { AuthRouteGuard } from "@/components/providers/AuthRouteGuard";
+import { ContentAutoTranslateProvider } from "@/components/providers/ContentAutoTranslateProvider";
+import { DeviceFingerprintProvider } from "@/components/providers/DeviceFingerprintProvider";
+import { HotSearchProvider } from "@/components/providers/HotSearchProvider";
+import { ThemeSyncProvider } from "@/components/providers/ThemeSyncProvider";
+import { UserStateProvider } from "@/components/providers/UserStateProvider";
 import { routing } from "@/i18n/routing";
+import { ToastContainer } from "@/lib";
+import { getCurrentUser } from "@/lib/current-user";
+import { getHotSearchKeywordsSSR } from "@/lib/hot-search-server";
 import {
   buildAuthHeaders,
   DEVICE_ID_COOKIE_NAME,
@@ -18,7 +22,6 @@ import {
   getPublicCategories,
   getPublicConfig,
 } from "@/lib/seo";
-import { getCurrentUser } from "@/lib/current-user";
 import { getServerCookie } from "@/lib/server-cookies";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
@@ -26,7 +29,6 @@ import { getMessages } from "next-intl/server";
 import { unstable_noStore as noStore } from "next/cache";
 import { notFound } from "next/navigation";
 import NextTopLoader from "nextjs-toploader";
-import { ToastContainer } from "@/lib";
 import { LocaleProvider } from "./LocaleProvider";
 
 export const dynamic = "force-dynamic";
@@ -69,6 +71,7 @@ export default async function LocaleLayout({
   const initialUser = initialToken ? await getCurrentUser() : null;
   const categories = await getPublicCategories();
   const config = await getPublicConfig();
+  const hotSearchKeywords = await getHotSearchKeywordsSSR();
   void deviceId;
   void requestHeaders;
 
@@ -87,7 +90,9 @@ export default async function LocaleLayout({
           initialConfig={config}
         >
           <AuthRouteGuard />
-          <AppChrome categories={categories}>{children}</AppChrome>
+          <HotSearchProvider hotSearchKeywords={hotSearchKeywords}>
+            <AppChrome categories={categories}>{children}</AppChrome>
+          </HotSearchProvider>
           <UserAvatarFarmeDialog />
           <UserCommentBubbleDialog />
           <UserAchievementDialog />

@@ -4,7 +4,7 @@ import { uploadControllerUploadFile, userControllerUpdate } from "@/api";
 import { Button } from "@/components/ui/Button";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/Dialog";
 import { useRouter } from "@/i18n/routing";
-import { showToast, getErrorMessage } from "@/lib";
+import { getErrorMessage, showToast } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import type { UserDetail } from "@/types";
 import { useTranslations } from "next-intl";
@@ -189,7 +189,7 @@ export const BackgroundEditor = ({
             <>
               {/* Crop area */}
               <div
-                className="w-full h-56 md:h-[300px] rounded-lg overflow-hidden cursor-move touch-none"
+                className="w-full h-56 md:h-75 rounded-lg overflow-hidden cursor-move touch-none"
                 onWheel={handleWheel}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
@@ -198,14 +198,14 @@ export const BackgroundEditor = ({
                 <AvatarEditor
                   ref={editorRef}
                   image={selectedImage}
-                  width={700}
+                  width={2400}
                   height={300}
                   border={0}
                   borderRadius={0}
                   color={[0, 0, 0, 0.6]}
                   scale={scale}
                   rotate={0}
-                  style={{ width: "100%", height: "100%" }}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
               </div>
 

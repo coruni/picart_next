@@ -17,5 +17,6 @@
         "messages",
         "src/i18n"
     ],
-    "chatgpt.commentCodeLensEnabled": true
+    "chatgpt.commentCodeLensEnabled": true,
+    "Codegeex.RepoIndex": true
 }

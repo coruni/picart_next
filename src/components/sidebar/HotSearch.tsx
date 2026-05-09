@@ -1,5 +1,6 @@
 "use client";
 
+import { useHotSearch } from "@/components/providers/HotSearchProvider";
 import { useRouter } from "@/i18n/routing";
 import { getHotSearchKeywords } from "@/lib/hot-search-client";
 import { useSearchStore } from "@/stores";
@@ -14,11 +15,18 @@ export function HotSearch() {
   const category = useSearchStore((state) => state.category);
   const sort = useSearchStore((state) => state.sort);
   const setSearchParams = useSearchStore((state) => state.setSearchParams);
+  const { hotSearchKeywords: initialHotSearches } = useHotSearch();
+
   const [hotSearches, setHotSearches] = useState<string[]>(
-    () => (tSearch.raw("hotSearches") as string[]) || [],
+    () => initialHotSearches || (tSearch.raw("hotSearches") as string[]) || [],
   );
 
   useEffect(() => {
+    // 如果已经有初始热门搜索词，则不再重新获取
+    if (initialHotSearches && initialHotSearches.length > 0) {
+      return;
+    }
+
     const fallbackHotSearches = (tSearch.raw("hotSearches") as string[]) || [];
 
     void (async () => {
@@ -30,7 +38,7 @@ export function HotSearch() {
         setHotSearches(fallbackHotSearches);
       }
     })();
-  }, [tSearch]);
+  }, [tSearch, initialHotSearches]);
 
   const handleSearch = (keyword: string) => {
     const q = keyword.trim();

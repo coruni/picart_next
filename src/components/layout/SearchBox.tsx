@@ -11,6 +11,7 @@ import { CategoryList } from "@/types";
 import { ChevronDown, Loader2, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useHotSearch } from "../providers/HotSearchProvider";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 export interface SearchBoxParams {
@@ -68,6 +69,7 @@ export function SearchBox({
   syncSearchStore = false,
 }: SearchBoxProps) {
   const t = useTranslations("common");
+  const { hotSearchKeywords: initialHotSearches } = useHotSearch();
   const router = useRouter();
   const pathname = usePathname();
   const [selectedCategory, setSelectedCategory] = useState<
@@ -76,8 +78,12 @@ export function SearchBox({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isSearchPanelOpen, setIsSearchPanelOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(defaultValue);
-  const [hotSearches, setHotSearches] = useState<string[]>([]);
-  const [panelHotSearches, setPanelHotSearches] = useState<string[]>([]);
+  const [hotSearches, setHotSearches] = useState<string[]>(
+    initialHotSearches || [],
+  );
+  const [panelHotSearches, setPanelHotSearches] = useState<string[]>(
+    initialHotSearches || [],
+  );
   const [currentHotSearchIndex, setCurrentHotSearchIndex] = useState(0);
   const [isPlaceholderAnimating, setIsPlaceholderAnimating] = useState(false);
   const [isPlaceholderResetting, setIsPlaceholderResetting] = useState(false);
@@ -178,6 +184,11 @@ export function SearchBox({
   }, [searchQuery, selectedCategory, setSearchParams, sort, syncSearchStore]);
 
   useEffect(() => {
+    // 如果已经有初始热门搜索词，则不再重新获取
+    if (initialHotSearches && initialHotSearches.length > 0) {
+      return;
+    }
+
     if (hotSearchLoadedRef.current) {
       return;
     }
@@ -193,7 +204,7 @@ export function SearchBox({
         console.error("Hot search error:", error);
       }
     })();
-  }, [fetchHotSearches]);
+  }, [fetchHotSearches, initialHotSearches]);
 
   useEffect(() => {
     if (hotSearches.length <= 1) {

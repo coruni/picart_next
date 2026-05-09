@@ -1,15 +1,13 @@
 import type { CreateClientConfig } from "./api/client.gen";
-import {
-  buildAuthHeaders,
-  getRequestAuthState,
-} from "./lib/request-auth";
+import { buildAuthHeaders, getRequestAuthState } from "./lib/request-auth";
 import { resilientFetch } from "./lib/resilient-fetch";
 
 export const createClientConfig: CreateClientConfig = (config) => ({
-  ...config,
-  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api/v1",
-  fetch: resilientFetch,
   throwOnError: true,
+  ...config,
+  baseUrl:
+    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api/v1",
+  fetch: resilientFetch,
 });
 
 let interceptorsInitialized = false;
@@ -24,7 +22,9 @@ export function initializeInterceptors(): Promise<void> {
       client.interceptors.request.use(async (request) => {
         try {
           const { token, deviceId } = await getRequestAuthState();
-          const headers = await buildAuthHeaders(request.headers as HeadersInit);
+          const headers = await buildAuthHeaders(
+            request.headers as HeadersInit,
+          );
           request.headers = headers;
 
           void token;
@@ -38,10 +38,16 @@ export function initializeInterceptors(): Promise<void> {
 
       client.interceptors.error.use(async (error, response) => {
         if (process.env.NODE_ENV === "development") {
-          console.warn("[auth][interceptor] response error", { error, response });
+          console.warn("[auth][interceptor] response error", {
+            error,
+            response,
+          });
         }
 
-        const apiCode = error && typeof error === "object" && "code" in error ? (error as { code?: number }).code : undefined;
+        const apiCode =
+          error && typeof error === "object" && "code" in error
+            ? (error as { code?: number }).code
+            : undefined;
         const status = response?.status ?? apiCode;
 
         // 处理 401 未授权错误
@@ -49,7 +55,9 @@ export function initializeInterceptors(): Promise<void> {
           // 尝试刷新 token（refreshAccessToken 内部使用原生 fetch，不会被拦截）
           try {
             const { useUserStore } = await import("./stores/useUserStore");
-            const refreshed = await useUserStore.getState().refreshAccessToken();
+            const refreshed = await useUserStore
+              .getState()
+              .refreshAccessToken();
             console.log("[auth] Token refresh result:", refreshed);
             if (!refreshed) {
               console.warn("[auth] Token refresh failed, user logged out");
