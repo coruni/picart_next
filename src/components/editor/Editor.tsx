@@ -250,6 +250,9 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               maxStack: 100,
               userOnly: true,
             },
+            clipboard: {
+              matchVisual: false,
+            },
             blotFormatter2: {
               specs: [
                 CustomImageSpec as unknown as typeof BlotSpec,
@@ -316,53 +319,22 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quillRef.current = quill;
 
-        // ─── 工具函数：从 DataTransfer 提取图片文件（去重） ───
-        const getClipboardImageFiles = (
-          clipboardData: DataTransfer,
-        ): File[] => {
-          console.log("getClipboardImageFiles");
-          const files = Array.from(clipboardData.files || []).filter((file) =>
-            file.type.startsWith("image/"),
-          );
-          const itemFiles = Array.from(clipboardData.items || [])
-            .filter(
-              (item) => item.kind === "file" && item.type.startsWith("image/"),
-            )
-            .map((item) => item.getAsFile())
-            .filter((file): file is File => file !== null);
+        // 自定义图片粘贴上传处理
+        const handleImageUpload = async (imageFiles: File[], startIndex: number) => {
+          const uploadItems: {
+            file: File;
+            originalFile: File;
+            index: number;
+            previewUrl: string;
+            wrapper: HTMLDivElement | null;
+            img: HTMLImageElement | null;
+            overlay: HTMLDivElement | null;
+            progressText: HTMLSpanElement | null;
+          }[] = [];
 
-          const seen = new Set<string>();
-          return [...files, ...itemFiles].filter((file) => {
-            const key = `${file.name}:${file.size}:${file.type}:${file.lastModified}`;
-            if (seen.has(key)) return false;
-            seen.add(key);
-            return true;
-          });
-        };
-
-        // ─── 核心：统一图片上传逻辑 ───
-        type ImageUploadItem = {
-          file: File;
-          index: number;
-          previewUrl: string;
-          wrapper: HTMLDivElement | null;
-          img: HTMLImageElement | null;
-          overlay: HTMLDivElement | null;
-          progressText: HTMLSpanElement | null;
-        };
-
-        const uploadImagesToEditor = async (
-          files: File[],
-          errorPrefix = "Upload failed:",
-        ) => {
-          if (files.length === 0) return;
-
-          const selection = quill.getSelection();
-          const startIndex = selection?.index ?? quill.getLength();
-          const uploadItems: ImageUploadItem[] = [];
-
-          for (let i = 0; i < files.length; i++) {
-            const originalFile = files[i];
+          // 先创建所有占位
+          for (let i = 0; i < imageFiles.length; i++) {
+            const originalFile = imageFiles[i];
             const currentIndex = startIndex + i;
             const previewUrl = URL.createObjectURL(originalFile);
 
@@ -382,7 +354,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 "img.ql-image",
               ) as HTMLImageElement | null;
               if (img && img.src === previewUrl && !img.dataset.uploaded) {
-                targetWrapper = wrapper;
+                targetWrapper = wrapper as HTMLDivElement;
                 targetImg = img;
                 break;
               }
@@ -405,6 +377,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                   </button>
                 </div>
               `;
+
               targetWrapper.appendChild(overlay);
 
               const progressText = overlay.querySelector(
@@ -414,6 +387,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
               uploadItems.push({
                 file: originalFile,
+                originalFile,
                 index: currentIndex,
                 previewUrl,
                 wrapper: targetWrapper,
@@ -442,12 +416,14 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             }
           }
 
-          const compressionResults = await compressImages(files);
+          // 压缩图片
+          const compressionResults = await compressImages(imageFiles);
+
+          // 验证压缩后的文件大小
           const validation = validateFiles(
             compressionResults.map((r) => r.file),
             true,
           );
-
           if (!validation.valid) {
             console.error(validation.error);
             uploadItems.forEach((item) => {
@@ -462,7 +438,8 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             return;
           }
 
-          const metadata = await buildUploadMetadata(files);
+          // 计算原始文件的 hash 并构建 metadata
+          const metadata = await buildUploadMetadata(imageFiles);
           compressionResults.forEach((result, index) => {
             const item = uploadItems[index];
             if (!item) return;
@@ -472,6 +449,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             }
           });
 
+          // Batch upload all compressed files
           const abortController = new AbortController();
           uploadAbortControllerRef.current = abortController;
 
@@ -483,14 +461,12 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
             const uploadedUrls = response.data?.data || [];
 
+            // Update each uploaded image
             uploadItems.forEach((item, idx) => {
               if (!item.wrapper || !item.img) return;
 
               const uploadedUrl = uploadedUrls[idx]?.url;
-              if (
-                uploadedUrl &&
-                !uploadedUrl.includes("/images/blocked.webp")
-              ) {
+              if (uploadedUrl && !uploadedUrl.includes("/images/blocked.webp")) {
                 item.img.src = uploadedUrl;
                 item.img.dataset.uploaded = "true";
                 if (item.previewUrl.startsWith("blob:")) {
@@ -505,8 +481,10 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               item.overlay?.remove();
             });
           } catch (error) {
-            if ((error as Error).name === "AbortError") return;
-            console.error(errorPrefix, error);
+            if ((error as Error).name === "AbortError") {
+              return;
+            }
+            console.error("Upload failed:", error);
             showToast(getErrorMessage(error, "上传失败"));
             uploadItems.forEach((item) => {
               item.overlay?.remove();
@@ -520,6 +498,29 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           }
         };
 
+        // 监听粘贴事件处理图片
+        quill.root.addEventListener(
+          "paste",
+          (e: ClipboardEvent) => {
+            const clipboardData = e.clipboardData;
+            if (!clipboardData) return;
+
+            const files = Array.from(clipboardData.files || []);
+            const imageFiles = files.filter((file) =>
+              file.type.startsWith("image/"),
+            );
+
+            if (imageFiles.length > 0) {
+              e.preventDefault();
+              e.stopPropagation();
+              const range = quill.getSelection(true);
+              const index = range?.index ?? quill.getLength();
+              handleImageUpload(imageFiles, index);
+            }
+          },
+          true,
+        );
+
         // 渲染自定义 toolbar
         renderToolbar({
           quill,
@@ -527,6 +528,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           t: (key: string) => t(`toolbar.${key}`),
           onVideoClick: () => setShowVideoModal(true),
           onSaveSelection: () => {
+            // 保存当前光标位置
             const range = quill.getSelection(true);
             if (range) {
               savedSelection.current = {
@@ -557,16 +559,22 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             setShowArticleModal(true);
           },
           onImageUpload: async () => {
+            // 图片上传处理（带预压缩）
             const input = document.createElement("input");
             input.type = "file";
             input.accept = "image/*";
             input.multiple = true;
+            input.click();
             input.onchange = async () => {
               const files = input.files;
               if (!files || files.length === 0) return;
-              await uploadImagesToEditor(Array.from(files));
+
+              const selection = quill.getSelection();
+              const startIndex = selection?.index || 0;
+              const imageFiles = Array.from(files);
+
+              handleImageUpload(imageFiles, startIndex);
             };
-            input.click();
           },
         });
 
@@ -579,6 +587,8 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           }
         }
 
+        // 设置初始值由第二个 effect 处理
+
         // 监听内容变化
         const handleTextChange = () => {
           if (isApplyingExternalValueRef.current) return;
@@ -587,15 +597,17 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         };
         quill.on("text-change", handleTextChange);
 
-        // ─── Ctrl+C 复制图片到内部缓存 ───
+        // 键盘快捷键：Ctrl+C 复制图片
         const handleKeyDown = (e: KeyboardEvent) => {
           if ((e.ctrlKey || e.metaKey) && e.key === "c") {
+            // 检查是否有选中的图片 blot
             const selection = quill.getSelection();
             if (selection && selection.length > 0) {
               const delta = quill.getContents(
                 selection.index,
                 selection.length,
               );
+              // 检查是否包含图片
               const hasImage = delta.ops.some(
                 (op: any) =>
                   op.insert &&
@@ -603,105 +615,270 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                   "image" in op.insert,
               );
               if (hasImage) {
+                // 存储到全局变量
                 (window as any).__quillClipboardImage = delta;
               }
+            }
+          }
+
+          // Ctrl+V 粘贴图片
+          if ((e.ctrlKey || e.metaKey) && e.key === "v") {
+            const clipImage = (window as any).__quillClipboardImage;
+            if (clipImage) {
+              e.preventDefault();
+              const selection = quill.getSelection();
+              const index = selection ? selection.index : quill.getLength();
+              quill.updateContents(
+                new (Quill.import("delta"))().retain(index).concat(clipImage),
+                "user",
+              );
+              quill.setSelection(index + clipImage.length(), 0);
             }
           }
         };
 
         quill.root.addEventListener("keydown", handleKeyDown);
 
-        // ─── 覆写 clipboard.onPaste 处理代码块粘贴 ───
-        // Quill v2 的 onPaste 签名: (range, { html, text })
-        // 这是 Quill 内部处理文本/HTML 粘贴的真正入口
+        // 拦截 Quill clipboard 模块的 onPaste 方法
         const clipboard = quill.getModule("clipboard") as any;
         const originalOnPaste = clipboard.onPaste.bind(clipboard);
 
-        clipboard.onPaste = (
-          range: { index: number; length: number },
-          { html, text }: { html?: string; text?: string },
-        ) => {
-          const plainText = text ?? "";
-          const htmlText = html ?? "";
+        clipboard.onPaste = (e: ClipboardEvent) => {
+          const files = e.clipboardData?.files;
+          if (files && files.length > 0) {
+            // 检查是否有图片文件
+            const imageFiles = Array.from(files).filter((file: File) =>
+              file.type.startsWith("image/"),
+            );
 
-          if (plainText && shouldPasteAsCodeBlock(plainText, htmlText)) {
-            const normalizedText = normalizeClipboardText(plainText);
-            let index = range.index;
-
-            if (range.length) {
-              quill.deleteText(index, range.length, "user");
-            }
-
-            const lines = normalizedText.split("\n");
-            lines.forEach((line, i) => {
-              quill.insertText(index, line, { "code-block": true }, "user");
-              index += line.length;
-              if (i < lines.length - 1) {
-                quill.insertText(index, "\n", { "code-block": true }, "user");
-                index += 1;
-              }
-            });
-
-            quill.setSelection(index, 0);
-            return;
-          }
-
-          // 其余交给 Quill 默认处理
-          originalOnPaste(range, { html, text });
-        };
-
-        // ─── 在 document 上监听 paste，优先于 Quill 捕获图片 ───
-        // Quill 本身也在 document 上注册 paste，所以必须在 document + capture=true
-        // 才能在 Quill 之前拦截到图片文件
-        const handleDocumentPaste = async (e: ClipboardEvent) => {
-          // 只处理当前编辑器有焦点时的粘贴
-          const isEditorFocused =
-            quill.root.contains(document.activeElement) ||
-            document.activeElement === quill.root;
-          if (!isEditorFocused) return;
-
-          const clipboardData = e.clipboardData;
-          if (!clipboardData) return;
-
-          // ─── 优先：编辑器内部复制的图片（不重新上传，直接插入 delta）───
-          const clipImage = (window as any).__quillClipboardImage;
-          if (clipImage) {
-            // 检查剪贴板里是否有真实图片文件；没有才走内部缓存
-            const imageFiles = getClipboardImageFiles(clipboardData);
-            if (imageFiles.length === 0) {
+            if (imageFiles.length > 0) {
               e.preventDefault();
-              e.stopImmediatePropagation();
 
-              const selection = quill.getSelection();
-              const index = selection?.index ?? quill.getLength();
+              const range = quill.getSelection(true);
+              const startIndex = range?.index || quill.getLength();
 
-              quill.updateContents(
-                new (Quill.import("delta") as any)()
-                  .retain(index)
-                  .concat(clipImage),
-                "user",
+              const uploadItems: {
+                file: File;
+                originalFile: File;
+                index: number;
+                previewUrl: string;
+                wrapper: HTMLDivElement | null;
+                img: HTMLImageElement | null;
+                overlay: HTMLDivElement | null;
+                progressText: HTMLSpanElement | null;
+              }[] = [];
+
+              // 处理所有粘贴的图片
+              const processImages = async () => {
+                if (imageFiles.length === 0) return;
+
+                // 先创建所有占位
+                for (let i = 0; i < imageFiles.length; i++) {
+                  const originalFile = imageFiles[i];
+                const currentIndex = startIndex + i;
+                const previewUrl = URL.createObjectURL(originalFile);
+
+                quill.insertEmbed(currentIndex, "image", previewUrl);
+                quill.setSelection(currentIndex + 1, 0);
+
+                await new Promise((resolve) => setTimeout(resolve, 50));
+
+                const wrappers = Array.from(
+                  quill.root.querySelectorAll("div.ql-image-wrapper"),
+                ) as HTMLDivElement[];
+                let targetWrapper: HTMLDivElement | null = null;
+                let targetImg: HTMLImageElement | null = null;
+
+                for (const wrapper of wrappers) {
+                  const img = wrapper.querySelector(
+                    "img.ql-image",
+                  ) as HTMLImageElement | null;
+                  if (img && img.src === previewUrl && !img.dataset.uploaded) {
+                    targetWrapper = wrapper as HTMLDivElement;
+                    targetImg = img;
+                    break;
+                  }
+                }
+
+                if (targetWrapper && targetImg) {
+                  targetWrapper.style.position = "relative";
+                  targetWrapper.style.display = "inline-block";
+
+                  const overlay = document.createElement("div");
+                  overlay.className = "image-upload-overlay";
+                  overlay.innerHTML = `
+                    <div class="image-upload-pill">
+                      <div class="progress">
+                        <div class="spinner"></div>
+                        <span class="progress-text">0%</span>
+                      </div>
+                      <button type="button" class="cancel-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                      </button>
+                    </div>
+                  `;
+
+                  targetWrapper.appendChild(overlay);
+
+                  const progressText = overlay.querySelector(
+                    ".progress-text",
+                  ) as HTMLSpanElement;
+                  progressText.textContent = "0%";
+
+                  uploadItems.push({
+                    file: originalFile,
+                    originalFile,
+                    index: currentIndex,
+                    previewUrl,
+                    wrapper: targetWrapper,
+                    img: targetImg,
+                    overlay,
+                    progressText,
+                  });
+
+                  const cancelBtn = overlay.querySelector(
+                    ".cancel-btn",
+                  ) as HTMLButtonElement;
+                  cancelBtn.onclick = () => {
+                    const item = uploadItems.find(
+                      (u) => u.index === currentIndex,
+                    );
+                    if (item) {
+                      if (item.previewUrl.startsWith("blob:")) {
+                        URL.revokeObjectURL(item.previewUrl);
+                      }
+                      item.wrapper = null;
+                      item.img = null;
+                    }
+                    overlay.remove();
+                    quill.deleteText(currentIndex, 1);
+                  };
+                } else {
+                  URL.revokeObjectURL(previewUrl);
+                }
+              }
+
+                // 压缩图片
+                const compressionResults = await compressImages(imageFiles);
+
+              // 验证压缩后的文件大小
+              const validation = validateFiles(
+                compressionResults.map((r) => r.file),
+                true,
               );
-              quill.setSelection(index + clipImage.length(), 0);
-              (window as any).__quillClipboardImage = null;
+              if (!validation.valid) {
+                console.error(validation.error);
+                uploadItems.forEach((item) => {
+                  item.overlay?.remove();
+                  if (item.previewUrl.startsWith("blob:")) {
+                    URL.revokeObjectURL(item.previewUrl);
+                  }
+                  if (item.wrapper) {
+                    quill.deleteText(item.index, 1);
+                  }
+                });
+                return;
+              }
+
+                // 计算原始文件的 hash 并构建 metadata
+                const metadata = await buildUploadMetadata(imageFiles);
+              compressionResults.forEach((result, index) => {
+                const item = uploadItems[index];
+                if (!item) return;
+                item.file = result.file;
+                if (item.progressText) {
+                  item.progressText.textContent = "0%";
+                }
+              });
+
+                // Batch upload all compressed files
+                const abortController = new AbortController();
+                uploadAbortControllerRef.current = abortController;
+
+                try {
+                  const compressedFiles = compressionResults.map((r) => r.file);
+                  const response = await uploadControllerUploadFile({
+                    body: { file: compressedFiles as any, metadata },
+                  });
+
+                  const uploadedUrls = response.data?.data || [];
+
+                  // Update each uploaded image
+                  uploadItems.forEach((item, idx) => {
+                    if (!item.wrapper || !item.img) return;
+
+                    const uploadedUrl = uploadedUrls[idx]?.url;
+                    if (
+                      uploadedUrl &&
+                      !uploadedUrl.includes("/images/blocked.webp")
+                    ) {
+                      item.img.src = uploadedUrl;
+                      item.img.dataset.uploaded = "true";
+                      if (item.previewUrl.startsWith("blob:")) {
+                        URL.revokeObjectURL(item.previewUrl);
+                      }
+                      if (item.progressText) {
+                        item.progressText.textContent = "100%";
+                      }
+                    } else {
+                      quill.deleteText(item.index, 1);
+                    }
+                    item.overlay?.remove();
+                  });
+                } catch (error) {
+                  if ((error as Error).name === "AbortError") {
+                    return;
+                  }
+                  console.error("Upload failed:", error);
+                  showToast(getErrorMessage(error, "上传失败"));
+                  uploadItems.forEach((item) => {
+                    item.overlay?.remove();
+                    if (item.previewUrl.startsWith("blob:")) {
+                      URL.revokeObjectURL(item.previewUrl);
+                    }
+                    if (item.wrapper) {
+                      quill.deleteText(item.index, 1);
+                    }
+                  });
+                }
+              };
+
+              processImages();
               return;
             }
           }
 
-          // ─── 系统截图 / 外部图片文件粘贴 ───
-          const imageFiles = getClipboardImageFiles(clipboardData);
-          if (imageFiles.length === 0) return;
-
-          e.preventDefault();
-          e.stopImmediatePropagation();
-
-          // 清除内部复制缓存，避免下次误触发
-          (window as any).__quillClipboardImage = null;
-
-          void uploadImagesToEditor(imageFiles, "Paste image upload failed:");
+          // 没有图片，使用原始的 onPaste 处理
+          originalOnPaste(e);
         };
 
-        // capture=true：在 Quill 自己的 document paste 监听之前触发
-        document.addEventListener("paste", handleDocumentPaste, true);
+        // 处理代码块粘贴
+        const handleCodePaste = (e: ClipboardEvent) => {
+          const clipboardData = e.clipboardData;
+          if (!clipboardData) return;
+
+          const plainText = clipboardData.getData("text/plain");
+          const htmlText = clipboardData.getData("text/html");
+          if (!plainText || !shouldPasteAsCodeBlock(plainText, htmlText))
+            return;
+
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+
+          const normalizedText = normalizeClipboardText(plainText);
+          const selection = quill.getSelection(true);
+          const index = selection?.index ?? quill.getLength();
+
+          if (selection?.length) {
+            quill.deleteText(index, selection.length, "user");
+          }
+
+          const codeHtml = `<pre>${escapeHtml(normalizedText)}</pre>`;
+          quill.clipboard.dangerouslyPasteHTML(index, codeHtml, "user");
+        };
+
+        quill.root.addEventListener("paste", handleCodePaste, true);
 
         // 监听图片 caption 输入，同步到 alt 属性
         const handleCaptionInput = (e: Event) => {
@@ -729,8 +906,10 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         const handleCaptionKeyDown = (e: KeyboardEvent) => {
           const target = e.target as HTMLElement;
           if (target.classList.contains("ql-image-caption")) {
+            // 允许基本的编辑操作
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
+              // 移动光标到图片后面
               const wrapper = target.closest(".ql-image-wrapper");
               if (wrapper) {
                 const blot = quill.scroll.find(wrapper);
@@ -740,6 +919,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                 }
               }
             }
+            // 阻止删除键删除图片本身
             if (e.key === "Backspace" && target.textContent === "") {
               e.preventDefault();
             }
@@ -752,9 +932,9 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           uploadAbortControllerRef.current?.abort();
           quill.off("text-change", handleTextChange);
           quill.root.removeEventListener("keydown", handleKeyDown);
+          quill.root.removeEventListener("paste", handleCodePaste, true);
           quill.root.removeEventListener("input", handleCaptionInput);
           quill.root.removeEventListener("keydown", handleCaptionKeyDown, true);
-          document.removeEventListener("paste", handleDocumentPaste, true);
         };
       }
     }, [ref, placeholder, readOnly]);
@@ -792,6 +972,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         }>;
         const { index, articles } = customEvent.detail;
 
+        // 预填充选中文章（转换为 ArticleItem 格式）
         if (articles && articles.length > 0) {
           const preSelectedArticles = articles.map((article) => ({
             id: parseInt(article.id, 10),
@@ -819,7 +1000,10 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           setSelectedArticles(preSelectedArticles as ArticleItem[]);
         }
 
+        // 保存当前编辑的 blot 索引，用于替换
         inlineArticleEditIndexRef.current = index;
+
+        // 打开文章选择对话框
         setShowArticleModal(true);
       };
       document.addEventListener("inline-article-edit", handleInlineArticleEdit);
@@ -842,10 +1026,12 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       const sanitizedNext = sanitizeRichTextHtml(nextValue);
       const currentValue = sanitizeRichTextHtml(quill.root.innerHTML || "");
 
+      // 检测是否是初始加载（value 从 undefined/空 变成有值）
       const isInitialLoad =
         !hasInitializedRef.current &&
         (sanitizedNext || initialValueRef.current);
 
+      // 只在初始化时应用外部值，避免编辑时覆盖用户输入
       if (isInitialLoad) {
         if (sanitizedNext !== currentValue) {
           isApplyingExternalValueRef.current = true;
@@ -865,15 +1051,18 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         return;
       }
 
+      // 初始化完成后，只在值真正变化且不是用户正在编辑时同步
       if (sanitizedNext === currentValue) {
         lastSyncedValueRef.current = currentValue;
         return;
       }
 
+      // 如果编辑器有焦点，说明用户正在编辑，不覆盖
       if (quill.hasFocus()) {
         return;
       }
 
+      // 只在确认是外部更新（不是来自 onChange）时才应用
       if (sanitizedNext !== lastSyncedValueRef.current) {
         isApplyingExternalValueRef.current = true;
         try {
@@ -894,15 +1083,20 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
         const target = e.target as HTMLElement;
+        // 找到 toolbar 容器
         const toolbar = containerRef.current?.querySelector(".ql-toolbar");
         if (!toolbar) return;
 
+        // 检查点击是否在 toolbar 内
         const isInsideToolbar = toolbar.contains(target);
+
+        // 检查点击是否在任何 dropdown 内（包括 emoji 面板等）
         const dropdowns = document.querySelectorAll('[id^="dropdown-"]');
         const isInsideDropdown = Array.from(dropdowns).some((dropdown) =>
           dropdown.contains(target),
         );
 
+        // 如果点击在 toolbar 外部且不在任何 dropdown 内，关闭所有下拉菜单
         if (!isInsideToolbar && !isInsideDropdown) {
           dropdowns.forEach((dropdown) => {
             dropdown.classList.add("hidden");
@@ -920,6 +1114,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       if (quill && videoUrl) {
         const parsed = parseVideoUrl(videoUrl);
         if (parsed) {
+          // 使用保存的光标位置
           const index =
             savedSelection.current?.index ??
             quill.getSelection(true)?.index ??
@@ -933,6 +1128,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       }
       setShowVideoModal(false);
       setVideoUrl("");
+      // 恢复焦点
       setTimeout(() => restoreFocus(), 0);
     };
 
@@ -967,6 +1163,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             setArticleHasMore(newArticles.length < total);
           } else {
             setArticles((prev) => {
+              // 去重：只添加不存在的新文章
               const existingIds = new Set(prev.map((a) => a.id));
               const uniqueNewArticles = newArticles.filter(
                 (a) => !existingIds.has(a.id),
@@ -1051,12 +1248,15 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
         setArticleSearchQuery(query);
         setArticlePage(1);
         setArticleHasMore(true);
+        // 检查是否是URL格式
         const urlRegex = /\/article\/(\d+)/;
         const match = query.match(urlRegex);
         if (match) {
+          // 是URL，提取ID搜索
           const articleId = parseInt(match[1], 10);
           searchArticleById(articleId);
         } else {
+          // 普通关键词搜索
           loadUserArticles(query, 1);
         }
       },
@@ -1117,17 +1317,21 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       const quill = quillRef.current;
       if (!quill || selectedArticles.length === 0) return;
 
+      // 检查是否是编辑模式（有保存的索引）
       const editIndex = inlineArticleEditIndexRef.current;
       let index: number;
 
       if (editIndex !== null) {
+        // 编辑模式：删除原有 blot 并在原位置插入
         index = editIndex;
         quill.deleteText(index, 1, "user");
       } else {
+        // 插入模式：在光标位置插入
         const range = quill.getSelection();
         index = range?.index ?? quill.getLength();
       }
 
+      // 所有文章都使用 inlineArticleList 包裹（包括单篇）
       const articles = selectedArticles.map((article) => {
         const coverUrl =
           article.cover ||
@@ -1149,7 +1353,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       quill.insertEmbed(
         index,
         "inlineArticleList",
-        { articles, untitledArticle: t("untitledArticle", { id: "{id}" }) },
+        { articles, untitledArticle: t("untitledArticle") },
         "user",
       );
 
@@ -1157,6 +1361,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       setShowArticleModal(false);
       setArticleSearchQuery("");
       setSelectedArticles([]);
+      // 重置编辑索引
       inlineArticleEditIndexRef.current = null;
     };
 
@@ -1175,6 +1380,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       if (quill && linkUrl) {
         const selection = savedSelection.current || quill.getSelection();
         if (selection) {
+          // 如果有选中的文字，直接添加链接
           if (selection.length > 0) {
             quill.formatText(
               selection.index,
@@ -1183,9 +1389,11 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
               linkUrl,
             );
           } else if (linkText) {
+            // 如果没有选中文字但有链接文字，插入新链接
             quill.insertText(selection.index, linkText, "link", linkUrl);
             quill.setSelection(selection.index + linkText.length, 0);
           } else {
+            // 如果都没有，用链接地址作为文字
             quill.insertText(selection.index, linkUrl, "link", linkUrl);
             quill.setSelection(selection.index + linkUrl.length, 0);
           }
