@@ -30,6 +30,7 @@ type ImageViewerProps = {
   alt?: string;
   enableSidePanel?: boolean;
   zIndexClassName?: string;
+  disableMobileHistory?: boolean;
 };
 
 const renderIcon = (
@@ -53,6 +54,7 @@ export function ImageViewer({
   alt = "Image",
   enableSidePanel = true,
   zIndexClassName = "z-300!",
+  disableMobileHistory = false,
 }: ImageViewerProps) {
   const t = useTranslations("imageViewer");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -124,7 +126,7 @@ export function ImageViewer({
   }, [onChange]);
 
   useEffect(() => {
-    if (!isMobileViewport()) {
+    if (!isMobileViewport() || disableMobileHistory) {
       return;
     }
 
@@ -186,7 +188,7 @@ export function ImageViewer({
         mobilePopStateHandlerRef.current = null;
       }
     };
-  }, [visible]);
+  }, [visible, disableMobileHistory]);
 
   const getCurrentIndex = useCallback(() => {
     const viewer = viewerRef.current as Viewer & { index?: number };

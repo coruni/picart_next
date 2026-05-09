@@ -525,9 +525,13 @@ export const quillOverrideStyles = `
   .blot-formatter__toolbar span:hover {
     background: rgba(255, 255, 255, 0.15) !important;
   }
+    
   .blot-formatter__toolbar span svg {
     color: white !important;
     background: transparent !important;
+  }
+  .blot-formatter__toolbar span svg:hover {
+    color: var(--color-primary) !important;
   }
   /* 图片 overlay 样式 */
   .blot-formatter__overlay:not(:empty) {
