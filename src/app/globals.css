@@ -484,7 +484,7 @@ body.viewer-open .fixed {
 }
 
 .ql-editor li {
-  margin: 0.22rem 0;
+  font-size: 14px;
   padding-left: 0.05rem !important;
   display: list-item !important;
 }
