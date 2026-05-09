@@ -274,18 +274,10 @@ export function ImageViewer({
       return;
     }
 
-    // 桌面端：根据侧边栏状态调整偏移量
-    if (enableSidePanel && panelExpandedRef.current) {
-      // 侧边栏展开时：按钮移到侧边栏外侧
-      const expandedOffset = "534px"; // 486px(侧边栏宽度) + 48px(间距)
-      if (prevButton) prevButton.style.left = expandedOffset;
-      if (nextButton) nextButton.style.right = expandedOffset;
-    } else {
-      // 侧边栏收起或未启用时：默认位置
-      const defaultOffset = "112px";
-      if (prevButton) prevButton.style.left = defaultOffset;
-      if (nextButton) nextButton.style.right = defaultOffset;
-    }
+    // 桌面端：按钮位置固定，不受侧边栏状态影响
+    const defaultOffset = "112px";
+    if (prevButton) prevButton.style.left = defaultOffset;
+    if (nextButton) nextButton.style.right = defaultOffset;
   }, [enableSidePanel]);
 
   // Track last active index to avoid updating all thumbnails
