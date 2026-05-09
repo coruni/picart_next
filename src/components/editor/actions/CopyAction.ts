@@ -29,19 +29,21 @@ export class CopyAction extends Action {
     // 将 Delta 存储到全局变量，供粘贴时使用
     (window as any).__quillClipboardImage = delta;
 
-    // 同时复制到剪贴板（HTML 格式）
-    const img = this.formatter.currentSpec?.getTargetElement() as HTMLImageElement;
-    if (img) {
-      const html = `<img src="${img.src}">`;
-      navigator.clipboard.write([
-        new ClipboardItem({
-          "text/html": new Blob([html], { type: "text/html" }),
-          "text/plain": new Blob([img.src], { type: "text/plain" }),
-        }),
-      ]).catch(() => {
-        // 如果剪贴板 API 失败，使用备用方案
-        navigator.clipboard.writeText(img.src).catch(() => {});
-      });
+    // 获取图片元素的 src，targetElement 是 .ql-image-wrapper
+    const targetElement = this.formatter.currentSpec?.getTargetElement();
+    if (targetElement) {
+      const img = targetElement.querySelector("img.ql-image") as HTMLImageElement | null;
+      if (img) {
+        const html = `<img src="${img.src}">`;
+        navigator.clipboard.write([
+          new ClipboardItem({
+            "text/html": new Blob([html], { type: "text/html" }),
+            "text/plain": new Blob([img.src], { type: "text/plain" }),
+          }),
+        ]).catch(() => {
+          navigator.clipboard.writeText(img.src).catch(() => {});
+        });
+      }
     }
   };
 }
