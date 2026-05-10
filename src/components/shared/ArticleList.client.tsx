@@ -83,11 +83,8 @@ export const ArticleListClient = ({
     try {
       const cached = sessionStorage.getItem(storageKey);
       if (cached) {
-        const { articles, page, timestamp } = JSON.parse(cached);
-        // 缓存 5 分钟内有效
-        if (Date.now() - timestamp < 5 * 60 * 1000) {
-          return { articles, page };
-        }
+        const { articles, page } = JSON.parse(cached);
+        return { articles, page };
       }
     } catch (e) {
       console.error("Failed to restore cache:", e);
@@ -122,18 +119,52 @@ export const ArticleListClient = ({
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    try {
-      sessionStorage.setItem(
-        storageKey,
-        JSON.stringify({
-          articles,
-          page,
-          timestamp: Date.now(),
-        }),
-      );
-    } catch (e) {
-      console.error("Failed to cache state:", e);
-    }
+    const saveState = () => {
+      try {
+        sessionStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            articles,
+            page,
+            timestamp: Date.now(),
+          }),
+        );
+      } catch (e) {
+        console.error("Failed to cache state:", e);
+      }
+    };
+
+    saveState();
+  }, [articles, page, storageKey]);
+
+  // 页面卸载或隐藏前保存状态（处理 bfcache 和快速返回）
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const saveState = () => {
+      try {
+        sessionStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            articles,
+            page,
+            timestamp: Date.now(),
+          }),
+        );
+      } catch (e) {
+        console.error("Failed to cache state on unload:", e);
+      }
+    };
+
+    window.addEventListener("beforeunload", saveState);
+    window.addEventListener("pagehide", saveState);
+
+    return () => {
+      window.removeEventListener("beforeunload", saveState);
+      window.removeEventListener("pagehide", saveState);
+      // 组件卸载时也保存（SPA 导航离开页面时触发）
+      saveState();
+    };
   }, [articles, page, storageKey]);
 
   // 保存滚动位置
@@ -164,21 +195,34 @@ export const ArticleListClient = ({
     )
       return;
 
-    try {
-      const savedScroll = sessionStorage.getItem(scrollKey);
-      if (savedScroll) {
-        // 使用 requestAnimationFrame 确保 DOM 已渲染
-        requestAnimationFrame(() => {
-          window.scrollTo(0, parseInt(savedScroll, 10));
+    const restoreScroll = () => {
+      try {
+        const savedScroll = sessionStorage.getItem(scrollKey);
+        if (savedScroll) {
+          requestAnimationFrame(() => {
+            window.scrollTo(0, parseInt(savedScroll, 10));
+            setScrollRestored(true);
+          });
+        } else {
           setScrollRestored(true);
-        });
-      } else {
+        }
+      } catch (e) {
+        console.error("Failed to restore scroll position:", e);
         setScrollRestored(true);
       }
-    } catch (e) {
-      console.error("Failed to restore scroll position:", e);
-      setScrollRestored(true);
-    }
+    };
+
+    restoreScroll();
+
+    // 处理 bfcache 恢复（浏览器前进/后退缓存）
+    const handlePageShow = () => {
+      restoreScroll();
+    };
+    window.addEventListener("pageshow", handlePageShow);
+
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+    };
   }, [scrollKey, scrollRestored]);
 
   // Load more articles function

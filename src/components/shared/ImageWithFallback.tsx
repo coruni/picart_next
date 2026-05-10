@@ -7,36 +7,68 @@ import imagePlaceholder from "@/assets/images/placeholder/image_placeholder.webp
 import { cn } from "@/lib";
 import type { StaticImageData } from "next/image";
 import Image, { type ImageProps } from "next/image";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type StaticImport from "next/image.js";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+// StaticRequire is not exported by next/image, reconstruct it inline
+type StaticRequire = { default: StaticImageData };
+type AnySrc =
+  | string
+  | StaticImageData
+  | StaticRequire
+  | typeof StaticImport
+  | undefined;
+
+// ─── Constants ───────────────────────────────────────────────────────────────
 
 const DEFAULT_PLACEHOLDER = imagePlaceholder;
 const DEFAULT_ERROR = imageError;
 const UNOPTIMIZED_HOSTS = new Set(["cf-s3.coslark.org"]);
 
-// Helper to extract string URL from src (string or StaticImageData)
-const getSrcString = (src: string | StaticImageData | undefined): string => {
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function toSrcString(src: AnySrc): string {
   if (!src) return "";
   if (typeof src === "string") return src;
-  return src.src;
-};
+  // StaticRequire: { default: StaticImageData }
+  if ("default" in (src as object)) return (src as StaticRequire).default.src;
+  // StaticImageData: { src: string }
+  if ("src" in (src as object)) return (src as StaticImageData).src;
+  return "";
+}
 
-// 全局图片缓存 - 存储已加载成功的图片URL
-const imageCache = new Map<string, "loaded" | "error">();
+function normalizeSrc(raw: AnySrc): string {
+  const s = toSrcString(raw);
+  if (s.includes("/images/blocked.webp")) return ImageBlock.src;
+  if (s.includes("/images/pending.webp")) return ImagePending.src;
+  return s;
+}
 
-// 预加载图片并返回Promise
-const preloadImage = (src: string): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    const img = new window.Image();
-    img.onload = () => resolve();
-    img.onerror = () => reject();
-    img.src = src;
-  });
-};
+function shouldDisableOptimize(src: AnySrc): boolean {
+  if (!src || typeof src !== "string") return true; // local image → skip optimize
+  try {
+    const parsed = new URL(src, "http://localhost");
+    return (
+      parsed.searchParams.has("url") || UNOPTIMIZED_HOSTS.has(parsed.hostname)
+    );
+  } catch {
+    return false;
+  }
+}
+
+// ─── Global image status cache ───────────────────────────────────────────────
+
+type CacheStatus = "loaded" | "error";
+const imageCache = new Map<string, CacheStatus>();
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+type LoadStatus = "idle" | "loading" | "loaded" | "error";
 
 type ImageWithFallbackProps = Omit<ImageProps, "onError"> & {
   wrapperClassName?: string;
-  placeholderSrc?: string | StaticImageData;
-  errorSrc?: string | StaticImageData;
+  placeholderSrc?: AnySrc;
+  errorSrc?: AnySrc;
   onError?: (event: React.SyntheticEvent<HTMLImageElement, Event>) => void;
   /** 是否启用懒加载（当图片进入视口时才加载） */
   lazy?: boolean;
@@ -45,6 +77,8 @@ type ImageWithFallbackProps = Omit<ImageProps, "onError"> & {
   /** 懒加载的阈值 */
   lazyThreshold?: number;
 };
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export function ImageWithFallback({
   alt,
@@ -64,207 +98,108 @@ export function ImageWithFallback({
   lazyThreshold = 0,
   ...rest
 }: ImageWithFallbackProps) {
-  // Handle src as string or StaticImageData object
-  let srcString: string;
-  if (typeof src === "string") {
-    srcString = src;
-  } else if (src && typeof src === "object" && "src" in src) {
-    // StaticImageData object
-    srcString = (src as StaticImageData).src;
-  } else {
-    srcString = String(src ?? "");
-  }
+  const srcString = normalizeSrc(src);
+  const placeholderUrl = toSrcString(placeholderSrc);
+  const errorUrl = toSrcString(errorSrc);
+  const unoptimized = shouldDisableOptimize(src);
 
-  // 如果图片被屏蔽，使用错误占位图
-  if (srcString.includes("/images/blocked.webp")) {
-    srcString = ImageBlock.src;
-  }
-  // 如果图片是pending状态，使用pending占位图
-  if (srcString.includes("/images/pending.webp")) {
-    srcString = ImagePending.src;
-  }
+  // ── Lazy load visibility ──────────────────────────────────────────────────
+  const wrapperRef = useRef<HTMLSpanElement>(null);
+  const [inView, setInView] = useState(!lazy);
 
-  // 从缓存获取初始状态
-  const cachedStatus = imageCache.get(srcString);
-  const [status, setStatus] = useState<"loading" | "loaded" | "error">(
-    cachedStatus || "loading",
-  );
-  // 实际图片是否已渲染（用于缓存命中时的淡入效果）
-  // 如果缓存中已有成功加载的记录，直接设置为已渲染
-  const [imageRendered, setImageRendered] = useState(cachedStatus === "loaded");
-  const [shouldLoad, setShouldLoad] = useState(!lazy);
-  const wrapperRef = useRef<HTMLSpanElement | null>(null);
-  const imgRef = useRef<HTMLImageElement | null>(null);
-
-  // 懒加载：使用 Intersection Observer
   useEffect(() => {
-    if (!lazy) return;
-    if (shouldLoad) return;
-
-    const wrapper = wrapperRef.current;
-    if (!wrapper) return;
-
+    if (!lazy || inView) return;
+    const el = wrapperRef.current;
+    if (!el) return;
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          setShouldLoad(true);
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setInView(true);
           observer.disconnect();
         }
       },
-      {
-        rootMargin: lazyRootMargin,
-        threshold: lazyThreshold,
-      },
+      { rootMargin: lazyRootMargin, threshold: lazyThreshold },
     );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [lazy, inView, lazyRootMargin, lazyThreshold]);
 
-    observer.observe(wrapper);
+  // ── Load status ───────────────────────────────────────────────────────────
+  const cached = imageCache.get(srcString);
+  const [status, setStatus] = useState<LoadStatus>(
+    cached ? cached : inView ? "loading" : "idle",
+  );
 
-    return () => {
-      observer.disconnect();
-    };
-  }, [lazy, shouldLoad, lazyRootMargin, lazyThreshold]);
-
-  // 图片加载逻辑
+  // When inView flips to true, kick off loading if not already cached
   useEffect(() => {
-    if (!shouldLoad) return;
-
-    // 如果已有缓存，直接使用缓存状态
+    if (!inView) return;
     if (imageCache.has(srcString)) {
-      const cached = imageCache.get(srcString)!;
-      setStatus(cached);
-      // 缓存命中且已成功加载时，标记为已渲染
-      if (cached === "loaded") {
-        setImageRendered(true);
-      }
+      setStatus(imageCache.get(srcString)!);
       return;
     }
-
-    // 重置为加载中状态
     setStatus("loading");
-    setImageRendered(false);
+  }, [inView, srcString]);
 
-    // 预加载图片并更新缓存
-    preloadImage(srcString)
-      .then(() => {
-        imageCache.set(srcString, "loaded");
-        setStatus("loaded");
-      })
-      .catch(() => {
-        imageCache.set(srcString, "error");
-        setStatus("error");
-      });
-  }, [srcString, shouldLoad]);
+  // Reset status when src changes
+  useEffect(() => {
+    if (imageCache.has(srcString)) {
+      setStatus(imageCache.get(srcString)!);
+    } else if (inView) {
+      setStatus("loading");
+    } else {
+      setStatus("idle");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [srcString]);
 
-  const handleLoad: ImageProps["onLoad"] = useCallback(
-    (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+  const handleLoad = useCallback(
+    (e: React.SyntheticEvent<HTMLImageElement>) => {
       imageCache.set(srcString, "loaded");
       setStatus("loaded");
-      setImageRendered(true);
-      onLoad?.(event);
+      onLoad?.(e);
     },
     [srcString, onLoad],
   );
 
-  const handleError: ImageProps["onError"] = useCallback(
-    (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+  const handleError = useCallback(
+    (e: React.SyntheticEvent<HTMLImageElement>) => {
       imageCache.set(srcString, "error");
       setStatus("error");
-      onError?.(event);
+      onError?.(e);
     },
     [srcString, onError],
   );
 
-  // 检查图片是否已经在浏览器缓存中完成加载
-  useEffect(() => {
-    const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth > 0) {
-      // 图片已经在浏览器缓存中，立即标记为已渲染
-      imageCache.set(srcString, "loaded");
-      setStatus("loaded");
-      setImageRendered(true);
-    }
-  }, [srcString]);
+  // ── Derived values ────────────────────────────────────────────────────────
+  const isLoaded = status === "loaded";
+  const fallbackUrl = status === "error" ? errorUrl : placeholderUrl;
 
-  const fallbackSrc = status === "error" ? errorSrc : placeholderSrc;
-  const fallbackSrcString = getSrcString(fallbackSrc);
-  const placeholderSrcString = getSrcString(placeholderSrc);
-  // 图片真正显示的条件：状态为 loaded 且实际已渲染
-  const isImageVisible = status === "loaded" && imageRendered;
-  // 添加过渡动画类，避免加载图到实际图的闪烁
-  const imageClassName = useMemo(
-    () =>
-      cn(
-        className,
+  const widthNum = typeof width === "number" ? width : Number(width) || 0;
+  const heightNum = typeof height === "number" ? height : Number(height) || 0;
+  const hasDimensions = widthNum > 0 && heightNum > 0;
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
+  /**
+   * FallbackLayer — absolutely fills the wrapper, fades out once real image is loaded.
+   * Uses its own <img> tag so it always fills the container regardless of the
+   * real image's intrinsic size or the fill/width/height props passed to it.
+   */
+  const FallbackLayer = (
+    <span
+      aria-hidden
+      className={cn(
+        "pointer-events-none absolute inset-0 select-none overflow-hidden",
         "transition-opacity duration-300",
-        isImageVisible ? "opacity-100" : "opacity-0",
-      ),
-    [className, isImageVisible],
-  );
-  const placeholderClassName = useMemo(
-    () =>
-      cn(
-        "pointer-events-none absolute inset-0 block select-none bg-cover bg-center transition-opacity duration-300",
-        isImageVisible ? "opacity-0" : "opacity-100",
-      ),
-    [isImageVisible],
+        isLoaded ? "opacity-0" : "opacity-100",
+      )}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={fallbackUrl} alt="" className="h-full w-full object-cover" />
+    </span>
   );
 
-  // 判断是否为本地图片（StaticImageData）
-  const isLocalImage = typeof src !== "string";
-
-  const shouldDisableOptimization = useMemo(
-    () =>
-      isLocalImage ||
-      (typeof src === "string" &&
-        (() => {
-          try {
-            const parsed = new URL(src, "http://localhost");
-            return (
-              parsed.searchParams.has("url") ||
-              UNOPTIMIZED_HOSTS.has(parsed.hostname)
-            );
-          } catch {
-            return false;
-          }
-        })()),
-    [isLocalImage, src],
-  );
-
-  // 未开始加载时显示占位符
-  if (!shouldLoad) {
-    return (
-      <span
-        ref={wrapperRef}
-        className={cn(
-          fill
-            ? "absolute inset-0 block overflow-hidden"
-            : "relative block w-full overflow-hidden",
-          wrapperClassName,
-        )}
-        style={
-          fill
-            ? undefined
-            : {
-                aspectRatio: width && height ? `${width}/${height}` : undefined,
-              }
-        }
-      >
-        <span
-          aria-hidden
-          className={cn(
-            !fill && !(width && height) ? "block w-full" : undefined,
-            placeholderClassName,
-          )}
-          style={{
-            backgroundImage: `url(${placeholderSrcString})`,
-            ...(!fill && !(width && height) ? { paddingBottom: "56.25%" } : undefined),
-          }}
-        />
-      </span>
-    );
-  }
-
-  // fill 模式：wrapper 使用 absolute 定位覆盖父元素
+  // ── fill mode ─────────────────────────────────────────────────────────────
   if (fill) {
     return (
       <span
@@ -274,105 +209,115 @@ export function ImageWithFallback({
           wrapperClassName,
         )}
       >
-        <Image
-          ref={imgRef}
-          src={srcString}
-          alt={alt}
-          fill
-          unoptimized={shouldDisableOptimization}
-          className={imageClassName}
-          onLoad={handleLoad}
-          onError={handleError}
-          {...rest}
-        />
-        {!isImageVisible && (
-          <span
-            aria-hidden
-            className={cn(placeholderClassName)}
-            style={{ backgroundImage: `url(${fallbackSrcString})` }}
+        {FallbackLayer}
+        {inView && (
+          <Image
+            {...rest}
+            src={srcString}
+            alt={alt}
+            fill
+            unoptimized={unoptimized}
+            className={cn(
+              "transition-opacity duration-300",
+              isLoaded ? "opacity-100" : "opacity-0",
+              className,
+            )}
+            onLoad={handleLoad}
+            onError={handleError}
           />
         )}
       </span>
     );
   }
 
-  // 无尺寸判断
-  const widthNum = typeof width === "number" ? width : Number(width) || 0;
-  const heightNum = typeof height === "number" ? height : Number(height) || 0;
-  const hasDimensions = widthNum > 0 && heightNum > 0;
-
-  // 无尺寸时：宽度填充容器，高度由图片比例决定
-  if (!hasDimensions) {
+  // ── fixed dimensions mode ─────────────────────────────────────────────────
+  if (hasDimensions) {
     return (
       <span
         ref={wrapperRef}
         className={cn(
-          "relative block w-full overflow-hidden",
+          "relative inline-block overflow-hidden align-top",
           wrapperClassName,
         )}
+        style={{ width: widthNum, height: heightNum }}
       >
-        {!isImageVisible && (
-          <span
-            aria-hidden
+        {FallbackLayer}
+        {inView && (
+          <Image
+            {...rest}
+            src={srcString}
+            alt={alt}
+            width={width}
+            height={height}
+            unoptimized={unoptimized}
+            style={style}
             className={cn(
-              "block w-full bg-cover bg-center",
-              placeholderClassName,
+              "h-full w-full object-cover transition-opacity duration-300",
+              isLoaded ? "opacity-100" : "opacity-0",
+              className,
             )}
-            style={{ backgroundImage: `url(${fallbackSrcString})`, paddingBottom: "56.25%" }}
+            onLoad={handleLoad}
+            onError={handleError}
           />
         )}
-        <Image
-          {...rest}
-          ref={imgRef}
-          src={srcString}
-          alt={alt}
-          width={1}
-          height={1}
-          unoptimized={true}
-          className={cn("w-full h-auto", imageClassName)}
-          onLoad={handleLoad}
-          onError={handleError}
-        />
       </span>
     );
   }
 
-  // 有明确尺寸的情况
+  // ── fluid / no dimensions mode ────────────────────────────────────────────
+  // Width fills container; height is intrinsic to the image.
+  // Fallback uses a 16:9 aspect ratio as a reasonable placeholder height.
   return (
     <span
       ref={wrapperRef}
-      className={cn(
-        "relative inline-block max-w-full overflow-hidden align-top",
-        wrapperClassName,
-      )}
+      className={cn("relative block w-full overflow-hidden", wrapperClassName)}
     >
-      <Image
-        {...rest}
-        ref={imgRef}
-        src={srcString}
-        alt={alt}
-        width={width}
-        height={height}
-        unoptimized={shouldDisableOptimization}
-        className={cn("h-auto max-w-full", imageClassName)}
-        style={{
-          ...style,
-        }}
-        onLoad={handleLoad}
-        onError={handleError}
-      />
-      {!isImageVisible && (
+      {/* Placeholder: holds space with 16:9 ratio until real image loads */}
+      <span
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-0 select-none overflow-hidden",
+          "transition-opacity duration-300",
+          isLoaded ? "opacity-0" : "opacity-100",
+        )}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={fallbackUrl} alt="" className="h-full w-full object-cover" />
+      </span>
+
+      {/* Invisible spacer that keeps 16:9 aspect until the real image loads */}
+      {!isLoaded && (
         <span
           aria-hidden
-          className={cn(placeholderClassName)}
-          style={{ backgroundImage: `url(${fallbackSrc})` }}
+          className="block w-full"
+          style={{ paddingBottom: "56.25%" }}
+        />
+      )}
+
+      {inView && (
+        <Image
+          {...rest}
+          src={srcString}
+          alt={alt}
+          width={1}
+          height={1}
+          unoptimized
+          style={style}
+          className={cn(
+            "w-full h-auto transition-opacity duration-300",
+            isLoaded ? "opacity-100" : "opacity-0",
+            className,
+          )}
+          onLoad={handleLoad}
+          onError={handleError}
         />
       )}
     </span>
   );
 }
 
-// 导出缓存工具函数，供外部使用
+// ─── Cache utilities ──────────────────────────────────────────────────────────
+
 export function clearImageCache(src?: string): void {
   if (src) {
     imageCache.delete(src);
@@ -381,21 +326,22 @@ export function clearImageCache(src?: string): void {
   }
 }
 
-export function getImageCacheStatus(
-  src: string,
-): "loaded" | "error" | undefined {
+export function getImageCacheStatus(src: string): CacheStatus | undefined {
   return imageCache.get(src);
 }
 
 export function preloadImageToCache(src: string): Promise<void> {
-  if (imageCache.get(src) === "loaded") {
-    return Promise.resolve();
-  }
-  return preloadImage(src)
-    .then(() => {
+  if (imageCache.get(src) === "loaded") return Promise.resolve();
+  return new Promise<void>((resolve) => {
+    const img = new window.Image();
+    img.onload = () => {
       imageCache.set(src, "loaded");
-    })
-    .catch(() => {
+      resolve();
+    };
+    img.onerror = () => {
       imageCache.set(src, "error");
-    });
+      resolve(); // resolve anyway so callers don't need to catch
+    };
+    img.src = src;
+  });
 }
