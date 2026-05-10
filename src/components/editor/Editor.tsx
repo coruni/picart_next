@@ -1,5 +1,6 @@
 "use client";
 
+import "@/components/article/ql-editor-content.css";
 import QuillBlotFormatter2, {
   BlotSpec,
 } from "@enzedonline/quill-blot-formatter2";

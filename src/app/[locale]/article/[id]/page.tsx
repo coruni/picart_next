@@ -11,6 +11,7 @@ import {
 import { ArticleReactionWrapper } from "@/components/article/ArticleReactionWrapper.client";
 import { ArticleCommentList } from "@/components/comment/ArticleCommentList.client";
 import "@/components/editor/inline-article.css";
+import "@/components/article/ql-editor-content.css";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Link } from "@/i18n/routing";
@@ -257,12 +258,12 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               </div>
             )}
             {content &&
-              (article?.type === "image" ? (
+              (article?.type !== "mixed" ? (
                 <div
                   data-auto-translate-content={
                     shouldTranslateArticleDetail ? true : undefined
                   }
-                  className="mt-4 text-sm"
+                  className="mt-4 text-sm leading-[22px]"
                 >
                   {article.content}
                 </div>

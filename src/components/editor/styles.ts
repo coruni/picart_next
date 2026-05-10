@@ -535,7 +535,7 @@ export const quillOverrideStyles = `
   }
   /* 图片 overlay 样式 */
   .blot-formatter__overlay:not(:empty) {
-    border: 2px solid var(--primary) !important;
+    border: 2px solid var(--color-primary) !important;
     border-radius: 8px !important;
     background: transparent !important;
   }

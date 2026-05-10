@@ -490,7 +490,7 @@ export const renderToolbar = ({
 
   // 第一行：undo redo | emoji image video more
   const row1 = document.createElement("div");
-  row1.className = "ql-formats flex! items-center gap-3";
+  row1.className = "ql-formats flex! items-center gap-3! flex-wrap";
 
   // Undo, Redo
   const undoBtn = document.createElement("button");
@@ -506,11 +506,6 @@ export const renderToolbar = ({
   redoBtn.innerHTML = renderIcon(Redo2);
   redoBtn.onclick = () => quill.history.redo();
   row1.appendChild(createTooltipButton(redoBtn, t("redo")));
-
-  // 分隔符
-  const divider1 = document.createElement("span");
-  divider1.className = "w-px h-4 bg-[#eceff4] mx-1";
-  row1.appendChild(divider1);
 
   // Emoji, Image
   const emojiBtn = document.createElement("button");
@@ -721,12 +716,7 @@ export const renderToolbar = ({
   };
   row1.appendChild(moreDiv);
 
-  toolbar.appendChild(row1);
-
-  // 第二行：bold italic strike underline | 字号
-  const row2 = document.createElement("div");
-  row2.className = "ql-formats flex! items-center gap-3";
-
+  // bold italic strike underline
   const formatBtns = [
     { name: "bold", Icon: Bold, tooltip: t("bold") },
     { name: "italic", Icon: Italic, tooltip: t("italic") },
@@ -741,13 +731,8 @@ export const renderToolbar = ({
     button.onclick = () => {
       quill.format(name, !quill.getFormat()[name]);
     };
-    row2.appendChild(createTooltipButton(button, tooltip));
+    row1.appendChild(createTooltipButton(button, tooltip));
   });
-
-  // 分隔符
-  const divider2 = document.createElement("span");
-  divider2.className = "w-px h-4 bg-[#eceff4] mx-1";
-  row2.appendChild(divider2);
 
   // 字号下拉
   const sizeDiv = document.createElement("div");
@@ -783,13 +768,7 @@ export const renderToolbar = ({
   sizeTrigger.onclick = (e) => {
     toggleDropdown("dropdown-size", e);
   };
-  row2.appendChild(sizeDiv);
-
-  toolbar.appendChild(row2);
-
-  // 第三行：color bgcolor
-  const row3 = document.createElement("div");
-  row3.className = "ql-formats flex! items-center gap-3";
+  row1.appendChild(sizeDiv);
 
   const colorBtn = document.createElement("button");
   colorBtn.className = "ql-color";
@@ -838,14 +817,10 @@ export const renderToolbar = ({
     },
   );
 
-  row3.appendChild(colorDropdown);
-  row3.appendChild(bgColorDropdown);
+  row1.appendChild(colorDropdown);
+  row1.appendChild(bgColorDropdown);
 
-  toolbar.appendChild(row3);
-
-  // 第四行：align 下拉
-  const row4 = document.createElement("div");
-  row4.className = "ql-formats flex! items-center gap-3";
+  // align 下拉
 
   const alignDiv = document.createElement("div");
   alignDiv.className = "relative inline-flex tooltip-wrapper";
@@ -885,14 +860,9 @@ export const renderToolbar = ({
   alignTrigger.onclick = (e) => {
     toggleDropdown("dropdown-align", e);
   };
-  row4.appendChild(alignDiv);
+  row1.appendChild(alignDiv);
 
-  toolbar.appendChild(row4);
-
-  // 第五行：list 下拉
-  const row5 = document.createElement("div");
-  row5.className = "ql-formats flex! items-center gap-3";
-
+  // list 按钮
   const listOptions = [
     { value: "ordered", label: t("ordered"), Icon: ListOrdered },
     { value: "bullet", label: t("bullet"), Icon: List },
@@ -931,13 +901,9 @@ export const renderToolbar = ({
   listTrigger.onclick = (e) => {
     toggleDropdown("dropdown-list", e);
   };
-  row5.appendChild(listDiv);
+  row1.appendChild(listDiv);
 
-  toolbar.appendChild(row5);
-
-  // 第六行：header 下拉
-  const row6 = document.createElement("div");
-  row6.className = "ql-formats flex! items-center gap-3";
+  // header 按钮
 
   const headerDiv = document.createElement("div");
   headerDiv.className = "relative inline-flex tooltip-wrapper";
@@ -978,10 +944,8 @@ export const renderToolbar = ({
   headerTrigger.onclick = (e) => {
     toggleDropdown("dropdown-header", e);
   };
-  row6.appendChild(headerDiv);
-
-  toolbar.appendChild(row6);
-
+  row1.appendChild(headerDiv);
+  toolbar.appendChild(row1);
   const editorContainer = container.querySelector(".editor-container");
   if (editorContainer) {
     container.insertBefore(toolbar, editorContainer);
