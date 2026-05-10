@@ -18,6 +18,9 @@ export const quillOverrideStyles = `
     width: 24px !important;
     height: 24px !important;
   }
+  .ql-snow.ql-toolbar .ql-formats button:not(.h-8) svg:hover{
+    color:var(--color-primary) !important;
+  }
   /* 排除分割线面板中的 SVG 预览 */
   .ql-snow.ql-toolbar .ql-formats button:not(.h-8) #dropdown-divider-panel svg,
   .ql-snow .ql-toolbar .ql-formats button:not(.h-8) #dropdown-divider-panel svg,
