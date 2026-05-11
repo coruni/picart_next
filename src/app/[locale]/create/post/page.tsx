@@ -5,8 +5,10 @@ import {
   articleControllerFindOne,
   articleControllerUpdate,
   categoryControllerFindAll,
+  CreateArticleDto,
   uploadControllerUploadFile,
 } from "@/api";
+import DownloadDialog from "@/components/article/DownloadDialog";
 import { Editor } from "@/components/editor";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
@@ -34,7 +36,7 @@ import {
 } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { useUserStore } from "@/stores";
-import { Edit, Loader2, Trash2, X } from "lucide-react";
+import { Edit, Loader2, Plus, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import Quill from "quill";
@@ -48,15 +50,16 @@ type CreatePostFormData = {
   categoryId: string;
   tagIds: string[];
   tagNames: string[];
-  requireFollow: boolean;
-  requirePayment: boolean;
-  requireMembership: boolean;
-  listRequireLogin: boolean;
-  requireLogin: boolean;
-  viewPrice: number;
-  sort: number;
+  requireFollow?: boolean;
+  requirePayment?: boolean;
+  requireMembership?: boolean;
+  listRequireLogin?: boolean;
+  requireLogin?: boolean;
+  viewPrice?: number;
+  downloads?: CreateArticleDto["downloads"];
+  sort?: number;
   type: "mixed" | "image";
-  allowReprint: boolean;
+  allowReprint?: boolean;
 };
 
 type CreatePostPageProps = {
@@ -74,6 +77,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   const searchParams = useSearchParams();
   const articleId = searchParams.get("articleId");
   const isEditMode = !!articleId;
+  const [showDownloadDialog, setShowDownloadDialog] = useState(false);
 
   const t = useTranslations("createPost");
   const tc = useTranslations("common");
@@ -83,6 +87,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   const canRequirePayment = currentUser?.isMember === true;
   const editorRef = useRef<Quill | null>(null);
   const latestContentRef = useRef("");
+
   const getLatestEditorContent = (value?: string) => {
     const editorHtml = sanitizeRichTextHtml(
       editorRef.current?.root.innerHTML || "",
@@ -173,6 +178,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       },
       categoryId: { required: t("form.categoryRequired") },
     },
+
     async onSubmit(values) {
       const sanitizedContent = getLatestEditorContent(values.content);
       const body = {
@@ -220,6 +226,13 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       }
     },
   });
+
+  const handleDownloadSubmit = (data: CreatePostFormData["downloads"]) => {
+    setFieldValues({
+      downloads: data,
+    });
+    setShowDownloadDialog(false);
+  };
 
   useEffect(() => {
     if (!canRequirePayment && values.requirePayment) {
@@ -269,6 +282,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
             requirePayment: article.requirePayment || false,
             requireMembership: article.requireMembership || false,
             listRequireLogin: article.listRequireLogin || false,
+            downloads: (article.downloads as CreatePostFormData["downloads"]) || [],
             viewPrice: Number(article.viewPrice) || 0,
             sort: article.sort || 0,
             type: (article.type as "mixed" | "image") || "mixed",
@@ -756,6 +770,19 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                     {t("settings.title")}
                   </label>
                   <div className="border border-border p-3 rounded-lg inline-block max-w-100 w-full space-y-2">
+                    <FormField name="ddownloads">
+                      <div className="flex items-center justify-between">
+                        <label className="text-black/65 dark:text-white text-sm">
+                          {t("settings.downloads")}
+                        </label>
+                        <Button
+                          onClick={() => setShowDownloadDialog(true)}
+                          className="rounded-full w-11 h-6"
+                        >
+                          <Plus size={20} />
+                        </Button>
+                      </div>
+                    </FormField>
                     <FormField name="requireLogin">
                       <div className="flex items-center justify-between">
                         <label className="text-black/65 dark:text-white text-sm">
@@ -1036,6 +1063,12 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           </DialogContent>
         </>
       </Dialog>
+      <DownloadDialog
+        data={values.downloads || []}
+        open={showDownloadDialog}
+        onClose={() => setShowDownloadDialog(false)}
+        onSubmit={handleDownloadSubmit}
+      />
     </div>
   );
 }

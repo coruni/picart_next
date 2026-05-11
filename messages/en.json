@@ -517,7 +517,7 @@
       "uploadButton": "Cover Upload",
       "preview": "Cover Preview",
       "crop": "Crop Cover",
-      "cropHint": "Scroll to zoom 路 Drag to reposition"
+      "cropHint": "Scroll to zoom  Drag to reposition"
     },
     "form": {
       "title": "Title",
@@ -535,6 +535,7 @@
     },
     "settings": {
       "title": "Publish Settings",
+      "downloads": "Downloads",
       "requireLogin": "Require Login",
       "requireFollow": "Require Follow",
       "requirePayment": "Require Payment",
@@ -550,6 +551,36 @@
       "preview": "Preview",
       "publish": "Publish",
       "update": "Update"
+    },
+    "downloadDialog": {
+      "title": "Add Downloads",
+      "addItem": "Add Item",
+      "empty": "No downloads yet. Click \"Add Item\" above.",
+      "itemTitle": "Download Item {index}",
+      "itemSummaryEmptyUrl": "No download URL",
+      "remove": "Remove",
+      "type": "Download Type",
+      "extractionCode": "Extraction Code",
+      "url": "Download URL",
+      "password": "Password",
+      "optional": "Optional",
+      "urlPlaceholder": "Enter download URL",
+      "visibleWithoutPermission": "Show this download even when content is restricted",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "types": {
+        "direct": "Direct Link",
+        "baidu": "Baidu Netdisk",
+        "aliyun": "Aliyun Drive",
+        "quark": "Quark Drive",
+        "onedrive": "OneDrive",
+        "google": "Google Drive",
+        "dropbox": "Dropbox",
+        "lanzou": "Lanzou",
+        "mega": "MEGA",
+        "telegram": "Telegram",
+        "other": "Other"
+      }
     },
     "loading": "Loading..."
   },

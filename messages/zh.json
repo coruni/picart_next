@@ -528,6 +528,7 @@
     },
     "settings": {
       "title": "发布设置",
+      "downloads": "下载资源",
       "requireLogin": "需要登录",
       "requireFollow": "需要关注",
       "requirePayment": "需要付费",
@@ -543,6 +544,36 @@
       "preview": "预览",
       "publish": "发布",
       "update": "更新"
+    },
+    "downloadDialog": {
+      "title": "添加下载",
+      "addItem": "添加一项",
+      "empty": "暂无下载项，点击下方\"添加一项\"",
+      "itemTitle": "下载项 {index}",
+      "itemSummaryEmptyUrl": "未填写下载链接",
+      "remove": "删除",
+      "type": "下载类型",
+      "extractionCode": "提取码",
+      "url": "下载链接",
+      "password": "密码",
+      "optional": "选填",
+      "urlPlaceholder": "请输入下载链接",
+      "visibleWithoutPermission": "文章受限时也展示该下载项",
+      "cancel": "取消",
+      "confirm": "确定",
+      "types": {
+        "direct": "直链",
+        "baidu": "百度网盘",
+        "aliyun": "阿里云盘",
+        "quark": "夸克网盘",
+        "onedrive": "OneDrive",
+        "google": "Google Drive",
+        "dropbox": "Dropbox",
+        "lanzou": "蓝奏云",
+        "mega": "MEGA",
+        "telegram": "Telegram",
+        "other": "其他"
+      }
     },
     "loading": "加载中..."
   },
