@@ -21,8 +21,6 @@
 
 .ql-editor p {
   margin: 0;
-  font-size: 14px;
-  line-height: 22px;
 }
 
 /* ---- Headings ---- */
@@ -100,8 +98,6 @@
 }
 
 .ql-editor li {
-  font-size: 14px;
-  line-height: 22px;
   padding-left: 0.05rem !important;
   display: list-item !important;
 }
