@@ -29,6 +29,7 @@
     "retry": "Retry",
     "pin": "Pin",
     "unpin": "Unpin",
+    "close": "Close",
     "confirmDelete": "Confirm Delete",
     "confirmDeleteDescription": "This action cannot be undone. Are you sure you want to continue?",
     "report": "Report",
@@ -759,6 +760,7 @@
     "blockRecorded": "Block action recorded. You can connect real logic later.",
     "dislikeRecorded": "Your content preference has been recorded",
     "editPost": "Edit Post",
+    "downloadResources": "Download Resources",
     "reportPost": "Report Post",
     "reportUser": "Report User",
     "blockUser": "Block",
@@ -1234,5 +1236,17 @@
   "sitePages": {
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service"
+  },
+  "articleDownloads": {
+    "title": "Download Resources",
+    "url": "URL",
+    "password": "Password",
+    "extractionCode": "Extraction Code",
+    "copy": "Copy",
+    "copySuccess": "Copied to clipboard",
+    "copyFailed": "Failed to copy",
+    "public": "Public",
+    "empty": "No downloads available",
+    "noUrl": "No URL"
   }
 }

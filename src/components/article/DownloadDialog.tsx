@@ -5,11 +5,11 @@ import { useTranslations } from "next-intl";
 import { memo, useEffect, useState } from "react";
 import { Button } from "../ui/Button";
 import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "../ui/Dialog";
 import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
@@ -20,6 +20,7 @@ type DownloadDialogProps = {
   data: CreateArticleDto["downloads"];
   onClose: () => void;
   onSubmit: (data: CreateArticleDto["downloads"]) => void;
+  readonly?: boolean;
 };
 
 type DownloadItem = NonNullable<CreateArticleDto["downloads"]>[number];
@@ -54,6 +55,7 @@ function DownloadDialog({
   onClose,
   data,
   onSubmit,
+  readonly = false,
 }: DownloadDialogProps) {
   const t = useTranslations("createPost.downloadDialog");
   const [downloads, setDownloads] = useState<DownloadItem[]>([]);
@@ -199,13 +201,14 @@ function DownloadDialog({
                         <Select
                           value={item.type}
                           onChange={(value) =>
-                            handleItemChange(
+                            !readonly && handleItemChange(
                               index,
                               "type",
                               value as DownloadType,
                             )
                           }
                           options={downloadTypeOptions}
+                          disabled={readonly}
                         />
                       </div>
 
@@ -215,9 +218,10 @@ function DownloadDialog({
                         </label>
                         <Input
                           fullWidth
+                          disabled={readonly}
                           value={item.extractionCode || ""}
                           onChange={(event) =>
-                            handleItemChange(
+                            !readonly && handleItemChange(
                               index,
                               "extractionCode",
                               event.target.value,
@@ -234,9 +238,10 @@ function DownloadDialog({
                         </label>
                         <Input
                           fullWidth
+                          disabled={readonly}
                           value={item.url}
                           onChange={(event) =>
-                            handleItemChange(index, "url", event.target.value)
+                            !readonly && handleItemChange(index, "url", event.target.value)
                           }
                           placeholder={t("urlPlaceholder")}
                         />
@@ -248,9 +253,10 @@ function DownloadDialog({
                         </label>
                         <Input
                           fullWidth
+                          disabled={readonly}
                           value={item.password || ""}
                           onChange={(event) =>
-                            handleItemChange(
+                            !readonly && handleItemChange(
                               index,
                               "password",
                               event.target.value,
@@ -266,9 +272,10 @@ function DownloadDialog({
                         {t("visibleWithoutPermission")}
                       </p>
                       <Switch
+                        disabled={readonly}
                         checked={Boolean(item.visibleWithoutPermission)}
                         onCheckedChange={(checked) =>
-                          handleItemChange(
+                          !readonly && handleItemChange(
                             index,
                             "visibleWithoutPermission",
                             checked,
@@ -283,35 +290,50 @@ function DownloadDialog({
           )}
         </div>
 
-        <DialogFooter className="mt-2 flex flex-col px-4 pb-4">
-          <Button
-            fullWidth
-            type="button"
-            variant="outline"
-            className="h-9 rounded-full"
-            onClick={handleAdd}
-          >
-            {t("addItem")}
-          </Button>
-          <div className="flex items-center shrink-0 justify-end gap-4">
+        {!readonly && (
+          <DialogFooter className="mt-2 flex flex-col px-4 pb-4">
             <Button
+              fullWidth
               type="button"
               variant="outline"
-              className="rounded-full"
+              className="h-9 rounded-full"
+              onClick={handleAdd}
+            >
+              {t("addItem")}
+            </Button>
+            <div className="flex items-center shrink-0 justify-end gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full"
+                onClick={onClose}
+              >
+                {t("cancel")}
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                className="rounded-full"
+                onClick={handleSubmit}
+              >
+                {t("confirm")}
+              </Button>
+            </div>
+          </DialogFooter>
+        )}
+        {readonly && (
+          <div className="mt-2 flex px-4 pb-4">
+            <Button
+              fullWidth
+              type="button"
+              variant="outline"
+              className="rounded-full h-9"
               onClick={onClose}
             >
               {t("cancel")}
             </Button>
-            <Button
-              type="button"
-              variant="primary"
-              className="rounded-full"
-              onClick={handleSubmit}
-            >
-              {t("confirm")}
-            </Button>
           </div>
-        </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );

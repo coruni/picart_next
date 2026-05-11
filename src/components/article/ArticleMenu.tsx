@@ -7,7 +7,9 @@ import {
   articleControllerSetProfilePin,
   messageControllerBlockPrivateUser,
   reportControllerCreate,
+  type CreateArticleDto,
 } from "@/api";
+import ArticleDownloadsPanel from "@/components/article/ArticleDownloadsPanel";
 import {
   createDefaultReportReasons,
   DropdownMenu,
@@ -24,11 +26,12 @@ import {
   DialogTitle,
 } from "@/components/ui/Dialog";
 import { usePathname, useRouter } from "@/i18n/routing";
-import { cn, showToast, getErrorMessage } from "@/lib";
+import { cn, getErrorMessage, showToast } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import {
   Ban,
+  Download,
   HeartOff,
   MoreHorizontal,
   PencilLine,
@@ -47,6 +50,8 @@ type ArticleMenuProps = {
   isOwner?: boolean;
   isFeatured?: boolean;
   isPinnedOnProfile?: boolean;
+  downloadCount?: number;
+  downloads?: CreateArticleDto["downloads"];
 };
 
 export function ArticleMenu({
@@ -56,6 +61,8 @@ export function ArticleMenu({
   isOwner: isOwnerProp = false,
   isFeatured = false,
   isPinnedOnProfile = false,
+  downloadCount = 0,
+  downloads = [],
 }: ArticleMenuProps) {
   const t = useTranslations("articleMenu");
   const router = useRouter();
@@ -76,6 +83,7 @@ export function ArticleMenu({
   const [profilePinnedState, setProfilePinnedState] = useState(
     Boolean(isPinnedOnProfile),
   );
+  const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const reportReasons = createDefaultReportReasons(t);
 
   const isOwner =
@@ -269,6 +277,12 @@ export function ArticleMenu({
         },
       ];
 
+  const downloadMenuItem: MenuItem | null = downloadCount > 0 ? {
+    label: t("downloadResources"),
+    icon: <Download size={18} />,
+    onClick: () => setShowDownloadDialog(true),
+  } : null;
+
   // 编辑操作项 - 给作者或有管理权限的用户
   const editMenuItem: MenuItem = {
     label: t("editPost"),
@@ -332,8 +346,8 @@ export function ArticleMenu({
 
   // 最终菜单项：有编辑权限则添加编辑项，再加上基础操作项
   const menuItems: MenuItem[] = canEdit
-    ? [editMenuItem, ...manageMenuItems, ...baseMenuItems]
-    : baseMenuItems;
+    ? [editMenuItem, ...manageMenuItems, ...(downloadMenuItem ? [downloadMenuItem] : []), ...baseMenuItems]
+    : [...(downloadMenuItem ? [downloadMenuItem] : []), ...baseMenuItems];
 
   return (
     <>
@@ -423,6 +437,12 @@ export function ArticleMenu({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ArticleDownloadsPanel
+        open={showDownloadDialog}
+        onClose={() => setShowDownloadDialog(false)}
+        downloads={downloads}
+      />
     </>
   );
 }

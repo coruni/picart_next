@@ -9,9 +9,9 @@ import {
   VideoPlayer,
 } from "@/components/article";
 import { ArticleReactionWrapper } from "@/components/article/ArticleReactionWrapper.client";
+import "@/components/article/ql-editor-content.css";
 import { ArticleCommentList } from "@/components/comment/ArticleCommentList.client";
 import "@/components/editor/inline-article.css";
-import "@/components/article/ql-editor-content.css";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Link } from "@/i18n/routing";
@@ -200,6 +200,14 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               articleType={article?.type}
               isFeatured={Boolean(article?.isFeatured)}
               isPinnedOnProfile={Boolean(article?.isPinnedOnProfile)}
+              downloadCount={article?.downloadCount}
+              downloads={article?.downloads?.filter(d => d.url).map(({ type, url, password, extractionCode, visibleWithoutPermission }) => ({ 
+                type: (type || 'direct') as 'baidu' | 'direct' | 'aliyun' | 'quark' | 'onedrive' | 'google' | 'dropbox' | 'lanzou' | 'mega' | 'telegram' | 'other', 
+                url: url!, 
+                ...(password && { password }), 
+                ...(extractionCode && { extractionCode }), 
+                visibleWithoutPermission: visibleWithoutPermission || false 
+              }))}
             />
           </div>
         </div>

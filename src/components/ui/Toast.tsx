@@ -54,7 +54,7 @@ export function ToastContainer() {
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-9999 flex items-center justify-center">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center pointer-events-none">
       <div className="bg-black/70 text-white px-6 py-3 rounded-md text-sm">
         {toast.message}
       </div>
