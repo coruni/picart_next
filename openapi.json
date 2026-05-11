@@ -46812,6 +46812,329 @@
         ]
       }
     },
+    "/achievement/user/{id}": {
+      "get": {
+        "summary": "获取用户成就",
+        "deprecated": false,
+        "description": "",
+        "operationId": "AchievementController_findByUserId",
+        "tags": [
+          "成就管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "icon": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "rarity": {
+                            "type": "string"
+                          },
+                          "condition": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string"
+                              },
+                              "event": {
+                                "type": "string"
+                              },
+                              "target": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "event",
+                              "target"
+                            ]
+                          },
+                          "rewardPoints": {
+                            "type": "integer"
+                          },
+                          "rewardExp": {
+                            "type": "integer"
+                          },
+                          "rewardDecorationId": {
+                            "type": "integer",
+                            "nullable": true
+                          },
+                          "hidden": {
+                            "type": "boolean"
+                          },
+                          "sort": {
+                            "type": "integer"
+                          },
+                          "enabled": {
+                            "type": "boolean"
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "type": "string"
+                          },
+                          "rewardDecoration": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "imageUrl": {
+                                "type": "string"
+                              },
+                              "previewUrl": {
+                                "type": "string"
+                              },
+                              "rarity": {
+                                "type": "string"
+                              },
+                              "bubbleColor": {
+                                "type": "null"
+                              },
+                              "obtainMethod": {
+                                "type": "string"
+                              },
+                              "isPurchasable": {
+                                "type": "boolean"
+                              },
+                              "price": {
+                                "type": "string"
+                              },
+                              "isPermanent": {
+                                "type": "boolean"
+                              },
+                              "validDays": {
+                                "type": "null"
+                              },
+                              "sort": {
+                                "type": "integer"
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "activityId": {
+                                "type": "null"
+                              },
+                              "achievementId": {
+                                "type": "integer"
+                              },
+                              "requiredLikes": {
+                                "type": "integer"
+                              },
+                              "requiredComments": {
+                                "type": "integer"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "type",
+                              "description",
+                              "imageUrl",
+                              "previewUrl",
+                              "rarity",
+                              "bubbleColor",
+                              "obtainMethod",
+                              "isPurchasable",
+                              "price",
+                              "isPermanent",
+                              "validDays",
+                              "sort",
+                              "status",
+                              "activityId",
+                              "achievementId",
+                              "requiredLikes",
+                              "requiredComments",
+                              "createdAt",
+                              "updatedAt"
+                            ],
+                            "nullable": true
+                          },
+                          "progress": {
+                            "type": "integer"
+                          },
+                          "completed": {
+                            "type": "boolean"
+                          },
+                          "completedAt": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "claimed": {
+                            "type": "boolean"
+                          },
+                          "claimedAt": {
+                            "type": "null"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "code",
+                          "name",
+                          "description",
+                          "icon",
+                          "type",
+                          "rarity",
+                          "condition",
+                          "rewardPoints",
+                          "rewardExp",
+                          "rewardDecorationId",
+                          "hidden",
+                          "sort",
+                          "enabled",
+                          "createdAt",
+                          "updatedAt",
+                          "rewardDecoration",
+                          "progress",
+                          "completed",
+                          "completedAt",
+                          "claimed",
+                          "claimedAt"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
     "/achievement/{id}/claim": {
       "post": {
         "summary": "领取成就奖励",

@@ -71,6 +71,7 @@ export default async function AccountLayout({
               author={user}
               tabSticky
               showUserInfo
+              showUserAchievements
             />
           </div>
         </div>

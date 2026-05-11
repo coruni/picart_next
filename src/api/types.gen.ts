@@ -15350,6 +15350,84 @@ export type AchievementControllerUpdateResponses = {
     200: unknown;
 };
 
+export type AchievementControllerFindByUserIdData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: {
+        keyword?: string;
+        sortBy?: string;
+        sortOrder?: string;
+    };
+    url: '/achievement/user/{id}';
+};
+
+export type AchievementControllerFindByUserIdResponses = {
+    200: {
+        code: number;
+        message: string;
+        data: Array<{
+            id: number;
+            code: string;
+            name: string;
+            description: string;
+            icon: string;
+            type: string;
+            rarity: string;
+            condition: {
+                type: string;
+                event: string;
+                target: number;
+            };
+            rewardPoints: number;
+            rewardExp: number;
+            rewardDecorationId: number | null;
+            hidden: boolean;
+            sort: number;
+            enabled: boolean;
+            createdAt: string;
+            updatedAt: string;
+            rewardDecoration: {
+                id: number;
+                name: string;
+                type: string;
+                description: string;
+                imageUrl: string;
+                previewUrl: string;
+                rarity: string;
+                bubbleColor: unknown;
+                obtainMethod: string;
+                isPurchasable: boolean;
+                price: string;
+                isPermanent: boolean;
+                validDays: unknown;
+                sort: number;
+                status: string;
+                activityId: unknown;
+                achievementId: number;
+                requiredLikes: number;
+                requiredComments: number;
+                createdAt: string;
+                updatedAt: string;
+            } | null;
+            progress: number;
+            completed: boolean;
+            completedAt: string | null;
+            claimed: boolean;
+            claimedAt: unknown;
+        }>;
+    };
+};
+
+export type AchievementControllerFindByUserIdResponse = AchievementControllerFindByUserIdResponses[keyof AchievementControllerFindByUserIdResponses];
+
 export type AchievementControllerClaimRewardData = {
     body?: never;
     headers?: {
