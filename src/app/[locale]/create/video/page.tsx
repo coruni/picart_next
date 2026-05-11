@@ -5,9 +5,11 @@ import {
   articleControllerFindOne,
   articleControllerUpdate,
   categoryControllerFindAll,
+  CreateArticleDto,
   uploadControllerGetUploadConfig,
   uploadControllerUploadFile,
 } from "@/api";
+import DownloadDialog from "@/components/article/DownloadDialog";
 import { Button } from "@/components/ui/Button";
 import { CategoryOption, CategorySelect } from "@/components/ui/CategorySelect";
 import { Form, FormField } from "@/components/ui/Form";
@@ -19,7 +21,7 @@ import { useRouter } from "@/i18n/routing";
 import { cn, getErrorMessage, showToast } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { useUserStore } from "@/stores/useUserStore";
-import { Loader2, Trash2, Upload } from "lucide-react";
+import { Loader2, Plus, Trash2, Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -38,6 +40,7 @@ type CreateVideoFormData = {
   requireMembership: boolean;
   listRequireLogin: boolean;
   requireLogin: boolean;
+  downloads?: CreateArticleDto["downloads"];
   viewPrice: number;
   sort: number;
   type: "video";
@@ -218,6 +221,7 @@ export default function CreateVideoPage() {
   const searchParams = useSearchParams();
   const articleId = searchParams.get("articleId");
   const isEditMode = !!articleId;
+  const [showDownloadDialog, setShowDownloadDialog] = useState(false);
 
   const tPost = useTranslations("createPost");
   const tVideo = useTranslations("createVideo");
@@ -380,6 +384,11 @@ export default function CreateVideoPage() {
     }
   }, [canRequirePayment, values.requirePayment, setFieldValues]);
 
+  const handleDownloadSubmit = (data: CreateVideoFormData["downloads"]) => {
+    setFieldValues({ downloads: data });
+    setShowDownloadDialog(false);
+  };
+
   // Fetch article data in edit mode
   useEffect(() => {
     if (!isEditMode || !articleId) return;
@@ -408,6 +417,8 @@ export default function CreateVideoPage() {
             requirePayment: article.requirePayment || false,
             requireMembership: article.requireMembership || false,
             listRequireLogin: article.listRequireLogin || false,
+            downloads:
+              (article.downloads as CreateVideoFormData["downloads"]) || [],
             viewPrice: Number(article.viewPrice) || 0,
             sort: article.sort || 0,
             type: "video",
@@ -940,6 +951,19 @@ export default function CreateVideoPage() {
                   </label>
 
                   <div className="border border-border p-3 rounded-lg inline-block max-w-100 w-full space-y-2">
+                    <FormField name="ddownloads">
+                      <div className="flex items-center justify-between">
+                        <label className="text-black/65 dark:text-white text-sm">
+                          {tPost("settings.downloads")}
+                        </label>
+                        <Button
+                          onClick={() => setShowDownloadDialog(true)}
+                          className="rounded-full w-11 h-6"
+                        >
+                          <Plus size={20} />
+                        </Button>
+                      </div>
+                    </FormField>
                     <FormField name="requireLogin">
                       <div className="flex items-center justify-between">
                         <label className="text-black/65 dark:text-white text-sm">
@@ -1076,6 +1100,12 @@ export default function CreateVideoPage() {
           </div>
         </div>
       </div>
+      <DownloadDialog
+        data={values.downloads || []}
+        open={showDownloadDialog}
+        onClose={() => setShowDownloadDialog(false)}
+        onSubmit={handleDownloadSubmit}
+      />
     </div>
   );
 }

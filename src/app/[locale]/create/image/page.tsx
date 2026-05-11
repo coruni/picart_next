@@ -5,8 +5,10 @@ import {
   articleControllerFindOne,
   articleControllerUpdate,
   categoryControllerFindAll,
+  CreateArticleDto,
   uploadControllerUploadFile,
 } from "@/api";
+import DownloadDialog from "@/components/article/DownloadDialog";
 import { useUploadConfig } from "@/components/providers/UploadConfigProvider";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
@@ -40,6 +42,7 @@ type CreateImageFormData = {
   requireMembership: boolean;
   listRequireLogin: boolean;
   requireLogin: boolean;
+  downloads?: CreateArticleDto["downloads"];
   viewPrice: number;
   sort: number;
   type: "image";
@@ -139,6 +142,7 @@ export default function CreateImagePage() {
   const searchParams = useSearchParams();
   const articleId = searchParams.get("articleId");
   const isEditMode = !!articleId;
+  const [showDownloadDialog, setShowDownloadDialog] = useState(false);
 
   const tPost = useTranslations("createPost");
   const tImage = useTranslations("createImage");
@@ -302,6 +306,11 @@ export default function CreateImagePage() {
     [setFieldValues],
   );
 
+  const handleDownloadSubmit = (data: CreateImageFormData["downloads"]) => {
+    setFieldValues({ downloads: data });
+    setShowDownloadDialog(false);
+  };
+
   useEffect(() => {
     if (!canRequirePayment && values.requirePayment) {
       setFieldValues({ requirePayment: false, viewPrice: 0 });
@@ -335,6 +344,8 @@ export default function CreateImagePage() {
             requirePayment: article.requirePayment || false,
             requireMembership: article.requireMembership || false,
             listRequireLogin: article.listRequireLogin || false,
+            downloads:
+              (article.downloads as CreateImageFormData["downloads"]) || [],
             viewPrice: Number(article.viewPrice) || 0,
             sort: article.sort || 0,
             type: "image",
@@ -1068,6 +1079,19 @@ export default function CreateImagePage() {
                   </label>
 
                   <div className="border border-border p-3 rounded-lg inline-block max-w-100 w-full space-y-2">
+                    <FormField name="ddownloads">
+                      <div className="flex items-center justify-between">
+                        <label className="text-black/65 dark:text-white text-sm">
+                          {tPost("settings.downloads")}
+                        </label>
+                        <Button
+                          onClick={() => setShowDownloadDialog(true)}
+                          className="rounded-full w-11 h-6"
+                        >
+                          <Plus size={20} />
+                        </Button>
+                      </div>
+                    </FormField>
                     <FormField name="requireLogin">
                       <div className="flex items-center justify-between">
                         <label className="text-black/65 dark:text-white text-sm">
@@ -1199,6 +1223,12 @@ export default function CreateImagePage() {
           </div>
         </div>
       </div>
+      <DownloadDialog
+        data={values.downloads || []}
+        open={showDownloadDialog}
+        onClose={() => setShowDownloadDialog(false)}
+        onSubmit={handleDownloadSubmit}
+      />
     </div>
   );
 }
