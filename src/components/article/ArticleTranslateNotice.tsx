@@ -49,6 +49,12 @@ function restoreOriginalHtml(element: HTMLElement) {
   }
 }
 
+function hasMediaContent(element: HTMLElement): boolean {
+  return !!element.querySelector(
+    "img, picture, video, audio, iframe, .ql-image, .ql-image-wrapper",
+  );
+}
+
 function getCurrentDisplayedLanguage(translate: typeof window.translate): string | undefined {
   if (!translate) return undefined;
   if (translate.language && typeof translate.language.getCurrent === "function") {
@@ -188,9 +194,12 @@ export function ArticleTranslateNotice({
       // Immediately set state before translation
       setShowOriginal(false);
 
-      // Capture original HTML before translation (if not already captured)
+      // Avoid capturing media-rich blocks to prevent full DOM replacement on restore.
       documents.forEach((doc) => {
-        captureOriginalHtml(doc as HTMLElement);
+        const element = doc as HTMLElement;
+        if (!hasMediaContent(element)) {
+          captureOriginalHtml(element);
+        }
       });
 
       translate.service?.use?.("client.edge");
@@ -216,10 +225,13 @@ export function ArticleTranslateNotice({
     setShowOriginal(true);
     translate.reset?.();
 
-    // Manually restore original HTML from captured attribute
-    // This ensures DOM is restored even if translate.reset() doesn't work properly (e.g., on mobile)
+    // Manually restore only non-media blocks.
+    // Media-rich blocks keep current DOM to avoid image/video remount during "view original".
     documents.forEach((doc) => {
-      restoreOriginalHtml(doc as HTMLElement);
+      const element = doc as HTMLElement;
+      if (!hasMediaContent(element)) {
+        restoreOriginalHtml(element);
+      }
     });
 
     // Reset toggle flag after reset is triggered
