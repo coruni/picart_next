@@ -540,7 +540,11 @@
       "requirePayment": "Require Payment",
       "requireMembership": "Require Membership",
       "pricePlaceholder": "Enter price",
-      "allowReprint": "Allow Reprint"
+      "allowReprint": "Allow Reprint",
+      "allowReprintEnabledTitle": "Standard Reposting Allowed",
+      "allowReprintEnabledDescription": "You may copy and repost this work, but must credit the author and source.",
+      "allowReprintDisabledTitle": "Reposting Prohibited",
+      "allowReprintDisabledDescription": "This work may not be copied or reposted."
     },
     "actions": {
       "preview": "Preview",

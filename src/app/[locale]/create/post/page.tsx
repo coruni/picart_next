@@ -97,14 +97,20 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   const [showPreview, setShowPreview] = useState(false);
 
   const [showCoverEditor, setShowCoverEditor] = useState(false);
-  const [selectedCoverImage, setSelectedCoverImage] = useState<File | null>(null);
+  const [selectedCoverImage, setSelectedCoverImage] = useState<File | null>(
+    null,
+  );
   const [coverScale, setCoverScale] = useState(1);
   const [coverUploading, setCoverUploading] = useState(false);
 
-  const [parentCategories, setParentCategories] = useState<CategoryOption[]>([]);
+  const [parentCategories, setParentCategories] = useState<CategoryOption[]>(
+    [],
+  );
   const [childCategories, setChildCategories] = useState<CategoryOption[]>([]);
   const [selectedParentId, setSelectedParentId] = useState<string>("");
-  const [initialTagOptions, setInitialTagOptions] = useState<{ value: string; label: string }[]>([]);
+  const [initialTagOptions, setInitialTagOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
   const [showChildSelect, setShowChildSelect] = useState(false);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [_parentSearching, setParentSearching] = useState(false);
@@ -112,8 +118,12 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
 
   const initialParentCategoriesRef = useRef<CategoryOption[]>([]);
   const childrenMapRef = useRef<Map<number, CategoryOption[]>>(new Map());
-  const parentSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const parentSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const childSearchSeqRef = useRef(0);
   const parentSearchSeqRef = useRef(0);
   const lastParentQueryRef = useRef<string | null>(null);
@@ -147,7 +157,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       viewPrice: 0,
       sort: 0,
       type: "mixed",
-      allowReprint:false,
+      allowReprint: false,
     },
     validationRules: {
       title: {
@@ -186,7 +196,8 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           newArticleId = String(response?.data?.data?.data?.id ?? articleId);
         } else {
           const response = await articleControllerCreate({ body });
-          newArticleId = (response as { data?: { data?: { id?: string } } })?.data?.data?.id;
+          newArticleId = (response as { data?: { data?: { id?: string } } })
+            ?.data?.data?.id;
         }
       } catch (error) {
         console.error("提交文章失败:", error);
@@ -247,7 +258,9 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           setFieldValues({
             cover: article.cover || "",
             title: article.title || "",
-            content: (latestContentRef.current = sanitizeRichTextHtml(article.content || "")),
+            content: (latestContentRef.current = sanitizeRichTextHtml(
+              article.content || "",
+            )),
             categoryId: String(article.category.id || ""),
             tagIds: article.tags?.map((tag) => String(tag.id)) || [],
             tagNames: [],
@@ -275,11 +288,14 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
             const parentOption: CategoryOption = {
               value: String(parentIdNum),
               label: category.parent?.name || "",
-              ...(category.parent?.avatar ? { avatar: category.parent.avatar } : {}),
+              ...(category.parent?.avatar
+                ? { avatar: category.parent.avatar }
+                : {}),
             };
 
             setParentCategories((prev) => {
-              if (prev.some((p) => p.value === String(parentIdNum))) return prev;
+              if (prev.some((p) => p.value === String(parentIdNum)))
+                return prev;
               const updated = [...prev, parentOption];
               initialParentCategoriesRef.current = updated;
               return updated;
@@ -291,9 +307,13 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
               ...(category.avatar ? { avatar: category.avatar } : {}),
             };
 
-            const existingChildren = childrenMapRef.current.get(parentIdNum) || [];
+            const existingChildren =
+              childrenMapRef.current.get(parentIdNum) || [];
             if (!existingChildren.some((c) => c.value === categoryIdStr)) {
-              childrenMapRef.current.set(parentIdNum, [...existingChildren, childOption]);
+              childrenMapRef.current.set(parentIdNum, [
+                ...existingChildren,
+                childOption,
+              ]);
             }
 
             setSelectedParentId(String(parentIdNum));
@@ -364,8 +384,10 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     return () => {
       parentSearchAbortControllerRef.current?.abort();
       childSearchAbortControllerRef.current?.abort();
-      if (parentSearchTimerRef.current) clearTimeout(parentSearchTimerRef.current);
-      if (childSearchTimerRef.current) clearTimeout(childSearchTimerRef.current);
+      if (parentSearchTimerRef.current)
+        clearTimeout(parentSearchTimerRef.current);
+      if (childSearchTimerRef.current)
+        clearTimeout(childSearchTimerRef.current);
     };
   }, []);
 
@@ -395,7 +417,8 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     if (query === lastParentQueryRef.current) return;
     lastParentQueryRef.current = query;
 
-    if (parentSearchTimerRef.current) clearTimeout(parentSearchTimerRef.current);
+    if (parentSearchTimerRef.current)
+      clearTimeout(parentSearchTimerRef.current);
 
     if (!query.trim()) {
       setParentCategories(initialParentCategoriesRef.current);
@@ -413,7 +436,11 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           query: { name: query },
           signal: abortController.signal,
         });
-        if (seq !== parentSearchSeqRef.current || parentSearchAbortControllerRef.current !== abortController) return;
+        if (
+          seq !== parentSearchSeqRef.current ||
+          parentSearchAbortControllerRef.current !== abortController
+        )
+          return;
         if (response.data?.data?.data) {
           const parents = response.data.data.data
             .filter((cat) => !cat.parentId || cat.parentId === 0)
@@ -428,7 +455,10 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         if (abortController.signal.aborted) return;
         console.error("搜索父分类失败:", error);
       } finally {
-        if (seq === parentSearchSeqRef.current && parentSearchAbortControllerRef.current === abortController) {
+        if (
+          seq === parentSearchSeqRef.current &&
+          parentSearchAbortControllerRef.current === abortController
+        ) {
           parentSearchAbortControllerRef.current = null;
           setParentSearching(false);
         }
@@ -447,8 +477,13 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
       const parentId = parseInt(selectedParentId, 10);
       const cached = childrenMapRef.current.get(parentId) || [];
       const currentSelectedId = values.categoryId;
-      if (currentSelectedId && !cached.find((c) => c.value === currentSelectedId)) {
-        const selectedChild = childCategories.find((c) => c.value === currentSelectedId);
+      if (
+        currentSelectedId &&
+        !cached.find((c) => c.value === currentSelectedId)
+      ) {
+        const selectedChild = childCategories.find(
+          (c) => c.value === currentSelectedId,
+        );
         if (selectedChild) {
           setChildCategories([...cached, selectedChild]);
           return;
@@ -471,7 +506,11 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
           query: { name: query, parentId },
           signal: abortController.signal,
         });
-        if (seq !== childSearchSeqRef.current || childSearchAbortControllerRef.current !== abortController) return;
+        if (
+          seq !== childSearchSeqRef.current ||
+          childSearchAbortControllerRef.current !== abortController
+        )
+          return;
         if (response.data?.data?.data) {
           const results = response.data.data.data
             .filter((cat) => cat.parentId === parentId)
@@ -481,8 +520,13 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
               ...(cat.avatar ? { avatar: cat.avatar } : {}),
             }));
 
-          if (currentSelectedId && !results.find((c) => c.value === currentSelectedId)) {
-            const selectedChild = childCategories.find((c) => c.value === currentSelectedId);
+          if (
+            currentSelectedId &&
+            !results.find((c) => c.value === currentSelectedId)
+          ) {
+            const selectedChild = childCategories.find(
+              (c) => c.value === currentSelectedId,
+            );
             if (selectedChild) results.push(selectedChild);
           }
 
@@ -492,7 +536,10 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
         if (abortController.signal.aborted) return;
         console.error("搜索子分类失败:", error);
       } finally {
-        if (seq === childSearchSeqRef.current && childSearchAbortControllerRef.current === abortController) {
+        if (
+          seq === childSearchSeqRef.current &&
+          childSearchAbortControllerRef.current === abortController
+        ) {
           childSearchAbortControllerRef.current = null;
           setChildSearching(false);
         }
@@ -521,9 +568,13 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     try {
       const canvas = coverEditorRef.current.getImageScaledToCanvas();
       const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => { resolve(blob!); }, "image/png");
+        canvas.toBlob((blob) => {
+          resolve(blob!);
+        }, "image/png");
       });
-      const croppedFile = new File([blob], selectedCoverImage.name, { type: "image/png" });
+      const croppedFile = new File([blob], selectedCoverImage.name, {
+        type: "image/png",
+      });
       const metadata = await buildUploadMetadata([croppedFile]);
       const { data } = await uploadControllerUploadFile({
         body: { file: croppedFile, metadata },
@@ -578,7 +629,12 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                     className="hidden"
                     id="cover-upload"
                   />
-                  <div className={cn("flex items-center gap-4", values.cover && "-mx-6")}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-4",
+                      values.cover && "-mx-6",
+                    )}
+                  >
                     {values.cover ? (
                       <div className="relative w-full aspect-21/9">
                         <ImageWithFallback
@@ -651,7 +707,11 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                     className="min-h-75"
                   />
                 </FormField>
-                <FormField name="categoryId" label={t("form.publishTo")} className="pt-4">
+                <FormField
+                  name="categoryId"
+                  label={t("form.publishTo")}
+                  className="pt-4"
+                >
                   <div className="flex items-stretch gap-2 min-w-0">
                     <CategorySelect
                       value={selectedParentId}
@@ -703,7 +763,9 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                         </label>
                         <Switch
                           checked={values.requireLogin}
-                          onCheckedChange={(checked) => setFieldValues({ requireLogin: checked })}
+                          onCheckedChange={(checked) =>
+                            setFieldValues({ requireLogin: checked })
+                          }
                         />
                       </div>
                     </FormField>
@@ -714,19 +776,41 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                         </label>
                         <Switch
                           checked={values.requireFollow}
-                          onCheckedChange={(checked) => setFieldValues({ requireFollow: checked })}
+                          onCheckedChange={(checked) =>
+                            setFieldValues({ requireFollow: checked })
+                          }
                         />
                       </div>
                     </FormField>
                     <FormField name="allowReprint">
-                      <div className="flex items-center justify-between">
-                        <label className="text-black/65 dark:text-white text-sm">
-                          {t("settings.allowReprint")}
-                        </label>
-                        <Switch
-                          checked={values.allowReprint}
-                          onCheckedChange={(checked) => setFieldValues({ allowReprint: checked })}
-                        />
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-black/65 dark:text-white text-sm">
+                            {t("settings.allowReprint")}
+                          </label>
+                          <Switch
+                            checked={values.allowReprint}
+                            onCheckedChange={(checked) =>
+                              setFieldValues({ allowReprint: checked })
+                            }
+                          />
+                        </div>
+                        {values.allowReprint && (
+                          <div className="space-y-1 text-xs text-secondary p-2 border border-border rounded-lg">
+                            <p>
+                              <span className="font-medium">
+                                {t("settings.allowReprintEnabledTitle")}
+                              </span>{" "}
+                              {t("settings.allowReprintEnabledDescription")}
+                            </p>
+                            <p>
+                              <span className="font-medium">
+                                {t("settings.allowReprintDisabledTitle")}
+                              </span>{" "}
+                              {t("settings.allowReprintDisabledDescription")}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </FormField>
                     {canRequirePayment && (
@@ -738,7 +822,9 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                             </label>
                             <Switch
                               checked={values.requirePayment}
-                              onCheckedChange={(checked) => setFieldValues({ requirePayment: checked })}
+                              onCheckedChange={(checked) =>
+                                setFieldValues({ requirePayment: checked })
+                              }
                             />
                           </div>
                           {values.requirePayment && (
@@ -752,7 +838,9 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                                 placeholder={t("settings.pricePlaceholder")}
                                 value={values.viewPrice}
                                 onChange={(value) =>
-                                  setFieldValues({ viewPrice: Number(value.target.value) })
+                                  setFieldValues({
+                                    viewPrice: Number(value.target.value),
+                                  })
                                 }
                               />
                             </div>
@@ -767,7 +855,9 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                         </label>
                         <Switch
                           checked={values.requireMembership}
-                          onCheckedChange={(checked) => setFieldValues({ requireMembership: checked })}
+                          onCheckedChange={(checked) =>
+                            setFieldValues({ requireMembership: checked })
+                          }
                         />
                       </div>
                     </FormField>
@@ -823,7 +913,9 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                     style={{ width: "100%", height: "100%" }}
                   />
                 </div>
-                <p className="text-xs text-gray-500 text-center">{t("cover.cropHint")}</p>
+                <p className="text-xs text-gray-500 text-center">
+                  {t("cover.cropHint")}
+                </p>
                 <div className="flex gap-3 w-full">
                   <Button
                     type="button"
@@ -899,7 +991,11 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                               {currentUser?.avatar ? (
                                 <ImageWithFallback
                                   src={currentUser.avatar}
-                                  alt={currentUser.nickname || currentUser.username || "User"}
+                                  alt={
+                                    currentUser.nickname ||
+                                    currentUser.username ||
+                                    "User"
+                                  }
                                   fill
                                   sizes="40px"
                                   className="object-cover"
@@ -908,11 +1004,15 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                             </div>
                             <div className="min-w-0">
                               <div className="truncate text-sm font-semibold text-foreground">
-                                {currentUser?.nickname || currentUser?.username || t("title")}
+                                {currentUser?.nickname ||
+                                  currentUser?.username ||
+                                  t("title")}
                               </div>
                               <div className="text-xs text-muted-foreground">
                                 {selectedParentCategory?.label}
-                                {selectedChildCategory?.label ? ` · ${selectedChildCategory.label}` : ""}
+                                {selectedChildCategory?.label
+                                  ? ` · ${selectedChildCategory.label}`
+                                  : ""}
                               </div>
                             </div>
                           </div>

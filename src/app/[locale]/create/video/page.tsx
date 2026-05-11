@@ -617,10 +617,10 @@ export default function CreateVideoPage() {
         setVideoItem((prev) =>
           prev
             ? {
-              ...prev,
-              remoteUrl: videoUrl,
-              status: "ready",
-            }
+                ...prev,
+                remoteUrl: videoUrl,
+                status: "ready",
+              }
             : null,
         );
         setFieldValues({ videoUrl });
@@ -968,14 +968,36 @@ export default function CreateVideoPage() {
                       </div>
                     </FormField>
                     <FormField name="allowReprint">
-                      <div className="flex items-center justify-between">
-                        <label className="text-black/65 dark:text-white text-sm">
-                          {tPost("settings.allowReprint")}
-                        </label>
-                        <Switch
-                          checked={values.allowReprint}
-                          onCheckedChange={(checked) => setFieldValues({ allowReprint: checked })}
-                        />
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-black/65 dark:text-white text-sm">
+                            {tPost("settings.allowReprint")}
+                          </label>
+                          <Switch
+                            checked={values.allowReprint}
+                            onCheckedChange={(checked) =>
+                              setFieldValues({ allowReprint: checked })
+                            }
+                          />
+                        </div>
+                        {values.allowReprint && (
+                          <div className="space-y-1 text-xs text-secondary p-2 border border-border rounded-lg">
+                            <p>
+                              <span className="font-medium">
+                                {tPost("settings.allowReprintEnabledTitle")}
+                              </span>{" "}
+                              {tPost("settings.allowReprintEnabledDescription")}
+                            </p>
+                            <p>
+                              <span className="font-medium">
+                                {tPost("settings.allowReprintDisabledTitle")}
+                              </span>{" "}
+                              {tPost(
+                                "settings.allowReprintDisabledDescription",
+                              )}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </FormField>
 

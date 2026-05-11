@@ -533,7 +533,11 @@
       "requirePayment": "需要付费",
       "requireMembership": "需要会员",
       "pricePlaceholder": "请输入价格",
-      "allowReprint": "允许转载"
+      "allowReprint": "允许转载",
+      "allowReprintEnabledTitle": "允许规范转载作品",
+      "allowReprintEnabledDescription": "可对作品内容进行复制和转载，但需要注明作品作者和出处",
+      "allowReprintDisabledTitle": "禁止转载作品",
+      "allowReprintDisabledDescription": "不得对作品进行复制和转载"
     },
     "actions": {
       "preview": "预览",

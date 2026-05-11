@@ -394,19 +394,19 @@ export function SearchBox({
             className="flex items-center h-full rounded-l-full transition-colors cursor-pointer"
           >
             <div
-              className="size-7 rounded-full bg-cover bg-center flex items-center justify-center text-lg"
+              className="size-7 rounded-full bg-cover bg-center flex items-center justify-center text-lg overflow-hidden"
               style={{
                 backgroundImage:
                   typeof currentCategory.avatar === "string" &&
                   currentCategory.avatar.startsWith("http")
                     ? `url(${currentCategory.avatar})`
-                    : undefined,
+                    : "",
               }}
             >
               {typeof currentCategory.avatar === "string" &&
                 currentCategory.avatar.startsWith("/") && (
                   <ImageWithFallback
-                    src={currentCategory.avatar}
+                    src={currentCategory.avatar || ""}
                     width={28}
                     height={28}
                     alt={currentCategory.name}
@@ -415,7 +415,7 @@ export function SearchBox({
                 )}
               {typeof currentCategory.avatar === "object" && (
                 <ImageWithFallback
-                  src={currentCategory.avatar}
+                  src={currentCategory.avatar || ""}
                   width={28}
                   height={28}
                   alt={currentCategory.name}
@@ -671,7 +671,7 @@ export function SearchBox({
                     selectedCategory?.id === category.id && "text-primary",
                   )}
                 >
-                  <div className="size-8 rounded-full bg-primary/15 flex items-center justify-center relative">
+                  <div className="size-8 rounded-full bg-primary/15 flex items-center justify-center relative overflow-hidden">
                     {category.avatar && (
                       <ImageWithFallback
                         src={category.avatar}

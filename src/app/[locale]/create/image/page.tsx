@@ -164,7 +164,9 @@ export default function CreateImagePage() {
     null,
   );
 
-  const [parentCategories, setParentCategories] = useState<CategoryOption[]>([]);
+  const [parentCategories, setParentCategories] = useState<CategoryOption[]>(
+    [],
+  );
   const [childCategories, setChildCategories] = useState<CategoryOption[]>([]);
   const [selectedParentId, setSelectedParentId] = useState<string>("");
   const [initialTagOptions, setInitialTagOptions] = useState<
@@ -180,7 +182,9 @@ export default function CreateImagePage() {
   const parentSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const childSearchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const childSearchSeqRef = useRef(0);
   const parentSearchSeqRef = useRef(0);
   const lastParentQueryRef = useRef<string | null>(null);
@@ -696,7 +700,9 @@ export default function CreateImagePage() {
           const next = [...current];
 
           newItems.forEach((newItem, index) => {
-            const targetIndex = next.findIndex((item) => item.id === newItem.id);
+            const targetIndex = next.findIndex(
+              (item) => item.id === newItem.id,
+            );
             if (targetIndex === -1) return;
 
             const remoteUrl = uploadedUrls[index];
@@ -725,7 +731,9 @@ export default function CreateImagePage() {
 
         setImageItems((current) => {
           const next = current.filter((item) => {
-            const shouldRemove = newItems.some((newItem) => newItem.id === item.id);
+            const shouldRemove = newItems.some(
+              (newItem) => newItem.id === item.id,
+            );
             if (shouldRemove && item.previewUrl) {
               URL.revokeObjectURL(item.previewUrl);
             }
@@ -943,7 +951,7 @@ export default function CreateImagePage() {
                             className={cn(
                               "relative aspect-square overflow-hidden rounded-xl border border-border transition-transform",
                               draggingImageIndex === index &&
-                              "scale-[0.98] opacity-70",
+                                "scale-[0.98] opacity-70",
                             )}
                           >
                             {item.previewUrl ? (
@@ -995,7 +1003,7 @@ export default function CreateImagePage() {
                             "border-border bg-muted-foreground text-white",
                             "transition-colors",
                             imagesUploading &&
-                            "pointer-events-none opacity-70 cursor-not-allowed",
+                              "pointer-events-none opacity-70 cursor-not-allowed",
                           )}
                         >
                           <Plus className="size-6" />
@@ -1088,14 +1096,36 @@ export default function CreateImagePage() {
                       </div>
                     </FormField>
                     <FormField name="allowReprint">
-                      <div className="flex items-center justify-between">
-                        <label className="text-black/65 dark:text-white text-sm">
-                          {tPost("settings.allowReprint")}
-                        </label>
-                        <Switch
-                          checked={values.allowReprint}
-                          onCheckedChange={(checked) => setFieldValues({ allowReprint: checked })}
-                        />
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <label className="text-black/65 dark:text-white text-sm">
+                            {tPost("settings.allowReprint")}
+                          </label>
+                          <Switch
+                            checked={values.allowReprint}
+                            onCheckedChange={(checked) =>
+                              setFieldValues({ allowReprint: checked })
+                            }
+                          />
+                        </div>
+                        {values.allowReprint && (
+                          <div className="space-y-1 text-xs text-secondary p-2 border border-border rounded-lg">
+                            <p>
+                              <span className="font-medium">
+                                {tPost("settings.allowReprintEnabledTitle")}
+                              </span>{" "}
+                              {tPost("settings.allowReprintEnabledDescription")}
+                            </p>
+                            <p>
+                              <span className="font-medium">
+                                {tPost("settings.allowReprintDisabledTitle")}
+                              </span>{" "}
+                              {tPost(
+                                "settings.allowReprintDisabledDescription",
+                              )}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </FormField>
 
