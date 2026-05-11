@@ -1,9 +1,9 @@
 "use client";
 
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib";
-import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
-import { type MouseEvent, useState } from "react";
+import { memo, type MouseEvent, useState } from "react";
 import "swiper/css";
 import { Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -51,6 +51,8 @@ function BannerImage({ banner }: { banner: ResolvedBannerItem }) {
   );
 }
 
+const MemoBannerImage = memo(BannerImage);
+
 export function BannerCarousel({
   banners,
   className,
@@ -84,7 +86,7 @@ export function BannerCarousel({
         className="banner-swiper h-full w-full"
       >
         {banners.map((banner, index) => {
-          const content = <BannerImage banner={banner} />;
+          const content = <MemoBannerImage banner={banner} />;
 
           return (
             <SwiperSlide key={`${banner.image}-${index}`}>

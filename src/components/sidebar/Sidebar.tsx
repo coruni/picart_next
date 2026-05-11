@@ -33,6 +33,21 @@ type SidebarProps = {
   tabSticky?: boolean;
 };
 
+function shouldRenderRandomBanner(userId?: number | string) {
+  if (userId === undefined || userId === null) {
+    return true;
+  }
+
+  const value = String(userId);
+  let hash = 0;
+
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+  }
+
+  return hash % 2 === 0;
+}
+
 export async function Sidebar({
   showLogin = true,
   showArticleCreate = true,
@@ -54,7 +69,8 @@ export async function Sidebar({
 }: SidebarProps) {
   const currentUser = await getCurrentUser();
   const shouldShowBanner =
-    showBanner && (randomBanner ? Math.random() >= 0.5 : true);
+    showBanner &&
+    (randomBanner ? shouldRenderRandomBanner(currentUser?.id) : true);
 
   const sidebarItems = [
     showArticleCreate && currentUser && (
