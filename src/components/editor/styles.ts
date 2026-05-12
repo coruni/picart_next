@@ -64,18 +64,10 @@ export const quillOverrideStyles = `
       height: 28px !important;
     }
     /* Dropdown menus on mobile - prevent overflow (except emoji panel) */
-    .ql-toolbar [id^="dropdown-"]:not(#dropdown-emoji-panel) {
+    .ql-toolbar [id^="dropdown-"]:not(#dropdown-emoji-panel):not(#dropdown-textColor):not(#dropdown-bgColor) {
       min-width: max-content !important;
       left: auto !important;
       right: 0 !important;
-    }
-    /* Color dropdown on mobile */
-    .ql-toolbar [id^="dropdown-textColor"],
-    .ql-toolbar [id^="dropdown-bgColor"] {
-      left: auto !important;
-      right: 0 !important;
-      width: auto !important;
-      max-width: calc(100vw - 32px) !important;
     }
     /* Emoji panel dropdown on mobile - centered */
     #dropdown-emoji-panel.emoji-panel-dropdown {

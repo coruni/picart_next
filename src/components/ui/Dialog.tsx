@@ -223,7 +223,7 @@ export function DialogContent({
       role="dialog"
       aria-modal="true"
       className={cn(
-        "fixed left-[50%] top-[50%] z-101 w-full max-w-lg",
+        "fixed left-[50%] top-[50%] z-101 w-[calc(100vw-1rem)]! md:w-full max-w-lg",
         "translate-x-[-50%] translate-y-[-50%]",
         "rounded-lg border bg-card border-border p-4 shadow-xl",
         "animate-in fade-in-0 zoom-in-95 duration-200 ",
@@ -277,12 +277,7 @@ export function DialogHeader({ className, children }: DialogHeaderProps) {
 
 export function DialogFooter({ className, children }: DialogFooterProps) {
   return (
-    <div
-      className={cn(
-        "mt-6 flex gap-2 sm:justify-end sm:gap-2",
-        className,
-      )}
-    >
+    <div className={cn("mt-6 flex gap-2 sm:justify-end sm:gap-2", className)}>
       {children}
     </div>
   );

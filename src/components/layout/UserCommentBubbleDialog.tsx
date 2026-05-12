@@ -294,7 +294,7 @@ export function UserCommentBubbleDialog() {
   return (
     <Dialog open={commentBubbleDialogOpen} onOpenChange={handleDialogClose}>
       <DialogOverlay className="z-500!" />
-      <DialogContent className="w-[calc(100vw-1rem)] max-w-2xl rounded-2xl p-0 overflow-hidden h-[80vh] flex flex-col z-501!">
+      <DialogContent className=" max-w-2xl rounded-2xl p-0 overflow-hidden h-[80vh] flex flex-col z-501!">
         <DialogHeader className="mb-0 border-b border-border px-6 py-4 text-sm flex-row font-semibold flex items-center">
           {/* 移动端返回按钮 */}
           <button

@@ -408,7 +408,7 @@ export function CommentReplyList({
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogOverlay className="z-400!" />
 
-        <DialogContent className="w-[calc(100vw-1rem)] md:max-w-2xl rounded-xl p-0 z-401! flex flex-col max-h-[85vh] min-h-0">
+        <DialogContent className="md:max-w-2xl rounded-xl p-0 z-401! flex flex-col max-h-[85vh] min-h-0">
           <DialogHeader className="px-6 py-4 mb-0!">
             <DialogTitle className="text-sm font-semibold text-left">
               {tComment.has("viewCommentTitle")

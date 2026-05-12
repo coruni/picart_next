@@ -249,6 +249,33 @@ export const renderToolbar = ({
       "absolute top-full left-0 z-50 mt-2 bg-card border border-border rounded-xl shadow-lg p-3 hidden w-48";
     dropdown.id = `dropdown-${dropdownKey}`;
 
+    const positionDropdown = () => {
+      if (window.innerWidth > 767) {
+        dropdown.style.position = "absolute";
+        dropdown.style.left = "0";
+        dropdown.style.right = "auto";
+        dropdown.style.top = "100%";
+        dropdown.style.transform = "";
+        dropdown.style.width = "12rem";
+        dropdown.style.maxWidth = "none";
+        return;
+      }
+
+      dropdown.style.position = "absolute";
+      const toolbarRect = toolbar.getBoundingClientRect();
+      const containerRect = dropdownContainer.getBoundingClientRect();
+      const triggerRect = triggerBtn.getBoundingClientRect();
+      const centeredLeft = toolbarRect.left + toolbarRect.width / 2 - containerRect.left;
+      const topOffset = triggerRect.bottom - containerRect.top + 8;
+
+      dropdown.style.left = `${Math.max(8, centeredLeft)}px`;
+      dropdown.style.right = "auto";
+      dropdown.style.top = `${Math.max(8, topOffset)}px`;
+      dropdown.style.transform = "translateX(-50%)";
+      dropdown.style.width = "min(12rem, calc(100vw - 16px))";
+      dropdown.style.maxWidth = "calc(100vw - 16px)";
+    };
+
     // 标题
     const titleEl = document.createElement("div");
     titleEl.className = "text-sm font-medium mb-2";
@@ -261,6 +288,7 @@ export const renderToolbar = ({
 
     // 第一个是取消/移除颜色
     const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
     removeBtn.className =
       "w-5! h-5! flex-none rounded flex items-center justify-center bg-muted hover:bg-primary/15 border! border-border!";
     removeBtn.innerHTML = renderIcon(X);
@@ -273,6 +301,7 @@ export const renderToolbar = ({
     // 添加颜色
     colorPalette.forEach((color) => {
       const colorBtn = document.createElement("button");
+      colorBtn.type = "button";
       colorBtn.className =
         "w-5! h-5! flex-none rounded hover:ring-2 hover:ring-primary/50";
       colorBtn.style.backgroundColor = color;
@@ -300,6 +329,7 @@ export const renderToolbar = ({
       "flex h-6 w-16 rounded-md border border-primary! bg-card px-2 py-1 text-sm placeholder:text-gray-400 focus:outline-none transition-colors duration-200 border-gray-300 hover:border-primary focus:border-primary flex-shrink-0 flex-1";
     hexInput.maxLength = 7;
     const hexBtn = document.createElement("button");
+    hexBtn.type = "button";
     hexBtn.className =
       "inline-flex items-center justify-center rounded-md border! border-primary! font-medium transition-all duration-200 focus:outline-none bg-primary text-primary! hover:bg-primary/20! px-2 h-6! text-xs whitespace-nowrap flex-shrink-0";
     hexBtn.textContent = t("confirm");
@@ -324,7 +354,13 @@ export const renderToolbar = ({
     dropdownContainer.appendChild(tooltip);
 
     triggerBtn.onclick = (e) => {
-      toggleDropdown(`dropdown-${dropdownKey}`, e);
+      e.stopPropagation();
+      const isCurrentlyHidden = dropdown.classList.contains("hidden");
+      closeAllDropdowns();
+      if (isCurrentlyHidden) {
+        positionDropdown();
+        dropdown.classList.remove("hidden");
+      }
     };
 
     return dropdownContainer;
@@ -609,10 +645,60 @@ export const renderToolbar = ({
     "w-full! hover:bg-primary/15! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors text-nowrap";
   cleanItem.type = "button";
   cleanItem.innerHTML = `${renderIcon(RemoveFormatting, "w-4 h-4!")}<span>${t("clean")}</span>`;
+  // 防止点击工具栏按钮导致编辑器失焦，保留选区
+  cleanItem.onmousedown = (e) => {
+    e.preventDefault();
+  };
+
   cleanItem.onclick = () => {
-    const format = quill.getFormat();
-    Object.keys(format).forEach((key) => quill.format(key, false));
-    moreDropdown.classList.add("hidden");
+    try {
+      // 确保编辑器有焦点
+      quill.focus();
+
+      const selection = quill.getSelection(true);
+
+      if (selection && selection.length > 0) {
+        // 使用 Quill 提供的 removeFormat 清除选区内的格式
+        quill.removeFormat(selection.index, selection.length);
+
+        // 额外在 DOM 层面清理残留的内联样式（防止某些样式以 style 属性残留）
+        try {
+          const domSelection = window.getSelection();
+          if (domSelection && domSelection.rangeCount > 0) {
+            const range = domSelection.getRangeAt(0);
+            const root = quill.root as HTMLElement;
+            const styledNodes = Array.from(root.querySelectorAll('[style]')) as HTMLElement[];
+            styledNodes.forEach((node) => {
+              // 仅清理与选区相交的节点
+              // Range.intersectsNode 在现代浏览器中可用
+              if (range.intersectsNode(node)) {
+                node.style.removeProperty("color");
+                node.style.removeProperty("background-color");
+                node.style.removeProperty("font-size");
+                node.style.removeProperty("font-weight");
+                node.style.removeProperty("font-style");
+                node.style.removeProperty("text-decoration");
+                node.style.removeProperty("text-align");
+                if (!(node.getAttribute("style") || "").trim()) {
+                  node.removeAttribute("style");
+                }
+              }
+            });
+          }
+        } catch (err) {
+          // 忽略 DOM 层面清理的失败，不阻塞主要功能
+          console.error("clear-format DOM cleanup failed", err);
+        }
+      } else {
+        // 折叠光标：清除当前光标处的激活格式
+        const format = quill.getFormat();
+        Object.keys(format).forEach((key) => quill.format(key, false));
+      }
+    } catch (err) {
+      console.error("clear-format failed", err);
+    } finally {
+      moreDropdown.classList.add("hidden");
+    }
   };
   moreDropdown.appendChild(cleanItem);
 
@@ -774,29 +860,11 @@ export const renderToolbar = ({
   colorBtn.className = "ql-color";
   colorBtn.type = "button";
   colorBtn.innerHTML = renderIcon(Palette);
-  colorBtn.onclick = (e) => {
-    e.stopPropagation();
-    const dropdown = document.getElementById("dropdown-textColor");
-    const isCurrentlyHidden = dropdown?.classList.contains("hidden");
-    closeAllDropdowns();
-    if (isCurrentlyHidden) {
-      dropdown?.classList.remove("hidden");
-    }
-  };
 
   const bgColorBtn = document.createElement("button");
   bgColorBtn.className = "ql-background";
   bgColorBtn.type = "button";
   bgColorBtn.innerHTML = renderIcon(Highlighter);
-  bgColorBtn.onclick = (e) => {
-    e.stopPropagation();
-    const dropdown = document.getElementById("dropdown-bgColor");
-    const isCurrentlyHidden = dropdown?.classList.contains("hidden");
-    closeAllDropdowns();
-    if (isCurrentlyHidden) {
-      dropdown?.classList.remove("hidden");
-    }
-  };
 
   // 创建颜色下拉
   const colorDropdown = createColorDropdown(

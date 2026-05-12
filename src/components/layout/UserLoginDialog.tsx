@@ -355,7 +355,7 @@ export function UserLoginDialog() {
   return (
     <Dialog open={loginDialogOpen} onOpenChange={handleDialogClose}>
       <DialogOverlay className="z-499!" />
-      <DialogContent className="w-[calc(100vw-1rem)! max-w-110 rounded-2xl max-h-[95vh] bg-card! border border-border! z-500!">
+      <DialogContent className="max-w-110 rounded-2xl max-h-[95vh] bg-card! border border-border! z-500!">
         <div className="flex flex-col">
           {/* logo */}
           <div

@@ -162,7 +162,7 @@ export const UserInfoWidget = ({ author }: UserInfoWidgetProps) => {
         </div>
       </section>
       <Dialog open={openModal} onOpenChange={setOpenModal}>
-        <DialogContent className="w-[calc(100vw-1rem)] p-0 md:max-w-xl flex flex-col max-h-[85vh]">
+        <DialogContent className=" p-0 md:max-w-xl flex flex-col max-h-[85vh]">
           <DialogHeader className="p-4">
             <DialogTitle className="text-sm font-semibold">{t("rechargeMembership")}</DialogTitle>
           </DialogHeader>

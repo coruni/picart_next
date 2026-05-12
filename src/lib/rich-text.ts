@@ -46,6 +46,41 @@ const ALLOWED_TAGS = new Set([
 
 const ALLOWED_CLASS_PREFIXES = ["ql-", "language-"];
 const URL_PROTOCOL_PATTERN = /^(https?:|mailto:|tel:|\/|#|data:image\/|blob:)/i;
+const SAFE_COLOR_PATTERN =
+  /^(#[0-9a-f]{3,8}|rgb\(\s*[\d.]+%?(\s*,\s*[\d.]+%?){2}\s*\)|rgba\(\s*[\d.]+%?(\s*,\s*[\d.]+%?){2}\s*,\s*[\d.]+\s*\)|hsl\(\s*[\d.]+(deg|rad|turn)?\s*,\s*[\d.]+%\s*,\s*[\d.]+%\s*\)|hsla\(\s*[\d.]+(deg|rad|turn)?\s*,\s*[\d.]+%\s*,\s*[\d.]+%\s*,\s*[\d.]+\s*\)|[a-z]+)$/i;
+const SAFE_TEXT_ALIGN_VALUES = new Set([
+  "left",
+  "right",
+  "center",
+  "justify",
+  "start",
+  "end",
+]);
+const SAFE_FONT_SIZE_VALUES = new Set([
+  "12px",
+  "14px",
+  "16px",
+  "18px",
+  "20px",
+  "24px",
+  "32px",
+]);
+const SAFE_FONT_WEIGHT_VALUES = new Set([
+  "normal",
+  "bold",
+  "bolder",
+  "lighter",
+  "400",
+  "500",
+  "600",
+  "700",
+]);
+const SAFE_FONT_STYLE_VALUES = new Set(["normal", "italic", "oblique"]);
+const SAFE_TEXT_DECORATION_VALUES = new Set([
+  "none",
+  "underline",
+  "line-through",
+]);
 
 // SVG 安全属性白名单
 const SVG_SAFE_ATTRIBUTES = new Set([
@@ -117,6 +152,7 @@ const RE_DANGEROUS_TAGS =
   /<\/?(script|style|object|embed|form|input|button|textarea|select|option|meta|link|base|math)[^>]*>/gi;
 const RE_INLINE_EVENT = /\son[a-z-]+\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi;
 const RE_STYLE_ATTR = /\sstyle\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi;
+const RE_STYLE_ATTR_CAPTURE = /\sstyle\s*=\s*("([^"]*)"|'([^']*)')/gi;
 const RE_SRCDOC_ATTR = /\ssrcdoc\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi;
 const RE_JS_URL =
   /\s(href|src|poster)\s*=\s*("javascript:[^"]*"|'javascript:[^']*'|javascript:[^\s>]+)/gi;
@@ -166,6 +202,95 @@ function stripRichTextEditorArtifacts(html: string): string {
 function isSafeUrl(value: string): boolean {
   const normalized = value.trim();
   return !!normalized && URL_PROTOCOL_PATTERN.test(normalized);
+}
+
+function sanitizeInlineStyle(value: string): string {
+  const declarations = value
+    .split(";")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const safeDeclarations: string[] = [];
+
+  for (const declaration of declarations) {
+    const separatorIndex = declaration.indexOf(":");
+    if (separatorIndex <= 0) {
+      continue;
+    }
+
+    const property = declaration.slice(0, separatorIndex).trim().toLowerCase();
+    const rawValue = declaration.slice(separatorIndex + 1).trim();
+    const normalizedValue = rawValue.toLowerCase();
+
+    // Block obvious style injection payloads.
+    if (
+      normalizedValue.includes("url(") ||
+      normalizedValue.includes("expression(") ||
+      normalizedValue.includes("javascript:") ||
+      normalizedValue.includes("var(")
+    ) {
+      continue;
+    }
+
+    if (property === "color" || property === "background-color") {
+      if (SAFE_COLOR_PATTERN.test(rawValue)) {
+        safeDeclarations.push(`${property}: ${rawValue}`);
+      }
+      continue;
+    }
+
+    if (property === "text-align") {
+      if (SAFE_TEXT_ALIGN_VALUES.has(normalizedValue)) {
+        safeDeclarations.push(`${property}: ${normalizedValue}`);
+      }
+      continue;
+    }
+
+    if (property === "font-size") {
+      if (SAFE_FONT_SIZE_VALUES.has(normalizedValue)) {
+        safeDeclarations.push(`${property}: ${normalizedValue}`);
+      }
+      continue;
+    }
+
+    if (property === "font-weight") {
+      if (SAFE_FONT_WEIGHT_VALUES.has(normalizedValue)) {
+        safeDeclarations.push(`${property}: ${normalizedValue}`);
+      }
+      continue;
+    }
+
+    if (property === "font-style") {
+      if (SAFE_FONT_STYLE_VALUES.has(normalizedValue)) {
+        safeDeclarations.push(`${property}: ${normalizedValue}`);
+      }
+      continue;
+    }
+
+    if (property === "text-decoration") {
+      if (SAFE_TEXT_DECORATION_VALUES.has(normalizedValue)) {
+        safeDeclarations.push(`${property}: ${normalizedValue}`);
+      }
+      continue;
+    }
+  }
+
+  return safeDeclarations.join("; ");
+}
+
+function sanitizeStyleAttributesInHtml(html: string): string {
+  return html.replace(
+    RE_STYLE_ATTR_CAPTURE,
+    (_match: string, _quoted: string, doubleQuoted?: string, singleQuoted?: string) => {
+      const styleValue = (doubleQuoted ?? singleQuoted ?? "").trim();
+      const sanitized = sanitizeInlineStyle(styleValue);
+      if (!sanitized) {
+        return "";
+      }
+
+      return ` style="${escapeHtmlAttribute(sanitized)}"`;
+    },
+  );
 }
 
 // 允许的视频域名白名单
@@ -353,8 +478,18 @@ function sanitizeRegularElementAttributes(
     const name = attr.name.toLowerCase();
     const value = attr.value;
 
-    if (name.startsWith("on") || name === "style" || name === "srcdoc") {
+    if (name.startsWith("on") || name === "srcdoc") {
       element.removeAttribute(attr.name);
+      continue;
+    }
+
+    if (name === "style") {
+      const sanitizedStyle = sanitizeInlineStyle(value);
+      if (sanitizedStyle) {
+        element.setAttribute("style", sanitizedStyle);
+      } else {
+        element.removeAttribute("style");
+      }
       continue;
     }
 
@@ -479,11 +614,10 @@ function sanitizeHtmlWithDomParser(html: string): string {
 }
 
 function sanitizeHtmlWithFallback(html: string): string {
-  return html
+  return sanitizeStyleAttributesInHtml(html)
     .replace(RE_COMMENTS, "")
     .replace(RE_DANGEROUS_TAGS, "")
     .replace(RE_INLINE_EVENT, "")
-    .replace(RE_STYLE_ATTR, "")
     .replace(RE_SRCDOC_ATTR, "")
     .replace(RE_JS_URL, "")
     .replace(RE_UNSAFE_DATA_URL, "");

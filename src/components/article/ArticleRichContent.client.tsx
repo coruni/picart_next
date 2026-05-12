@@ -6,14 +6,15 @@ import { ArticleDetail, ArticleList } from "@/types";
 import { useLocale } from "next-intl";
 import { parse } from "node-html-parser";
 import {
-  createElement,
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
+    createElement,
+    Fragment,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+    type CSSProperties,
+    type ReactNode,
 } from "react";
 import { ImageViewer } from "./ImageViewer";
 type Article = ArticleList[number] | ArticleDetail;
@@ -25,6 +26,30 @@ type ArticleRichContentProps = {
 interface ParseResult {
   content: ReactNode;
   images: string[];
+}
+
+function parseInlineStyleToReactObject(styleValue: string): CSSProperties {
+  const styleObject: Record<string, string> = {};
+
+  styleValue
+    .split(";")
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .forEach((declaration) => {
+      const separatorIndex = declaration.indexOf(":");
+      if (separatorIndex <= 0) return;
+
+      const cssProperty = declaration.slice(0, separatorIndex).trim();
+      const cssValue = declaration.slice(separatorIndex + 1).trim();
+      if (!cssProperty || !cssValue) return;
+
+      const reactProperty = cssProperty.replace(/-([a-z])/g, (_, c: string) =>
+        c.toUpperCase(),
+      );
+      styleObject[reactProperty] = cssValue;
+    });
+
+  return styleObject as CSSProperties;
 }
 
 // 将HTML字符串转换为React元素，将img.ql-image替换为ImageWithFallback
@@ -55,7 +80,7 @@ function parseHtmlToReact(html: string): ParseResult {
       if (key === "class") {
         props.className = value;
       } else if (key === "style") {
-        props.style = value;
+        props.style = parseInlineStyleToReactObject(String(value));
       } else if (key.startsWith("data-")) {
         props[key] = value;
       } else if (

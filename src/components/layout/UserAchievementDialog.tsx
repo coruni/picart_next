@@ -10,8 +10,8 @@ import {
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/Dialog";
-import { formatDate } from "@/lib/utils";
 import { MODAL_IDS } from "@/lib/modal-helpers";
+import { formatDate } from "@/lib/utils";
 import { useModalStore } from "@/stores/useModalStore";
 import { Clock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
@@ -214,7 +214,7 @@ export function UserAchievementDialog() {
     <Dialog open={achievementDialogOpen} onOpenChange={handleCloseDialog}>
       <DialogOverlay className="z-500!" />
       <DialogContent
-        className="w-[calc(100vw-1rem)] h-full max-h-[65vh]! overflow-hidden rounded-2xl border-0 p-0 md:max-w-lg z-501!"
+        className=" h-full max-h-[65vh]! overflow-hidden rounded-2xl border-0 p-0 md:max-w-lg z-501!"
         showClose={true}
       >
         {dialogLoading ? (
