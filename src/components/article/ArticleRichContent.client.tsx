@@ -84,6 +84,7 @@ function parseHtmlToReact(html: string): ParseResult {
       } else if (key.startsWith("data-")) {
         props[key] = value;
       } else if (
+        key === "id" ||
         key === "src" ||
         key === "alt" ||
         key === "title" ||

@@ -179,7 +179,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           />
         </aside>
       ) : null}
-      <div className="left-container " data-auto-translate-article-detail>
+      <div className="left-container" data-auto-translate-article-detail>
         <div className="top-header px-4 h-14 flex items-center border-b rounded-t-xl border-border sticky bg-card  z-15">
           <div className="h-full flex-1 flex items-center">
             {tocItems.length > 0 ? (
@@ -244,7 +244,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           ) : article?.cover ? (
             <div
               className={cn(
-                "relative w-full h-auto",
+                "relative w-full h-full min-h-80",
                 tocItems.length > 0 ? "max-h-80" : "max-h-120 md:h-120",
               )}
             >

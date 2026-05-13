@@ -917,7 +917,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
 
       <Dialog open={showCoverEditor} onOpenChange={setShowCoverEditor}>
         <DialogContent className="max-w-2xl pt-4!">
-          <DialogHeader>
+          <DialogHeader className="p-0">
             <DialogTitle className="text-sm">{t("cover.crop")}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4 py-4">

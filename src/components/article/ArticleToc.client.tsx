@@ -553,6 +553,22 @@ export function ArticleToc({ items, title, openLabel }: ArticleTocProps) {
     [lockActiveId],
   );
 
+  const handleMobileItemClick = useCallback(
+    (id: string) => {
+      const exists = document.getElementById(id);
+      if (!exists) {
+        return;
+      }
+
+      setMobileOpen(false);
+      lockActiveId(id);
+      window.setTimeout(() => {
+        scrollToHeading(id);
+      }, MOBILE_TOC_ANIMATION_MS);
+    },
+    [lockActiveId],
+  );
+
   if (items.length === 0) {
     return null;
   }
@@ -617,7 +633,7 @@ export function ArticleToc({ items, title, openLabel }: ArticleTocProps) {
                       items={resolvedItems}
                       title={title}
                       activeId={activeId}
-                      onItemClick={handleItemClick}
+                      onItemClick={handleMobileItemClick}
                       showTitle={false}
                       enableCollapse={false}
                     />
