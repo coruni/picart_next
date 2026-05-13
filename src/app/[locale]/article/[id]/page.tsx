@@ -201,13 +201,34 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               isFeatured={Boolean(article?.isFeatured)}
               isPinnedOnProfile={Boolean(article?.isPinnedOnProfile)}
               downloadCount={article?.downloadCount}
-              downloads={article?.downloads?.filter(d => d.url).map(({ type, url, password, extractionCode, visibleWithoutPermission }) => ({ 
-                type: (type || 'direct') as 'baidu' | 'direct' | 'aliyun' | 'quark' | 'onedrive' | 'google' | 'dropbox' | 'lanzou' | 'mega' | 'telegram' | 'other', 
-                url: url!, 
-                ...(password && { password }), 
-                ...(extractionCode && { extractionCode }), 
-                visibleWithoutPermission: visibleWithoutPermission || false 
-              }))}
+              downloads={article?.downloads
+                ?.filter((d) => d.url)
+                .map(
+                  ({
+                    type,
+                    url,
+                    password,
+                    extractionCode,
+                    visibleWithoutPermission,
+                  }) => ({
+                    type: (type || "direct") as
+                      | "baidu"
+                      | "direct"
+                      | "aliyun"
+                      | "quark"
+                      | "onedrive"
+                      | "google"
+                      | "dropbox"
+                      | "lanzou"
+                      | "mega"
+                      | "telegram"
+                      | "other",
+                    url: url!,
+                    ...(password && { password }),
+                    ...(extractionCode && { extractionCode }),
+                    visibleWithoutPermission: visibleWithoutPermission || false,
+                  }),
+                )}
             />
           </div>
         </div>
@@ -221,7 +242,12 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               />
             </div>
           ) : article?.cover ? (
-            <div className="relative w-full h-80 md:h-120">
+            <div
+              className={cn(
+                "relative w-full",
+                tocItems.length > 0 ? "h-80" : "h-auto max-h-120 md:h-120",
+              )}
+            >
               <ImageWithFallback
                 src={article.cover}
                 fill
@@ -301,11 +327,10 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
               </>
             ) : (
               <>
-                <Ban size={14}/>
+                <Ban size={14} />
                 <span>{t("notRepostable")}</span>
               </>
             )}
-
           </div>
           {article.tags?.length > 0 && (
             <div
