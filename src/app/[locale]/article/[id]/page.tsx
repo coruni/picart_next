@@ -244,8 +244,8 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
           ) : article?.cover ? (
             <div
               className={cn(
-                "relative w-full",
-                tocItems.length > 0 ? "h-80" : "h-auto max-h-120 md:h-120",
+                "relative w-full h-auto",
+                tocItems.length > 0 ? "max-h-80" : "max-h-120 md:h-120",
               )}
             >
               <ImageWithFallback
