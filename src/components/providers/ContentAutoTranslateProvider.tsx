@@ -17,6 +17,7 @@ const AUTO_TRANSLATE_SELECTOR =
 const TRANSLATE_LOCAL_LANGUAGE = "chinese_simplified";
 const MUTATION_TRANSLATE_DEBOUNCE_MS = 260;
 const MIN_TEXT_LENGTH_FOR_DETECTION = 1;
+const MANUAL_TOGGLE_PAUSE_MS = 1200;
 
 const ORIGINAL_HTML_ATTR = "data-translate-original-html";
 const TRANSLATE_BOUND_ATTR = "data-translate-bound";
@@ -160,6 +161,15 @@ function configureSessionStorage() {
       return item;
     }
   };
+}
+
+function isManualTogglePaused(): boolean {
+  const lastManualToggle = window.__lastManualTranslateToggle;
+  if (!lastManualToggle) {
+    return false;
+  }
+
+  return Date.now() - lastManualToggle < MANUAL_TOGGLE_PAUSE_MS;
 }
 
 export function ContentAutoTranslateProvider() {
@@ -363,8 +373,7 @@ export function ContentAutoTranslateProvider() {
 
     const scheduleTranslate = () => {
       // Skip if user just manually toggled translation (prevents interference with manual restore)
-      const lastManualToggle = window.__lastManualTranslateToggle;
-      if (lastManualToggle && Date.now() - lastManualToggle < 500) {
+      if (isManualTogglePaused()) {
         return;
       }
 

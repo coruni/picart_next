@@ -1,7 +1,6 @@
 "use client";
 
 import { TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
-import { useTranslateStore } from "@/stores";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -30,12 +29,6 @@ function markManualToggle() {
   window.__lastManualTranslateToggle = Date.now();
 }
 
-function isManualTogglePaused(): boolean {
-  const lastToggle = window.__lastManualTranslateToggle;
-  if (!lastToggle) return false;
-  return Date.now() - lastToggle < MANUAL_TOGGLE_PAUSE_MS;
-}
-
 function captureOriginalHtml(element: HTMLElement) {
   if (!element.getAttribute(ORIGINAL_HTML_ATTR)) {
     element.setAttribute(ORIGINAL_HTML_ATTR, element.innerHTML);
@@ -47,12 +40,6 @@ function restoreOriginalHtml(element: HTMLElement) {
   if (originalHtml != null) {
     element.innerHTML = originalHtml;
   }
-}
-
-function hasMediaContent(element: HTMLElement): boolean {
-  return !!element.querySelector(
-    "img, picture, video, audio, iframe, .ql-image, .ql-image-wrapper",
-  );
 }
 
 function getCurrentDisplayedLanguage(translate: typeof window.translate): string | undefined {
@@ -87,7 +74,6 @@ export function ArticleTranslateNotice({
 }) {
   const t = useTranslations("articleDetail");
   const locale = useLocale();
-  const autoTranslateContent = useTranslateStore((state) => state.autoTranslateContent);
 
   const [showOriginal, setShowOriginal] = useState(true);
   const [shouldHideNotice, setShouldHideNotice] = useState(false);
@@ -118,7 +104,7 @@ export function ArticleTranslateNotice({
       }
 
       const translate = getTranslateApi();
-      const isTranslated = translate && targetLanguage && autoTranslateContent
+      const isTranslated = translate && targetLanguage
         ? isTranslatedToTarget(translate, targetLanguage)
         : false;
 
@@ -134,7 +120,7 @@ export function ArticleTranslateNotice({
       setShowOriginal(!isTranslated);
       debounceTimerRef.current = null;
     }, DEBOUNCE_DELAY);
-  }, [targetLanguage, autoTranslateContent, contentMatchesLocale]);
+  }, [targetLanguage, contentMatchesLocale]);
 
   useEffect(() => {
     if (!enabled || !isVisible) return;
@@ -180,26 +166,14 @@ export function ArticleTranslateNotice({
     isUserTogglingRef.current = true;
     markManualToggle();
 
-    if (showOriginal) {
+    if (!isCurrentlyTranslated) {
       // If already translated by auto-translate, just update state
-      if (isCurrentlyTranslated) {
-        setShowOriginal(false);
-        // Reset toggle flag after state update
-        window.requestAnimationFrame(() => {
-          isUserTogglingRef.current = false;
-        });
-        return;
-      }
-
       // Immediately set state before translation
       setShowOriginal(false);
 
-      // Avoid capturing media-rich blocks to prevent full DOM replacement on restore.
       documents.forEach((doc) => {
         const element = doc as HTMLElement;
-        if (!hasMediaContent(element)) {
-          captureOriginalHtml(element);
-        }
+        captureOriginalHtml(element);
       });
 
       translate.service?.use?.("client.edge");
@@ -225,20 +199,16 @@ export function ArticleTranslateNotice({
     setShowOriginal(true);
     translate.reset?.();
 
-    // Manually restore only non-media blocks.
-    // Media-rich blocks keep current DOM to avoid image/video remount during "view original".
     documents.forEach((doc) => {
       const element = doc as HTMLElement;
-      if (!hasMediaContent(element)) {
-        restoreOriginalHtml(element);
-      }
+      restoreOriginalHtml(element);
     });
 
     // Reset toggle flag after reset is triggered
     window.setTimeout(() => {
       isUserTogglingRef.current = false;
     }, 200);
-  }, [showOriginal, targetLanguage]);
+  }, [targetLanguage]);
 
   if (!enabled || !isVisible || shouldHideNotice) {
     return null;
