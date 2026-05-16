@@ -277,7 +277,7 @@ export function ArticleMenu({
         },
       ];
 
-  const downloadMenuItem: MenuItem | null = downloadCount > 0 ? {
+  const downloadMenuItem: MenuItem | null = downloads.length > 0 ? {
     label: t("downloadResources"),
     icon: <Download size={18} />,
     onClick: () => setShowDownloadDialog(true),
