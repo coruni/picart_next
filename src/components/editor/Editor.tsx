@@ -1240,7 +1240,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           >
             <DialogContent className={cn(modalContentClassName, "p-0!")}>
               <DialogHeader>
-                <DialogTitle className="text-sm">
+                <DialogTitle className="text-sm px-4">
                   {t("modal.insertVideo")}
                 </DialogTitle>
               </DialogHeader>
@@ -1291,7 +1291,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
           >
             <DialogContent className={cn(modalContentClassName, "p-0!")}>
               <DialogHeader>
-                <DialogTitle className="text-sm">
+                <DialogTitle className="text-sm px-4">
                   {t("modal.insertLink")}
                 </DialogTitle>
               </DialogHeader>
