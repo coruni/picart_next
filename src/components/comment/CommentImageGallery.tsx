@@ -78,7 +78,7 @@ export function CommentImageGallery({
       >
         <button
           type="button"
-          className="inline-block max-w-full cursor-pointer overflow-hidden rounded-xl bg-muted "
+          className="inline-block max-w-full cursor-pointer overflow-hidden rounded-xl bg-muted"
           onClick={(e) => {
             e.stopPropagation();
             onOpenImageViewer(originalUrls, 0);
@@ -87,8 +87,6 @@ export function CommentImageGallery({
           <ImageWithFallback
             draggable={false}
             src={imageUrls[0]}
-            width={320}
-            height={180}
             alt={`${imageAltPrefix} 1`}
             wrapperClassName="relative block"
             className={cn(
