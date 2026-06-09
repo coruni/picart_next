@@ -12,6 +12,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 
 import "swiper/css";
 
+const COMMENT_IMAGE_MAX_WIDTH = 320;
+const COMMENT_IMAGE_MAX_HEIGHT = 180;
+
 type CommentImageGalleryProps = {
   images: (string | ImageInfo)[];
   imageAltPrefix: string;
@@ -46,6 +49,26 @@ export function CommentImageGallery({
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
 
+  const getDisplaySize = (image: string | ImageInfo) => {
+    if (typeof image === "string" || image.width <= 0 || image.height <= 0) {
+      return {
+        width: COMMENT_IMAGE_MAX_WIDTH,
+        height: COMMENT_IMAGE_MAX_HEIGHT,
+      };
+    }
+
+    const scale = Math.min(
+      COMMENT_IMAGE_MAX_WIDTH / image.width,
+      COMMENT_IMAGE_MAX_HEIGHT / image.height,
+      1,
+    );
+
+    return {
+      width: Math.max(1, Math.round(image.width * scale)),
+      height: Math.max(1, Math.round(image.height * scale)),
+    };
+  };
+
   const syncSwiperNavState = (swiper: SwiperType) => {
     const wrapperWidth = swiper.wrapperEl?.scrollWidth || 0;
     const containerWidth = swiper.el?.clientWidth || swiper.width || 0;
@@ -68,6 +91,8 @@ export function CommentImageGallery({
   }
 
   if (imageUrls.length === 1) {
+    const singleImageSize = getDisplaySize(images[0]);
+
     return (
       <div
         className={cn(
@@ -88,9 +113,10 @@ export function CommentImageGallery({
             draggable={false}
             src={imageUrls[0]}
             alt={`${imageAltPrefix} 1`}
-            wrapperClassName="relative block"
+            width={singleImageSize.width}
+            height={singleImageSize.height}
             className={cn(
-              "block h-auto max-h-45 w-auto max-w-full object-contain",
+              "block h-full! w-full! max-h-45 max-w-80 object-contain",
               singleImageClassName,
             )}
           />
@@ -129,19 +155,21 @@ export function CommentImageGallery({
           syncSwiperNavState(swiper);
         }}
       >
-        {imageUrls.map((imageUrl, index) => (
-          <SwiperSlide
-            key={`${imageAltPrefix}-${index}`}
-            className={cn(
-              "w-auto!",
-              index === 0 && contentOffset && "pl-17",
-              !compact && index === 0 && contentOffset && "md:pl-19",
-            )}
-          >
-            <div className="overflow-hidden rounded-xl bg-muted h-45 max-w-80 ">
+        {imageUrls.map((imageUrl, index) => {
+          const imageSize = getDisplaySize(images[index]);
+
+          return (
+            <SwiperSlide
+              key={`${imageAltPrefix}-${index}`}
+              className={cn(
+                "w-auto!",
+                index === 0 && contentOffset && "pl-17",
+                !compact && index === 0 && contentOffset && "md:pl-19",
+              )}
+            >
               <button
                 type="button"
-                className="block cursor-pointer h-full"
+                className="block cursor-pointer overflow-hidden rounded-xl bg-muted"
                 onClick={(e) => {
                   e.stopPropagation();
                   onOpenImageViewer(originalUrls, index);
@@ -150,18 +178,17 @@ export function CommentImageGallery({
                 <ImageWithFallback
                   src={imageUrl}
                   alt={`${imageAltPrefix} ${index + 1}`}
-                  width={320}
-                  height={180}
-                  wrapperClassName="relative block h-full"
+                  width={imageSize.width}
+                  height={imageSize.height}
                   className={cn(
-                    "block h-full! max-h-45 w-auto max-w-none object-contain",
+                    "block h-full! w-full! max-h-45 max-w-80 object-contain",
                     multiImageClassName,
                   )}
                 />
               </button>
-            </div>
-          </SwiperSlide>
-        ))}
+            </SwiperSlide>
+          );
+        })}
       </Swiper>
       {canScrollPrev ? (
         <button
