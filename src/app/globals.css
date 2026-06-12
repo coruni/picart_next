@@ -499,3 +499,16 @@ body.viewer-open .fixed {
   }
 }
 
+
+img.ql-emoji-embed__img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  max-width: 32px;
+  max-height: 32px;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}

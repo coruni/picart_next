@@ -352,7 +352,7 @@ export function MessageDropdown({
                     </span>
                   </div>
                   <div
-                    className="mt-1 line-clamp-2 text-xs text-muted-foreground"
+                    className="article-summary-html mt-1 line-clamp-2 text-xs text-muted-foreground"
                     dangerouslySetInnerHTML={{
                       __html: prepareRichTextHtmlForSummary(previewText),
                     }}

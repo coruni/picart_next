@@ -49,7 +49,7 @@ export function DashboardCommentsPage() {
           return (
             <div className="min-w-0">
               <div
-                className="line-clamp-3 overflow-hidden text-sm text-foreground [&_p]:m-0 [&_span]:align-middle [&_img]:inline-block [&_img]:align-middle"
+                className="article-summary-html line-clamp-3 overflow-hidden text-sm text-foreground [&_p]:m-0 [&_span]:align-middle [&_img]:inline-block [&_img]:align-middle"
                 dangerouslySetInnerHTML={{ __html: contentHtml }}
               />
               <div className="mt-1 text-xs text-muted-foreground">
