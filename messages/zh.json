@@ -61,6 +61,7 @@
     "messageManagement": "信息管理",
     "privacySettings": "隐私设置",
     "blockedUsers": "屏蔽用户管理",
+    "contentManagement": "内容管理",
     "systemSettings": "系统设置",
     "switchLanguage": "切换语言",
     "appearanceSettings": "外观设置",
@@ -1117,6 +1118,31 @@
       "unblock": "取消屏蔽",
       "unblockConfirmTitle": "确认取消屏蔽",
       "unblockConfirmDescription": "确定要取消对 {username} 的屏蔽吗？取消后对方将可以再次给您发送私信。"
+    },
+    "content": {
+      "title": "内容管理",
+      "description": "管理您已点踩的内容，支持逐条取消点踩。",
+      "emptyDescription": "您还没有点踩任何文章",
+      "loading": "正在加载内容...",
+      "loadMore": "加载更多",
+      "retry": "重试",
+      "allLoaded": "没有更多内容了",
+      "loadFailed": "内容加载失败",
+      "removeSuccess": "已取消点踩",
+      "removeFailed": "取消点踩失败",
+      "menuTitle": "内容操作",
+      "disliked": "已点踩",
+      "confirmTitle": "确认取消点踩",
+      "confirmDescription": "确定要取消对《{title}》的点踩吗？",
+      "stats": {
+        "views": "浏览 {count}",
+        "comments": "评论 {count}"
+      },
+      "actions": {
+        "cancelDislike": "取消点踩",
+        "confirm": "确认",
+        "cancel": "取消"
+      }
     }
   },
   "response": {

@@ -40,7 +40,13 @@ export function initializeInterceptors(): Promise<void> {
         if (process.env.NODE_ENV === "development") {
           console.warn("[auth][interceptor] response error", {
             error,
-            response,
+            response: response
+              ? {
+                  status: response.status,
+                  statusText: response.statusText,
+                  url: response.url,
+                }
+              : null,
           });
         }
 

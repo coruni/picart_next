@@ -68,6 +68,7 @@
     "messageManagement": "Message Management",
     "privacySettings": "Privacy Settings",
     "blockedUsers": "Blocked Users Management",
+    "contentManagement": "Content Management",
     "systemSettings": "System Settings",
     "switchLanguage": "Switch Language",
     "appearanceSettings": "Appearance Settings",
@@ -1124,6 +1125,31 @@
       "unblock": "Unblock",
       "unblockConfirmTitle": "Confirm Unblock",
       "unblockConfirmDescription": "Are you sure you want to unblock {username}? They will be able to send you direct messages again."
+    },
+    "content": {
+      "title": "Content Management",
+      "description": "Manage the articles you disliked and remove dislikes one by one.",
+      "emptyDescription": "You haven't disliked any articles yet",
+      "loading": "Loading content...",
+      "loadMore": "Load more",
+      "retry": "Retry",
+      "allLoaded": "No more content",
+      "loadFailed": "Failed to load content",
+      "removeSuccess": "Dislike removed",
+      "removeFailed": "Failed to remove dislike",
+      "menuTitle": "Content Actions",
+      "disliked": "Disliked",
+      "confirmTitle": "Confirm Remove Dislike",
+      "confirmDescription": "Are you sure you want to remove the dislike from \"{title}\"?",
+      "stats": {
+        "views": "Views {count}",
+        "comments": "Comments {count}"
+      },
+      "actions": {
+        "cancelDislike": "Remove Dislike",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
+      }
     }
   },
   "response": {

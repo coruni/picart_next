@@ -4698,7 +4698,7 @@ export type ArticleControllerFindAllData = {
         limit?: number;
         title?: string;
         categoryId?: number;
-        type?: string;
+        type?: 'following' | 'all' | 'popular' | 'latest';
         tagId?: number;
         status?: string;
     };
@@ -6857,6 +6857,222 @@ export type ArticleControllerGetDislikeStatusData = {
 export type ArticleControllerGetDislikeStatusResponses = {
     200: unknown;
 };
+
+export type ArticleControllerGetDislikedArticlesData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: {
+        /**
+         * 页码
+         */
+        page?: number;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+    };
+    url: '/article/disliked/list';
+};
+
+export type ArticleControllerGetDislikedArticlesResponses = {
+    /**
+     * 获取成功
+     */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<{
+                id: number;
+                title: string;
+                requireLogin: boolean;
+                requireFollow: boolean;
+                requirePayment: boolean;
+                requireMembership: boolean;
+                listRequireLogin: boolean;
+                viewPrice: string;
+                type: string;
+                content: string;
+                images: Array<{
+                    url: string;
+                    width: number;
+                    height: number;
+                    size: number;
+                    auditStatus: string;
+                    original: string;
+                    thumbnails: {
+                        thumb: string;
+                        small: string;
+                        medium: string;
+                        large: string;
+                    };
+                }>;
+                videoUrl: string;
+                sort: number;
+                summary: string;
+                views: number;
+                likes: number;
+                favoriteCount: number;
+                commentCount: number;
+                isFeatured: boolean;
+                featuredAt: string;
+                isPinnedOnProfile: boolean;
+                pinnedAt: string;
+                status: string;
+                cover: string | null;
+                authorId: number;
+                author: {
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: string;
+                    banReason: string | null;
+                    avatar: string;
+                    description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: string;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    likes: number;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string | null;
+                    membershipEndDate: string | null;
+                    lastLoginAt: string;
+                    lastActiveAt: string;
+                    inviterId: number;
+                    myInviteCode: string;
+                    inviteCode: string | null;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    equippedDecorations: {
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                            bubbleColor: string | null;
+                        };
+                        COMMENT_BUBBLE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                            bubbleColor: string;
+                        };
+                        ACHIEVEMENT_BADGE: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                            bubbleColor: unknown;
+                        };
+                    };
+                    isMember: boolean;
+                    isFollowed: boolean;
+                    isBlocked: boolean;
+                };
+                category: {
+                    id: number;
+                    name: string;
+                    description: string;
+                    parentId: number;
+                    link: string;
+                    parent: {
+                        id: number;
+                        name: string;
+                        description: unknown;
+                        parentId: unknown;
+                        link: unknown;
+                        avatar: string | null;
+                        background: string | null;
+                        cover: string | null;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                    avatar: string;
+                    background: string;
+                    cover: string;
+                    sort: number;
+                    status: string;
+                    articleCount: number;
+                    followCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                tags: Array<{
+                    id?: number;
+                    name?: string;
+                    description?: string;
+                    avatar?: string;
+                    background?: string;
+                    cover?: string;
+                    sort?: number;
+                    articleCount?: number;
+                    followCount?: number;
+                    createdAt?: string;
+                    updatedAt?: string;
+                }>;
+                downloads: Array<string>;
+                activityId: number;
+                allowReprint: boolean;
+                downloadCount: number;
+                createdAt: string;
+                updatedAt: string;
+                dislikedAt: string;
+                dislikeUpdatedAt: string;
+                dislikeReason: string;
+                hotScore: number;
+                isHot: boolean;
+                isLiked: boolean;
+                isPaid: boolean;
+                imageCount: number;
+                reactionStats: {
+                    like: number;
+                    love: number;
+                    haha: number;
+                    wow: number;
+                    sad: number;
+                    angry: number;
+                    dislike: number;
+                };
+                userReaction: string | null;
+                isFavorited: boolean;
+            }>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
+};
+
+export type ArticleControllerGetDislikedArticlesResponse = ArticleControllerGetDislikedArticlesResponses[keyof ArticleControllerGetDislikedArticlesResponses];
 
 export type ArticleControllerUpdateBrowseProgressData = {
     body: RecordBrowseHistoryDto;
@@ -15349,84 +15565,6 @@ export type AchievementControllerUpdateResponses = {
      */
     200: unknown;
 };
-
-export type AchievementControllerFindByUserIdData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        id: string;
-    };
-    query?: {
-        keyword?: string;
-        sortBy?: string;
-        sortOrder?: string;
-    };
-    url: '/achievement/user/{id}';
-};
-
-export type AchievementControllerFindByUserIdResponses = {
-    200: {
-        code: number;
-        message: string;
-        data: Array<{
-            id: number;
-            code: string;
-            name: string;
-            description: string;
-            icon: string;
-            type: string;
-            rarity: string;
-            condition: {
-                type: string;
-                event: string;
-                target: number;
-            };
-            rewardPoints: number;
-            rewardExp: number;
-            rewardDecorationId: number | null;
-            hidden: boolean;
-            sort: number;
-            enabled: boolean;
-            createdAt: string;
-            updatedAt: string;
-            rewardDecoration: {
-                id: number;
-                name: string;
-                type: string;
-                description: string;
-                imageUrl: string;
-                previewUrl: string;
-                rarity: string;
-                bubbleColor: unknown;
-                obtainMethod: string;
-                isPurchasable: boolean;
-                price: string;
-                isPermanent: boolean;
-                validDays: unknown;
-                sort: number;
-                status: string;
-                activityId: unknown;
-                achievementId: number;
-                requiredLikes: number;
-                requiredComments: number;
-                createdAt: string;
-                updatedAt: string;
-            } | null;
-            progress: number;
-            completed: boolean;
-            completedAt: string | null;
-            claimed: boolean;
-            claimedAt: unknown;
-        }>;
-    };
-};
-
-export type AchievementControllerFindByUserIdResponse = AchievementControllerFindByUserIdResponses[keyof AchievementControllerFindByUserIdResponses];
 
 export type AchievementControllerClaimRewardData = {
     body?: never;

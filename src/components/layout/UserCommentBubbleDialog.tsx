@@ -13,7 +13,7 @@ import { MODAL_IDS } from "@/lib/modal-helpers";
 import { useModalStore } from "@/stores/useModalStore";
 import { useUserStore } from "@/stores/useUserStore";
 import { DecorationControllerFindAllResponse } from "@/types";
-import { CheckCircle2Icon, ChevronLeft } from "lucide-react";
+import { CheckCircle2Icon, ChevronLeft, Lock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -329,7 +329,10 @@ export function UserCommentBubbleDialog() {
                   <button
                     key={bubble.id}
                     onClick={() => {
-                      setSelectedBubble({ ...bubble, isOwned: true });
+                      setSelectedBubble({
+                        ...bubble,
+                        isOwned: bubble.isOwned,
+                      } as SelectedBubble);
                       setShowMobileDetail(true);
                     }}
                     className={cn(
@@ -345,8 +348,16 @@ export function UserCommentBubbleDialog() {
                         <CheckCircle2Icon size={16} className="text-primary" />
                       </div>
                     )}
+                    {!bubble.isOwned && (
+                      <>
+                        <div className="absolute left-2 top-2 z-10 rounded-full bg-black/60 p-1 text-white">
+                          <Lock size={14} />
+                        </div>
+                        <div className="absolute inset-0 z-0 rounded-xl bg-black/28" />
+                      </>
+                    )}
 
-                    <div className="flex flex-col items-center justify-center h-full p-4 gap-2">
+                    <div className="relative z-1 flex h-full flex-col items-center justify-center gap-2 p-4">
                       <div className="pt-6 w-full relative">
                         <div
                           className="h-11 w-full text-center leading-11 rounded-lg text-xs text-muted-foreground"

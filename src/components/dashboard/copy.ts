@@ -108,6 +108,14 @@ const copy = {
         ACHIEVEMENT: "成就",
         DEFAULT: "默认",
       },
+      decorationActivityType: {
+        LIKE: "点赞",
+        COMMENT: "评论",
+        SHARE: "分享",
+        RECHARGE: "充值",
+        SIGN_IN: "签到",
+        CUSTOM: "自定义",
+      },
       // 积分活动类型
       activityType: {
         INSTANT: "即时",
@@ -153,6 +161,7 @@ const copy = {
       banners: "轮播",
       reports: "举报",
       decorations: "装饰品",
+      decorationActivities: "装扮活动",
       emojis: "表情",
       achievements: "成就",
       search: "搜索",
@@ -286,6 +295,23 @@ const copy = {
         title: "装饰品管理",
         description: "查看装饰品状态、类型、稀有度和价格信息。",
       },
+      decorationActivities: {
+        title: "装扮活动管理",
+        description: "管理装扮奖励活动、达成条件与生效周期。",
+        fields: {
+          rewardDecorationId: "奖励装扮",
+          articleId: "关联文章 ID",
+          requiredShares: "所需分享数",
+          requiredRecharge: "所需充值金额",
+          requiredSignInDays: "所需签到天数",
+          startTime: "开始日期",
+          endTime: "结束日期",
+        },
+        columns: {
+          requirement: "达成条件",
+          period: "活动周期",
+        },
+      },
       emojis: {
         title: "表情管理",
         description: "查看表情状态、分类、使用次数和公开状态。",
@@ -387,6 +413,7 @@ const copy = {
       bannerTitlePlaceholder: "输入轮播标题",
       reportPlaceholder: "搜索举报原因",
       decorationPlaceholder: "搜索装饰品名称",
+      decorationActivityPlaceholder: "输入活动名称",
       emojiPlaceholder: "搜索表情名称",
       achievementPlaceholder: "搜索成就名称",
       status: "状态",
@@ -452,6 +479,7 @@ const copy = {
       banners: "没有匹配的轮播。",
       reports: "没有匹配的举报。",
       decorations: "没有匹配的装饰品。",
+      decorationActivities: "没有匹配的装扮活动。",
       emojis: "没有匹配的表情。",
       achievements: "没有匹配的成就。",
     },
@@ -585,6 +613,14 @@ const copy = {
         ACHIEVEMENT: "Achievement",
         DEFAULT: "Default",
       },
+      decorationActivityType: {
+        LIKE: "Like",
+        COMMENT: "Comment",
+        SHARE: "Share",
+        RECHARGE: "Recharge",
+        SIGN_IN: "Sign In",
+        CUSTOM: "Custom",
+      },
       // Activity type
       activityType: {
         INSTANT: "Instant",
@@ -630,6 +666,7 @@ const copy = {
       banners: "Banners",
       reports: "Reports",
       decorations: "Decorations",
+      decorationActivities: "Decoration Activities",
       emojis: "Emojis",
       achievements: "Achievements",
       search: "Search",
@@ -771,6 +808,24 @@ const copy = {
         title: "Decoration Management",
         description: "Review decoration status, type, rarity, and pricing.",
       },
+      decorationActivities: {
+        title: "Decoration Activity Management",
+        description:
+          "Manage decoration reward activities, completion conditions, and active periods.",
+        fields: {
+          rewardDecorationId: "Reward Decoration",
+          articleId: "Related Article ID",
+          requiredShares: "Required Shares",
+          requiredRecharge: "Required Recharge",
+          requiredSignInDays: "Required Sign-in Days",
+          startTime: "Start Date",
+          endTime: "End Date",
+        },
+        columns: {
+          requirement: "Requirement",
+          period: "Period",
+        },
+      },
       emojis: {
         title: "Emoji Management",
         description: "Review emoji status, category, usage count and public status.",
@@ -873,6 +928,7 @@ const copy = {
       bannerTitlePlaceholder: "Enter banner title",
       reportPlaceholder: "Search report reason",
       decorationPlaceholder: "Search decoration name",
+      decorationActivityPlaceholder: "Enter activity name",
       emojiPlaceholder: "Search emoji name",
       achievementPlaceholder: "Search achievement name",
       status: "Status",
@@ -937,6 +993,7 @@ const copy = {
       banners: "No matching banners.",
       reports: "No matching reports.",
       decorations: "No matching decorations.",
+      decorationActivities: "No matching decoration activities.",
       emojis: "No matching emojis.",
       achievements: "No matching achievements.",
     },

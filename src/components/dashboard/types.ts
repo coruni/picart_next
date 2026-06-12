@@ -4,6 +4,7 @@ import type {
   CommentControllerFindAllCommentsResponse,
   ConfigControllerGetAdvertisementConfigResponse,
   ConfigControllerGetPublicConfigsResponse,
+  DecorationControllerFindAllActivitiesResponse,
   OrderControllerGetAllOrdersResponse,
   PermissionControllerFindAllResponse,
   PointsControllerFindAllActivitiesResponse,
@@ -39,6 +40,8 @@ export type DashboardAchievementItem =
   NonNullable<AchievementControllerFindAllResponse["data"]>[number];
 export type DashboardPointsActivityItem =
   PointsControllerFindAllActivitiesResponse["data"][number];
+export type DashboardDecorationActivityItem =
+  NonNullable<DecorationControllerFindAllActivitiesResponse["data"]["data"]>[number];
 export type DashboardPublicConfig = NonNullable<
   ConfigControllerGetPublicConfigsResponse["data"]
 >;

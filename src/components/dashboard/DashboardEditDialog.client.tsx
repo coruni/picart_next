@@ -42,6 +42,7 @@ type DashboardEditFieldType =
 export type DashboardEditField = {
   name: string;
   label: string;
+  required?: boolean;
   type?: DashboardEditFieldType;
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
@@ -282,6 +283,8 @@ export function DashboardEditDialog({
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imageScale, setImageScale] = useState(1);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const normalizedInitialValues = useMemo(() => {
     return fields.reduce<
@@ -299,6 +302,8 @@ export function DashboardEditDialog({
       setEditingImageField(null);
       setSelectedImage(null);
       setImageScale(1);
+      setErrors({});
+      setTouched({});
     }
   }, [normalizedInitialValues, open]);
 
@@ -329,20 +334,6 @@ export function DashboardEditDialog({
     return getImageEditorMode(field) === "avatar"
       ? "aspect-square h-auto w-full max-w-52"
       : "h-36";
-  };
-
-  const getImagePreviewObjectClassName = (field: DashboardEditField) => {
-    if (field.imageObjectFit === "contain") {
-      return "object-contain";
-    }
-
-    if (field.imageObjectFit === "cover") {
-      return "object-cover";
-    }
-
-    return getImageEditorMode(field) === "avatar"
-      ? "object-contain"
-      : "object-cover";
   };
 
   const handleImageSelect =
@@ -473,6 +464,110 @@ export function DashboardEditDialog({
     return String(value).trim();
   };
 
+  const getRequiredMessage = (field: DashboardEditField) =>
+    locale === "en"
+      ? `${field.label} is required`
+      : `${field.label}为必填项`;
+
+  const validateField = (
+    field: DashboardEditField,
+    normalizedValue: string | number | boolean | undefined,
+  ) => {
+    if (!field.required) {
+      return "";
+    }
+
+    if (field.type === "switch") {
+      return "";
+    }
+
+    if (
+      normalizedValue === undefined ||
+      normalizedValue === "" ||
+      normalizedValue === null
+    ) {
+      return getRequiredMessage(field);
+    }
+
+    return "";
+  };
+
+  const getNormalizedValues = () =>
+    fields.reduce<Record<string, string | number | boolean | undefined>>(
+      (result, field) => {
+        result[field.name] = normalizeSubmitValue(field);
+        return result;
+      },
+      {},
+    );
+
+  const handleSubmit = async () => {
+    const normalizedValues = getNormalizedValues();
+    const nextErrors = fields.reduce<Record<string, string>>((result, field) => {
+      const errorMessage = validateField(field, normalizedValues[field.name]);
+      if (errorMessage) {
+        result[field.name] = errorMessage;
+      }
+      return result;
+    }, {});
+
+    if (Object.keys(nextErrors).length > 0) {
+      setErrors(nextErrors);
+      setTouched(
+        fields.reduce<Record<string, boolean>>((result, field) => {
+          result[field.name] = true;
+          return result;
+        }, {}),
+      );
+      return;
+    }
+
+    setErrors({});
+    await onSubmit(normalizedValues);
+  };
+
+  const updateFieldValue = (
+    field: DashboardEditField,
+    nextValue: string | number | boolean | null | undefined,
+  ) => {
+    setValues((previous) => {
+      const nextValues = {
+        ...previous,
+        [field.name]: nextValue,
+      };
+
+      if (touched[field.name]) {
+        const normalizedValue =
+          field.type === "switch"
+            ? Boolean(nextValue)
+            : field.type === "number"
+              ? nextValue === "" || nextValue == null
+                ? undefined
+                : Number.isNaN(Number(nextValue))
+                  ? undefined
+                  : Number(nextValue)
+              : nextValue == null
+                ? undefined
+                : String(nextValue).trim();
+
+        setErrors((previousErrors) => {
+          const nextErrors = { ...previousErrors };
+          const errorMessage = validateField(field, normalizedValue);
+
+          if (errorMessage) {
+            nextErrors[field.name] = errorMessage;
+          } else {
+            delete nextErrors[field.name];
+          }
+
+          return nextErrors;
+        });
+      }
+
+      return nextValues;
+    });
+  };
+
   return (
     <Dialog
       open={open}
@@ -485,16 +580,11 @@ export function DashboardEditDialog({
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
           <Form
             className="space-y-4"
+            errors={errors}
+            touched={touched}
             onSubmit={(event) => {
               event.preventDefault();
-              void onSubmit(
-                fields.reduce<
-                  Record<string, string | number | boolean | undefined>
-                >((result, field) => {
-                  result[field.name] = normalizeSubmitValue(field);
-                  return result;
-                }, {}),
-              );
+              void handleSubmit();
             }}
           >
             {fields.map((field) => {
@@ -506,6 +596,7 @@ export function DashboardEditDialog({
                   key={field.name}
                   name={field.name}
                   label={field.label}
+                  required={field.required}
                 >
                   {type === "textarea" ? (
                     <textarea
@@ -517,10 +608,7 @@ export function DashboardEditDialog({
                             : String(value)
                       }
                       onChange={(event) =>
-                        setValues((previous) => ({
-                          ...previous,
-                          [field.name]: event.target.value,
-                        }))
+                        updateFieldValue(field, event.target.value)
                       }
                       placeholder={field.placeholder}
                       className={cn(
@@ -542,10 +630,7 @@ export function DashboardEditDialog({
                       step={field.step}
                       placeholder={field.placeholder}
                       onChange={(event) =>
-                        setValues((previous) => ({
-                          ...previous,
-                          [field.name]: event.target.value,
-                        }))
+                        updateFieldValue(field, event.target.value)
                       }
                     />
                   ) : null}
@@ -554,10 +639,7 @@ export function DashboardEditDialog({
                       <Switch
                         checked={Boolean(value)}
                         onCheckedChange={(nextValue) =>
-                          setValues((previous) => ({
-                            ...previous,
-                            [field.name]: nextValue,
-                          }))
+                          updateFieldValue(field, nextValue)
                         }
                       />
                     </div>
@@ -568,20 +650,14 @@ export function DashboardEditDialog({
                         field={field}
                         value={typeof value === "string" ? value : ""}
                         onChange={(nextValue) =>
-                          setValues((previous) => ({
-                            ...previous,
-                            [field.name]: nextValue,
-                          }))
+                          updateFieldValue(field, nextValue)
                         }
                       />
                     ) : (
                       <Select
                         value={typeof value === "string" ? value : ""}
                         onChange={(nextValue) =>
-                          setValues((previous) => ({
-                            ...previous,
-                            [field.name]: nextValue,
-                          }))
+                          updateFieldValue(field, nextValue)
                         }
                         options={field.options || []}
                         placeholder={field.placeholder}
@@ -592,10 +668,7 @@ export function DashboardEditDialog({
                     <CategorySelect
                       value={typeof value === "string" ? value : ""}
                       onChange={(nextValue) =>
-                        setValues((previous) => ({
-                          ...previous,
-                          [field.name]: nextValue,
-                        }))
+                        updateFieldValue(field, nextValue)
                       }
                       placeholder={field.placeholder}
                     />
@@ -656,10 +729,7 @@ export function DashboardEditDialog({
                       }
                       placeholder={field.placeholder}
                       onChange={(event) =>
-                        setValues((previous) => ({
-                          ...previous,
-                          [field.name]: event.target.value,
-                        }))
+                        updateFieldValue(field, event.target.value)
                       }
                     />
                   ) : null}
@@ -674,10 +744,7 @@ export function DashboardEditDialog({
                       }
                       placeholder={field.placeholder}
                       onChange={(newValue) =>
-                        setValues((previous) => ({
-                          ...previous,
-                          [field.name]: newValue,
-                        }))
+                        updateFieldValue(field, newValue)
                       }
                     />
                   ) : null}
@@ -685,10 +752,7 @@ export function DashboardEditDialog({
                     <TimePicker
                       value={typeof value === "string" ? value : ""}
                       onChange={(nextValue) =>
-                        setValues((previous) => ({
-                          ...previous,
-                          [field.name]: nextValue,
-                        }))
+                        updateFieldValue(field, nextValue)
                       }
                       placeholder={field.placeholder}
                     />
@@ -712,14 +776,7 @@ export function DashboardEditDialog({
             className="h-7 rounded-full px-2"
             loading={loading}
             onClick={() => {
-              void onSubmit(
-                fields.reduce<
-                  Record<string, string | number | boolean | undefined>
-                >((result, field) => {
-                  result[field.name] = normalizeSubmitValue(field);
-                  return result;
-                }, {}),
-              );
+              void handleSubmit();
             }}
           >
             {copy.common.save}

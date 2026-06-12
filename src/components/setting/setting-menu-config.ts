@@ -1,4 +1,11 @@
-import { Lock, MessageCircle, Monitor, User, UserRoundX } from "lucide-react";
+import {
+  Lock,
+  MessageCircle,
+  Monitor,
+  ThumbsDown,
+  User,
+  UserRoundX,
+} from "lucide-react";
 
 export const settingMenuItems = [
   {
@@ -20,6 +27,11 @@ export const settingMenuItems = [
     labelKey: "blockedUsers",
     href: "/setting/blocked-users",
     icon: UserRoundX,
+  },
+  {
+    labelKey: "contentManagement",
+    href: "/setting/content",
+    icon: ThumbsDown,
   },
   {
     labelKey: "systemSettings",

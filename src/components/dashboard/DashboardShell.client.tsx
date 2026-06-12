@@ -25,6 +25,7 @@ import {
   TriangleAlert,
   Trophy,
   X,
+  Zap,
 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
@@ -131,6 +132,11 @@ export function DashboardShell({ children }: DashboardShellProps) {
       href: "/dashboard/decorations",
       label: copy.nav.decorations,
       icon: Sparkles,
+    },
+    {
+      href: "/dashboard/decoration-activities",
+      label: copy.nav.decorationActivities,
+      icon: Zap,
     },
     {
       href: "/dashboard/emojis",

@@ -12,7 +12,7 @@ import { cn, formatExpiryTime } from "@/lib";
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { useModalStore } from "@/stores/useModalStore";
 import { DecorationControllerFindAllResponse } from "@/types";
-import { CheckCircle2Icon } from "lucide-react";
+import { CheckCircle2Icon, Lock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
@@ -287,7 +287,12 @@ export function UserAvatarFarmeDialog() {
                 {avatarFrames.map((frame) => (
                   <button
                     key={frame.id}
-                    onClick={() => setSelectedFrame({ ...frame, isOwned: true })}
+                    onClick={() =>
+                      setSelectedFrame({
+                        ...frame,
+                        isOwned: frame.isOwned,
+                      } as SelectedFrame)
+                    }
                     className={cn(
                       "relative aspect-square cursor-pointer rounded-xl transition-all ring-0 outline-0",
                       "bg-border hover:bg-primary/15",
@@ -299,6 +304,14 @@ export function UserAvatarFarmeDialog() {
                       <div className="absolute top-2 right-2">
                         <CheckCircle2Icon size={16} className="text-primary" />
                       </div>
+                    )}
+                    {!frame.isOwned && (
+                      <>
+                        <div className="absolute left-2 top-2 z-10 rounded-full bg-black/60 p-1 text-white">
+                          <Lock size={14} />
+                        </div>
+                        <div className="absolute inset-0 rounded-xl bg-black/28" />
+                      </>
                     )}
 
                     <div className="absolute inset-0 flex items-center justify-center p-2">
