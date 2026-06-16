@@ -35,20 +35,7 @@ type SidebarProps = {
   tabSticky?: boolean;
 };
 
-function shouldRenderRandomBanner(userId?: number | string) {
-  if (userId === undefined || userId === null) {
-    return true;
-  }
 
-  const value = String(userId);
-  let hash = 0;
-
-  for (let i = 0; i < value.length; i += 1) {
-    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
-  }
-
-  return hash % 2 === 0;
-}
 
 export async function Sidebar({
   showLogin = true,
@@ -93,9 +80,7 @@ export async function Sidebar({
         }
       : { data: [], meta: { total: 0, page: 0, limit: 0, totalPages: 0 } };
 
-  const shouldShowBanner =
-    showBanner &&
-    (randomBanner ? shouldRenderRandomBanner(currentUser?.id) : true);
+  const shouldShowBanner = showBanner;
 
   const sidebarItems = [
     showArticleCreate && currentUser && (
@@ -104,7 +89,7 @@ export async function Sidebar({
     showSearchHistory && <SearchHistory key="search-history" />,
     showHotSearch && <HotSearch key="hot-search" />,
     shouldShowBanner && (
-      <Banner key="sidebar-banner" className=" aspect-8/3 w-full rounded-xl" />
+      <Banner key="sidebar-banner" className="aspect-8/3 w-full rounded-xl" probability={0.4}/>
     ),
     showRecommendUser && <RecommendUserWidget key="recommend-user" />,
     showRecommendTag && <RecommendTagWidget key="recommend-tag" />,

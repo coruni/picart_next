@@ -6,28 +6,10 @@ import { BannerCarousel } from "./BannerCarousel";
 type BannerProps = {
   className?: string;
   autoplayDelay?: number;
+  probability?: number;
 };
 
 type BannerItem = ActiveBanners[number];
-type BannerField =
-  | "imageUrl"
-  | "image"
-  | "cover"
-  | "coverUrl"
-  | "bannerUrl"
-  | "pic"
-  | "picture"
-  | "url"
-  | "link"
-  | "linkUrl"
-  | "href"
-  | "targetUrl"
-  | "jumpUrl"
-  | "title"
-  | "name"
-  | "alt"
-  | "description";
-
 export type BannerHrefType = "internal" | "external";
 
 export type ResolvedBannerItem = {
@@ -37,48 +19,19 @@ export type ResolvedBannerItem = {
   title: string;
 };
 
-function pickStringValue(
-  source: BannerItem,
-  keys: BannerField[],
-): string | undefined {
-  for (const key of keys) {
-    const value = (source as Record<string, unknown>)[key];
-    if (typeof value === "string" && value.trim()) {
-      return value.trim();
-    }
-  }
-
-  return undefined;
-}
-
 function resolveBannerData(banner: unknown): ResolvedBannerItem | null {
   if (!banner || typeof banner !== "object") {
     return null;
   }
 
   const record = banner as BannerItem;
-  const image = pickStringValue(record, [
-    "imageUrl",
-    "image",
-    "cover",
-    "coverUrl",
-    "bannerUrl",
-    "pic",
-    "picture",
-    "url",
-  ]);
+  const image = (record as Record<string, unknown>).imageUrl as string;
 
-  if (!image) {
+  if (!image || typeof image !== "string" || !image.trim()) {
     return null;
   }
 
-  const rawHref = pickStringValue(record, [
-    "link",
-    "linkUrl",
-    "href",
-    "targetUrl",
-    "jumpUrl",
-  ]);
+  const rawHref = (record as Record<string, unknown>).linkUrl as string;
   const hrefType = rawHref
     ? /^https?:\/\//i.test(rawHref) || rawHref.startsWith("//")
       ? "external"
@@ -87,17 +40,21 @@ function resolveBannerData(banner: unknown): ResolvedBannerItem | null {
         : undefined
     : undefined;
 
+  const title = (record as Record<string, unknown>).title as string;
+
   return {
-    image,
+    image: image.trim(),
     href: hrefType ? rawHref : undefined,
     hrefType,
-    title:
-      pickStringValue(record, ["title", "name", "alt", "description"]) ||
-      "banner",
+    title: (typeof title === "string" && title.trim()) || "banner",
   };
 }
 
-export async function Banner({ className, autoplayDelay = 4000 }: BannerProps) {
+export async function Banner({ className, autoplayDelay = 4000, probability = 0.3 }: BannerProps) {
+  if (Math.random() > probability) {
+    return null;
+  }
+
   let banners: ActiveBanners = [];
 
   try {
