@@ -7,10 +7,10 @@ import { useTranslations } from "next-intl";
 import { memo } from "react";
 import { Button } from "../ui/Button";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "../ui/Dialog";
 
 type ArticleDownloadsPanelProps = {
@@ -57,7 +57,7 @@ function ArticleDownloadsPanel({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md rounded-2xl">
-        <DialogHeader className="py-0! pb-4!">
+        <DialogHeader className="p-0! pb-4!">
           <DialogTitle className="flex items-center gap-2">
             <Download size={20} />
             {t("articleDownloads.title")}
@@ -167,7 +167,7 @@ function ArticleDownloadsPanel({
           )}
         </div>
 
-        <div className="flex justify-end gap-2 pt-2">
+        <div className="flex justify-end gap-2 pt-4">
           <Button variant="outline" onClick={onClose} className="rounded-full">
             {t("common.close")}
           </Button>

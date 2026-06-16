@@ -465,9 +465,7 @@ export function DashboardEditDialog({
   };
 
   const getRequiredMessage = (field: DashboardEditField) =>
-    locale === "en"
-      ? `${field.label} is required`
-      : `${field.label}为必填项`;
+    locale === "en" ? `${field.label} is required` : `${field.label}为必填项`;
 
   const validateField = (
     field: DashboardEditField,
@@ -503,13 +501,16 @@ export function DashboardEditDialog({
 
   const handleSubmit = async () => {
     const normalizedValues = getNormalizedValues();
-    const nextErrors = fields.reduce<Record<string, string>>((result, field) => {
-      const errorMessage = validateField(field, normalizedValues[field.name]);
-      if (errorMessage) {
-        result[field.name] = errorMessage;
-      }
-      return result;
-    }, {});
+    const nextErrors = fields.reduce<Record<string, string>>(
+      (result, field) => {
+        const errorMessage = validateField(field, normalizedValues[field.name]);
+        if (errorMessage) {
+          result[field.name] = errorMessage;
+        }
+        return result;
+      },
+      {},
+    );
 
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
@@ -574,10 +575,10 @@ export function DashboardEditDialog({
       onOpenChange={(nextOpen) => !loading && onOpenChange(nextOpen)}
     >
       <DialogContent className="flex max-h-[88vh] max-w-2xl flex-col overflow-hidden p-0">
-        <DialogHeader className="shrink-0 border-b border-border px-5 py-4 mb-0!">
+        <DialogHeader className="shrink-0 border-b border-border px-4 py-4 mb-0!">
           <DialogTitle className="text-sm font-semibold ">{title}</DialogTitle>
         </DialogHeader>
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
           <Form
             className="space-y-4"
             errors={errors}
@@ -743,9 +744,7 @@ export function DashboardEditDialog({
                             : String(value)
                       }
                       placeholder={field.placeholder}
-                      onChange={(newValue) =>
-                        updateFieldValue(field, newValue)
-                      }
+                      onChange={(newValue) => updateFieldValue(field, newValue)}
                     />
                   ) : null}
                   {type === "time" ? (
@@ -762,10 +761,10 @@ export function DashboardEditDialog({
             })}
           </Form>
         </div>
-        <DialogFooter className="shrink-0 mt-0! border-t border-border px-6 py-4 gap-4!">
+        <DialogFooter className="shrink-0 mt-0! border-t border-border  py-4 gap-4!">
           <Button
             variant="outline"
-            className="h-7 rounded-full px-2"
+            className="h-7 rounded-full px-4"
             onClick={() => onOpenChange(false)}
             disabled={loading}
           >
@@ -773,7 +772,7 @@ export function DashboardEditDialog({
           </Button>
           <Button
             variant="primary"
-            className="h-7 rounded-full px-2"
+            className="h-7 rounded-full px-4"
             loading={loading}
             onClick={() => {
               void handleSubmit();
