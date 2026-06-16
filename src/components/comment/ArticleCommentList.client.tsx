@@ -254,7 +254,7 @@ export function ArticleCommentList({
         )}
         <div
           className={cn(
-            "border-b border-border px-6 pb-4",
+            "border-b border-border px-4 pb-4",
             compact && "px-4",
             stickySort && "sticky top-0 z-10 bg-card",
           )}

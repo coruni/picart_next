@@ -266,7 +266,7 @@ export function CollectionEditDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="mt-2 min-h-0 flex-1 overflow-y-auto px-6!">
+        <div className="mt-2 min-h-0 flex-1 overflow-y-auto px-4!">
           {editorMode && selectedImage ? (
             <div className="flex flex-col gap-4 py-2">
               {!isEditingAvatar ? (
@@ -486,7 +486,7 @@ export function CollectionEditDialog({
         </div>
 
         {editorMode && selectedImage ? (
-          <DialogFooter className="mt-2 flex shrink-0 justify-end gap-4! px-6 pb-4">
+          <DialogFooter className="mt-2 flex shrink-0 justify-end gap-4! px-4 pb-4">
             <Button
               type="button"
               variant="outline"
@@ -507,7 +507,7 @@ export function CollectionEditDialog({
             </Button>
           </DialogFooter>
         ) : (
-          <DialogFooter className="mt-6 flex shrink-0 justify-end gap-4! px-6 pb-4">
+          <DialogFooter className="flex shrink-0 justify-end gap-4! px-4 pb-4">
             <Button
               type="button"
               variant="outline"

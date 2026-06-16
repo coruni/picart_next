@@ -43,7 +43,7 @@ export function DeleteConfirmDialog({
         <div className="py-4 px-6">
           <p className="text-sm text-muted-foreground">{description}</p>
         </div>
-        <DialogFooter className="px-6 pb-4 gap-4!">
+        <DialogFooter className="px-4 pb-4 gap-4!">
           <Button
             variant="outline"
             className="rounded-full"

@@ -6,12 +6,12 @@ import { Button } from "@/components/ui/Button";
 import { CategorySelect } from "@/components/ui/CategorySelect";
 import { DatePicker } from "@/components/ui/DatePicker";
 import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogOverlay,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogOverlay,
+  DialogTitle,
 } from "@/components/ui/Dialog";
 import { Form, FormField } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
@@ -793,7 +793,7 @@ export function DashboardEditDialog({
             <DialogHeader>
               <DialogTitle>{editingImageField.label}</DialogTitle>
             </DialogHeader>
-            <div className="flex flex-col gap-4 py-2">
+            <div className="flex flex-col gap-4 py-2 px-6">
               <div
                 className={cn(
                   "overflow-hidden rounded-xl",

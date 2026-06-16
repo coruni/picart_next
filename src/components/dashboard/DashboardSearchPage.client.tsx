@@ -261,7 +261,7 @@ export function DashboardSearchPage() {
               {copy.pages.search.clearConfirm}
             </p>
           </div>
-          <DialogFooter className="px-6 pb-4 gap-4!">
+          <DialogFooter className="px-4 pb-4 gap-4!">
             <Button
               variant="outline"
               className="rounded-full"

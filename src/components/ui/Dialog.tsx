@@ -266,7 +266,7 @@ export function DialogHeader({ className, children }: DialogHeaderProps) {
   return (
     <div
       className={cn(
-        "flex  py-4 flex-col space-y-1.5 text-center sm:text-left text-sm",
+        "flex py-4 flex-col space-y-1.5 text-center sm:text-left text-sm px-6",
         className,
       )}
     >
@@ -277,7 +277,7 @@ export function DialogHeader({ className, children }: DialogHeaderProps) {
 
 export function DialogFooter({ className, children }: DialogFooterProps) {
   return (
-    <div className={cn("mt-6 flex gap-2 sm:justify-end sm:gap-2", className)}>
+    <div className={cn("mt-4 flex gap-2 sm:justify-end sm:gap-2 px-6", className)}>
       {children}
     </div>
   );

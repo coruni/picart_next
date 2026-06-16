@@ -6,8 +6,8 @@ import {
   emojiControllerUpdate,
   emojiControllerUpload,
 } from "@/api";
-import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { DropdownMenu, type MenuItem } from "@/components/shared";
+import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Button } from "@/components/ui/Button";
 import {
   Dialog,
@@ -18,15 +18,15 @@ import {
 } from "@/components/ui/Dialog";
 import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
-import { useLocale, useTranslations } from "next-intl";
 import { MoreHorizontal, PencilLine, Plus, Trash2 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
-import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardProTable } from "./DashboardProTable.client";
 import type { DashboardTableColumn } from "./DashboardTable";
+import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
 import { useDashboardGuard } from "./useDashboardGuard";
 import { formatDashboardDate } from "./utils";
 
@@ -411,7 +411,7 @@ function EmojiEditDialog({
             <Switch checked={isPublic} onCheckedChange={setIsPublic} />
           </div>
         </div>
-        <DialogFooter className="px-6 pb-4 gap-4!">
+        <DialogFooter className="px-4 pb-4 gap-4!">
           <Button
             variant="outline"
             className="rounded-full"
@@ -590,7 +590,7 @@ function EmojiCreateDialog({
             <Switch checked={isPublic} onCheckedChange={setIsPublic} />
           </div>
         </div>
-        <DialogFooter className="gap-4! px-6 pb-4">
+        <DialogFooter className="gap-4! px-4 pb-4">
           <Button
             variant="outline"
             className="rounded-full"
