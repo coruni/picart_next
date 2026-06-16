@@ -367,9 +367,6 @@ var translate = {
 			isReload = true; //标记要刷新页面
 		}
 		
-		translate.to = languageName;
-		translate.storage.set('to',languageName);	//设置目标翻译语言
-		
 		/*
 			1. 先触发父级，免得当前刷新了，导致父级不执行翻译了
 		*/
@@ -1460,7 +1457,7 @@ var translate = {
 							}
 						}
 						if(isFind){
-							break;
+							continue;
 						}
 						documents.push.apply(documents, [item]);
 					}

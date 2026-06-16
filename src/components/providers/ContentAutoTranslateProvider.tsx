@@ -385,8 +385,16 @@ export function ContentAutoTranslateProvider() {
         const pending = getPendingTranslateDocuments();
         if (pending.length === 0) return;
 
+        // Only translate new content, do NOT call changeLanguage here.
+        // changeLanguage calls reset() internally which rolls back all previously
+        // translated nodes, then re-translates only the limited setDocuments scope.
+        // Since translate.to is already set from the initial changeLanguage call,
+        // calling execute() directly through runTranslateForDocuments is sufficient.
+        if (!translate.to && targetLanguage) {
+          translate.to = targetLanguage;
+          translate.storage?.set?.("to", targetLanguage);
+        }
         runTranslateForDocuments(pending);
-        translate.changeLanguage?.(targetLanguage);
       }, MUTATION_TRANSLATE_DEBOUNCE_MS);
     };
 
