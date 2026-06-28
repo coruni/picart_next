@@ -2,6 +2,7 @@
 
 import { decorationControllerGetMyDecorations } from "@/api/sdk.gen";
 import type { DecorationControllerGetMyDecorationsResponse } from "@/api/types.gen";
+import AvatarBanner from "@/assets/images/account/decoration/assets_avatar_frame_banner.png";
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { formatDate } from "@/lib/utils";
 import { useModalStore } from "@/stores/useModalStore";
@@ -9,7 +10,6 @@ import { CheckCircle2Icon, ChevronRight, Clock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
-
 type Decoration =
   DecorationControllerGetMyDecorationsResponse["data"]["data"][0];
 
@@ -73,7 +73,7 @@ export function AvatarFrameList() {
         <div
           className="flex h-20 w-full items-center justify-between gap-4 rounded-xl bg-cover bg-center bg-no-repeat px-4 cursor-pointer"
           style={{
-            backgroundImage: "url(/account/decoration/avatar_frame_banner.png)",
+            backgroundImage: `url(${AvatarBanner.src})`,
           }}
         >
           <div className="flex flex-col">

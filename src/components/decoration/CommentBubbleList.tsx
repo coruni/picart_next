@@ -2,6 +2,7 @@
 
 import { decorationControllerGetMyDecorations } from "@/api/sdk.gen";
 import type { DecorationControllerGetMyDecorationsResponse } from "@/api/types.gen";
+import CommentBubble from "@/assets/images/account/decoration/assets_reply_bubble_banner.png";
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { cn } from "@/lib/utils";
 import { useModalStore } from "@/stores/useModalStore";
@@ -75,7 +76,7 @@ export function CommentBubbleList() {
         <div
           className="flex h-20 w-full items-center justify-between gap-4 rounded-xl bg-cover bg-center bg-no-repeat px-4 cursor-pointer"
           style={{
-            backgroundImage: "url(/account/decoration/avatar_frame_banner.png)",
+            backgroundImage: `url(${CommentBubble.src})`,
           }}
           onClick={handleBannerClick}
           role="button"

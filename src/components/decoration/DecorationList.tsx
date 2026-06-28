@@ -1,15 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { cn, formatDate } from "@/lib/utils";
-import { CheckCircle2Icon, ChevronRight, Clock } from "lucide-react";
 import { decorationControllerGetMyDecorations } from "@/api/sdk.gen";
 import type { DecorationControllerGetMyDecorationsResponse } from "@/api/types.gen";
-import { useLocale, useTranslations } from "next-intl";
-import { useModalStore } from "@/stores/useModalStore";
 import { MODAL_IDS } from "@/lib/modal-helpers";
+import { cn, formatDate } from "@/lib/utils";
+import { useModalStore } from "@/stores/useModalStore";
+import { CheckCircle2Icon, ChevronRight, Clock } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
-
 type DecorationType = "AVATAR_FRAME" | "EMOJI" | "COMMENT_BUBBLE";
 
 type Decoration =

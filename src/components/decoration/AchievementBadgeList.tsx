@@ -4,14 +4,14 @@ import {
   decorationControllerGetMyDecorations,
   DecorationControllerGetMyDecorationsResponse,
 } from "@/api";
+import AchievementBanner from "@/assets/images/account/decoration/assets_avatar_badge_banner.png";
+import { MODAL_IDS } from "@/lib/modal-helpers";
+import { formatDate } from "@/lib/utils";
+import { useModalStore } from "@/stores/useModalStore";
 import { ChevronRight, Clock } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
-import { MODAL_IDS } from "@/lib/modal-helpers";
-import { useModalStore } from "@/stores/useModalStore";
-import { formatDate } from "@/lib/utils";
-
 type UserDecorationItem =
   DecorationControllerGetMyDecorationsResponse["data"]["data"][number];
 
@@ -63,7 +63,9 @@ export function AchievementBadgeList() {
   }, []);
 
   const handleItemClick = (item: UserDecorationItem) => {
-    openModal(MODAL_IDS.ACHIEVEMENT_BADGE, { achievementId: item.decorationId });
+    openModal(MODAL_IDS.ACHIEVEMENT_BADGE, {
+      achievementId: item.decorationId,
+    });
   };
 
   if (loading) {
@@ -90,14 +92,16 @@ export function AchievementBadgeList() {
         <div
           className="flex h-20 w-full items-center justify-between gap-4 rounded-xl bg-cover bg-center bg-no-repeat px-4"
           style={{
-            backgroundImage: "url(/account/decoration/avatar_frame_banner.png)",
+            backgroundImage: `url(${AchievementBanner.src})`,
           }}
         >
           <div className="flex flex-col">
             <span className="text-xl font-bold text-[#3db8f5]">
               {t("types.achievement")}
             </span>
-            <span className="text-xs text-secondary">{t("ownedHint", { count: items.length })}</span>
+            <span className="text-xs text-secondary">
+              {t("ownedHint", { count: items.length })}
+            </span>
           </div>
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3db8f566] text-white">
             <ChevronRight size={16} />
