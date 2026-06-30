@@ -38,6 +38,24 @@ function resolvePreviewImageUrls(payload?: Record<string, unknown> | null) {
   return [];
 }
 
+// Composer-serialised messages embed emoji as
+//   <span class="ql-emoji-embed" title="<name>">...<img class="ql-emoji-embed__img" .../></span>
+// which `prepareRichTextHtmlForSummary` would strip down to nothing
+// (images are removed in summary form). Replace each emoji span with
+// its name in brackets so a preview line still reads naturally.
+const RE_EMOJI_SPAN_WITH_TITLE =
+  /<span\s+class="ql-emoji-embed"[^>]*\btitle="([^"]*)"[^>]*>[\s\S]*?<\/span>/gi;
+const RE_EMOJI_SPAN_FALLBACK =
+  /<span\s+class="ql-emoji-embed"[^>]*>[\s\S]*?<\/span>/gi;
+
+function replaceEmojiSpansWithNames(html: string): string {
+  return html
+    .replace(RE_EMOJI_SPAN_WITH_TITLE, (_, title: string) =>
+      title ? `[${title}]` : "[emoji]",
+    )
+    .replace(RE_EMOJI_SPAN_FALLBACK, "[emoji]");
+}
+
 export function resolveMessagePreviewText(
   item: {
     content?: string;
@@ -58,7 +76,7 @@ export function resolveMessagePreviewText(
 
   const content = item.content?.trim();
   if (content) {
-    return content;
+    return replaceEmojiSpansWithNames(content);
   }
 
   const hasImage =

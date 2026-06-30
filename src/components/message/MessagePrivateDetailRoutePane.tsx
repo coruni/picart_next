@@ -11,7 +11,12 @@ import {
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { cn, formatRelativeTime } from "@/lib";
-import { prepareRichTextHtmlForSummary } from "@/lib/rich-text";
+import {
+  prepareCommentHtmlForDisplay,
+  prepareRichTextHtmlForSummary,
+} from "@/lib/rich-text";
+
+import "./message-rich-text.css";
 import {
   ArrowLeft,
   Ban,
@@ -67,6 +72,15 @@ function resolveMessageImageUrls(payload?: PrivateMessagePayload): string[] {
 
   const singleUrl = resolveMessageImageUrl(payload);
   return singleUrl ? [singleUrl] : [];
+}
+
+// Composer-serialised messages embed emoji as <span class="ql-emoji-embed">.
+// Any tag presence is a reliable signal we should render via HTML rather
+// than plain text so emoji <img>s actually show up.
+const RE_MESSAGE_HAS_HTML_TAG = /<[a-z!\/]/i;
+
+function isRichTextMessage(content: string | undefined): content is string {
+  return typeof content === "string" && RE_MESSAGE_HAS_HTML_TAG.test(content);
 }
 
 type PrivateRoutePaneProps = MessageDetailPaneProps;
@@ -216,9 +230,18 @@ const PrivateMessageRow = memo(function PrivateMessageRow({
                 imageUrls.length > 0 ? "mt-2" : "",
               )}
             >
-              <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6">
-                {item.content}
-              </p>
+              {isRichTextMessage(item.content) ? (
+                <div
+                  className="message-rich-text whitespace-pre-wrap wrap-break-word text-sm leading-6"
+                  dangerouslySetInnerHTML={{
+                    __html: prepareCommentHtmlForDisplay(item.content),
+                  }}
+                />
+              ) : (
+                <p className="whitespace-pre-wrap wrap-break-word text-sm leading-6">
+                  {item.content}
+                </p>
+              )}
               <div
                 className={cn(
                   "pointer-events-none absolute bottom-0 right-0 flex items-center justify-end gap-1 text-[10px] dark:text-secondary",

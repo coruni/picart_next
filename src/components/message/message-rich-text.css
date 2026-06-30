@@ -1,0 +1,36 @@
+/*
+ * Styles for HTML message bodies rendered inside the private chat
+ * detail pane. The composer (mobile / comment editor) serialises emoji
+ * as <span class="ql-emoji-embed"><img class="ql-emoji-embed__img" /></span>.
+ * Without an explicit inline-flex rule on the wrapper span, the global
+ * `img.ql-emoji-embed__img { display: block }` rule forces each emoji
+ * onto its own line. Scope these rules to .message-rich-text so they
+ * only apply inside chat bubbles.
+ */
+
+.message-rich-text .ql-emoji-embed {
+  display: inline-flex;
+  vertical-align: text-bottom;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  max-width: 32px;
+  max-height: 32px;
+  line-height: 32px;
+  margin: 0 2px;
+  overflow: hidden;
+  flex: 0 0 32px;
+  user-select: none;
+}
+
+.message-rich-text .ql-emoji-embed__img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
