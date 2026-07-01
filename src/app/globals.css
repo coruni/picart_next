@@ -512,3 +512,8 @@ img.ql-emoji-embed__img {
   pointer-events: none;
   -webkit-user-drag: none;
 }
+
+/* Remove Quill snow-theme border on the inline composer */
+.comment-editor-shell .ql-container.ql-snow {
+  border: none !important;
+}

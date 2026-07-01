@@ -34,3 +34,11 @@
   pointer-events: none;
   -webkit-user-drag: none;
 }
+
+/* Quill composer – remove default snow-theme borders */
+.comment-editor-shell .ql-container {
+  border: 0 !important;
+}
+.comment-editor-shell .ql-container.ql-snow {
+  border: none !important;
+}

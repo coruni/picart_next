@@ -1,25 +1,33 @@
 "use client";
 
 import {
-  commentControllerCreate,
-  commentControllerUpdate,
-  emojiControllerFindAll,
-  emojiControllerIncrementUseCount,
-  uploadControllerUploadFile,
+    commentControllerCreate,
+    commentControllerUpdate,
+    emojiControllerFindAll,
+    emojiControllerIncrementUseCount,
+    uploadControllerUploadFile,
 } from "@/api";
+import {
+    hasQuillContent,
+    loadQuill,
+    normalizeEmojiGroups,
+    registerEmojiQuill,
+    type EmojiGroup,
+    type EmojiRecord,
+} from "@/components/editor/emoji-utils";
 import { useImageCompression } from "@/hooks/useImageCompression";
-import { cn, sanitizeRichTextHtml, showToast, getErrorMessage } from "@/lib";
+import { cn, getErrorMessage, sanitizeRichTextHtml, showToast } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { useUserStore } from "@/stores";
 import {
-  ChevronLeft,
-  ChevronRight,
-  ImagePlus,
-  LoaderCircle,
-  Send,
-  Smile,
-  X,
+    ChevronLeft,
+    ChevronRight,
+    ImagePlus,
+    LoaderCircle,
+    Send,
+    Smile,
+    X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -28,20 +36,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Button } from "../ui/Button";
 
 import "swiper/css";
-
-// 动态导入 Quill 以减少初始包大小
-let QuillModule: (typeof import("quill"))["default"] | null = null;
-let CustomEmojiBlot: unknown = null;
-
-async function loadQuill() {
-  if (!QuillModule) {
-    const [{ default: Quill }, { CustomEmojiBlot: emojiBlot }] =
-      await Promise.all([import("quill"), import("@/components/editor")]);
-    QuillModule = Quill;
-    CustomEmojiBlot = emojiBlot;
-  }
-  return { Quill: QuillModule, CustomEmojiBlot };
-}
 
 type CommentEditorProps = {
   articleId: string | number;
@@ -55,17 +49,6 @@ type CommentEditorProps = {
   disableImageUpload?: boolean; // 禁用图片上传（编辑模式）
 };
 
-type EmojiRecord = {
-  id: string;
-  name: string;
-  url: string;
-};
-
-type EmojiGroup = {
-  name: string;
-  items: EmojiRecord[];
-};
-
 type UploadedAttachment = {
   id: string;
   previewUrl: string;
@@ -73,100 +56,6 @@ type UploadedAttachment = {
   status: "uploading" | "uploaded";
   url?: string;
 };
-
-declare global {
-  interface Window {
-    __PICART_COMMENT_QUILL_REGISTERED__?: boolean;
-  }
-}
-
-async function registerCommentQuillModules() {
-  if (
-    typeof window !== "undefined" &&
-    window.__PICART_COMMENT_QUILL_REGISTERED__
-  ) {
-    return;
-  }
-
-  const { Quill, CustomEmojiBlot } = await loadQuill();
-
-  if (Quill && CustomEmojiBlot) {
-    (
-      Quill as unknown as {
-        register: (path: string, target: unknown, overwrite?: boolean) => void;
-      }
-    ).register("formats/emoji", CustomEmojiBlot, true);
-  }
-
-  if (typeof window !== "undefined") {
-    window.__PICART_COMMENT_QUILL_REGISTERED__ = true;
-  }
-}
-
-function normalizeEmojiGroups(response: unknown): EmojiGroup[] {
-  const payload = (response as { data?: { data?: unknown } })?.data?.data as
-    | { groups?: unknown[] }
-    | undefined;
-  const groups = Array.isArray(payload?.groups) ? payload.groups : [];
-
-  return groups.reduce<EmojiGroup[]>((acc, group) => {
-    const raw = group as {
-      name?: string;
-      items?: unknown[];
-    };
-
-    if (!raw.name || !Array.isArray(raw.items)) {
-      return acc;
-    }
-
-    const items = raw.items.reduce<EmojiRecord[]>((emojiAcc, item) => {
-      const record = item as {
-        id?: string | number;
-        _id?: string | number;
-        name?: string;
-        url?: string;
-        imageUrl?: string;
-        code?: string;
-      };
-      const url = record.url || record.imageUrl;
-
-      if (!url) {
-        return emojiAcc;
-      }
-
-      emojiAcc.push({
-        id: String(record.id ?? record._id ?? url),
-        name: record.name || record.code || "emoji",
-        url,
-      });
-      return emojiAcc;
-    }, []);
-
-    if (items.length > 0) {
-      acc.push({
-        name: raw.name,
-        items,
-      });
-    }
-
-    return acc;
-  }, []);
-}
-
-function hasQuillContent(
-  quill: { getText: () => string; root: Element } | null,
-) {
-  if (!quill) {
-    return false;
-  }
-
-  const text = quill.getText().replace(/[\s\u00A0\u200B-\u200D\uFEFF]/g, "");
-  if (text.length > 0) {
-    return true;
-  }
-
-  return !!quill.root.querySelector(".ql-emoji-embed");
-}
 
 function AttachmentPreviewCard({
   attachment,
@@ -278,7 +167,7 @@ export function CommentEditor({
 
   useEffect(() => {
     const initQuill = async () => {
-      await registerCommentQuillModules();
+      await registerEmojiQuill();
 
       if (!containerRef.current || quillRef.current) {
         return;

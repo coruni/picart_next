@@ -1,7 +1,16 @@
 "use client";
 /* eslint-disable @next/next/no-img-element */
 
+import { emojiControllerFindAll, emojiControllerIncrementUseCount } from "@/api";
 import { ImageViewer } from "@/components/article/ImageViewer";
+import {
+  hasQuillContent,
+  loadQuill,
+  normalizeEmojiGroups,
+  registerEmojiQuill,
+  type EmojiGroup,
+  type EmojiRecord,
+} from "@/components/editor/emoji-utils";
 import {
   createDefaultReportReasons,
   DropdownMenu,
@@ -15,22 +24,26 @@ import {
   prepareCommentHtmlForDisplay,
   prepareRichTextHtmlForSummary,
 } from "@/lib/rich-text";
+import "quill/dist/quill.snow.css";
 
-import "./message-rich-text.css";
 import {
   ArrowLeft,
   Ban,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   LoaderCircle,
   MoreVertical,
   Paperclip,
   SendHorizontal,
   ShieldAlert,
+  Smile,
   Undo2,
   X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import "./message-rich-text.css";
 import type {
   MessageDetailPaneProps,
   PrivateHistoryItem,
@@ -269,7 +282,6 @@ const PrivateMessageRow = memo(function PrivateMessageRow({
 
 export function MessagePrivateDetailRoutePane({
   blockSubmitting,
-  composerValue,
   composerImages,
   copy,
   detailLoading,
@@ -301,7 +313,12 @@ export function MessagePrivateDetailRoutePane({
 }: PrivateRoutePaneProps) {
   const tMenu = useTranslations("articleMenu");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const quillRef = useRef<unknown>(null);
+  const composerContainerRef = useRef<HTMLDivElement | null>(null);
+  const emojiPanelRef = useRef<HTMLDivElement | null>(null);
+  const emojiTabsViewportRef = useRef<HTMLDivElement | null>(null);
+  const handleSendRef = useRef<() => void>(() => {});
+  const onPickComposerImagesRef = useRef(onPickComposerImages);
   const scrollViewportRef = useRef<HTMLDivElement | null>(null);
   const bottomAnchorRef = useRef<HTMLDivElement | null>(null);
   const messageMenuRef = useRef<HTMLDivElement | null>(null);
@@ -329,6 +346,40 @@ export function MessagePrivateDetailRoutePane({
   const [imageViewerOpen, setImageViewerOpen] = useState(false);
   const [imageViewerImages, setImageViewerImages] = useState<string[]>([]);
   const [imageViewerIndex, setImageViewerIndex] = useState(0);
+  const [emojiGroups, setEmojiGroups] = useState<EmojiGroup[]>([]);
+  const [activeEmojiGroup, setActiveEmojiGroup] = useState<string>("all");
+  const [emojiOpen, setEmojiOpen] = useState(false);
+  const [editorHasContent, setEditorHasContent] = useState(false);
+
+  const emojiList = useMemo(() => {
+    if (activeEmojiGroup === "all") {
+      return emojiGroups.flatMap((group) => group.items);
+    }
+    return (
+      emojiGroups.find((group) => group.name === activeEmojiGroup)?.items || []
+    );
+  }, [activeEmojiGroup, emojiGroups]);
+
+  useEffect(() => {
+    onPickComposerImagesRef.current = onPickComposerImages;
+  }, [onPickComposerImages]);
+
+  useEffect(() => {
+    handleSendRef.current = async () => {
+      const quill = quillRef.current as {
+        root: { innerHTML: string };
+        setContents: (content: unknown[], source: string) => void;
+      } | null;
+      if (!quill) {
+        return;
+      }
+      const html = quill.root.innerHTML;
+      await handleSendPrivateMessage(html);
+      quill.setContents([{ insert: "\n" }], "silent");
+      setEditorHasContent(false);
+      setEmojiOpen(false);
+    };
+  }, [handleSendPrivateMessage]);
 
   const statusLabel =
     selectedUserStatus?.isOnline
@@ -405,14 +456,187 @@ export function MessagePrivateDetailRoutePane({
   );
 
   useEffect(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) {
+    let quillInstance: {
+      off: (event: string, handler: () => void) => void;
+      root: HTMLElement;
+    } | null = null;
+    let syncEditorState: (() => void) | null = null;
+    let keydownHandler: ((event: KeyboardEvent) => void) | null = null;
+    let pasteHandler: ((event: ClipboardEvent) => void) | null = null;
+    let focusHandler: (() => void) | null = null;
+
+    const initQuill = async () => {
+      await registerEmojiQuill();
+
+      if (!composerContainerRef.current || quillRef.current) {
+        return;
+      }
+
+      const { Quill } = await loadQuill();
+      if (!Quill || !composerContainerRef.current || quillRef.current) {
+        return;
+      }
+
+      const quill = new Quill(composerContainerRef.current, {
+        theme: "snow",
+        modules: {
+          toolbar: false,
+          history: { delay: 800, maxStack: 50, userOnly: true },
+        },
+        formats: ["emoji"],
+        placeholder: copy.composerPlaceholder,
+      });
+
+      quillRef.current = quill;
+      quillInstance = quill as unknown as {
+        off: (event: string, handler: () => void) => void;
+        root: HTMLElement;
+      };
+
+      syncEditorState = () => {
+        setComposerValue(quill.root.innerHTML);
+        setEditorHasContent(
+          hasQuillContent(
+            quill as unknown as { getText: () => string; root: Element },
+          ),
+        );
+      };
+      quill.on("text-change", syncEditorState);
+      syncEditorState();
+
+      keydownHandler = (event: KeyboardEvent) => {
+        if (
+          event.key === "Enter" &&
+          !event.shiftKey &&
+          !event.isComposing
+        ) {
+          event.preventDefault();
+          void handleSendRef.current();
+        }
+      };
+      quill.root.addEventListener("keydown", keydownHandler);
+
+      pasteHandler = (event: ClipboardEvent) => {
+        const files = event.clipboardData?.files;
+        if (!files?.length) {
+          return;
+        }
+        const hasImage = Array.from(files).some((file) =>
+          file.type.startsWith("image/"),
+        );
+        if (!hasImage) {
+          return;
+        }
+        event.preventDefault();
+        onPickComposerImagesRef.current?.(files);
+      };
+      quill.root.addEventListener("paste", pasteHandler);
+
+      focusHandler = () => {
+        if (shouldAutoScrollRef.current) {
+          scheduleScrollToBottom();
+        }
+      };
+      quill.root.addEventListener("focus", focusHandler);
+    };
+
+    void initQuill();
+
+    return () => {
+      if (quillInstance && syncEditorState) {
+        quillInstance.off("text-change", syncEditorState);
+      }
+      const root = quillInstance?.root;
+      if (root) {
+        if (keydownHandler) {
+          root.removeEventListener("keydown", keydownHandler);
+        }
+        if (pasteHandler) {
+          root.removeEventListener("paste", pasteHandler);
+        }
+        if (focusHandler) {
+          root.removeEventListener("focus", focusHandler);
+        }
+      }
+      quillRef.current = null;
+    };
+  }, [copy.composerPlaceholder, scheduleScrollToBottom, setComposerValue]);
+
+  useEffect(() => {
+    const loadEmojis = async () => {
+      try {
+        const response = await emojiControllerFindAll({
+          query: { page: 1, limit: 100, grouped: true },
+        });
+        const groups = normalizeEmojiGroups(response);
+        setEmojiGroups(groups);
+      } catch (error) {
+        console.error("Failed to load emoji list:", error);
+      }
+    };
+
+    void loadEmojis();
+  }, []);
+
+  useEffect(() => {
+    if (!emojiOpen) {
       return;
     }
 
-    textarea.style.height = "24px";
-    textarea.style.height = `${Math.min(Math.max(textarea.scrollHeight, 24), 144)}px`;
-  }, [composerValue]);
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!emojiPanelRef.current?.contains(event.target as Node)) {
+        setEmojiOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+    };
+  }, [emojiOpen]);
+
+  const handleEmojiSelect = async (emoji: EmojiRecord) => {
+    const quill = quillRef.current as {
+      getSelection: (focus: boolean) => { index: number } | null;
+      getLength: () => number;
+      insertEmbed: (
+        index: number,
+        type: string,
+        value: unknown,
+        source: string,
+      ) => void;
+      insertText: (index: number, text: string, source: string) => void;
+      setSelection: (index: number, length: number, source: string) => void;
+    } | null;
+    if (!quill) {
+      return;
+    }
+
+    const selection = quill.getSelection(true);
+    const index = selection?.index ?? quill.getLength();
+
+    quill.insertEmbed(
+      index,
+      "emoji",
+      { src: emoji.url, alt: emoji.name, name: emoji.name },
+      "user",
+    );
+    quill.insertText(index + 1, " ", "user");
+    quill.setSelection(index + 2, 0, "silent");
+
+    try {
+      await emojiControllerIncrementUseCount({ path: { id: emoji.id } });
+    } catch (error) {
+      console.error("Failed to update emoji usage:", error);
+    }
+  };
+
+  const scrollEmojiTabs = (direction: "prev" | "next") => {
+    emojiTabsViewportRef.current?.scrollBy({
+      left: direction === "next" ? 180 : -180,
+      behavior: "smooth",
+    });
+  };
 
   useEffect(() => {
     const viewport = window.visualViewport;
@@ -421,7 +645,10 @@ export function MessagePrivateDetailRoutePane({
     }
 
     const handleViewportChange = () => {
-      if (document.activeElement !== textareaRef.current || !shouldAutoScrollRef.current) {
+      if (
+        !composerContainerRef.current?.contains(document.activeElement) ||
+        !shouldAutoScrollRef.current
+      ) {
         return;
       }
 
@@ -896,6 +1123,103 @@ export function MessagePrivateDetailRoutePane({
               />
 
               <div className="flex h-full shrink-0 items-end">
+                <div className="relative" ref={emojiPanelRef}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-full p-2"
+                    onClick={() => setEmojiOpen((open) => !open)}
+                    aria-label="表情"
+                  >
+                    <Smile size={16} />
+                  </Button>
+
+                  {emojiOpen && (
+                    <div className="absolute bottom-full z-10 mb-3 w-max max-w-[calc(100vw-1rem)] min-w-[18rem] overflow-hidden rounded-2xl border border-border bg-card shadow-xl md:min-w-[24rem]">
+                      <div className="flex h-10 items-center gap-2 rounded-t-xl border-b border-border bg-border px-2.5">
+                        <button
+                          type="button"
+                          className="flex h-6 w-6 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors hover:bg-card"
+                          onClick={() => scrollEmojiTabs("prev")}
+                        >
+                          <ChevronLeft className="size-4" />
+                        </button>
+                        <div
+                          ref={emojiTabsViewportRef}
+                          className="flex h-10 flex-1 items-center gap-1.5 overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden"
+                        >
+                          <button
+                            type="button"
+                            className={cn(
+                              "flex h-7 shrink-0 cursor-pointer items-center justify-center rounded-md px-2 text-xs transition-colors hover:bg-card",
+                              activeEmojiGroup === "all" &&
+                                "bg-card text-primary",
+                            )}
+                            onClick={() => setActiveEmojiGroup("all")}
+                          >
+                            <span className="text-xs font-medium">全部</span>
+                          </button>
+                          {emojiGroups.map((group) => (
+                            <button
+                              key={group.name}
+                              type="button"
+                              className={cn(
+                                "flex h-7 shrink-0 cursor-pointer items-center justify-center rounded-xl px-2 transition-colors hover:bg-card",
+                                activeEmojiGroup === group.name &&
+                                  "bg-card text-primary",
+                              )}
+                              onClick={() => setActiveEmojiGroup(group.name)}
+                              title={group.name}
+                            >
+                              {group.items[0]?.url ? (
+                                <img
+                                  src={group.items[0].url}
+                                  alt={group.name}
+                                  className="h-4.5 w-4.5 cursor-pointer object-contain"
+                                />
+                              ) : (
+                                <span className="text-xs font-medium">
+                                  {group.name.slice(0, 1)}
+                                </span>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          type="button"
+                          className="flex h-6 w-6 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors hover:bg-card"
+                          onClick={() => scrollEmojiTabs("next")}
+                        >
+                          <ChevronRight className="size-4" />
+                        </button>
+                      </div>
+                      <div className="grid h-52 grid-cols-7 content-start gap-1 overflow-y-auto px-2 py-2">
+                        {emojiList.length > 0 ? (
+                          emojiList.map((emoji) => (
+                            <button
+                              key={emoji.id}
+                              type="button"
+                              className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent bg-transparent p-1 transition-all hover:border-border hover:bg-primary/15"
+                              onClick={() => void handleEmojiSelect(emoji)}
+                              title={emoji.name}
+                            >
+                              <img
+                                src={emoji.url}
+                                alt={emoji.name}
+                                className="max-h-7 max-w-7 object-contain"
+                              />
+                            </button>
+                          ))
+                        ) : (
+                          <div className="col-span-7 py-8 text-center text-sm text-muted-foreground">
+                            暂无表情
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <Button
                   variant="ghost"
                   size="sm"
@@ -908,59 +1232,21 @@ export function MessagePrivateDetailRoutePane({
                 </Button>
               </div>
 
-              <div className="flex min-h-9 min-w-0 flex-1 items-center overflow-hidden">
-                <textarea
-                  ref={textareaRef}
-                  rows={1}
-                  value={composerValue}
-                  onChange={(event) => setComposerValue(event.target.value)}
-                  onFocus={() => {
-                    if (shouldAutoScrollRef.current) {
-                      scheduleScrollToBottom();
-                    }
-                  }}
-                  onPaste={(event) => {
-                    const files = event.clipboardData?.files;
-                    if (!files?.length) {
-                      return;
-                    }
-
-                    const hasImage = Array.from(files).some((file) =>
-                      file.type.startsWith("image/"),
-                    );
-                    if (!hasImage) {
-                      return;
-                    }
-
-                    event.preventDefault();
-                    onPickComposerImages(files);
-                  }}
-                  onKeyDown={(event) => {
-                    if (
-                      event.key === "Enter" &&
-                      !event.shiftKey &&
-                      !event.nativeEvent.isComposing
-                    ) {
-                      event.preventDefault();
-                      void handleSendPrivateMessage();
-                    }
-                  }}
-                  placeholder={copy.composerPlaceholder}
-                  className="textarea-resizer block max-h-36 min-h-6 w-full resize-none border-0 bg-transparent px-0 py-0 text-sm leading-6 text-foreground outline-none placeholder:text-muted-foreground"
-                  style={{ scrollbarWidth: "none" }}
-                />
-              </div>
+              <div
+                ref={composerContainerRef}
+                className="comment-editor-shell flex min-h-9 min-w-0 flex-1 items-center overflow-hidden [&_.ql-editor]:max-h-36 [&_.ql-editor]:min-h-6 [&_.ql-editor]:px-0 [&_.ql-editor]:py-1 [&_.ql-editor]:text-sm [&_.ql-editor]:leading-6 [&_.ql-editor.ql-blank::before]:font-normal [&_.ql-editor.ql-blank::before]:text-sm [&_.ql-editor.ql-blank::before]:text-muted-foreground [&_.ql-editor]:w-full! border-0!"
+              />
 
               <div className="flex h-full shrink-0">
                 <Button
-                  onClick={() => void handleSendPrivateMessage()}
+                  onClick={() => void handleSendRef.current()}
                   variant="primary"
                   size="sm"
                   className="self-end rounded-full px-4"
                   disabled={
                     isSending ||
                     isUploadingImages ||
-                    (!composerValue.trim() &&
+                    (!editorHasContent &&
                       composerImages.every((item) => !item.uploadedUrl))
                   }
                   loading={isSending}

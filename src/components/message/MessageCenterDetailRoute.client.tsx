@@ -24,19 +24,20 @@ import { MessagePrivateDetailRoutePane } from "@/components/message/MessagePriva
 import { useIsMobile } from "@/hooks";
 import { useImageCompression } from "@/hooks/useImageCompression";
 import { useRouter } from "@/i18n/routing";
-import { showToast, getErrorMessage } from "@/lib";
+import { getErrorMessage, showToast } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
-import { messageSocketClient } from "@/lib/message-socket";
 import {
   buildMessageHrefFromItem,
   resolveMessageRouteType,
 } from "@/lib/message-routes";
+import { messageSocketClient } from "@/lib/message-socket";
 import { openLoginDialog } from "@/lib/modal-helpers";
+import { hasMeaningfulRichTextContent } from "@/lib/rich-text";
+import { useMessageNotificationStore, useUserStore } from "@/stores";
 import type {
   MessageDropdownItem,
   MessageTab,
 } from "@/stores/useMessageNotificationStore";
-import { useMessageNotificationStore, useUserStore } from "@/stores";
 import { useLocale, useTranslations } from "next-intl";
 import { useParams, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -416,7 +417,6 @@ export function MessageCenterDetailRouteClient() {
       setPrivateHistoryCursor(null);
       setHasMorePrivateHistory(false);
       setSelectedUserStatus(null);
-      setComposerValue("");
       setComposerImages((current) => {
         current.forEach((item) => URL.revokeObjectURL(item.previewUrl));
         return [];
@@ -868,15 +868,15 @@ export function MessageCenterDetailRouteClient() {
     });
   };
 
-  const handleSendPrivateMessage = async () => {
-    const content = composerValue.trim();
+  const handleSendPrivateMessage = async (content: string) => {
+    const hasContent = hasMeaningfulRichTextContent(content);
     const readyImages = composerImages.filter(
       (item) => !item.uploading && item.uploadedUrl,
     );
     const socket = messageSocketClient.instance;
 
     if (
-      (!content && readyImages.length === 0) ||
+      (!hasContent && readyImages.length === 0) ||
       !selectedPrivateCounterpartId ||
       !socket?.connected ||
       isSending ||
@@ -896,7 +896,7 @@ export function MessageCenterDetailRouteClient() {
         id: -Date.now(),
         senderId: Number(user?.id || 0),
         receiverId: Number(selectedPrivateCounterpartId),
-        content: content || undefined,
+        content: hasContent ? content : undefined,
         createdAt: nowIso,
         isRead: true,
         messageKind: uploadedUrls.length > 0 ? "image" : "text",
@@ -917,7 +917,7 @@ export function MessageCenterDetailRouteClient() {
           toUserId: selectedPrivateCounterpartId,
           type: "private",
           messageKind: "image",
-          content: content || undefined,
+          content: hasContent ? content : undefined,
           payload: {
             url: uploadedUrls[0],
             urls: uploadedUrls,
@@ -927,7 +927,7 @@ export function MessageCenterDetailRouteClient() {
         readyImages.forEach((item) => {
           URL.revokeObjectURL(item.previewUrl);
         });
-      } else if (content) {
+      } else if (hasContent) {
         socket.emit("sendMessage", {
           toUserId: selectedPrivateCounterpartId,
           type: "private",

@@ -125,7 +125,7 @@ export type MessageDetailPaneProps = {
     dayLabel: string;
   }>;
   handleRecallPrivateMessage: (messageId: number) => Promise<void>;
-  handleSendPrivateMessage: () => Promise<void>;
+  handleSendPrivateMessage: (content: string) => Promise<void>;
   isLoadingOlderHistory: boolean;
   isSending: boolean;
   isUploadingImages: boolean;
