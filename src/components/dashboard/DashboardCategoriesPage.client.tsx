@@ -97,6 +97,15 @@ export function DashboardCategoriesPage() {
       },
       { name: "link", label: copy.fields.link },
       { name: "sort", label: copy.columns.sort, type: "number", step: 1 },
+      {
+        name: "status",
+        label: copy.columns.status,
+        type: "select",
+        options: [
+          { value: "ENABLED", label: copy.options.categoryStatus.ENABLED },
+          { value: "DISABLED", label: copy.options.categoryStatus.DISABLED },
+        ],
+      },
     ],
     [copy, parentOptions],
   );
@@ -187,9 +196,9 @@ export function DashboardCategoriesPage() {
         hideInSearch: true,
         render: (item) => (
           <div className="text-sm text-muted-foreground">
-            {item.status === "active"
-              ? copy.status.active
-              : copy.status.inactive}
+            {item.status === "ENABLED"
+              ? copy.options.categoryStatus.ENABLED
+              : copy.options.categoryStatus.DISABLED}
           </div>
         ),
       },
@@ -262,7 +271,7 @@ export function DashboardCategoriesPage() {
           cover: (values.cover as string) || undefined,
           link: (values.link as string) || undefined,
           sort: (values.sort as number) || 0,
-          status: "enabled",
+          status: (values.status as string) || "ENABLED",
         },
       });
       setCreating(false);
@@ -289,6 +298,7 @@ export function DashboardCategoriesPage() {
           cover: (values.cover as string) || undefined,
           link: (values.link as string) || undefined,
           sort: values.sort as number | undefined,
+          status: values.status as string | undefined,
         },
       });
       setEditingItem(null);
@@ -422,6 +432,7 @@ export function DashboardCategoriesPage() {
           cover: "",
           link: "",
           sort: 0,
+          status: "ENABLED",
         }}
         loading={submitting}
         onOpenChange={(open) => {
@@ -448,6 +459,7 @@ export function DashboardCategoriesPage() {
           cover: editingItem?.cover,
           link: editingItem?.link,
           sort: editingItem?.sort,
+          status: editingItem?.status,
         }}
         loading={submitting}
         onOpenChange={(open) => {

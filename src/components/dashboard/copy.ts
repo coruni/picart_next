@@ -87,6 +87,11 @@ const copy = {
         INACTIVE: "停用",
         BANNED: "封禁",
       },
+      // 分类状态
+      categoryStatus: {
+        ENABLED: "启用",
+        DISABLED: "禁用",
+      },
       // 装饰类型
       decorationType: {
         AVATAR_FRAME: "头像框",
@@ -591,6 +596,11 @@ const copy = {
         ACTIVE: "Active",
         INACTIVE: "Inactive",
         BANNED: "Banned",
+      },
+      // Category status
+      categoryStatus: {
+        ENABLED: "Enabled",
+        DISABLED: "Disabled",
       },
       // Decoration type
       decorationType: {

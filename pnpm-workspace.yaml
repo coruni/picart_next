@@ -1,3 +1,9 @@
+allowBuilds:
+  '@enzedonline/quill-blot-formatter2@https://codeload.github.com/enzedonline/quill-blot-formatter2/tar.gz/a8420f1dde49ee156eb04adb3fab2fdb1d12578f': false
+  '@parcel/watcher': true
+  '@swc/core': true
+  sharp: true
+  unrs-resolver: true
 onlyBuiltDependencies:
   - '@enzedonline/quill-blot-formatter2'
   - '@parcel/watcher'
