@@ -90,24 +90,6 @@
   list-style-position: outside;
 }
 
-.ql-editor ul li {
-  list-style-type: disc !important;
-}
-
-.ql-editor ol li {
-  list-style-type: decimal !important;
-}
-
-.ql-editor li {
-  padding-left: 0.05rem !important;
-  display: list-item !important;
-}
-
-/* Hide Quill UI elements to avoid interfering with list markers */
-.ql-editor li .ql-ui {
-  display: none;
-}
-
 .ql-editor li::marker {
   font-size: 14px;
 }

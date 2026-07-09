@@ -34,6 +34,7 @@ const {
   RemoveFormatting,
   Minus,
   FileText,
+  Code,
 } = icons;
 
 interface RenderToolbarOptions {
@@ -702,6 +703,31 @@ export const renderToolbar = ({
   };
   moreDropdown.appendChild(cleanItem);
 
+  // Code Block 项
+  const codeBlockItem = document.createElement("button");
+  codeBlockItem.className =
+    "w-full! hover:bg-primary/15! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors text-nowrap";
+  codeBlockItem.type = "button";
+  codeBlockItem.innerHTML = `${renderIcon(Code, "w-4 h-4!")}<span>${t("codeBlock")}</span>`;
+  codeBlockItem.onmousedown = (e) => {
+    e.preventDefault();
+  };
+  codeBlockItem.onclick = () => {
+    const selection = quill.getSelection(true);
+    if (selection) {
+      const format = quill.getFormat(selection);
+      const isCodeBlock = !!(format as Record<string, unknown>)["code-block"];
+      quill.formatLine(
+        selection.index,
+        selection.length || 1,
+        "code-block",
+        isCodeBlock ? false : true,
+      );
+    }
+    moreDropdown.classList.add("hidden");
+  };
+  moreDropdown.appendChild(codeBlockItem);
+
   // 分割线二级面板 - hover 触发
   const createDividerPanel = () => {
     const dividerTrigger = document.createElement("div");
@@ -912,12 +938,12 @@ export const renderToolbar = ({
     { value: "center", label: t("alignCenter"), Icon: AlignCenter },
     { value: "right", label: t("alignRight"), Icon: AlignRight },
   ];
-  alignOptions.forEach(({ value, label, Icon }) => {
+  alignOptions.forEach(({ value, Icon }) => {
     const item = document.createElement("button");
     item.className =
       "w-full! hover:bg-primary/20! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors";
     item.type = "button";
-    item.innerHTML = `${Icon ? renderIcon(Icon, "w-3.5 h-3.5") : ""}<span>${label}</span>`;
+    item.innerHTML = `${Icon ? renderIcon(Icon, "w-3.5 h-3.5") : ""}`;
     item.onclick = () => {
       quill.format("align", value);
       alignMenu.classList.add("hidden");
@@ -953,12 +979,12 @@ export const renderToolbar = ({
   listMenu.className =
     "absolute top-full left-0 z-50 mt-1 bg-card border border-border rounded-lg shadow-lg py-2! px-1! min-w-24 flex flex-col hidden";
   listMenu.id = "dropdown-list";
-  listOptions.forEach(({ value, label, Icon }) => {
+  listOptions.forEach(({ value, Icon }) => {
     const item = document.createElement("button");
     item.className =
       "w-full! hover:bg-primary/20! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors";
     item.type = "button";
-    item.innerHTML = `${Icon ? renderIcon(Icon, "w-4 h-4!") : ""}<span>${label}</span>`;
+    item.innerHTML = `${Icon ? renderIcon(Icon, "w-4 h-4!") : ""}`;
     item.onclick = () => {
       quill.format("list", quill.getFormat().list === value ? false : value);
       listMenu.classList.add("hidden");
@@ -996,12 +1022,12 @@ export const renderToolbar = ({
     { value: 3, label: "H3", Icon: Heading3 },
     { value: 4, label: "H4", Icon: Heading4 },
   ];
-  headerOptions.forEach(({ value, label, Icon }) => {
+  headerOptions.forEach(({ value, Icon }) => {
     const item = document.createElement("button");
     item.className =
       "w-full! hover:bg-primary/20! px-3 py-2! rounded-md text-left flex! items-center gap-2 text-sm hover:text-primary! transition-colors";
     item.type = "button";
-    item.innerHTML = `${Icon ? renderIcon(Icon, "w-3.5 h-3.5") : ""}<span>${label}</span>`;
+    item.innerHTML = `${Icon ? renderIcon(Icon, "w-3.5 h-3.5") : ""}`;
     item.onclick = () => {
       quill.format("header", value);
       headerMenu.classList.add("hidden");

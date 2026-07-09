@@ -306,6 +306,20 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quillRef.current = quill;
 
+        // 代码块内 Backspace 退出代码块
+        quill.keyboard.addBinding(
+          {
+            key: "Backspace",
+            collapsed: true,
+            format: ["code-block"],
+            offset: 0,
+          } as unknown as Parameters<typeof quill.keyboard.addBinding>[0],
+          (range: { index: number }) => {
+            quill.formatLine(range.index, 1, "code-block", false);
+            return false;
+          },
+        );
+
         // 自定义图片粘贴上传处理
         const handleImageUpload = async (
           imageFiles: File[],

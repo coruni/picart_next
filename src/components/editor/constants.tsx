@@ -36,6 +36,7 @@ import {
   Minus,
   GripHorizontal,
   FileText,
+  Code,
 } from "lucide-react";
 
 // 渲染图标组件为 HTML 字符串
@@ -71,6 +72,7 @@ export const defaultFormats = [
   "code",
   "code-block",
   "list",
+  "indent",
   "link",
   "image",
   "emoji",
@@ -221,4 +223,5 @@ export const icons = {
   Minus,
   GripHorizontal,
   FileText,
+  Code,
 };
