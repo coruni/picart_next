@@ -735,7 +735,7 @@
     "pageTitle": "帖子详情",
     "repostable": "允许转载",
     "notRepostable": "不允许转载",
-    "translatedBy": "由 {provider} 翻译",
+    "translatedBy": "使用<icon>微软</icon>翻译",
     "viewOriginal": "查看原文",
     "viewTranslation": "\u67e5\u770b\u8bd1\u6587",
     "tocTitle": "\u76ee\u5f55",

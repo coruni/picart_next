@@ -1,6 +1,7 @@
 declare global {
   interface Window {
     translate?: {
+      to?: string;
       execute: (documents?: Element[] | NodeListOf<Element>) => void;
       changeLanguage?: (language: string) => void;
       reset?: () => void;
@@ -10,7 +11,9 @@ declare global {
       };
       language?: {
         setLocal?: (language: string) => void;
+        getLocal?: () => string;
         getCurrent?: () => string;
+        translateLocal?: boolean;
       };
       service?: {
         use?: (service: string) => void;
@@ -25,7 +28,6 @@ declare global {
       node?: {
         data?: Map<unknown, unknown>;
       };
-      to?: string;
     };
   }
 }

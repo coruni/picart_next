@@ -267,9 +267,8 @@ export function ArticleCommentList({
               <button className="inline-flex w-fit items-center gap-1.5 text-sm font-medium text-foreground transition hover:text-primary">
                 <span>{currentSortLabel}</span>
                 <ChevronDown
-                  className={`size-4 text-[#aeb8c7] transition-transform duration-180 ease-out ${
-                    isOpen ? "rotate-180" : ""
-                  }`}
+                  className={`size-4 text-[#aeb8c7] transition-transform duration-180 ease-out ${isOpen ? "rotate-180" : ""
+                    }`}
                 />
               </button>
             )}
@@ -291,7 +290,7 @@ export function ArticleCommentList({
       <div
         className={cn(
           "border-b border-border px-4 pb-4 min-w-min",
-          !compact && "mmd:px-6",
+          !compact && "md:px-6",
           stickySort && "sticky top-0 z-10 bg-card",
           sortClassName,
         )}
@@ -304,9 +303,8 @@ export function ArticleCommentList({
             <button className="inline-flex shrink-0 w-fit items-center gap-1.5 text-sm  text-muted-foreground font-semibold transition hover:text-primary">
               <span className=" w-max">{currentSortLabel}</span>
               <ChevronDown
-                className={`size-4 transition-transform duration-180 ease-out ${
-                  isOpen ? "rotate-180" : ""
-                }`}
+                className={`size-4 transition-transform duration-180 ease-out ${isOpen ? "rotate-180" : ""
+                  }`}
               />
             </button>
           )}
@@ -332,24 +330,26 @@ export function ArticleCommentList({
               compact={compact}
             />
           ))}
+          <div className="min-h-80">
+            <InfiniteScrollStatus
+              observerRef={observerRef}
+              hasMore={hasMore}
+              loading={loading}
+              error={error}
+              isEmpty={comments.length === 0}
+              onRetry={loadMoreComments}
+              loadingText={t("loading")}
+              idleText={t("loadMore")}
+              retryText={t("retry")}
+              allLoadedText={t("allLoaded")}
+              emptyText={t("noComments")}
+              loadingClassName="text-secondary"
+              idleTextClassName="text-secondary"
+              endClassName="text-secondary"
+              emptyClassName="text-muted-foreground"
+            />
+          </div>
 
-          <InfiniteScrollStatus
-            observerRef={observerRef}
-            hasMore={hasMore}
-            loading={loading}
-            error={error}
-            isEmpty={comments.length === 0}
-            onRetry={loadMoreComments}
-            loadingText={t("loading")}
-            idleText={t("loadMore")}
-            retryText={t("retry")}
-            allLoadedText={t("allLoaded")}
-            emptyText={t("noComments")}
-            loadingClassName="text-secondary"
-            idleTextClassName="text-secondary"
-            endClassName="text-secondary"
-            emptyClassName="text-muted-foreground"
-          />
         </>
       )}
     </div>

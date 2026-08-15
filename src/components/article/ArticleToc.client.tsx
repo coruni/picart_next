@@ -452,13 +452,20 @@ export function ArticleToc({ items, title, openLabel }: ArticleTocProps) {
         resolveItemsFrameRef.current = null;
       });
     });
-    headingElements.forEach((element) => {
-      mutationObserver.observe(element, {
+    // 观察稳定的容器而非标题元素本身：
+    // 翻译“退回原文”会通过 innerHTML 整体还原标题节点，
+    // 若直接观察标题元素，替换后观察器会失效，目录将无法再跟随翻译变化。
+    const observeTarget =
+      headingElements[0]?.closest("[data-auto-translate-article-detail]") ??
+      headingElements[0]?.parentElement ??
+      null;
+    if (observeTarget) {
+      mutationObserver.observe(observeTarget, {
         childList: true,
         subtree: true,
         characterData: true,
       });
-    });
+    }
 
     const initialHash = decodeURIComponent(
       window.location.hash.replace(/^#/, ""),

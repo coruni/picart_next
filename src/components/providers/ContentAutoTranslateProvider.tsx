@@ -2,9 +2,10 @@
 
 import { usePathname } from "@/i18n/routing";
 import { detectContentLanguage, TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
+import "@/lib/edge-translate";
 import { useTranslateStore } from "@/stores";
 import { useLocale } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 declare global {
   interface Window {
@@ -175,7 +176,8 @@ function isManualTogglePaused(): boolean {
 export function ContentAutoTranslateProvider() {
   const locale = useLocale();
   const pathname = usePathname();
-  const [scriptReady, setScriptReady] = useState(false);
+  // 自定义 Edge 翻译模块由 src/lib/edge-translate 静态引入，始终就绪
+  const scriptReady = true;
 
   const initializedRef = useRef(false);
   const translatedScopeKeyRef = useRef<string | null>(null);
@@ -241,30 +243,6 @@ export function ContentAutoTranslateProvider() {
   );
 
   useEffect(() => {
-    const loadTranslateScript = async () => {
-      if (typeof window === "undefined") return;
-
-      if (!window.translate) {
-        const script = document.createElement("script");
-        script.src =
-          "https://cdn.staticfile.net/translate.js/3.18.66/translate.js";
-        script.async = true;
-        script.onload = () => {
-          setScriptReady(true);
-        };
-        script.onerror = () => {
-          console.error("Failed to load translate.js");
-        };
-        document.head.appendChild(script);
-      } else {
-        setScriptReady(true);
-      }
-    };
-
-    loadTranslateScript();
-  }, []);
-
-  useEffect(() => {
     if (!scriptReady) return;
 
     const translate = window.translate;
@@ -291,7 +269,6 @@ export function ContentAutoTranslateProvider() {
       return;
     }
 
-    translate.service?.use?.("client.edge");
     translate.language?.setLocal?.(TRANSLATE_LOCAL_LANGUAGE);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (translate.language as any).translateLocal = true;

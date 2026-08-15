@@ -1,4 +1,4 @@
-﻿# 翻译相关标识符整理
+# 翻译相关标识符整理
 
 这份文档用于集中记录站内翻译功能使用到的标识符、选择器、存储键、全局 API 和主要入口文件，方便后续维护。
 
@@ -21,12 +21,12 @@
   由 `useManualHtmlTranslate()` 在内存中创建，翻译完成后移除。
 
 - `#translateSelectLanguage`
-  translate.js 自带的语言选择器 DOM。
-  当前项目会主动移除，不让它显示在页面上。
+  旧 translate.js 自带的语言选择器 DOM，现已不再生成。
+  保留的 `disableTranslateLanguageSelector()` 会主动移除它，以防残留。
 
 - `#translate`
-  translate.js 挂载容器。
-  当这个容器为空时会被移除。
+  旧 translate.js 挂载容器，现已不再生成。
+  当这个容器存在且为空时会被移除。
 
 ## 二、选择器常量
 
@@ -54,7 +54,7 @@
   当前值：
   `chinese_simplified`
   作用：
-  作为 translate.js 的源语言。
+  作为翻译的源语言（本地语种）。
   定义位置：
   [ContentAutoTranslateProvider.tsx](../src/components/providers/ContentAutoTranslateProvider.tsx)
   [useManualHtmlTranslate.ts](../src/hooks/useManualHtmlTranslate.ts)
@@ -70,21 +70,9 @@
 
 ## 四、脚本与运行时相关标识符
 
-- `LOCAL_TRANSLATE_SCRIPT_PATH`
-  当前值：
-  `/vendor/translate.js/3.18.66/translate.js`
-  作用：
-  本地 translate.js 脚本路径。
-
-- `TRANSLATE_SCRIPT_ID`
-  当前值：
-  `local-translate-js`
-  作用：
-  用于识别和复用注入过的翻译脚本。
-
 - `MUTATION_TRANSLATE_DEBOUNCE_MS`
   当前值：
-  `180`
+  `260`
   作用：
   自动翻译模式下，页面新增可翻译节点时的防抖间隔。
 
@@ -124,23 +112,29 @@
   当前存储位置是 `sessionStorage`。
 
 - `to`
-  文章详情翻译状态识别时会读取的 translate.js 存储键。
+  文章详情翻译状态识别时会读取的目标语种存储键。
   读取方式：
   `translate.storage.get("to")`
 
 ## 六、全局翻译 API
 
+翻译能力已由自定义模块 [edge-translate.ts](../src/lib/edge-translate.ts) 实现，
+不再依赖 translate.js 第三方库。该模块直接调用微软 Edge 免鉴权翻译接口：
+`POST https://edge.microsoft.com/translate/translatetext?from={from}&to={to}&isEnterpriseClient=false`
+（请求体为裸字符串数组，如 `["文本1","文本2"]`）。
+模块加载时会挂载到 `window.translate`，保持与旧调用方式兼容。
+
 全局类型声明位置：
 [translate.ts](../src/types/translate.ts)
 
 - `window.translate`
-  翻译能力的全局入口对象。
+  翻译能力的全局入口对象，由 `src/lib/edge-translate.ts` 提供。
 
 - `window.translate.execute(documents)`
   对指定节点集合执行翻译。
 
 - `window.translate.changeLanguage(language)`
-  切换目标语言。
+  切换目标语言（记录语种 -> 还原原文 -> 重新翻译）。
 
 - `window.translate.reset()`
   恢复原文。
@@ -149,7 +143,7 @@
   注册本次要翻译的节点集合。
 
 - `window.translate.listener.start()`
-  启动内部监听器。
+  兼容保留的空方法；动态新增内容的翻译由 `ContentAutoTranslateProvider` 自行监听处理。
 
 - `window.translate.language.setLocal(language)`
   设置源语言。
@@ -158,25 +152,22 @@
   获取当前目标语言。
 
 - `window.translate.service.use(service)`
-  设置翻译服务。
-  当前项目使用的是：
-  `client.edge`
+  兼容保留的空方法；本实现始终直接使用微软 Edge 翻译 API，无需切换服务通道。
 
 - `window.translate.selectLanguageTag.show`
-  translate.js 自带语言选择器的显示开关。
-  当前项目会强制设为 `false`。
+  兼容保留字段，恒为 `false`，本实现不生成语言选择器。
 
 - `window.translate.storage.set(key, value)`
-  当前项目重写后用于写入 `sessionStorage`。
+  直接写入 `sessionStorage`。
 
 - `window.translate.storage.get(key)`
-  当前项目重写后用于读取 `sessionStorage`。
+  从 `sessionStorage` 读取。
 
 - `window.translate.node.data`
-  文章详情翻译状态识别时用来判断当前页面是否已有翻译节点。
+  已翻译文本节点计数，文章详情翻译状态识别时用来判断当前页面是否已有翻译节点。
 
 - `window.translate.to`
-  在全局类型定义里保留的可能目标语言字段。
+  当前目标语种。
 
 ## 七、主要入口文件
 
@@ -230,6 +221,6 @@
 
 - 新增普通内容块，如果希望参与全站自动翻译，请添加 `data-auto-translate-content`。
 - 新增评论类 HTML 内容，如果希望参与评论翻译链路，请添加 `data-auto-translate-comment`。
-- 如果以后调整语言代码或替换 translate.js，需要同步更新 `TRANSLATE_LANGUAGE_MAP`、`TRANSLATE_LOCAL_LANGUAGE` 和这份文档。
-- 如果以后修改本地翻译脚本版本或来源，需要同步更新 `LOCAL_TRANSLATE_SCRIPT_PATH` 和这份文档。
+- 如果以后调整语言代码，需要同步更新 `TRANSLATE_LANGUAGE_MAP`、`TRANSLATE_LOCAL_LANGUAGE`、`src/lib/edge-translate.ts` 中的 `EDGE_LANGUAGE_CODES` 和这份文档。
+- 翻译能力由 `src/lib/edge-translate.ts` 自定义实现，直接调用微软 Edge 翻译 API；不再依赖 translate.js，也无需加载任何外部脚本。
 

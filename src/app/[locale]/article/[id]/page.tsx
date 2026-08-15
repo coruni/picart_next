@@ -104,6 +104,22 @@ function buildArticleToc(html: string): {
     },
   );
 
+  // 归一化目录层级：
+  // 文章可能只有 h2/h3/h4（无 h1），或标题跳级（如 h2 直接到 h4）。
+  // 按文章实际出现的标题级别重新编号，最低级别作为第 1 层并压缩跳级，
+  // 避免目录全部以原始 HTML 层级显示导致缩进错乱。
+  if (items.length > 0) {
+    const distinctLevels = [...new Set(items.map((item) => item.level))].sort(
+      (a, b) => a - b,
+    );
+    const levelMap = new Map(
+      distinctLevels.map((level, index) => [level, index + 1]),
+    );
+    items.forEach((item) => {
+      item.level = levelMap.get(item.level) ?? item.level;
+    });
+  }
+
   return {
     html: nextHtml,
     items,

@@ -1,6 +1,7 @@
 "use client";
 
 import { isContentMatchingLocale, TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
+import "@/lib/edge-translate";
 import { useTranslateStore } from "@/stores";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -71,7 +72,6 @@ async function translateHtmlContent(
 
     timeoutTimer = window.setTimeout(finish, TRANSLATE_TIMEOUT_MS);
 
-    translate.service?.use?.("client.edge");
     translate.language?.setLocal?.(TRANSLATE_LOCAL_LANGUAGE);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (translate.language as any).translateLocal = true;

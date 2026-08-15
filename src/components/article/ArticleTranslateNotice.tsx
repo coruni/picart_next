@@ -1,7 +1,10 @@
 "use client";
 
+import microsoftLogo from "@/assets/images/placeholder/microsoft-color.webp";
+import "@/lib/edge-translate";
 import { TRANSLATE_LANGUAGE_MAP } from "@/lib/translate";
 import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const DETAIL_TRANSLATE_SCOPE_SELECTOR =
@@ -82,7 +85,6 @@ export function ArticleTranslateNotice({
 
   const targetLanguage = TRANSLATE_LANGUAGE_MAP[locale];
   const isVisible = !!targetLanguage;
-  const providerLabel = useMemo(() => "translate.js", []);
 
   // Determine if content matches locale based on original language (passed from server)
   // This avoids dynamic DOM text detection which can be unreliable after translation
@@ -176,7 +178,6 @@ export function ArticleTranslateNotice({
         captureOriginalHtml(element);
       });
 
-      translate.service?.use?.("client.edge");
       translate.language?.setLocal?.("chinese_simplified");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (translate.language as any).translateLocal = true;
@@ -215,12 +216,25 @@ export function ArticleTranslateNotice({
   }
 
   return (
-    <div className="mt-2 flex items-center justify-between rounded-xl bg-muted px-4 py-2 text-xs text-secondary">
-      <span>{t("translatedBy", { provider: providerLabel })}</span>
+    <div className="mt-2 flex items-center   px-4 py-2 text-xs text-secondary">
+      <span className="inline-flex items-center gap-1">
+        {t.rich("translatedBy", {
+          icon: () => (
+            <Image
+              src={microsoftLogo}
+              alt=""
+              aria-hidden="true"
+              width={14}
+              height={14}
+              className="size-3.5 object-contain"
+            />
+          ),
+        })}
+      </span>
       <button
         type="button"
         onClick={handleToggle}
-        className="cursor-pointer font-medium text-primary transition-opacity hover:opacity-80"
+        className="cursor-pointer font-medium text-primary transition-opacity hover:opacity-80 ml-2"
       >
         {showOriginal ? t("viewTranslation") : t("viewOriginal")}
       </button>

@@ -742,7 +742,7 @@
     "pageTitle": "Post Detail",
     "repostable": "Repost allowed",
     "notRepostable": "Repost not allowed",
-    "translatedBy": "Translated by {provider}",
+    "translatedBy": "Translated By <icon>Microsoft</icon>",
     "viewOriginal": "View original",
     "viewTranslation": "View translation",
     "tocTitle": "Contents",
