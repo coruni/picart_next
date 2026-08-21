@@ -148,11 +148,17 @@ export function formatRelativeTime(
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (diffInSeconds < 60) {
+  // 注意：当时间戳为未来时间（时区/时钟偏差导致 diff 为负）时，
+  // 不能直接按 diffInSeconds < 60 判定为"刚刚"——负数恒小于 60，
+  // 会导致所有评论永远显示"刚刚"。
+  // 取绝对值后再计算相对时间，未来时间也按相同规则展示。
+  const absDiffInSeconds = Math.abs(diffInSeconds);
+
+  if (absDiffInSeconds < 60) {
     return t("justNow");
   }
 
-  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  const diffInMinutes = Math.floor(absDiffInSeconds / 60);
   if (diffInMinutes < 60) {
     return t("minutesAgo", { count: diffInMinutes });
   }
