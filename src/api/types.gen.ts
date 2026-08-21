@@ -2572,6 +2572,10 @@ export type ConfigControllerGetPublicConfigsResponses = {
             site_favicon: string;
             site_layout: string;
             site_mail: string;
+            site_separator: string;
+            site_privacy_policy: string;
+            site_terms_of_service: string;
+            site_contact: string;
             user_registration_enabled: boolean;
             user_email_verification: boolean;
             comment_approval_required: boolean;
@@ -2626,11 +2630,14 @@ export type ConfigControllerGetPublicConfigsResponses = {
             favorite_create_cost: number;
             telegram_proxy_enabled: boolean;
             telegram_proxy_url: string;
-            telegram_mtproto_proxy_enabled: boolean;
-            telegram_mtproto_proxy_url: string;
-            telegram_download_enabled: boolean;
-            telegram_max_requests_per_minute: number;
-            site_contact: string;
+            content_audit_provider: string;
+            content_audit_comment_enabled: boolean;
+            content_audit_avatar_enabled: boolean;
+            content_audit_image_enabled: boolean;
+            content_audit_auto_block: boolean;
+            content_audit_sensitivity: string;
+            content_audit_article_enabled: boolean;
+            content_audit_review_mode: string;
         };
     };
 };
@@ -3472,7 +3479,17 @@ export type UserControllerGetFollowersResponses = {
         code: number;
         message: string;
         data: {
-            data: Array<string>;
+            data: Array<{
+                id: number;
+                username: string;
+                nickname: string | null;
+                status: string;
+                avatar: string | null;
+                description: string | null;
+                createdAt: string;
+                isMember: boolean;
+                isFollowed: boolean;
+            }>;
             meta: {
                 total: number;
                 page: number;
@@ -3515,7 +3532,17 @@ export type UserControllerGetFollowingsResponses = {
         code: number;
         message: string;
         data: {
-            data: Array<string>;
+            data: Array<{
+                id: number;
+                username: string;
+                nickname: string | null;
+                status: string;
+                avatar: string | null;
+                description: string | null;
+                createdAt: string;
+                isMember: boolean;
+                isFollowed: boolean;
+            }>;
             meta: {
                 total: number;
                 page: number;
@@ -4677,6 +4704,88 @@ export type UserControllerCheckMembershipStatusResponses = {
 };
 
 export type UserControllerCheckMembershipStatusResponse = UserControllerCheckMembershipStatusResponses[keyof UserControllerCheckMembershipStatusResponses];
+
+export type UserControllerGetGithubOAuthUrlData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/user/oauth/github/url';
+};
+
+export type UserControllerGetGithubOAuthUrlErrors = {
+    /**
+     * GitHub OAuth 未配置
+     */
+    400: unknown;
+};
+
+export type UserControllerGetGithubOAuthUrlResponses = {
+    /**
+     * 返回授权链接和 state
+     */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            url: string;
+            state: string;
+        };
+    };
+};
+
+export type UserControllerGetGithubOAuthUrlResponse = UserControllerGetGithubOAuthUrlResponses[keyof UserControllerGetGithubOAuthUrlResponses];
+
+export type UserControllerGithubOAuthRedirectCallbackData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query: {
+        code: string;
+        state: string;
+        error: string;
+    };
+    url: '/user/oauth/github/callback';
+};
+
+export type UserControllerGithubOAuthCallbackData = {
+    body: {
+        [key: string]: unknown;
+    };
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/user/oauth/github/callback';
+};
+
+export type UserControllerGithubOAuthCallbackErrors = {
+    /**
+     * code 无效或 state 校验失败
+     */
+    400: unknown;
+};
+
+export type UserControllerGithubOAuthCallbackResponses = {
+    /**
+     * 登录成功，返回用户信息和 JWT token
+     */
+    200: unknown;
+};
 
 export type ArticleControllerFindAllData = {
     body?: never;
@@ -6183,6 +6292,10 @@ export type ArticleControllerGetUserBrowseHistoryData = {
          * 分类ID
          */
         categoryId?: number;
+        /**
+         * 排序
+         */
+        order?: 'newest' | 'oldest';
     };
     url: '/article/browse/history';
 };
@@ -6202,21 +6315,49 @@ export type ArticleControllerGetUserBrowseHistoryResponses = {
                 article: {
                     id: number;
                     title: string;
-                    cover: string;
-                    summary: string | null;
+                    requireLogin: boolean;
+                    requireFollow: boolean;
+                    requirePayment: boolean;
+                    requireMembership: boolean;
+                    listRequireLogin: boolean;
+                    viewPrice: string;
+                    type: string;
+                    content: string;
+                    images: Array<{
+                        url: string;
+                        width: number;
+                        height: number;
+                        size: number;
+                        auditStatus: string;
+                        original: string;
+                        thumbnails: {
+                            thumb: string;
+                            small: string;
+                            medium: string;
+                            large: string;
+                        };
+                    }>;
+                    videoUrl: string | null;
+                    sort: number;
+                    summary: string;
                     views: number;
                     likes: number;
+                    favoriteCount: number;
                     commentCount: number;
+                    isFeatured: boolean;
+                    featuredAt: string;
+                    isPinnedOnProfile: boolean;
+                    pinnedAt: string;
                     status: string;
-                    createdAt: string;
-                    updatedAt: string;
+                    cover: string | null;
+                    authorId: number;
                     author: {
                         id: number;
                         username: string;
-                        nickname: string;
+                        nickname: string | null;
                         status: string;
                         banned: string;
-                        banReason: string;
+                        banReason: string | null;
                         avatar: string;
                         description: string;
                         background: string;
@@ -6225,6 +6366,7 @@ export type ArticleControllerGetUserBrowseHistoryResponses = {
                         articleCount: number;
                         followerCount: number;
                         followingCount: number;
+                        likes: number;
                         level: number;
                         experience: number;
                         wallet: number;
@@ -6232,32 +6374,62 @@ export type ArticleControllerGetUserBrowseHistoryResponses = {
                         membershipLevel: number;
                         membershipLevelName: string;
                         membershipStatus: string;
-                        membershipStartDate: string;
-                        membershipEndDate: string;
-                        lastLoginAt: string;
+                        membershipStartDate: string | null;
+                        membershipEndDate: string | null;
+                        lastLoginAt: string | null;
                         lastActiveAt: string;
-                        inviterId: string;
+                        inviterId: number;
                         myInviteCode: string;
-                        inviteCode: string;
+                        inviteCode: string | null;
                         inviteEarnings: string;
                         inviteCount: number;
                         createdAt: string;
                         updatedAt: string;
-                        equippedDecorations: Decoration;
+                        isMember: boolean;
+                        isFollowed: boolean;
+                        isBlocked: boolean;
+                        equippedDecorations: {
+                            ACHIEVEMENT_BADGE: {
+                                id: number;
+                                name: string;
+                                type: string;
+                                imageUrl: string;
+                                rarity: string;
+                                bubbleColor: unknown;
+                            };
+                            COMMENT_BUBBLE: {
+                                id: number;
+                                name: string;
+                                type: string;
+                                imageUrl: string;
+                                rarity: string;
+                                bubbleColor: string;
+                            };
+                            AVATAR_FRAME: {
+                                id: number;
+                                name: string;
+                                type: string;
+                                imageUrl: string;
+                                rarity: string;
+                                bubbleColor: string | null;
+                            };
+                        };
                     };
                     category: {
                         id: number;
                         name: string;
-                        description: string;
+                        description: unknown;
                         parentId: number;
+                        link: unknown;
                         parent: {
                             id: number;
                             name: string;
-                            description: string;
-                            link: string;
-                            avatar: string;
-                            background: string;
-                            cover: string;
+                            description: unknown;
+                            parentId: unknown;
+                            link: unknown;
+                            avatar: string | null;
+                            background: string | null;
+                            cover: string | null;
                             sort: number;
                             status: string;
                             articleCount: number;
@@ -6265,10 +6437,9 @@ export type ArticleControllerGetUserBrowseHistoryResponses = {
                             createdAt: string;
                             updatedAt: string;
                         };
-                        link: string;
-                        avatar: string;
-                        background: string;
-                        cover: string;
+                        avatar: unknown;
+                        background: unknown;
+                        cover: unknown;
                         sort: number;
                         status: string;
                         articleCount: number;
@@ -6289,6 +6460,38 @@ export type ArticleControllerGetUserBrowseHistoryResponses = {
                         createdAt: string;
                         updatedAt: string;
                     }>;
+                    downloads: Array<{
+                        id?: number;
+                        type?: string;
+                        url?: string;
+                        password?: unknown;
+                        extractionCode?: string;
+                        visibleWithoutPermission?: boolean;
+                        articleId?: number;
+                        createdAt?: string;
+                        updatedAt?: string;
+                    }>;
+                    activityId: number;
+                    allowReprint: boolean;
+                    downloadCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    hotScore: number;
+                    isHot: boolean;
+                    isLiked: boolean;
+                    isPaid: boolean;
+                    imageCount: number;
+                    reactionStats: {
+                        like: number;
+                        love: number;
+                        haha: number;
+                        wow: number;
+                        sad: number;
+                        angry: number;
+                        dislike: number;
+                    };
+                    userReaction: string;
+                    isFavorited: boolean;
                 };
             }>;
             meta: {
@@ -7074,6 +7277,35 @@ export type ArticleControllerGetDislikedArticlesResponses = {
 
 export type ArticleControllerGetDislikedArticlesResponse = ArticleControllerGetDislikedArticlesResponses[keyof ArticleControllerGetDislikedArticlesResponses];
 
+export type ArticleControllerGetDraftsData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: {
+        /**
+         * 页码
+         */
+        page?: number;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+    };
+    url: '/article/drafts';
+};
+
+export type ArticleControllerGetDraftsResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};
+
 export type ArticleControllerUpdateBrowseProgressData = {
     body: RecordBrowseHistoryDto;
     headers?: {
@@ -7315,35 +7547,6 @@ export type ArticleControllerSetProfilePinData = {
 };
 
 export type ArticleControllerSetProfilePinResponses = {
-    200: unknown;
-};
-
-export type ArticleControllerGetDraftsData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path?: never;
-    query?: {
-        /**
-         * 页码
-         */
-        page?: number;
-        /**
-         * 每页数量
-         */
-        limit?: number;
-    };
-    url: '/article/drafts';
-};
-
-export type ArticleControllerGetDraftsResponses = {
-    /**
-     * 获取成功
-     */
     200: unknown;
 };
 

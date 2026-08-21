@@ -2017,6 +2017,18 @@
                         "site_mail": {
                           "type": "string"
                         },
+                        "site_separator": {
+                          "type": "string"
+                        },
+                        "site_privacy_policy": {
+                          "type": "string"
+                        },
+                        "site_terms_of_service": {
+                          "type": "string"
+                        },
+                        "site_contact": {
+                          "type": "string"
+                        },
                         "user_registration_enabled": {
                           "type": "boolean"
                         },
@@ -2179,19 +2191,28 @@
                         "telegram_proxy_url": {
                           "type": "string"
                         },
-                        "telegram_mtproto_proxy_enabled": {
-                          "type": "boolean"
-                        },
-                        "telegram_mtproto_proxy_url": {
+                        "content_audit_provider": {
                           "type": "string"
                         },
-                        "telegram_download_enabled": {
+                        "content_audit_comment_enabled": {
                           "type": "boolean"
                         },
-                        "telegram_max_requests_per_minute": {
-                          "type": "integer"
+                        "content_audit_avatar_enabled": {
+                          "type": "boolean"
                         },
-                        "site_contact": {
+                        "content_audit_image_enabled": {
+                          "type": "boolean"
+                        },
+                        "content_audit_auto_block": {
+                          "type": "boolean"
+                        },
+                        "content_audit_sensitivity": {
+                          "type": "string"
+                        },
+                        "content_audit_article_enabled": {
+                          "type": "boolean"
+                        },
+                        "content_audit_review_mode": {
                           "type": "string"
                         }
                       },
@@ -2204,6 +2225,10 @@
                         "site_favicon",
                         "site_layout",
                         "site_mail",
+                        "site_separator",
+                        "site_privacy_policy",
+                        "site_terms_of_service",
+                        "site_contact",
                         "user_registration_enabled",
                         "user_email_verification",
                         "comment_approval_required",
@@ -2258,11 +2283,14 @@
                         "favorite_create_cost",
                         "telegram_proxy_enabled",
                         "telegram_proxy_url",
-                        "telegram_mtproto_proxy_enabled",
-                        "telegram_mtproto_proxy_url",
-                        "telegram_download_enabled",
-                        "telegram_max_requests_per_minute",
-                        "site_contact"
+                        "content_audit_provider",
+                        "content_audit_comment_enabled",
+                        "content_audit_avatar_enabled",
+                        "content_audit_image_enabled",
+                        "content_audit_auto_block",
+                        "content_audit_sensitivity",
+                        "content_audit_article_enabled",
+                        "content_audit_review_mode"
                       ]
                     }
                   },
@@ -2460,7 +2488,7 @@
             "in": "path",
             "description": "配置ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -2553,7 +2581,7 @@
             "in": "path",
             "description": "配置ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -5082,7 +5110,50 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "username": {
+                                "type": "string"
+                              },
+                              "nickname": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "avatar": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "description": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "isMember": {
+                                "type": "boolean"
+                              },
+                              "isFollowed": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "username",
+                              "nickname",
+                              "status",
+                              "avatar",
+                              "description",
+                              "createdAt",
+                              "isMember",
+                              "isFollowed"
+                            ]
                           }
                         },
                         "meta": {
@@ -5248,7 +5319,50 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "username": {
+                                "type": "string"
+                              },
+                              "nickname": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "avatar": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "description": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "isMember": {
+                                "type": "boolean"
+                              },
+                              "isFollowed": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "username",
+                              "nickname",
+                              "status",
+                              "avatar",
+                              "description",
+                              "createdAt",
+                              "isMember",
+                              "isFollowed"
+                            ]
                           }
                         },
                         "meta": {
@@ -8982,6 +9096,641 @@
             "bearer": []
           }
         ]
+      }
+    },
+    "/user/oauth/github/url": {
+      "get": {
+        "summary": "获取 GitHub OAuth 授权链接",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserController_getGithubOAuthUrl",
+        "tags": [
+          "用户管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "返回授权链接和 state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                          "type": "string"
+                        },
+                        "state": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "url",
+                        "state"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "GitHub OAuth 未配置",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/user/oauth/github/callback": {
+      "post": {
+        "summary": "GitHub OAuth 登录（SPA 模式，用 code 换取 token）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserController_githubOAuthCallback",
+        "tags": [
+          "用户管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "登录成功，返回用户信息和 JWT token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "username": {
+                          "type": "string"
+                        },
+                        "nickname": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "phone": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "banned": {
+                          "type": "string"
+                        },
+                        "banReason": {
+                          "type": "string"
+                        },
+                        "avatar": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "background": {
+                          "type": "string"
+                        },
+                        "address": {
+                          "type": "string"
+                        },
+                        "gender": {
+                          "type": "string"
+                        },
+                        "birthDate": {
+                          "type": "string"
+                        },
+                        "articleCount": {
+                          "type": "integer"
+                        },
+                        "followerCount": {
+                          "type": "integer"
+                        },
+                        "followingCount": {
+                          "type": "integer"
+                        },
+                        "likes": {
+                          "type": "integer"
+                        },
+                        "level": {
+                          "type": "integer"
+                        },
+                        "experience": {
+                          "type": "integer"
+                        },
+                        "wallet": {
+                          "type": "integer"
+                        },
+                        "points": {
+                          "type": "integer"
+                        },
+                        "membershipLevel": {
+                          "type": "integer"
+                        },
+                        "membershipLevelName": {
+                          "type": "string"
+                        },
+                        "membershipStatus": {
+                          "type": "string"
+                        },
+                        "membershipStartDate": {
+                          "type": "string"
+                        },
+                        "membershipEndDate": {
+                          "type": "string"
+                        },
+                        "lastLoginAt": {
+                          "type": "string"
+                        },
+                        "lastActiveAt": {
+                          "type": "string"
+                        },
+                        "inviterId": {
+                          "type": "string"
+                        },
+                        "myInviteCode": {
+                          "type": "string"
+                        },
+                        "inviteCode": {
+                          "type": "string"
+                        },
+                        "inviteEarnings": {
+                          "type": "string"
+                        },
+                        "inviteCount": {
+                          "type": "integer"
+                        },
+                        "githubId": {
+                          "type": "string"
+                        },
+                        "githubUsername": {
+                          "type": "string"
+                        },
+                        "roles": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "displayName": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "isActive": {
+                                "type": "boolean"
+                              },
+                              "isSystem": {
+                                "type": "boolean"
+                              },
+                              "permissions": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer"
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "description": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "description"
+                                  ]
+                                }
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "config": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "userId": {
+                              "type": "integer"
+                            },
+                            "articleCommissionRate": {
+                              "type": "string"
+                            },
+                            "membershipCommissionRate": {
+                              "type": "string"
+                            },
+                            "productCommissionRate": {
+                              "type": "string"
+                            },
+                            "serviceCommissionRate": {
+                              "type": "string"
+                            },
+                            "enableCustomCommission": {
+                              "type": "boolean"
+                            },
+                            "enableSystemNotification": {
+                              "type": "boolean"
+                            },
+                            "enableCommentNotification": {
+                              "type": "boolean"
+                            },
+                            "enableLikeNotification": {
+                              "type": "boolean"
+                            },
+                            "enableFollowNotification": {
+                              "type": "boolean"
+                            },
+                            "enableMessageNotification": {
+                              "type": "boolean"
+                            },
+                            "enableOrderNotification": {
+                              "type": "boolean"
+                            },
+                            "enablePaymentNotification": {
+                              "type": "boolean"
+                            },
+                            "enableInviteNotification": {
+                              "type": "boolean"
+                            },
+                            "enableEmailNotification": {
+                              "type": "boolean"
+                            },
+                            "enableSmsNotification": {
+                              "type": "boolean"
+                            },
+                            "enablePushNotification": {
+                              "type": "boolean"
+                            },
+                            "hideFavorites": {
+                              "type": "boolean"
+                            },
+                            "hideComments": {
+                              "type": "boolean"
+                            },
+                            "hideCollections": {
+                              "type": "boolean"
+                            },
+                            "hideFollowers": {
+                              "type": "boolean"
+                            },
+                            "hideFollowings": {
+                              "type": "boolean"
+                            },
+                            "hideTags": {
+                              "type": "boolean"
+                            },
+                            "remark": {
+                              "type": "null"
+                            },
+                            "createdAt": {
+                              "type": "string"
+                            },
+                            "updatedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "userId",
+                            "articleCommissionRate",
+                            "membershipCommissionRate",
+                            "productCommissionRate",
+                            "serviceCommissionRate",
+                            "enableCustomCommission",
+                            "enableSystemNotification",
+                            "enableCommentNotification",
+                            "enableLikeNotification",
+                            "enableFollowNotification",
+                            "enableMessageNotification",
+                            "enableOrderNotification",
+                            "enablePaymentNotification",
+                            "enableInviteNotification",
+                            "enableEmailNotification",
+                            "enableSmsNotification",
+                            "enablePushNotification",
+                            "hideFavorites",
+                            "hideComments",
+                            "hideCollections",
+                            "hideFollowers",
+                            "hideFollowings",
+                            "hideTags",
+                            "remark",
+                            "createdAt",
+                            "updatedAt"
+                          ]
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "type": "string"
+                        },
+                        "isMember": {
+                          "type": "boolean"
+                        },
+                        "token": {
+                          "type": "string"
+                        },
+                        "refreshToken": {
+                          "type": "string"
+                        },
+                        "isNewUser": {
+                          "type": "boolean"
+                        },
+                        "oauthProvider": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "username",
+                        "nickname",
+                        "email",
+                        "phone",
+                        "status",
+                        "banned",
+                        "banReason",
+                        "avatar",
+                        "description",
+                        "background",
+                        "address",
+                        "gender",
+                        "birthDate",
+                        "articleCount",
+                        "followerCount",
+                        "followingCount",
+                        "likes",
+                        "level",
+                        "experience",
+                        "wallet",
+                        "points",
+                        "membershipLevel",
+                        "membershipLevelName",
+                        "membershipStatus",
+                        "membershipStartDate",
+                        "membershipEndDate",
+                        "lastLoginAt",
+                        "lastActiveAt",
+                        "inviterId",
+                        "myInviteCode",
+                        "inviteCode",
+                        "inviteEarnings",
+                        "inviteCount",
+                        "githubId",
+                        "githubUsername",
+                        "roles",
+                        "config",
+                        "createdAt",
+                        "updatedAt",
+                        "isMember",
+                        "token",
+                        "refreshToken",
+                        "isNewUser",
+                        "oauthProvider"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "code 无效或 state 校验失败",
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "get": {
+        "summary": "GitHub OAuth 回调（重定向模式，成功后跳转前端页面）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserController_githubOAuthRedirectCallback",
+        "tags": [
+          "用户管理"
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "error",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "重定向到前端页面并携带 token 或 error",
+            "headers": {}
+          }
+        },
+        "security": []
       }
     },
     "/article": {
@@ -14673,6 +15422,19 @@
             }
           },
           {
+            "name": "order",
+            "in": "query",
+            "description": "排序",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "newest",
+                "oldest"
+              ]
+            }
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "description": "",
@@ -14764,12 +15526,97 @@
                                   "title": {
                                     "type": "string"
                                   },
-                                  "cover": {
+                                  "requireLogin": {
+                                    "type": "boolean"
+                                  },
+                                  "requireFollow": {
+                                    "type": "boolean"
+                                  },
+                                  "requirePayment": {
+                                    "type": "boolean"
+                                  },
+                                  "requireMembership": {
+                                    "type": "boolean"
+                                  },
+                                  "listRequireLogin": {
+                                    "type": "boolean"
+                                  },
+                                  "viewPrice": {
                                     "type": "string"
                                   },
-                                  "summary": {
+                                  "type": {
+                                    "type": "string"
+                                  },
+                                  "content": {
+                                    "type": "string"
+                                  },
+                                  "images": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "url": {
+                                          "type": "string"
+                                        },
+                                        "width": {
+                                          "type": "integer"
+                                        },
+                                        "height": {
+                                          "type": "integer"
+                                        },
+                                        "size": {
+                                          "type": "integer"
+                                        },
+                                        "auditStatus": {
+                                          "type": "string"
+                                        },
+                                        "original": {
+                                          "type": "string"
+                                        },
+                                        "thumbnails": {
+                                          "type": "object",
+                                          "properties": {
+                                            "thumb": {
+                                              "type": "string"
+                                            },
+                                            "small": {
+                                              "type": "string"
+                                            },
+                                            "medium": {
+                                              "type": "string"
+                                            },
+                                            "large": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "required": [
+                                            "thumb",
+                                            "small",
+                                            "medium",
+                                            "large"
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "url",
+                                        "width",
+                                        "height",
+                                        "size",
+                                        "auditStatus",
+                                        "original",
+                                        "thumbnails"
+                                      ]
+                                    }
+                                  },
+                                  "videoUrl": {
                                     "type": "string",
                                     "nullable": true
+                                  },
+                                  "sort": {
+                                    "type": "integer"
+                                  },
+                                  "summary": {
+                                    "type": "string"
                                   },
                                   "views": {
                                     "type": "integer"
@@ -14777,17 +15624,33 @@
                                   "likes": {
                                     "type": "integer"
                                   },
+                                  "favoriteCount": {
+                                    "type": "integer"
+                                  },
                                   "commentCount": {
                                     "type": "integer"
+                                  },
+                                  "isFeatured": {
+                                    "type": "boolean"
+                                  },
+                                  "featuredAt": {
+                                    "type": "string"
+                                  },
+                                  "isPinnedOnProfile": {
+                                    "type": "boolean"
+                                  },
+                                  "pinnedAt": {
+                                    "type": "string"
                                   },
                                   "status": {
                                     "type": "string"
                                   },
-                                  "createdAt": {
-                                    "type": "string"
+                                  "cover": {
+                                    "type": "string",
+                                    "nullable": true
                                   },
-                                  "updatedAt": {
-                                    "type": "string"
+                                  "authorId": {
+                                    "type": "integer"
                                   },
                                   "author": {
                                     "type": "object",
@@ -14799,7 +15662,8 @@
                                         "type": "string"
                                       },
                                       "nickname": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "nullable": true
                                       },
                                       "status": {
                                         "type": "string"
@@ -14808,7 +15672,8 @@
                                         "type": "string"
                                       },
                                       "banReason": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "nullable": true
                                       },
                                       "avatar": {
                                         "type": "string"
@@ -14834,6 +15699,9 @@
                                       "followingCount": {
                                         "type": "integer"
                                       },
+                                      "likes": {
+                                        "type": "integer"
+                                      },
                                       "level": {
                                         "type": "integer"
                                       },
@@ -14841,7 +15709,7 @@
                                         "type": "integer"
                                       },
                                       "wallet": {
-                                        "type": "number"
+                                        "type": "integer"
                                       },
                                       "points": {
                                         "type": "integer"
@@ -14856,25 +15724,29 @@
                                         "type": "string"
                                       },
                                       "membershipStartDate": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "nullable": true
                                       },
                                       "membershipEndDate": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "nullable": true
                                       },
                                       "lastLoginAt": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "nullable": true
                                       },
                                       "lastActiveAt": {
                                         "type": "string"
                                       },
                                       "inviterId": {
-                                        "type": "string"
+                                        "type": "integer"
                                       },
                                       "myInviteCode": {
                                         "type": "string"
                                       },
                                       "inviteCode": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "nullable": true
                                       },
                                       "inviteEarnings": {
                                         "type": "string"
@@ -14888,8 +15760,118 @@
                                       "updatedAt": {
                                         "type": "string"
                                       },
+                                      "isMember": {
+                                        "type": "boolean"
+                                      },
+                                      "isFollowed": {
+                                        "type": "boolean"
+                                      },
+                                      "isBlocked": {
+                                        "type": "boolean"
+                                      },
                                       "equippedDecorations": {
-                                        "$ref": "#/components/schemas/Decoration"
+                                        "type": "object",
+                                        "properties": {
+                                          "ACHIEVEMENT_BADGE": {
+                                            "type": "object",
+                                            "properties": {
+                                              "id": {
+                                                "type": "integer"
+                                              },
+                                              "name": {
+                                                "type": "string"
+                                              },
+                                              "type": {
+                                                "type": "string"
+                                              },
+                                              "imageUrl": {
+                                                "type": "string"
+                                              },
+                                              "rarity": {
+                                                "type": "string"
+                                              },
+                                              "bubbleColor": {
+                                                "type": "null"
+                                              }
+                                            },
+                                            "required": [
+                                              "id",
+                                              "name",
+                                              "type",
+                                              "imageUrl",
+                                              "rarity",
+                                              "bubbleColor"
+                                            ]
+                                          },
+                                          "COMMENT_BUBBLE": {
+                                            "type": "object",
+                                            "properties": {
+                                              "id": {
+                                                "type": "integer"
+                                              },
+                                              "name": {
+                                                "type": "string"
+                                              },
+                                              "type": {
+                                                "type": "string"
+                                              },
+                                              "imageUrl": {
+                                                "type": "string"
+                                              },
+                                              "rarity": {
+                                                "type": "string"
+                                              },
+                                              "bubbleColor": {
+                                                "type": "string"
+                                              }
+                                            },
+                                            "required": [
+                                              "id",
+                                              "name",
+                                              "type",
+                                              "imageUrl",
+                                              "rarity",
+                                              "bubbleColor"
+                                            ]
+                                          },
+                                          "AVATAR_FRAME": {
+                                            "type": "object",
+                                            "properties": {
+                                              "id": {
+                                                "type": "integer"
+                                              },
+                                              "name": {
+                                                "type": "string"
+                                              },
+                                              "type": {
+                                                "type": "string"
+                                              },
+                                              "imageUrl": {
+                                                "type": "string"
+                                              },
+                                              "rarity": {
+                                                "type": "string"
+                                              },
+                                              "bubbleColor": {
+                                                "type": "string",
+                                                "nullable": true
+                                              }
+                                            },
+                                            "required": [
+                                              "id",
+                                              "name",
+                                              "type",
+                                              "imageUrl",
+                                              "rarity",
+                                              "bubbleColor"
+                                            ]
+                                          }
+                                        },
+                                        "required": [
+                                          "ACHIEVEMENT_BADGE",
+                                          "AVATAR_FRAME",
+                                          "COMMENT_BUBBLE"
+                                        ]
                                       }
                                     },
                                     "required": [
@@ -14907,6 +15889,7 @@
                                       "articleCount",
                                       "followerCount",
                                       "followingCount",
+                                      "likes",
                                       "level",
                                       "experience",
                                       "wallet",
@@ -14925,7 +15908,10 @@
                                       "inviteCount",
                                       "createdAt",
                                       "updatedAt",
-                                      "equippedDecorations"
+                                      "equippedDecorations",
+                                      "isMember",
+                                      "isFollowed",
+                                      "isBlocked"
                                     ]
                                   },
                                   "category": {
@@ -14938,10 +15924,13 @@
                                         "type": "string"
                                       },
                                       "description": {
-                                        "type": "string"
+                                        "type": "null"
                                       },
                                       "parentId": {
                                         "type": "integer"
+                                      },
+                                      "link": {
+                                        "type": "null"
                                       },
                                       "parent": {
                                         "type": "object",
@@ -14953,19 +15942,25 @@
                                             "type": "string"
                                           },
                                           "description": {
-                                            "type": "string"
+                                            "type": "null"
+                                          },
+                                          "parentId": {
+                                            "type": "null"
                                           },
                                           "link": {
-                                            "type": "string"
+                                            "type": "null"
                                           },
                                           "avatar": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "nullable": true
                                           },
                                           "background": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "nullable": true
                                           },
                                           "cover": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "nullable": true
                                           },
                                           "sort": {
                                             "type": "integer"
@@ -14990,6 +15985,7 @@
                                           "id",
                                           "name",
                                           "description",
+                                          "parentId",
                                           "link",
                                           "avatar",
                                           "background",
@@ -15002,17 +15998,14 @@
                                           "updatedAt"
                                         ]
                                       },
-                                      "link": {
-                                        "type": "string"
-                                      },
                                       "avatar": {
-                                        "type": "string"
+                                        "type": "null"
                                       },
                                       "background": {
-                                        "type": "string"
+                                        "type": "null"
                                       },
                                       "cover": {
-                                        "type": "string"
+                                        "type": "null"
                                       },
                                       "sort": {
                                         "type": "integer"
@@ -15039,6 +16032,7 @@
                                       "description",
                                       "parentId",
                                       "link",
+                                      "parent",
                                       "avatar",
                                       "background",
                                       "cover",
@@ -15047,8 +16041,7 @@
                                       "articleCount",
                                       "followCount",
                                       "createdAt",
-                                      "updatedAt",
-                                      "parent"
+                                      "updatedAt"
                                     ]
                                   },
                                   "tags": {
@@ -15104,22 +16097,157 @@
                                         "updatedAt"
                                       ]
                                     }
+                                  },
+                                  "downloads": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "id": {
+                                          "type": "integer"
+                                        },
+                                        "type": {
+                                          "type": "string"
+                                        },
+                                        "url": {
+                                          "type": "string"
+                                        },
+                                        "password": {
+                                          "type": "null"
+                                        },
+                                        "extractionCode": {
+                                          "type": "string"
+                                        },
+                                        "visibleWithoutPermission": {
+                                          "type": "boolean"
+                                        },
+                                        "articleId": {
+                                          "type": "integer"
+                                        },
+                                        "createdAt": {
+                                          "type": "string"
+                                        },
+                                        "updatedAt": {
+                                          "type": "string"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "activityId": {
+                                    "type": "integer"
+                                  },
+                                  "allowReprint": {
+                                    "type": "boolean"
+                                  },
+                                  "downloadCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  },
+                                  "hotScore": {
+                                    "type": "number"
+                                  },
+                                  "isHot": {
+                                    "type": "boolean"
+                                  },
+                                  "isLiked": {
+                                    "type": "boolean"
+                                  },
+                                  "isPaid": {
+                                    "type": "boolean"
+                                  },
+                                  "imageCount": {
+                                    "type": "integer"
+                                  },
+                                  "reactionStats": {
+                                    "type": "object",
+                                    "properties": {
+                                      "like": {
+                                        "type": "integer"
+                                      },
+                                      "love": {
+                                        "type": "integer"
+                                      },
+                                      "haha": {
+                                        "type": "integer"
+                                      },
+                                      "wow": {
+                                        "type": "integer"
+                                      },
+                                      "sad": {
+                                        "type": "integer"
+                                      },
+                                      "angry": {
+                                        "type": "integer"
+                                      },
+                                      "dislike": {
+                                        "type": "integer"
+                                      }
+                                    },
+                                    "required": [
+                                      "like",
+                                      "love",
+                                      "haha",
+                                      "wow",
+                                      "sad",
+                                      "angry",
+                                      "dislike"
+                                    ]
+                                  },
+                                  "userReaction": {
+                                    "type": "string"
+                                  },
+                                  "isFavorited": {
+                                    "type": "boolean"
                                   }
                                 },
                                 "required": [
                                   "id",
                                   "title",
-                                  "cover",
+                                  "requireLogin",
+                                  "requireFollow",
+                                  "requirePayment",
+                                  "requireMembership",
+                                  "listRequireLogin",
+                                  "viewPrice",
+                                  "type",
+                                  "content",
+                                  "images",
+                                  "videoUrl",
+                                  "sort",
                                   "summary",
                                   "views",
                                   "likes",
+                                  "favoriteCount",
                                   "commentCount",
+                                  "isFeatured",
+                                  "featuredAt",
+                                  "isPinnedOnProfile",
+                                  "pinnedAt",
                                   "status",
-                                  "createdAt",
-                                  "updatedAt",
+                                  "cover",
+                                  "authorId",
                                   "author",
                                   "category",
-                                  "tags"
+                                  "tags",
+                                  "downloads",
+                                  "activityId",
+                                  "allowReprint",
+                                  "downloadCount",
+                                  "createdAt",
+                                  "updatedAt",
+                                  "hotScore",
+                                  "isHot",
+                                  "isLiked",
+                                  "isPaid",
+                                  "imageCount",
+                                  "reactionStats",
+                                  "userReaction",
+                                  "isFavorited"
                                 ]
                               }
                             },
@@ -18128,6 +19256,91 @@
         "security": []
       }
     },
+    "/article/drafts": {
+      "get": {
+        "summary": "获取当前用户的草稿文章列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "ArticleController_getDrafts",
+        "tags": [
+          "文章管理"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
     "/article/{id}/browse/progress": {
       "post": {
         "summary": "更新文章浏览进度",
@@ -18995,91 +20208,6 @@
             "bearer": []
           }
         ]
-      }
-    },
-    "/article/drafts": {
-      "get": {
-        "summary": "获取当前用户的草稿文章列表",
-        "deprecated": false,
-        "description": "",
-        "operationId": "ArticleController_getDrafts",
-        "tags": [
-          "文章管理"
-        ],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "页码",
-            "required": false,
-            "schema": {
-              "minimum": 1,
-              "default": 1,
-              "type": "number"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "每页数量",
-            "required": false,
-            "schema": {
-              "minimum": 1,
-              "maximum": 100,
-              "default": 10,
-              "type": "number"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "获取成功",
-            "headers": {}
-          }
-        },
-        "security": []
       }
     },
     "/comment/article/{id}": {
@@ -24736,7 +25864,7 @@
             "in": "path",
             "description": "父评论ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -32670,7 +33798,10 @@
                   "file"
                 ]
               },
-              "examples": {}
+              "example": {
+                "file": "",
+                "metadata": ""
+              }
             }
           },
           "required": true
@@ -37053,7 +38184,7 @@
             "in": "path",
             "description": "轮播ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -37138,7 +38269,7 @@
             "in": "path",
             "description": "轮播ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -37224,7 +38355,7 @@
             "in": "path",
             "description": "轮播ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -37802,7 +38933,7 @@
             "in": "path",
             "description": "",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -38273,7 +39404,7 @@
             "in": "path",
             "description": "",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -46831,6 +47962,13 @@
                   "name",
                   "isPublic"
                 ]
+              },
+              "example": {
+                "name": "开心",
+                "code": ":smile:",
+                "category": "开心",
+                "tags": "开心,笑脸,高兴",
+                "isPublic": "true"
               }
             }
           },
@@ -48707,7 +49845,7 @@
             "in": "path",
             "description": "合集ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -48781,7 +49919,7 @@
             "in": "path",
             "description": "合集ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -48867,7 +50005,7 @@
             "in": "path",
             "description": "合集ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -49766,7 +50904,7 @@
             "in": "path",
             "description": "文章ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -49888,7 +51026,7 @@
             "in": "path",
             "description": "文章ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -50004,7 +51142,7 @@
             "in": "path",
             "description": "合集ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -50014,7 +51152,7 @@
             "in": "path",
             "description": "文章ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -50159,7 +51297,7 @@
             "in": "path",
             "description": "合集ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -50169,7 +51307,7 @@
             "in": "path",
             "description": "文章ID",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }
@@ -51060,7 +52198,7 @@
             "in": "path",
             "description": "",
             "required": true,
-            "example": 0,
+            "example": "",
             "schema": {
               "type": "number"
             }

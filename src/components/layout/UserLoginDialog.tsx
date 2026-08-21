@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  userControllerGetGithubOAuthUrl,
   userControllerLogin,
   UserControllerLoginResponse,
   userControllerRegisterUser,
@@ -60,6 +61,22 @@ function extractApiMessage(error: unknown): string | null {
   }
 
   return null;
+}
+
+/**
+ * GitHub 官方 mark 图标（lucide 已移除品牌图标）
+ */
+function GithubIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14 0 1.55-.01 2.79-.01 3.17 0 .31.21.68.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z" />
+    </svg>
+  );
 }
 
 export function UserLoginDialog() {
@@ -348,6 +365,27 @@ export function UserLoginDialog() {
     setError("");
   };
 
+  // GitHub OAuth：获取授权链接并跳转
+  const handleGithubLogin = async () => {
+    setIsSubmitting(true);
+    setError("");
+    try {
+      const { data } = await userControllerGetGithubOAuthUrl();
+      const url = (data as { data?: { url?: string } } | undefined)?.data?.url;
+      if (!url) {
+        setError(t("githubNotConfigured"));
+        return;
+      }
+      // 跳转 GitHub 授权页，完成后回调前端域名 /oauth/callback?code=xxx&state=xxx
+      window.location.href = url;
+    } catch (error) {
+      const message = getLoginErrorMessage(error as { message: string });
+      setError(message ?? t("githubNotConfigured"));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (!loginDialogOpen) {
     return null;
   }
@@ -374,71 +412,95 @@ export function UserLoginDialog() {
 
           {/* 登录表单 */}
           {mode === "login" && (
-            <Form
-              errors={loginForm.errors}
-              onSubmit={loginForm.handleSubmit}
-              touched={loginForm.touched}
-            >
-              <FormField name="account" floating>
-                <FloatingInput
-                  className="rounded-lg"
-                  label={t("username")}
-                  {...loginForm.getFieldProps("account")}
-                  fullWidth
-                  autoComplete="username"
-                />
-              </FormField>
-              <FormField name="password" floating>
-                <FloatingInput
-                  className="rounded-lg"
-                  label={t("password")}
-                  type="password"
-                  {...loginForm.getFieldProps("password")}
-                  fullWidth
-                  autoComplete="current-password"
-                />
-              </FormField>
-              {error && (
-                <p className="text-sm text-red-500 dark:text-red-400">
-                  {error}
-                </p>
-              )}
-              <div className="mt-12">
+            <>
+              <Form
+                errors={loginForm.errors}
+                onSubmit={loginForm.handleSubmit}
+                touched={loginForm.touched}
+              >
+                <FormField name="account" floating>
+                  <FloatingInput
+                    className="rounded-lg"
+                    label={t("username")}
+                    {...loginForm.getFieldProps("account")}
+                    fullWidth
+                    autoComplete="username"
+                  />
+                </FormField>
+                <FormField name="password" floating>
+                  <FloatingInput
+                    className="rounded-lg"
+                    label={t("password")}
+                    type="password"
+                    {...loginForm.getFieldProps("password")}
+                    fullWidth
+                    autoComplete="current-password"
+                  />
+                </FormField>
+                {error && (
+                  <p className="text-sm text-red-500 dark:text-red-400">
+                    {error}
+                  </p>
+                )}
+                <div className="mt-12">
+                  <Button
+                    size="lg"
+                    type="submit"
+                    variant="primary"
+                    fullWidth
+                    className="rounded-lg"
+                    loading={isSubmitting}
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? t("loggingIn") : t("loginButton")}
+                  </Button>
+                </div>
+                <div className="mt-4 flex items-center justify-between text-sm">
+                  <button
+                    type="button"
+                    className="text-primary cursor-pointer hover:opacity-80"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      switchToReset();
+                    }}
+                  >
+                    <span>{t("needHelp")}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="text-primary cursor-pointer hover:opacity-80"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      switchToRegister();
+                    }}
+                  >
+                    <span>{t("registerNow")}</span>
+                  </button>
+                </div>
+              </Form>
+
+              {/* GitHub OAuth 登录 */}
+              <div className="mt-5">
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1 bg-border" />
+                  <span className="text-xs text-muted-foreground">
+                    {t("orLoginWith")}
+                  </span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
                 <Button
-                  size="lg"
-                  type="submit"
-                  variant="primary"
+                  type="button"
                   fullWidth
-                  className="rounded-lg"
+                  className="mt-4 rounded-lg py-5 bg-black text-white hover:bg-black/80!"
+                  onClick={handleGithubLogin}
                   loading={isSubmitting}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? t("loggingIn") : t("loginButton")}
+                  <GithubIcon className="size-4 " />
+                  {t("githubLogin")}
                 </Button>
               </div>
-              <div className="mt-4 flex items-center justify-between text-sm">
-                <button
-                  type="button"
-                  className="text-primary cursor-pointer hover:opacity-80"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    switchToReset();
-                  }}
-                >
-                  <span>{t("needHelp")}</span>
-                </button>
-                <button
-                  type="button"
-                  className="text-primary cursor-pointer hover:opacity-80"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    switchToRegister();
-                  }}
-                >
-                  <span>{t("registerNow")}</span>
-                </button>
-              </div>
-            </Form>
+            </>
           )}
 
           {/* 注册表单 */}

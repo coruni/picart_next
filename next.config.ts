@@ -51,12 +51,12 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "api.picart.cc",
+        hostname: "api.cerylab.com",
         pathname: "/**",
       },
       {
         protocol: "https",
-        hostname: "**.picart.cc",
+        hostname: "**.cerylab.com",
         pathname: "/**",
       },
       {

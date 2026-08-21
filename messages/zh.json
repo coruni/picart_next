@@ -92,7 +92,18 @@
     "needHelp": "遇到问题",
     "registerNow": "立即注册",
     "loginFailed": "登录失败",
-    "passwordError": "用户名或者密码错误"
+    "passwordError": "用户名或者密码错误",
+    "orLoginWith": "或使用以下方式登录",
+    "githubLogin": "使用 GitHub 登录",
+    "githubNotConfigured": "GitHub 登录未配置"
+  },
+  "oauth": {
+    "title": "GitHub 登录",
+    "loading": "正在通过 GitHub 登录，请稍候...",
+    "loginFailed": "GitHub 登录失败，请重试",
+    "missingCode": "缺少授权码，无法完成登录",
+    "backHome": "返回首页",
+    "retry": "重新登录"
   },
   "register": {
     "title": "账号注册",

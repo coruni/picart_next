@@ -99,7 +99,18 @@
     "needHelp": "Need Help",
     "registerNow": "Register Now",
     "loginFailed": "Login Failed",
-    "passwordError": "Incorrect account or password"
+    "passwordError": "Incorrect account or password",
+    "orLoginWith": "or continue with",
+    "githubLogin": "Continue with GitHub",
+    "githubNotConfigured": "GitHub login is not configured"
+  },
+  "oauth": {
+    "title": "GitHub Login",
+    "loading": "Signing in with GitHub, please wait...",
+    "loginFailed": "GitHub login failed, please try again",
+    "missingCode": "Missing authorization code, unable to complete login",
+    "backHome": "Back to Home",
+    "retry": "Try Again"
   },
   "register": {
     "title": "Register Account",
