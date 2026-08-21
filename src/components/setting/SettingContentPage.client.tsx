@@ -13,7 +13,7 @@ import {
 import { Avatar } from "@/components/ui/Avatar";
 import { useInfiniteScrollObserver } from "@/hooks/useInfiniteScrollObserver";
 import { Link } from "@/i18n/routing";
-import { getErrorMessage, showToast } from "@/lib";
+import { formatDate, getErrorMessage, showToast } from "@/lib";
 import { MoreHorizontal, ThumbsDown, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -79,7 +79,7 @@ function SettingContentItem({
                 </Link>
                 <span className="mx-1">·</span>
                 <span>
-                  {new Date(article.createdAt).toLocaleDateString(locale)}
+                  {formatDate(article.createdAt, locale)}
                 </span>
               </div>
             </div>

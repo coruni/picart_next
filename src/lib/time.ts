@@ -6,8 +6,10 @@ type TimeTranslator = (
 type DateInput = string | number | Date | null | undefined;
 type TimeLocale = string | null | undefined;
 const DATE_ONLY_PATTERN = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+// 兼容带毫秒（.xxx）与 Z / 时区偏移（+08:00）后缀的字符串，
+// 直接按字面值解析为本地时间，不做时区转换。
 const LOCAL_DATE_TIME_PATTERN =
-  /^(\d{4})-(\d{1,2})-(\d{1,2})[ T](\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?$/;
+  /^(\d{4})-(\d{1,2})-(\d{1,2})[ T](\d{1,2})(?::(\d{1,2}))?(?::(\d{1,2}))?(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?$/;
 
 function resolveLocale(locale?: TimeLocale) {
   if (locale?.toLowerCase().startsWith("zh")) {
@@ -48,11 +50,10 @@ export function toDate(value: DateInput): Date | null {
   }
 
   const localDateTimeMatch = value.match(LOCAL_DATE_TIME_PATTERN);
-  if (
-    localDateTimeMatch &&
-    !value.endsWith("Z") &&
-    !/[+-]\d{2}:\d{2}$/.test(value)
-  ) {
+  if (localDateTimeMatch) {
+    // 直接按字面值解析为本地时间，不做时区转换：
+    // 后端返回的 createdAt 通常是本地时间（可能带 Z/偏移后缀），
+    // 若交给 new Date(value) 会被按 UTC 解析，产生 8 小时偏差。
     const [, year, month, day, hours, minutes = "0", seconds = "0"] =
       localDateTimeMatch;
     const date = new Date(

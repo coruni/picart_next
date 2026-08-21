@@ -2,7 +2,7 @@
 
 import type { DecorationControllerFindAllActivitiesResponse } from "@/api/types.gen";
 import { Link } from "@/i18n/routing";
-import { cn, formatDateYMD, prepareRichTextHtmlForSummary } from "@/lib";
+import { cn, formatDateYMD, prepareRichTextHtmlForSummary, toDate } from "@/lib";
 import { getImageUrl } from "@/types/image";
 import { Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -23,8 +23,10 @@ interface ActivityCardProps {
 function isActivityActive(start?: string, end?: string): boolean {
   if (!start || !end) return false;
   const now = new Date();
-  const startDate = new Date(start);
-  const endDate = new Date(end);
+  // 按字面值解析本地时间，不做时区转换（后端时间通常为本地时间）
+  const startDate = toDate(start);
+  const endDate = toDate(end);
+  if (!startDate || !endDate) return false;
   return now >= startDate && now <= endDate;
 }
 
