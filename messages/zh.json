@@ -485,7 +485,7 @@
     },
     "modal": {
       "insertVideo": "插入视频",
-      "videoUrlPlaceholder": "支持 YouTube、Bilibili、TikTok 视频链接",
+      "videoUrlPlaceholder": "支持 YouTube、Bilibili、TikTok 链接或视频直链（.mp4/.webm 等）",
       "insertLink": "插入链接",
       "linkTextPlaceholder": "链接文字（可选，选中文字时自动填充）",
       "linkUrlPlaceholder": "请输入链接地址",

@@ -446,6 +446,7 @@ function isAllowedAttribute(tagName: string, name: string): boolean {
     name === "controls" ||
     name === "preload" ||
     name === "type" ||
+    name === "playsinline" ||
     name === "colspan" ||
     name === "rowspan" ||
     name === "frameborder" ||

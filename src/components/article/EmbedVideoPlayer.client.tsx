@@ -5,9 +5,7 @@ import {
   Maximize,
   Minimize,
   Pause,
-  PictureInPicture,
   Play,
-  Settings,
   Volume1,
   Volume2,
   VolumeOff,
@@ -16,10 +14,11 @@ import {
 import { useEffect, useRef } from "react";
 import ReactDOMServer from "react-dom/server";
 
-interface VideoPlayerProps {
+interface EmbedVideoPlayerProps {
+  /** 直链视频地址（.mp4/.webm 等） */
   videoUrl: string;
+  /** 封面图地址（可选） */
   cover?: string;
-  title?: string;
 }
 
 // Convert Lucide icon to SVG string for ArtPlayer
@@ -27,7 +26,17 @@ const iconToSvg = (Icon: React.ComponentType<{ size?: number }>, size = 20) => {
   return ReactDOMServer.renderToStaticMarkup(<Icon size={size} />);
 };
 
-export function VideoPlayer({ videoUrl, cover, title }: VideoPlayerProps) {
+/**
+ * 文章内容内嵌直链视频渲染组件
+ *
+ * 专用于编辑器插入的直链视频（ql-video-direct），
+ * 与文章头部 VideoPlayer（article.type === "video"）相互独立：
+ * - 精简播放器配置，适配内容流内嵌场景
+ * - 不含调试日志，避免生产环境刷屏
+ * - 容器固定为 16:9 标准规格，视频内容以 contain 方式完整可见
+ *   （不变形、不裁剪，非 16:9 视频在容器内上下/左右留黑边）
+ */
+export function EmbedVideoPlayer({ videoUrl, cover }: EmbedVideoPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const artplayerRef = useRef<Artplayer | null>(null);
 
@@ -51,11 +60,11 @@ export function VideoPlayer({ videoUrl, cover, title }: VideoPlayerProps) {
       autoSize: false,
       autoMini: false,
       screenshot: false,
-      setting: true,
+      setting: false,
       loop: false,
-      flip: true,
+      flip: false,
       playbackRate: true,
-      aspectRatio: true,
+      aspectRatio: false,
       fullscreen: true,
       fullscreenWeb: false,
       subtitleOffset: false,
@@ -63,8 +72,8 @@ export function VideoPlayer({ videoUrl, cover, title }: VideoPlayerProps) {
       mutex: true,
       backdrop: false,
       playsInline: true,
-      autoPlayback: true,
-      airplay: true,
+      autoPlayback: false,
+      airplay: false,
       theme: "#6680ff",
       lang: navigator.language.toLowerCase(),
       quality: [],
@@ -78,10 +87,6 @@ export function VideoPlayer({ videoUrl, cover, title }: VideoPlayerProps) {
         volumeClose: iconToSvg(VolumeOff),
         fullscreen: iconToSvg(Maximize),
         fullscreenExit: iconToSvg(Minimize),
-        fullscreenWeb: iconToSvg(Maximize),
-        fullscreenExitWeb: iconToSvg(Minimize),
-        pip: iconToSvg(PictureInPicture),
-        setting: iconToSvg(Settings),
       },
       customType: {},
       plugins: [],
@@ -100,32 +105,20 @@ export function VideoPlayer({ videoUrl, cover, title }: VideoPlayerProps) {
       const video = art.video;
       if (!video) return;
 
+      // 固定 16:9 容器内保持视频完整可见（contain），不变形不裁剪
+      video.style.objectFit = "contain";
+      video.style.width = "100%";
+      video.style.height = "100%";
+
       // Force load metadata if duration is not available
-      if (video.readyState < 1 || video.duration === 0 || Number.isNaN(video.duration)) {
+      if (
+        video.readyState < 1 ||
+        video.duration === 0 ||
+        Number.isNaN(video.duration)
+      ) {
         video.preload = "metadata";
         video.load();
       }
-    });
-
-    art.on("video:loadedmetadata", () => {
-      console.log("[VideoPlayer] Metadata loaded, duration:", art.duration);
-    });
-
-    // Additional event: canplay can indicate duration is ready
-    art.on("video:canplay", () => {
-      const video = art.video;
-      if (video && video.duration > 0) {
-        console.log("[VideoPlayer] Can play, duration:", video.duration);
-      }
-    });
-
-    // Durationchange event specifically tracks duration changes
-    art.on("video:durationchange", () => {
-      console.log("[VideoPlayer] Duration changed:", art.duration);
-    });
-
-    art.on("error", (error) => {
-      console.error("[VideoPlayer] ArtPlayer error:", error);
     });
 
     artplayerRef.current = art;
@@ -136,11 +129,26 @@ export function VideoPlayer({ videoUrl, cover, title }: VideoPlayerProps) {
         artplayerRef.current = null;
       }
     };
-  }, [videoUrl, cover, title]);
+  }, [videoUrl, cover]);
 
   return (
-    <div className="relative z-10 w-full overflow-hidden bg-black">
-      <div ref={containerRef} className="aspect-video w-full" />
-    </div>
+    <>
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
+      .art-video-player {
+      position:unset !important;
+      }
+    `,
+        }}
+      />
+
+      <div
+        className="relative w-full overflow-hidden"
+        style={{ aspectRatio: "16 / 9" }}
+      >
+        <div ref={containerRef} className="h-full w-full" />
+      </div>
+    </>
   );
 }

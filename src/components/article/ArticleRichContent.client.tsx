@@ -17,6 +17,7 @@ import {
     type ReactNode,
 } from "react";
 import { ImageViewer } from "./ImageViewer";
+import { EmbedVideoPlayer } from "./EmbedVideoPlayer.client";
 type Article = ArticleList[number] | ArticleDetail;
 type ArticleRichContentProps = {
   html: string;
@@ -93,6 +94,12 @@ function parseHtmlToReact(html: string): ParseResult {
         key === "rel"
       ) {
         props[key] = value;
+      } else if (
+        tagName === "video" &&
+        (key === "controls" || key === "preload" || key === "playsinline")
+      ) {
+        // 直链视频需要保留播放器控制属性
+        props[key] = key === "controls" || key === "playsinline" ? true : value;
       }
     }
 
@@ -120,6 +127,29 @@ function parseHtmlToReact(html: string): ParseResult {
         style: { maxWidth: "100%", height: "auto",width: "100%" },
         wrapperClassName: "ql-image-wrapper-inner", // 标记内部wrapper
       });
+    }
+
+    // 处理直链视频：用独立的内嵌视频组件（EmbedVideoPlayer）替换 ql-video-container 容器，
+    // 直链视频（.mp4/.webm 等）使用 ArtPlayer 播放器，而非 iframe 嵌入。
+    // 注意：不复用 VideoPlayer（article.type === "video" 文章头部专用），
+    // 内嵌场景使用精简配置，避免完整播放器配置水土不服。
+    if (
+      tagName === "div" &&
+      node.classList?.contains("ql-video-container")
+    ) {
+      const directVideo = node.querySelector?.("video.ql-video-direct");
+      if (directVideo) {
+        const src = directVideo.getAttribute("src") || "";
+        const poster = directVideo.getAttribute("poster") || undefined;
+        const videoId = `video-${src}-${depth}`;
+        if (src) {
+          return createElement(EmbedVideoPlayer, {
+            key: videoId,
+            videoUrl: src,
+            cover: poster,
+          });
+        }
+      }
     }
 
     // 递归处理子节点

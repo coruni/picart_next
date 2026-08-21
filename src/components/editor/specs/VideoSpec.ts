@@ -49,6 +49,15 @@ export class VideoSpec extends BlotSpec {
     } else if (target instanceof HTMLIFrameElement && target.classList.contains("ql-video-iframe")) {
       // 直接点击 iframe 的情况（理论上被遮罩层覆盖，但以防万一）
       wrapper = target.closest(".ql-video-wrapper") as HTMLElement;
+    } else if (target instanceof HTMLVideoElement && target.classList.contains("ql-video-direct")) {
+      // 直链视频：直接点击 <video> 元素
+      const closestWrapper = target.closest(".ql-video-wrapper") as HTMLElement;
+      // 若视频已处于选中状态（遮罩已隐藏），放行点击让用户播放视频，
+      // 否则拦截用于选中视频
+      if (closestWrapper?.classList.contains("ql-video-selected")) {
+        return;
+      }
+      wrapper = closestWrapper;
     }
 
     if (this.formatter.enabled && wrapper) {

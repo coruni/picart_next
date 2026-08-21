@@ -674,6 +674,18 @@ export const quillOverrideStyles = `
     background: #f5f5f5;
     border-radius: 8px;
   }
+  /* 直链视频（.mp4/.webm 等） */
+  .ql-video-direct {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+    background: #000;
+    object-fit: contain;
+  }
   /* 视频选中状态 */
   .ql-video-wrapper.ql-video-selected {
     outline: 2px solid var(--color-primary) !important;

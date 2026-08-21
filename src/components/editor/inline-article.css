@@ -191,6 +191,7 @@ a.inline-article-card,
   margin: 16px 0;
   border-radius: 12px;
   background: #000;
+  overflow: hidden;
 }
 
 .ql-video-container {
@@ -228,4 +229,17 @@ a.inline-article-card,
   height: 100%;
   border: none;
   border-radius: 8px;
+}
+
+/* 直链视频（.mp4/.webm 等） */
+.ql-video-direct {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 8px;
+  background: #000;
+  object-fit: contain;
 }

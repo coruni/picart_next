@@ -492,7 +492,7 @@
     },
     "modal": {
       "insertVideo": "Insert Video",
-      "videoUrlPlaceholder": "Support YouTube, Bilibili, TikTok video URLs",
+      "videoUrlPlaceholder": "Support YouTube, Bilibili, TikTok URLs or direct video links (.mp4/.webm etc.)",
       "insertLink": "Insert Link",
       "linkTextPlaceholder": "Link text (optional, auto-filled when text is selected)",
       "linkUrlPlaceholder": "Enter link URL",
