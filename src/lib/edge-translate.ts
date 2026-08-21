@@ -215,11 +215,11 @@ function execute(docs?: Element[] | NodeListOf<Element>): void {
   if (!target) return;
   const toEdge = EDGE_LANGUAGE_CODES[target];
   if (!toEdge) return;
-  const localEdge = EDGE_LANGUAGE_CODES[localLanguage] ?? null;
-  if (localEdge && localEdge === toEdge) {
-    // 目标语种就是本地语种，无需翻译
-    return;
-  }
+  // 注意：不能根据 localLanguage 与目标语种是否相同来短路。
+  // localLanguage 被硬编码为页面本地语种（chinese_simplified），
+  // 而评论/回复等 UGC 内容语言未知（可能是英文等），
+  // 内容语言是否与目标语种匹配由上层（ContentAutoTranslateProvider /
+  // useManualHtmlTranslate）通过语言检测判断，进入本函数的内容都需要翻译。
 
   const scope =
     docs && docs.length > 0
@@ -262,7 +262,10 @@ function execute(docs?: Element[] | NodeListOf<Element>): void {
 
   const texts = Array.from(pending.keys());
   enqueueTranslate(async () => {
-    const results = await translateWithEdge(texts, localEdge, toEdge);
+    // 不传 from：微软接口会自动检测每条文本的源语言。
+    // 评论等 UGC 内容语言未知，若硬传 localLanguage（chinese_simplified）
+    // 会导致 from===to（如中文用户看英文评论时 to=zh-Hans），接口直接返回原文不翻译。
+    const results = await translateWithEdge(texts, null, toEdge);
     for (let i = 0; i < texts.length; i++) {
       const translated = results[i] ?? "";
       const list = pending.get(texts[i]) ?? [];

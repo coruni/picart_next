@@ -55,6 +55,13 @@ function containsJapaneseCharacters(value: string): boolean {
   return (japaneseMatches?.length ?? 0) > 0;
 }
 
+// Check if text contains Korean characters (Hangul syllables)
+function containsKoreanCharacters(value: string): boolean {
+  // Hangul syllables: \uAC00-\uD7AF
+  const koreanMatches = value.match(/[\uAC00-\uD7AF]/g);
+  return (koreanMatches?.length ?? 0) > 0;
+}
+
 function isLikelyChineseContent(value: string): boolean {
   const text = value.replace(/\s+/g, "");
   if (!text) {
@@ -68,8 +75,9 @@ function isLikelyChineseContent(value: string): boolean {
   const chineseCount = chineseMatches?.length ?? 0;
   const letterCount = letterMatches?.length ?? 0;
 
-  // If has Chinese characters and Chinese count >= English letter count
-  return chineseCount > 0 && chineseCount >= letterCount;
+  // 评论常为中英混排（如 "Great! 太棒了"），中文字符不少于英文字母
+  // 的一半即视为中文内容，避免交给 franc 后被误判为德语等语言。
+  return chineseCount > 0 && chineseCount * 2 >= letterCount;
 }
 
 /**
@@ -101,7 +109,10 @@ export function detectContentLanguage(text: string): string | null {
     return null;
   }
 
-  return FRANC_TO_LOCALE[langCode] || langCode;
+  // 仅接受能映射到站内支持语种的代码；franc 偶发返回的
+  // 未映射代码（如 zyb、kin）直接透传会导致 isContentMatchingLocale
+  // 判定永远不相等，从而对匹配语种的内容错误显示翻译图标。
+  return FRANC_TO_LOCALE[langCode] || null;
 }
 
 /**
@@ -118,9 +129,20 @@ export function isContentMatchingLocale(
   const cleanText = cleanTextForDetection(text);
   const detectedLang = detectContentLanguage(cleanText);
   if (!detectedLang) {
-    // Fallback: check for specific languages
+    // Fallback: detect by character sets when franc cannot determine
     if (containsJapaneseCharacters(cleanText)) {
       return locale === "ja";
+    }
+    if (containsKoreanCharacters(cleanText)) {
+      return locale === "ko";
+    }
+    // 纯数字/符号/emoji 等无语言特征的文本无需翻译，视为与当前语种匹配
+    if (
+      !/[A-Za-z\u00C0-\u024F\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/.test(
+        cleanText,
+      )
+    ) {
+      return true;
     }
     return isLikelyChineseContent(cleanText) === (locale === "zh");
   }
