@@ -10,7 +10,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 const DETAIL_TRANSLATE_SCOPE_SELECTOR =
   "[data-auto-translate-article-detail] [data-auto-translate-content]";
 const DEBOUNCE_DELAY = 150;
-const ORIGINAL_HTML_ATTR = "data-translate-original-html";
 
 // Global flag to signal manual translation toggle in progress
 // Used to prevent ContentAutoTranslateProvider from re-triggering translation
@@ -30,19 +29,6 @@ declare global {
 
 function markManualToggle() {
   window.__lastManualTranslateToggle = Date.now();
-}
-
-function captureOriginalHtml(element: HTMLElement) {
-  if (!element.getAttribute(ORIGINAL_HTML_ATTR)) {
-    element.setAttribute(ORIGINAL_HTML_ATTR, element.innerHTML);
-  }
-}
-
-function restoreOriginalHtml(element: HTMLElement) {
-  const originalHtml = element.getAttribute(ORIGINAL_HTML_ATTR);
-  if (originalHtml != null) {
-    element.innerHTML = originalHtml;
-  }
 }
 
 function getCurrentDisplayedLanguage(translate: typeof window.translate): string | undefined {
@@ -173,11 +159,6 @@ export function ArticleTranslateNotice({
       // Immediately set state before translation
       setShowOriginal(false);
 
-      documents.forEach((doc) => {
-        const element = doc as HTMLElement;
-        captureOriginalHtml(element);
-      });
-
       translate.language?.setLocal?.("chinese_simplified");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (translate.language as any).translateLocal = true;
@@ -197,13 +178,11 @@ export function ArticleTranslateNotice({
     }
 
     // Immediately set state before reset
+    // 注意：只调用 translate.reset() 还原翻译过的文本节点，
+    // 不要用 innerHTML 整体恢复（会销毁 ArtPlayer 等 React 组件的 DOM，
+    // 导致视频播放器失效、React 虚拟 DOM 与实际 DOM 失同步）。
     setShowOriginal(true);
     translate.reset?.();
-
-    documents.forEach((doc) => {
-      const element = doc as HTMLElement;
-      restoreOriginalHtml(element);
-    });
 
     // Reset toggle flag after reset is triggered
     window.setTimeout(() => {

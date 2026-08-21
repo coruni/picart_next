@@ -20,49 +20,10 @@ const MUTATION_TRANSLATE_DEBOUNCE_MS = 260;
 const MIN_TEXT_LENGTH_FOR_DETECTION = 1;
 const MANUAL_TOGGLE_PAUSE_MS = 1200;
 
-const ORIGINAL_HTML_ATTR = "data-translate-original-html";
-const TRANSLATE_BOUND_ATTR = "data-translate-bound";
-const TRANSLATE_SKIPPED_ATTR = "data-translate-skipped";
-
-function extractTextFromHtml(html: string): string {
-  if (!html) return "";
-  const temp = document.createElement("div");
-  temp.innerHTML = html;
-
-  temp.querySelectorAll("script, style").forEach((el) => el.remove());
-
-  return temp.textContent || "";
-}
-
 function extractElementText(element: HTMLElement): string {
   const clone = element.cloneNode(true) as HTMLElement;
   clone.querySelectorAll("script, style").forEach((el) => el.remove());
   return clone.textContent || "";
-}
-
-function captureOriginalHtml(element: HTMLElement) {
-  if (!element.getAttribute(ORIGINAL_HTML_ATTR)) {
-    element.setAttribute(ORIGINAL_HTML_ATTR, element.innerHTML);
-  }
-}
-
-function captureOriginalHtmlForDocuments(documents: HTMLElement[]) {
-  documents.forEach((element) => {
-    captureOriginalHtml(element);
-  });
-}
-
-function restoreOriginalHtml(element: HTMLElement) {
-  const originalHtml = element.getAttribute(ORIGINAL_HTML_ATTR);
-  if (originalHtml != null) {
-    element.innerHTML = originalHtml;
-  }
-}
-
-function restoreOriginalHtmlForDocuments(documents: HTMLElement[]) {
-  documents.forEach((element) => {
-    restoreOriginalHtml(element);
-  });
 }
 
 function clearTranslateDocumentMarks() {
@@ -72,17 +33,7 @@ function clearTranslateDocumentMarks() {
   });
 }
 
-function clearStoredOriginalHtml() {
-  getTranslateDocuments().forEach((element) => {
-    element.removeAttribute(ORIGINAL_HTML_ATTR);
-  });
-}
-
 function getOriginalText(element: HTMLElement): string {
-  const originalHtml = element.getAttribute(ORIGINAL_HTML_ATTR);
-  if (originalHtml != null) {
-    return extractTextFromHtml(originalHtml);
-  }
   return extractElementText(element);
 }
 
@@ -188,13 +139,11 @@ export function ContentAutoTranslateProvider() {
     (state) => state.autoTranslateContent,
   );
 
-  const resetTranslationState = useCallback((restoreOriginal = false) => {
-    const documents = getTranslateDocuments();
-
-    if (restoreOriginal) {
-      restoreOriginalHtmlForDocuments(documents);
-    }
-
+  const resetTranslationState = useCallback(() => {
+    // 注意：只清理翻译标记，不要用 innerHTML 整体恢复。
+    // 文本还原由调用方 translate.reset() 完成（仅还原文本节点，不破坏 DOM 结构）；
+    // innerHTML 整体替换会销毁 ArtPlayer 等 React 组件的 DOM，
+    // 导致视频播放器失效、React 虚拟 DOM 与实际 DOM 失同步。
     clearTranslateDocumentMarks();
   }, []);
 
@@ -224,8 +173,6 @@ export function ContentAutoTranslateProvider() {
       if (!translate || documents.length === 0) {
         return;
       }
-
-      captureOriginalHtmlForDocuments(documents);
 
       const { toTranslate, skipped } = filterDocumentsByLanguage(documents);
 
@@ -276,7 +223,7 @@ export function ContentAutoTranslateProvider() {
 
     if (!autoTranslateContent || !targetLanguage) {
       translate.reset?.();
-      resetTranslationState(true);
+      resetTranslationState();
       translatedScopeKeyRef.current = null;
       return;
     }
@@ -292,7 +239,7 @@ export function ContentAutoTranslateProvider() {
 
     if (scopeChanged) {
       translate.reset?.();
-      resetTranslationState(true);
+      resetTranslationState();
     }
 
     if (shouldRefreshAll) {
@@ -456,7 +403,6 @@ export function ContentAutoTranslateProvider() {
       initializedRef.current = false;
       translatedScopeKeyRef.current = null;
       clearTranslateDocumentMarks();
-      clearStoredOriginalHtml();
     };
   }, [scriptReady]);
 

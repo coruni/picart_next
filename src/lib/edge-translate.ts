@@ -119,12 +119,16 @@ const SKIP_TAGS = new Set([
   "SELECT",
   "OPTION",
   "IFRAME",
+  "VIDEO",
+  "AUDIO",
 ]);
 
 function isIgnoredElement(el: Element): boolean {
   if (SKIP_TAGS.has(el.tagName)) return true;
   const className = typeof el.className === "string" ? el.className : "";
   const classes = className.split(/\s+/);
+  // 跳过视频播放器 DOM（ArtPlayer 容器），避免翻译引擎修改播放器内部文本
+  if (classes.includes("art-video-player")) return true;
   return classes.includes("ignore") || classes.includes("translateSelectLanguage");
 }
 
