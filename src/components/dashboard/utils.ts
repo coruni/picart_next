@@ -72,6 +72,10 @@ export function getStatusClassName(value?: string | boolean | null) {
     return "border-emerald-500/20 bg-emerald-500/10 text-emerald-700";
   }
 
+  if (normalized === "REVOKED") {
+    return "border-gray-400/20 bg-gray-400/10 text-gray-500";
+  }
+
   if (normalized === "RESOLVED" || normalized === "PUBLIC") {
     return "border-sky-500/20 bg-sky-500/10 text-sky-700";
   }

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { uploadControllerUploadFile, userControllerUpdate } from "@/api";
 import { Button } from "@/components/ui/Button";
@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader } from "@/components/ui/Dialog";
 import { useRouter } from "@/i18n/routing";
 import { getErrorMessage, showToast } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
+import { getCropExportType } from "@/lib/imageProcessing";
 import type { UserDetail } from "@/types";
 import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
@@ -49,18 +50,19 @@ export const BackgroundEditor = ({
     setUploading(true);
     try {
       const canvas = editorRef.current.getImageScaledToCanvas();
+      const exportType = getCropExportType(selectedImage);
       const blob = await new Promise<Blob>((resolve) => {
         canvas.toBlob(
           (blob) => {
             resolve(blob!);
           },
-          "image/jpeg",
+          exportType,
           0.95,
         );
       });
 
       const croppedFile = new File([blob], selectedImage.name, {
-        type: "image/jpeg",
+        type: exportType,
       });
 
       // 计算裁剪后文件的 hash

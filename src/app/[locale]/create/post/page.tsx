@@ -11,6 +11,7 @@ import {
 import DownloadDialog from "@/components/article/DownloadDialog";
 import { Editor } from "@/components/editor";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
+import { useUploadConfig } from "@/components/providers/UploadConfigProvider";
 import { Button } from "@/components/ui/Button";
 import { CategoryOption, CategorySelect } from "@/components/ui/CategorySelect";
 import {
@@ -35,6 +36,7 @@ import {
   showToast,
 } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
+import { getCropExportType } from "@/lib/imageProcessing";
 import { useUserStore } from "@/stores";
 import { Edit, Loader2, Plus, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -82,6 +84,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   const t = useTranslations("createPost");
   const tc = useTranslations("common");
   const tTag = useTranslations("tagSelect");
+  const { config: uploadConfig } = useUploadConfig();
   const coverEditorRef = useRef<AvatarEditor>(null);
   const currentUser = useUserStore((state) => state.user);
   const canRequirePayment = currentUser?.isMember === true;
@@ -581,13 +584,18 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     setCoverUploading(true);
     try {
       const canvas = coverEditorRef.current.getImageScaledToCanvas();
+      const exportType = getCropExportType(
+        selectedCoverImage,
+        uploadConfig?.imageProcessing?.format ??
+          uploadConfig?.compression?.image?.format,
+      );
       const blob = await new Promise<Blob>((resolve) => {
         canvas.toBlob((blob) => {
           resolve(blob!);
-        }, "image/png");
+        }, exportType);
       });
       const croppedFile = new File([blob], selectedCoverImage.name, {
-        type: "image/png",
+        type: exportType,
       });
       const metadata = await buildUploadMetadata([croppedFile]);
       const { data } = await uploadControllerUploadFile({

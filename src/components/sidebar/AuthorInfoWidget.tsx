@@ -1,6 +1,7 @@
 import { ArticleDetail } from "@/types";
 import { Check, Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { CertificationBadge } from "../shared/CertificationBadge";
 import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
 
@@ -17,13 +18,17 @@ export const AuthorInfoWidget = async ({ author }: AuthorInfoWidgetProps) => {
         <span>{t("authorInfo")}</span>
       </div>
       <div className="flex items-center space-x-3">
-        <Avatar
-          url={author?.avatar}
-          className="size-12"
-          frameUrl={author?.equippedDecorations?.AVATAR_FRAME?.imageUrl}
-        />
+        <div className="relative">
+          <Avatar url={author?.avatar} className="size-12" />
+          <div className="absolute right-0 bottom-0 z-20">
+            {author?.certification && (
+              <CertificationBadge position="bottom" certification={author.certification} />
+            )}
+          </div>
+        </div>
+
         <div className="flex-1">
-          <span className="font-medium">
+          <span className="inline-flex items-center gap-1 font-medium">
             {author?.nickname || author?.username}
           </span>
         </div>

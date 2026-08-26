@@ -22,6 +22,7 @@ import { useClickOutside } from "@/hooks";
 import { useImageCompression } from "@/hooks/useImageCompression";
 import { cn } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
+import { getCropExportType } from "@/lib/imageProcessing";
 import { ChevronDown, ImagePlus, Loader2, Search, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -273,7 +274,7 @@ export function DashboardEditDialog({
 }: DashboardEditDialogProps) {
   const locale = useLocale();
   const copy = getDashboardCopy(locale);
-  const { compressImage } = useImageCompression();
+  const { compressImage, config: uploadConfig } = useImageCompression();
   const editorRef = useRef<AvatarEditor>(null);
   const [values, setValues] = useState<
     Record<string, string | number | boolean | null | undefined>
@@ -397,18 +398,23 @@ export function DashboardEditDialog({
 
     try {
       const canvas = editorRef.current.getImageScaledToCanvas();
+      const exportType = getCropExportType(
+        selectedImage,
+        uploadConfig?.imageProcessing?.format ??
+          uploadConfig?.compression?.image?.format,
+      );
       const blob = await new Promise<Blob>((resolve) => {
         canvas.toBlob(
           (nextBlob) => {
             resolve(nextBlob!);
           },
-          "image/jpeg",
+          exportType,
           0.95,
         );
       });
 
       const croppedFile = new File([blob], selectedImage.name, {
-        type: "image/jpeg",
+        type: exportType,
       });
 
       // 压缩裁剪后的图片

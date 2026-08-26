@@ -9,6 +9,7 @@ import { useUserStore } from "@/stores";
 import type { ArticleDetail } from "@/types";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
+import { CertificationBadge } from "../shared/CertificationBadge";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
 
@@ -137,6 +138,9 @@ export function ArticleAuthor({
             <span className={cn("truncate font-bold hover:text-primary", author?.isMember )}>
               {(author?.nickname || author?.username) as string}
             </span>
+            {author?.certification && (
+              <CertificationBadge certification={author.certification} />
+            )}
             {author?.equippedDecorations?.ACHIEVEMENT_BADGE && (
               <span className="relative block size-4" data-auto-translate-conten>
                 <ImageWithFallback

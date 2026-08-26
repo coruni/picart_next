@@ -85,7 +85,8 @@ export const getPublicCategories = unstable_cache(
   fetchPublicCategories,
   ["public-categories"],
   {
-    revalidate: 300,
+    // 分类/channel 数据变更后希望尽快生效，缩短为 1 分钟
+    revalidate: 60,
   },
 );
 

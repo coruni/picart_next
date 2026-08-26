@@ -4,6 +4,7 @@ import { GuardedLink } from "@/components/shared/GuardedLink";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Avatar } from "@/components/ui/Avatar";
 import { FollowButtonWithStatus } from "@/components/ui/FollowButtonWithStatus";
+import { CertificationBadge } from "@/components/shared/CertificationBadge";
 import { Link } from "@/i18n/routing";
 import {
   cn,
@@ -25,7 +26,7 @@ import {
   Play,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState, useCallback, useMemo, memo } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { ArticleMenu } from "./ArticleMenu";
 import { ImageViewer } from "./ImageViewer";
 import { ReactionPanel } from "./ReactionPanel.client";
@@ -83,15 +84,18 @@ export const ArticleCard = memo(function ArticleCard({
     setViewerVisible(true);
   }, []);
 
-  const stopLinkNavigationEvent = useCallback((e: {
-    preventDefault: () => void;
-    stopPropagation: () => void;
-    nativeEvent: Event & { stopImmediatePropagation?: () => void };
-  }) => {
-    e.preventDefault();
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation?.();
-  }, []);
+  const stopLinkNavigationEvent = useCallback(
+    (e: {
+      preventDefault: () => void;
+      stopPropagation: () => void;
+      nativeEvent: Event & { stopImmediatePropagation?: () => void };
+    }) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.nativeEvent.stopImmediatePropagation?.();
+    },
+    [],
+  );
 
   const renderMediaElement = () => {
     if (article.cover) {
@@ -307,9 +311,14 @@ export const ArticleCard = memo(function ArticleCard({
                     article?.author?.username) as string
                 }
               </span>
+              {article?.author?.certification && (
+                <CertificationBadge
+                  certification={article.author.certification}
+                />
+              )}
               {article?.author?.equippedDecorations?.ACHIEVEMENT_BADGE && (
                 <span
-                  className="relative size-4 cursor-pointer"
+                  className="relative size-4 cursor-pointer "
                   data-auto-translate-content
                   data-guarded-link-ignore="true"
                   onClick={(e) => {
@@ -345,6 +354,8 @@ export const ArticleCard = memo(function ArticleCard({
                       article?.author?.equippedDecorations?.ACHIEVEMENT_BADGE
                         ?.name
                     }
+                    fill
+                    className="object-cover"
                   />
                 </span>
               )}

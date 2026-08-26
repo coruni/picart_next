@@ -170,6 +170,7 @@ const copy = {
       emojis: "表情",
       achievements: "成就",
       search: "搜索",
+      certifications: "认证",
     },
     pages: {
       overview: {
@@ -368,6 +369,33 @@ const copy = {
         clearConfirm: "确定要清空所有文章搜索索引吗？此操作不可恢复！",
         clearSuccess: "索引已清空",
       },
+      certifications: {
+        title: "认证管理",
+        description: "审核用户认证申请，管理官方与创作者认证状态。",
+        fields: {
+          type: "认证类型",
+          realName: "真实姓名",
+          organizationName: "机构名称",
+          slogan: "认证标语",
+          description: "认证说明",
+          materials: "证明材料",
+          reviewReason: "审核原因",
+          reviewedAt: "审核时间",
+        },
+        actions: {
+          revoke: "撤销",
+          revokeConfirm: "确认撤销该用户的认证吗？撤销后用户可重新申请认证。",
+          rejectReasonRequired: "请输入拒绝原因",
+          approveSuccess: "认证申请已通过",
+          rejectSuccess: "认证申请已拒绝",
+          revokeSuccess: "认证已撤销",
+          submitFailed: "操作失败",
+        },
+        typeOptions: {
+          OFFICIAL: "官方认证",
+          CREATOR: "创作者认证",
+        },
+      },
     },
     summary: {
       users: "用户总数",
@@ -403,6 +431,7 @@ const copy = {
       decorations: "查看装饰品类型、价格和上架状态。",
       emojis: "查看表情分类、使用次数和公开状态。",
       achievements: "查看成就类型、稀有度和启用状态。",
+      certifications: "审核认证申请，管理认证状态。",
     },
     filters: {
       keyword: "关键词",
@@ -470,6 +499,7 @@ const copy = {
       price: "价格",
       enabled: "启用",
       code: "代码",
+      createdAt: "申请时间",
     },
     empty: {
       users: "没有匹配的用户。",
@@ -487,6 +517,7 @@ const copy = {
       decorationActivities: "没有匹配的装扮活动。",
       emojis: "没有匹配的表情。",
       achievements: "没有匹配的成就。",
+      certifications: "没有匹配的认证申请。",
     },
     status: {
       DRAFT: "草稿",
@@ -500,6 +531,7 @@ const copy = {
       REJECTED: "已拒绝",
       UNDER_REVIEW: "审核中",
       APPROVED: "已通过",
+      REVOKED: "已撤销",
       active: "启用",
       inactive: "停用",
       deleted: "已删除",
@@ -680,6 +712,7 @@ const copy = {
       emojis: "Emojis",
       achievements: "Achievements",
       search: "Search",
+      certifications: "Certifications",
     },
     pages: {
       overview: {
@@ -888,6 +921,33 @@ const copy = {
         clearConfirm: "Are you sure you want to clear all article search indexes? This action cannot be undone!",
         clearSuccess: "Index Cleared",
       },
+      certifications: {
+        title: "Certifications",
+        description: "Review user certification applications and manage official & creator status.",
+        fields: {
+          type: "Type",
+          realName: "Real Name",
+          organizationName: "Organization",
+          slogan: "Slogan",
+          description: "Description",
+          materials: "Materials",
+          reviewReason: "Review Reason",
+          reviewedAt: "Reviewed At",
+        },
+        actions: {
+          revoke: "Revoke",
+          revokeConfirm: "Revoke this user's certification? They can re-apply afterwards.",
+          rejectReasonRequired: "Please enter a reject reason",
+          approveSuccess: "Certification approved",
+          rejectSuccess: "Certification rejected",
+          revokeSuccess: "Certification revoked",
+          submitFailed: "Operation failed",
+        },
+        typeOptions: {
+          OFFICIAL: "Official",
+          CREATOR: "Creator",
+        },
+      },
     },
     summary: {
       users: "Total Users",
@@ -923,6 +983,7 @@ const copy = {
       decorations: "Review decoration type, price, and availability.",
       emojis: "Review emoji category, usage count and public status.",
       achievements: "Review achievement type, rarity, and enabled state.",
+      certifications: "Review certification applications and manage status.",
     },
     filters: {
       keyword: "Keyword",
@@ -989,6 +1050,7 @@ const copy = {
       price: "Price",
       enabled: "Enabled",
       code: "Code",
+      createdAt: "Created",
     },
     empty: {
       users: "No matching users.",
@@ -1006,6 +1068,7 @@ const copy = {
       decorationActivities: "No matching decoration activities.",
       emojis: "No matching emojis.",
       achievements: "No matching achievements.",
+      certifications: "No matching certifications.",
     },
     status: {
       DRAFT: "Draft",
@@ -1019,6 +1082,7 @@ const copy = {
       REJECTED: "Rejected",
       UNDER_REVIEW: "Under Review",
       APPROVED: "Approved",
+      REVOKED: "Revoked",
       active: "Active",
       inactive: "Inactive",
       deleted: "Deleted",

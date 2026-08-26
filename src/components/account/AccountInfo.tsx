@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { CertificationBadge } from "../shared/CertificationBadge";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
@@ -275,6 +276,9 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                 >
                   {user.nickname || user.username}
                 </span>
+                {user?.certification && (
+                  <CertificationBadge certification={user.certification} />
+                )}
                 {user?.equippedDecorations?.ACHIEVEMENT_BADGE && (
                   <span
                     className="relative block size-4"
@@ -389,6 +393,13 @@ export const AccountInfo = ({ user }: AccountInfoProps) => {
                       href={`/account/${user.id}/edit`}
                     >
                       <span>{t("editProfile")}</span>
+                    </GuardedLink>
+                    <GuardedLink
+                      onClick={() => setShowEditMenu(false)}
+                      className="flex cursor-pointer items-center gap-2 rounded-xl text-muted-foreground p-2 text-sm transition-colors hover:bg-primary/15 hover:text-primary"
+                      href={`/account/${user.id}/certification`}
+                    >
+                      <span>{t("certification")}</span>
                     </GuardedLink>
                     <div
                       className="flex cursor-pointer items-center gap-2 truncate rounded-xl p-2 text-sm transition-colors text-muted-foreground  hover:bg-primary/15 hover:text-primary"

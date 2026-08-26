@@ -14,6 +14,7 @@ import { Select } from "@/components/ui/Select";
 import { useRouter } from "@/i18n/routing";
 import { showToast, getErrorMessage } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
+import { getCropExportType } from "@/lib/imageProcessing";
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { useModalStore } from "@/stores/useModalStore";
 import type { UserDetail } from "@/types";
@@ -96,18 +97,19 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
     setAvatarUploading(true);
     try {
       const canvas = avatarEditorRef.current.getImageScaledToCanvas();
+      const exportType = getCropExportType(selectedAvatarImage);
       const blob = await new Promise<Blob>((resolve) => {
         canvas.toBlob(
           (blob) => {
             resolve(blob!);
           },
-          "image/jpeg",
+          exportType,
           0.95,
         );
       });
 
       const croppedFile = new File([blob], selectedAvatarImage.name, {
-        type: "image/jpeg",
+        type: exportType,
       });
 
       // 计算裁剪后文件的 hash
@@ -180,18 +182,19 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
     setBackgroundUploading(true);
     try {
       const canvas = backgroundEditorRef.current.getImageScaledToCanvas();
+      const exportType = getCropExportType(selectedBackgroundImage);
       const blob = await new Promise<Blob>((resolve) => {
         canvas.toBlob(
           (blob) => {
             resolve(blob!);
           },
-          "image/jpeg",
+          exportType,
           0.95,
         );
       });
 
       const croppedFile = new File([blob], selectedBackgroundImage.name, {
-        type: "image/jpeg",
+        type: exportType,
       });
 
       // 计算裁剪后文件的 hash

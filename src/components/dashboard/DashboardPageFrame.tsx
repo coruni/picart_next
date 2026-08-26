@@ -25,6 +25,7 @@ const breadcrumbMap: Record<string, string> = {
   permissions: "权限管理",
   banners: "轮播管理",
   reports: "举报管理",
+  certifications: "认证管理",
   decorations: "装饰品管理",
   "decoration-activities": "装扮活动管理",
   emojis: "表情管理",

@@ -9,9 +9,11 @@ import { Plus } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { GuardedLink } from "../shared";
+import { AchievementBadge } from "../shared/AchievementBadge";
+import { CertificationBadge } from "../shared/CertificationBadge";
+import { ImageWithFallback } from "../shared/ImageWithFallback";
 import { Avatar } from "../ui/Avatar";
 import { FollowButtonWithStatus } from "../ui/FollowButtonWithStatus";
-import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 // 根据用户数据生成标语
 const getUserSlogan = (
@@ -82,7 +84,7 @@ export const RecommendUserWidget = async () => {
       >
         <div className="py-2 my-1 flex items-center">
           <Avatar url={user.avatar} className=" size-8" />
-          <div className="ml-3 flex-1">
+          <div className="ml-3 flex-1 space-x-1 flex items-center">
             <span
               className={cn(
                 "font-bold text-base leading-5 text-foreground/90 hover:text-primary",
@@ -91,6 +93,14 @@ export const RecommendUserWidget = async () => {
             >
               {user?.nickname || user?.username}
             </span>
+            {user?.certification && (
+              <CertificationBadge certification={user.certification} />
+            )}
+            {user?.equippedDecorations?.ACHIEVEMENT_BADGE && (
+              <AchievementBadge
+                achievement={user.equippedDecorations.ACHIEVEMENT_BADGE}
+              />
+            )}
           </div>
           {!isFollowed && (
             <FollowButtonWithStatus className="min-w-13 max-w-16" author={user}>

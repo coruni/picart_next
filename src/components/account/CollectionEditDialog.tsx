@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/Input";
 import { Switch } from "@/components/ui/Switch";
 import { cn } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
+import { getCropExportType } from "@/lib/imageProcessing";
 import { ImagePlus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -132,18 +133,19 @@ export function CollectionEditDialog({
 
     try {
       const canvas = editorRef.current.getImageScaledToCanvas();
+      const exportType = getCropExportType(selectedImage);
       const blob = await new Promise<Blob>((resolve) => {
         canvas.toBlob(
           (nextBlob) => {
             resolve(nextBlob!);
           },
-          "image/jpeg",
+          exportType,
           0.95,
         );
       });
 
       const croppedFile = new File([blob], selectedImage.name, {
-        type: "image/jpeg",
+        type: exportType,
       });
 
       // 计算裁剪后文件的 hash

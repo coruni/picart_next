@@ -44,6 +44,7 @@ import {
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { CertificationBadge } from "../shared/CertificationBadge";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
@@ -416,6 +417,11 @@ export const CommentItem = memo(function CommentItem({
             >
               {commentState.author.nickname || commentState.author.username}
             </span>
+            {commentState.author?.certification && (
+              <CertificationBadge
+                certification={commentState.author.certification}
+              />
+            )}
 
             {commentState.author?.equippedDecorations?.ACHIEVEMENT_BADGE && (
               <span

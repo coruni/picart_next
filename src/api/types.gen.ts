@@ -31,6 +31,12 @@ export type Decoration = {
     };
 };
 
+export type Certification = {
+    type: string;
+    slogan: string;
+    certifiedAt: string;
+};
+
 export type CreatePermissionDto = {
     /**
      * 权限名称
@@ -1990,6 +1996,44 @@ export type SetCommentPinDto = {
     isPinned: boolean;
 };
 
+export type ApplyCertificationDto = {
+    /**
+     * 认证类型：OFFICIAL-官方，CREATOR-创作者
+     */
+    type: 'OFFICIAL' | 'CREATOR';
+    /**
+     * 真实姓名/主体名称
+     */
+    realName?: string;
+    /**
+     * 机构名称（官方认证必填）
+     */
+    organizationName?: string;
+    /**
+     * 认证说明
+     */
+    description?: string;
+    /**
+     * 认证标语（公开展示，长度不超过80字符，勿填私人信息）
+     */
+    slogan?: string;
+    /**
+     * 证明材料（文件URL数组）
+     */
+    materials?: Array<string>;
+};
+
+export type AuditCertificationDto = {
+    /**
+     * 审核结果：APPROVED-通过，REJECTED-拒绝
+     */
+    status: 'APPROVED' | 'REJECTED';
+    /**
+     * 审核意见/拒绝原因（拒绝时建议填写）
+     */
+    reason?: string;
+};
+
 export type AppControllerGetHelloData = {
     body?: never;
     headers?: {
@@ -2957,6 +3001,11 @@ export type UserControllerFindAllResponses = {
                     };
                 }>;
                 equippedDecorations: Decoration;
+                certification: {
+                    type: string;
+                    slogan: string;
+                    certifiedAt: string;
+                };
             }>;
             meta: {
                 total: number;
@@ -3237,6 +3286,7 @@ export type UserControllerFindOneResponses = {
             isMember: boolean;
             equippedDecorations: Decoration;
             likes: number;
+            certification: Certification;
         };
     };
 };
@@ -3389,6 +3439,11 @@ export type UserControllerGetProfileResponses = {
             updatedAt: string;
             isMember: boolean;
             equippedDecorations: Decoration;
+            certification: {
+                type: string;
+                slogan: string;
+                certifiedAt: string;
+            };
         };
     };
 };
@@ -4784,8 +4839,102 @@ export type UserControllerGithubOAuthCallbackResponses = {
     /**
      * 登录成功，返回用户信息和 JWT token
      */
-    200: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            username: string;
+            nickname: string;
+            email: string;
+            phone: string;
+            status: string;
+            banned: string;
+            banReason: string;
+            avatar: string;
+            description: string;
+            background: string;
+            address: string;
+            gender: string;
+            birthDate: string;
+            articleCount: number;
+            followerCount: number;
+            followingCount: number;
+            likes: number;
+            level: number;
+            experience: number;
+            wallet: number;
+            points: number;
+            membershipLevel: number;
+            membershipLevelName: string;
+            membershipStatus: string;
+            membershipStartDate: string;
+            membershipEndDate: string;
+            lastLoginAt: string;
+            lastActiveAt: string;
+            inviterId: string;
+            myInviteCode: string;
+            inviteCode: string;
+            inviteEarnings: string;
+            inviteCount: number;
+            githubId: string;
+            githubUsername: string;
+            roles: Array<{
+                id?: number;
+                name?: string;
+                displayName?: string;
+                description?: string;
+                isActive?: boolean;
+                isSystem?: boolean;
+                permissions?: Array<{
+                    id: number;
+                    name: string;
+                    description: string;
+                }>;
+                createdAt?: string;
+                updatedAt?: string;
+            }>;
+            config: {
+                id: number;
+                userId: number;
+                articleCommissionRate: string;
+                membershipCommissionRate: string;
+                productCommissionRate: string;
+                serviceCommissionRate: string;
+                enableCustomCommission: boolean;
+                enableSystemNotification: boolean;
+                enableCommentNotification: boolean;
+                enableLikeNotification: boolean;
+                enableFollowNotification: boolean;
+                enableMessageNotification: boolean;
+                enableOrderNotification: boolean;
+                enablePaymentNotification: boolean;
+                enableInviteNotification: boolean;
+                enableEmailNotification: boolean;
+                enableSmsNotification: boolean;
+                enablePushNotification: boolean;
+                hideFavorites: boolean;
+                hideComments: boolean;
+                hideCollections: boolean;
+                hideFollowers: boolean;
+                hideFollowings: boolean;
+                hideTags: boolean;
+                remark: unknown;
+                createdAt: string;
+                updatedAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+            isMember: boolean;
+            token: string;
+            refreshToken: string;
+            isNewUser: boolean;
+            oauthProvider: string;
+        };
+    };
 };
+
+export type UserControllerGithubOAuthCallbackResponse = UserControllerGithubOAuthCallbackResponses[keyof UserControllerGithubOAuthCallbackResponses];
 
 export type ArticleControllerFindAllData = {
     body?: never;
@@ -4892,6 +5041,11 @@ export type ArticleControllerFindAllResponses = {
                     isMember: boolean;
                     isFollowed: boolean;
                     equippedDecorations: Decoration;
+                    certification: {
+                        type: string;
+                        slogan: string;
+                        certifiedAt: string;
+                    };
                 };
                 category: {
                     id: number;
@@ -5129,6 +5283,11 @@ export type ArticleControllerFindOneResponses = {
                 isMember: boolean;
                 isFollowed: boolean;
                 equippedDecorations: Decoration;
+                certification: {
+                    type: string;
+                    slogan: string;
+                    certifiedAt: string;
+                };
             };
             category: {
                 id: number;
@@ -5612,6 +5771,11 @@ export type ArticleControllerSearchResponses = {
                     isMember: boolean;
                     isFollowed: boolean;
                     equippedDecorations: Decoration;
+                    certification: {
+                        type: string;
+                        slogan: string;
+                        certifiedAt: string;
+                    };
                 };
                 category: {
                     id: number;
@@ -5786,6 +5950,11 @@ export type ArticleControllerFindRecommendationsResponses = {
                     isMember: boolean;
                     isFollowed: boolean;
                     equippedDecorations: Decoration;
+                    certification: {
+                        type: string;
+                        slogan: string;
+                        certifiedAt: string;
+                    };
                 };
                 category: {
                     id: number;
@@ -5972,6 +6141,11 @@ export type ArticleControllerFindByAuthorResponses = {
                     isMember: boolean;
                     isFollowed: boolean;
                     equippedDecorations: Decoration;
+                    certification: {
+                        type: string;
+                        slogan: string;
+                        certifiedAt: string;
+                    };
                 };
                 category: {
                     id: number;
@@ -6895,6 +7069,11 @@ export type ArticleControllerGetFavoritedArticlesResponses = {
                     isMember: boolean;
                     isFollowed: boolean;
                     equippedDecorations: Decoration;
+                    certification: {
+                        type: string;
+                        slogan: string;
+                        certifiedAt: string;
+                    };
                 };
                 category: {
                     id: number;
@@ -7644,6 +7823,7 @@ export type CommentControllerFindAllResponses = {
                     updatedAt: string;
                     equippedDecorations: Decoration;
                     isMember: boolean;
+                    certification: Certification;
                 };
                 article: {
                     id: number;
@@ -8103,6 +8283,7 @@ export type CommentControllerFindOneResponses = {
                     updatedAt: string;
                     equippedDecorations: Decoration;
                     isMember: boolean;
+                    certification: Certification;
                 };
                 article: {
                     id: number;
@@ -8650,6 +8831,7 @@ export type CommentControllerFindAllCommentsResponses = {
                         };
                     };
                     isMember: boolean;
+                    certification: Certification;
                 };
                 article: {
                     id: number;
@@ -16786,6 +16968,283 @@ export type ContentAuditControllerAuditImageData = {
 };
 
 export type ContentAuditControllerAuditImageResponses = {
+    /**
+     * 审核完成
+     */
+    200: unknown;
+};
+
+export type UserCertificationControllerGetMyCertificationsData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/user/certification/me';
+};
+
+export type UserCertificationControllerGetMyCertificationsResponses = {
+    /**
+     * 获取成功
+     */
+    200: {
+        code: number;
+        message: string;
+        data: Array<{
+            id?: number;
+            userId?: number;
+            type?: string;
+            status?: string;
+            realName?: string;
+            organizationName?: string;
+            description?: string;
+            slogan?: string;
+            materials?: Array<string>;
+            reviewerId?: number;
+            reviewReason?: string;
+            reviewedAt?: string;
+            createdAt?: string;
+            updatedAt?: string;
+        }>;
+    };
+};
+
+export type UserCertificationControllerGetMyCertificationsResponse = UserCertificationControllerGetMyCertificationsResponses[keyof UserCertificationControllerGetMyCertificationsResponses];
+
+export type UserCertificationControllerGetMyIdentityData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/user/certification/identity';
+};
+
+export type UserCertificationControllerGetMyIdentityResponses = {
+    /**
+     * 获取成功
+     */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            type: string;
+            certification: {
+                type: string;
+                slogan: string;
+                certifiedAt: string;
+            };
+        };
+    };
+};
+
+export type UserCertificationControllerGetMyIdentityResponse = UserCertificationControllerGetMyIdentityResponses[keyof UserCertificationControllerGetMyIdentityResponses];
+
+export type UserCertificationControllerGetIdentityByUserIdData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        userId: number;
+    };
+    query?: never;
+    url: '/user/certification/identity/{userId}';
+};
+
+export type UserCertificationControllerGetIdentityByUserIdResponses = {
+    /**
+     * 获取成功
+     */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            type: string;
+            certification: {
+                type: string;
+                slogan: string;
+                certifiedAt: string;
+            };
+        };
+    };
+};
+
+export type UserCertificationControllerGetIdentityByUserIdResponse = UserCertificationControllerGetIdentityByUserIdResponses[keyof UserCertificationControllerGetIdentityByUserIdResponses];
+
+export type UserCertificationControllerFindApplicationsData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query: {
+        /**
+         * 页码
+         */
+        page?: number;
+        /**
+         * 每页数量
+         */
+        limit?: number;
+        status: string;
+        type: string;
+    };
+    url: '/user/certification/admin/applications';
+};
+
+export type UserCertificationControllerFindApplicationsResponses = {
+    /**
+     * 获取成功
+     */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            items: Array<{
+                id?: number;
+                userId?: number;
+                type?: string;
+                status?: string;
+                realName?: string;
+                organizationName?: string;
+                description?: string;
+                slogan?: string;
+                materials?: Array<string>;
+                reviewerId?: number;
+                reviewReason?: string;
+                reviewedAt?: string;
+                createdAt?: string;
+                updatedAt?: string;
+            }>;
+            total: number;
+            page: number;
+            limit: number;
+        };
+    };
+};
+
+export type UserCertificationControllerFindApplicationsResponse = UserCertificationControllerFindApplicationsResponses[keyof UserCertificationControllerFindApplicationsResponses];
+
+export type UserCertificationControllerGetMyCertificationStatusData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/user/certification/status';
+};
+
+export type UserCertificationControllerGetMyCertificationStatusResponses = {
+    /**
+     * 获取成功，从未申请时返回 null
+     */
+    200: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            userId: number;
+            type: string;
+            status: string;
+            realName: string;
+            organizationName: string;
+            description: string;
+            slogan: string;
+            reviewerId: number;
+            reviewReason: string;
+            reviewedAt: string;
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
+};
+
+export type UserCertificationControllerGetMyCertificationStatusResponse = UserCertificationControllerGetMyCertificationStatusResponses[keyof UserCertificationControllerGetMyCertificationStatusResponses];
+
+export type UserCertificationControllerApplyData = {
+    body: ApplyCertificationDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/user/certification/apply';
+};
+
+export type UserCertificationControllerApplyErrors = {
+    /**
+     * 已有待审核或已通过的认证
+     */
+    409: unknown;
+};
+
+export type UserCertificationControllerApplyResponses = {
+    /**
+     * 申请成功，等待审核
+     */
+    201: unknown;
+};
+
+export type UserCertificationControllerRevokeData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/user/certification/admin/applications/{id}/revoke';
+};
+
+export type UserCertificationControllerRevokeResponses = {
+    /**
+     * 撤销成功
+     */
+    200: unknown;
+};
+
+export type UserCertificationControllerAuditData = {
+    body: AuditCertificationDto;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: number;
+    };
+    query?: never;
+    url: '/user/certification/admin/applications/{id}/audit';
+};
+
+export type UserCertificationControllerAuditResponses = {
     /**
      * 审核完成
      */

@@ -18,6 +18,7 @@ import {
   MessageSquareText,
   ReceiptText,
   Search,
+  ShieldCheck,
   ShieldUser,
   Smile,
   Sparkles,
@@ -127,6 +128,11 @@ export function DashboardShell({ children }: DashboardShellProps) {
       href: "/dashboard/reports",
       label: copy.nav.reports,
       icon: TriangleAlert,
+    },
+    {
+      href: "/dashboard/certifications",
+      label: copy.nav.certifications,
+      icon: ShieldCheck,
     },
     {
       href: "/dashboard/decorations",

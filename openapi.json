@@ -77,6 +77,9 @@
     },
     {
       "name": "内容审核"
+    },
+    {
+      "name": "用户认证"
     }
   ],
   "paths": {
@@ -3233,6 +3236,25 @@
                               },
                               "equippedDecorations": {
                                 "$ref": "#/components/schemas/Decoration"
+                              },
+                              "certification": {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string"
+                                  },
+                                  "slogan": {
+                                    "type": "string"
+                                  },
+                                  "certifiedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "slogan",
+                                  "certifiedAt"
+                                ]
                               }
                             },
                             "required": [
@@ -3276,7 +3298,8 @@
                               "isMember",
                               "isFollowed",
                               "articles",
-                              "equippedDecorations"
+                              "equippedDecorations",
+                              "certification"
                             ]
                           }
                         },
@@ -4114,6 +4137,9 @@
                         },
                         "likes": {
                           "type": "integer"
+                        },
+                        "certification": {
+                          "$ref": "#/components/schemas/Certification"
                         }
                       },
                       "required": [
@@ -4157,7 +4183,8 @@
                         "isFollowed",
                         "isMember",
                         "equippedDecorations",
-                        "likes"
+                        "likes",
+                        "certification"
                       ]
                     }
                   },
@@ -4714,6 +4741,25 @@
                         },
                         "equippedDecorations": {
                           "$ref": "#/components/schemas/Decoration"
+                        },
+                        "certification": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string"
+                            },
+                            "slogan": {
+                              "type": "string"
+                            },
+                            "certifiedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "slogan",
+                            "certifiedAt"
+                          ]
                         }
                       },
                       "required": [
@@ -4755,7 +4801,8 @@
                         "createdAt",
                         "updatedAt",
                         "isMember",
-                        "equippedDecorations"
+                        "equippedDecorations",
+                        "certification"
                       ]
                     }
                   },
@@ -10108,6 +10155,25 @@
                                   },
                                   "equippedDecorations": {
                                     "$ref": "#/components/schemas/Decoration"
+                                  },
+                                  "certification": {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "type": "string"
+                                      },
+                                      "slogan": {
+                                        "type": "string"
+                                      },
+                                      "certifiedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "type",
+                                      "slogan",
+                                      "certifiedAt"
+                                    ]
                                   }
                                 },
                                 "required": [
@@ -10145,7 +10211,8 @@
                                   "updatedAt",
                                   "isMember",
                                   "isFollowed",
-                                  "equippedDecorations"
+                                  "equippedDecorations",
+                                  "certification"
                                 ]
                               },
                               "category": {
@@ -10877,6 +10944,25 @@
                             },
                             "equippedDecorations": {
                               "$ref": "#/components/schemas/Decoration"
+                            },
+                            "certification": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string"
+                                },
+                                "slogan": {
+                                  "type": "string"
+                                },
+                                "certifiedAt": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "type",
+                                "slogan",
+                                "certifiedAt"
+                              ]
                             }
                           },
                           "required": [
@@ -10914,7 +11000,8 @@
                             "updatedAt",
                             "isMember",
                             "isFollowed",
-                            "equippedDecorations"
+                            "equippedDecorations",
+                            "certification"
                           ]
                         },
                         "category": {
@@ -12694,6 +12781,25 @@
                                   },
                                   "equippedDecorations": {
                                     "$ref": "#/components/schemas/Decoration"
+                                  },
+                                  "certification": {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "type": "string"
+                                      },
+                                      "slogan": {
+                                        "type": "string"
+                                      },
+                                      "certifiedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "type",
+                                      "slogan",
+                                      "certifiedAt"
+                                    ]
                                   }
                                 },
                                 "required": [
@@ -12731,7 +12837,8 @@
                                   "updatedAt",
                                   "isMember",
                                   "isFollowed",
-                                  "equippedDecorations"
+                                  "equippedDecorations",
+                                  "certification"
                                 ]
                               },
                               "category": {
@@ -13406,6 +13513,25 @@
                                   },
                                   "equippedDecorations": {
                                     "$ref": "#/components/schemas/Decoration"
+                                  },
+                                  "certification": {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "type": "string"
+                                      },
+                                      "slogan": {
+                                        "type": "string"
+                                      },
+                                      "certifiedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "type",
+                                      "slogan",
+                                      "certifiedAt"
+                                    ]
                                   }
                                 },
                                 "required": [
@@ -13443,7 +13569,8 @@
                                   "updatedAt",
                                   "isMember",
                                   "isFollowed",
-                                  "equippedDecorations"
+                                  "equippedDecorations",
+                                  "certification"
                                 ]
                               },
                               "category": {
@@ -14156,6 +14283,25 @@
                                   },
                                   "equippedDecorations": {
                                     "$ref": "#/components/schemas/Decoration"
+                                  },
+                                  "certification": {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "type": "string"
+                                      },
+                                      "slogan": {
+                                        "type": "string"
+                                      },
+                                      "certifiedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "type",
+                                      "slogan",
+                                      "certifiedAt"
+                                    ]
                                   }
                                 },
                                 "required": [
@@ -14193,7 +14339,8 @@
                                   "updatedAt",
                                   "isMember",
                                   "isFollowed",
-                                  "equippedDecorations"
+                                  "equippedDecorations",
+                                  "certification"
                                 ]
                               },
                               "category": {
@@ -17733,6 +17880,25 @@
                                   },
                                   "equippedDecorations": {
                                     "$ref": "#/components/schemas/Decoration"
+                                  },
+                                  "certification": {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "type": "string"
+                                      },
+                                      "slogan": {
+                                        "type": "string"
+                                      },
+                                      "certifiedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "type",
+                                      "slogan",
+                                      "certifiedAt"
+                                    ]
                                   }
                                 },
                                 "required": [
@@ -17770,7 +17936,8 @@
                                   "updatedAt",
                                   "isMember",
                                   "isFollowed",
-                                  "equippedDecorations"
+                                  "equippedDecorations",
+                                  "certification"
                                 ]
                               },
                               "category": {
@@ -20520,6 +20687,9 @@
                                   },
                                   "isMember": {
                                     "type": "boolean"
+                                  },
+                                  "certification": {
+                                    "$ref": "#/components/schemas/Certification"
                                   }
                                 },
                                 "required": [
@@ -20556,7 +20726,8 @@
                                   "createdAt",
                                   "updatedAt",
                                   "equippedDecorations",
-                                  "isMember"
+                                  "isMember",
+                                  "certification"
                                 ]
                               },
                               "article": {
@@ -22158,6 +22329,9 @@
                                   },
                                   "isMember": {
                                     "type": "boolean"
+                                  },
+                                  "certification": {
+                                    "$ref": "#/components/schemas/Certification"
                                   }
                                 },
                                 "required": [
@@ -22194,7 +22368,8 @@
                                   "createdAt",
                                   "updatedAt",
                                   "equippedDecorations",
-                                  "isMember"
+                                  "isMember",
+                                  "certification"
                                 ]
                               },
                               "article": {
@@ -24374,6 +24549,9 @@
                                   },
                                   "isMember": {
                                     "type": "boolean"
+                                  },
+                                  "certification": {
+                                    "$ref": "#/components/schemas/Certification"
                                   }
                                 },
                                 "required": [
@@ -24410,7 +24588,8 @@
                                   "createdAt",
                                   "updatedAt",
                                   "equippedDecorations",
-                                  "isMember"
+                                  "isMember",
+                                  "certification"
                                 ]
                               },
                               "article": {
@@ -52494,6 +52673,948 @@
         },
         "security": []
       }
+    },
+    "/user/certification/me": {
+      "get": {
+        "summary": "获取我的认证记录",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserCertificationController_getMyCertifications",
+        "tags": [
+          "用户认证"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "userId": {
+                            "type": "integer"
+                          },
+                          "type": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "realName": {
+                            "type": "string"
+                          },
+                          "organizationName": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "slogan": {
+                            "type": "string"
+                          },
+                          "materials": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "reviewerId": {
+                            "type": "integer"
+                          },
+                          "reviewReason": {
+                            "type": "string"
+                          },
+                          "reviewedAt": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "updatedAt": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/user/certification/identity": {
+      "get": {
+        "summary": "获取当前用户的认证身份（官方/创作者/普通用户）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserCertificationController_getMyIdentity",
+        "tags": [
+          "用户认证"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        },
+                        "certification": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string"
+                            },
+                            "slogan": {
+                              "type": "string"
+                            },
+                            "certifiedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "slogan",
+                            "certifiedAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "certification"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/user/certification/identity/{userId}": {
+      "get": {
+        "summary": "查询指定用户的认证身份（官方/创作者/普通用户）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserCertificationController_getIdentityByUserId",
+        "tags": [
+          "用户认证"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        },
+                        "certification": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string"
+                            },
+                            "slogan": {
+                              "type": "string"
+                            },
+                            "certifiedAt": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "slogan",
+                            "certifiedAt"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "certification"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/user/certification/admin/applications": {
+      "get": {
+        "summary": "管理员：分页查询认证申请列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserCertificationController_findApplications",
+        "tags": [
+          "用户认证"
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "userId": {
+                                "type": "integer"
+                              },
+                              "type": {
+                                "type": "string"
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "realName": {
+                                "type": "string"
+                              },
+                              "organizationName": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              },
+                              "slogan": {
+                                "type": "string"
+                              },
+                              "materials": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "reviewerId": {
+                                "type": "integer"
+                              },
+                              "reviewReason": {
+                                "type": "string"
+                              },
+                              "reviewedAt": {
+                                "type": "string"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "total": {
+                          "type": "integer"
+                        },
+                        "page": {
+                          "type": "integer"
+                        },
+                        "limit": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "items",
+                        "total",
+                        "page",
+                        "limit"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/user/certification/status": {
+      "get": {
+        "summary": "获取我的认证状态（优先返回已通过的认证，否则返回最近一条申请记录，仅供本人查看）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserCertificationController_getMyCertificationStatus",
+        "tags": [
+          "用户认证"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功，从未申请时返回 null",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "userId": {
+                          "type": "integer"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "realName": {
+                          "type": "string"
+                        },
+                        "organizationName": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "slogan": {
+                          "type": "string"
+                        },
+                        "reviewerId": {
+                          "type": "integer"
+                        },
+                        "reviewReason": {
+                          "type": "string"
+                        },
+                        "reviewedAt": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "userId",
+                        "type",
+                        "status",
+                        "realName",
+                        "organizationName",
+                        "description",
+                        "slogan",
+                        "reviewerId",
+                        "reviewReason",
+                        "reviewedAt",
+                        "createdAt",
+                        "updatedAt"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/user/certification/apply": {
+      "post": {
+        "summary": "申请认证（官方/创作者）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserCertificationController_apply",
+        "tags": [
+          "用户认证"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApplyCertificationDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "申请成功，等待审核",
+            "headers": {}
+          },
+          "409": {
+            "description": "已有待审核或已通过的认证",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/user/certification/admin/applications/{id}/revoke": {
+      "post": {
+        "summary": "管理员：撤销已通过的认证",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserCertificationController_revoke",
+        "tags": [
+          "用户认证"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "撤销成功",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/user/certification/admin/applications/{id}/audit": {
+      "patch": {
+        "summary": "管理员：审核认证申请（通过/拒绝）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UserCertificationController_audit",
+        "tags": [
+          "用户认证"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuditCertificationDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "审核完成",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
     }
   },
   "components": {
@@ -52599,6 +53720,25 @@
           "COMMENT_BUBBLE",
           "AVATAR_FRAME",
           "ACHIEVEMENT_BADGE"
+        ]
+      },
+      "Certification": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "slogan": {
+            "type": "string"
+          },
+          "certifiedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "slogan",
+          "certifiedAt"
         ]
       },
       "CreatePermissionDto": {
@@ -55518,6 +56658,67 @@
         },
         "required": [
           "isPinned"
+        ]
+      },
+      "ApplyCertificationDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "认证类型：OFFICIAL-官方，CREATOR-创作者",
+            "enum": [
+              "OFFICIAL",
+              "CREATOR"
+            ],
+            "example": "CREATOR"
+          },
+          "realName": {
+            "type": "string",
+            "description": "真实姓名/主体名称"
+          },
+          "organizationName": {
+            "type": "string",
+            "description": "机构名称（官方认证必填）"
+          },
+          "description": {
+            "type": "string",
+            "description": "认证说明"
+          },
+          "slogan": {
+            "type": "string",
+            "description": "认证标语（公开展示，长度不超过80字符，勿填私人信息）",
+            "example": "官方认证 · 签约摄影师"
+          },
+          "materials": {
+            "description": "证明材料（文件URL数组）",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "AuditCertificationDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "审核结果：APPROVED-通过，REJECTED-拒绝",
+            "enum": [
+              "APPROVED",
+              "REJECTED"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "description": "审核意见/拒绝原因（拒绝时建议填写）"
+          }
+        },
+        "required": [
+          "status"
         ]
       }
     },
