@@ -488,7 +488,7 @@ export function MessageDropdown({
 
       <Dialog open={isMobile && mobileOpen} onOpenChange={setMobileOpen} >
         <DialogContent
-          className="top-auto bottom-0 left-0 right-0 max-w-none translate-x-0 translate-y-0 overflow-hidden rounded-b-none rounded-t-2xl border-x-0 border-b-0 p-0 md:hidden duration-0!"
+          className="top-auto bottom-0 left-0 right-0 max-w-none translate-x-0 translate-y-0 overflow-hidden rounded-b-none rounded-t-2xl border-x-0 border-b-0 p-0 md:hidden duration-0! w-full!"
           style={
             {
               height: `${mobileSheetHeight}vh`,

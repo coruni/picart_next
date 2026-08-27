@@ -190,8 +190,8 @@ export function UserLoginDialog() {
       },
       verificationCode: needEmailVerification
         ? {
-            required: tForm("required"),
-          }
+          required: tForm("required"),
+        }
         : undefined,
     },
     async onSubmit(values) {
@@ -393,16 +393,19 @@ export function UserLoginDialog() {
   return (
     <Dialog open={loginDialogOpen} onOpenChange={handleDialogClose}>
       <DialogOverlay className="z-499!" />
-      <DialogContent className="max-w-110 rounded-2xl max-h-[95vh] bg-card! border border-border! z-500!">
-        <div className="flex flex-col">
+      <DialogContent className="max-w-110 rounded-2xl max-h-[95vh] bg-card! border border-border! z-500! flex flex-col">
+        <div className="flex flex-col overflow-y-scroll flex-1" style={{ scrollbarWidth: "none" }}>
           {/* logo */}
-          <div
-            className="w-50 h-14 mx-auto relative -mt-2 bg-contain bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${loginLogo})` }}
-          ></div>
+          <div className="mt-2">
+            <div
+              className="w-50 h-14 mx-auto relative -mt-2 bg-contain bg-center bg-no-repeat"
+              style={{ backgroundImage: `url(${loginLogo})` }}
+            ></div>
+          </div>
+
 
           {/* 标题 */}
-          <div className="my-6 text-center text-2xl font-semibold">
+          <div className="my-5 text-center text-2xl font-semibold">
             <span>
               {mode === "login" && t("title")}
               {mode === "register" && tReg("title")}
