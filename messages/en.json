@@ -475,7 +475,9 @@
       "statusRevoked": "Revoked",
       "organizationNameLabel": "Organization",
       "certifiedAtLabel": "Certified At",
-      "reviewReason": "Rejection Reason"
+      "reviewReason": "Rejection Reason",
+      "back": "Back",
+      "createPost": "Create Post"
     }
   },
   "editor": {

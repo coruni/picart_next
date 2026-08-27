@@ -468,7 +468,9 @@
       "statusRevoked": "已撤销",
       "organizationNameLabel": "机构名称",
       "certifiedAtLabel": "认证时间",
-      "reviewReason": "驳回原因"
+      "reviewReason": "驳回原因",
+      "back": "返回",
+      "createPost": "发帖"
     }
   },
   "editor": {

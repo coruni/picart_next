@@ -12,21 +12,23 @@ import { Select } from "@/components/ui/Select";
 import { useRouter } from "@/i18n/routing";
 import { getErrorMessage, showToast } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
-import { formatDateYMD } from "@/lib/time";
-import { cn } from "@/lib/utils";
-import { Ban, Clock, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 /**
  * 我的认证状态类型（来自 userCertificationControllerGetMyCertificationStatus）
  */
-type CertificationRecord = NonNullable<
+export type CertificationRecord = NonNullable<
   UserCertificationControllerGetMyCertificationStatusResponses[200]["data"]
 >;
 
 /** 认证申请状态 */
-type CertificationStatus = "PENDING" | "APPROVED" | "REJECTED" | "REVOKED";
+export type CertificationStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "REJECTED"
+  | "REVOKED";
 
 type CertificationFormProps = {
   id: string;
@@ -60,25 +62,6 @@ export const CertificationForm = ({
   // 已有待审核或已通过的认证时禁止重复申请
   const hasPendingOrApproved =
     certification?.status === "PENDING" || certification?.status === "APPROVED";
-
-  const statusText = (status?: string): string => {
-    switch (status as CertificationStatus) {
-      case "PENDING":
-        return t("statusPending");
-      case "APPROVED":
-        return t("statusApproved");
-      case "REJECTED":
-        return t("statusRejected");
-      case "REVOKED":
-        return t("statusRevoked");
-      default:
-        return status || "-";
-    }
-  };
-
-  const typeText = (itemType?: string): string => {
-    return itemType === "OFFICIAL" ? t("typeOfficial") : t("typeCreator");
-  };
 
   const handleMaterialsChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -150,196 +133,9 @@ export const CertificationForm = ({
     }
   };
 
-  // ==================== 已有认证记录：不显示申请表单 ====================
-  if (certification) {
-    // ---------- 已通过：展示认证信息 ----------
-    if (certification.status === "APPROVED") {
-      return (
-        <div className="mb-6 mt-4 flex-1 justify-center items-center flex-col flex">
-          <div className="rounded-xl border border-border bg-card p-6 text-center w-full">
-            <div className="mx-auto mb-3 flex size-24 items-center justify-center rounded-full text-green-600">
-              <svg
-                width="72"
-                height="72"
-                viewBox="0 0 72 72"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="36"
-                  cy="36"
-                  r="30"
-                  stroke="currentColor"
-                  strokeWidth="6"
-                  fill="none"
-                  className="approve-icon-circle"
-                />
-                <polyline
-                  points="24,36 32,44 48,26"
-                  stroke="currentColor"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  fill="none"
-                  className="approve-icon-check"
-                />
-              </svg>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {typeText(certification.type)}
-            </p>
-            <p className="mt-1 text-lg font-extrabold text-green-600">
-              {t("statusApproved")}
-            </p>
-            <div className="mx-auto mt-5 max-w-sm space-y-3 text-left text-sm">
-              {certification.organizationName && (
-                <div className="flex items-center justify-between gap-6">
-                  <span className="shrink-0 text-muted-foreground">
-                    {t("organizationNameLabel")}
-                  </span>
-                  <span className="text-right">
-                    {certification.organizationName}
-                  </span>
-                </div>
-              )}
-              {certification.slogan && (
-                <div className="flex items-center justify-between gap-6">
-                  <span className="shrink-0 text-muted-foreground">
-                    {t("slogan")}
-                  </span>
-                  <span className="text-right">{certification.slogan}</span>
-                </div>
-              )}
-              {certification.reviewedAt && (
-                <div className="flex items-center justify-between gap-6">
-                  <span className="shrink-0 text-muted-foreground">
-                    {t("certifiedAtLabel")}
-                  </span>
-                  <span className="text-right">
-                    {formatDateYMD(certification.reviewedAt)}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    // ---------- 审核中 / 已拒绝 / 已撤销：状态占位（内容由用户自行编写） ----------
-    return (
-      <div className="mb-6 mt-4 flex-1 justify-center items-center flex-col flex">
-        <div className="rounded-xl border border-border bg-card p-6 text-center w-full">
-          <div
-            className={cn(
-              "mx-auto mb-3 flex size-24 items-center justify-center rounded-full",
-              certification.status === "REJECTED" && "text-red-500",
-              certification.status === "PENDING" && "bg-blue-50 text-blue-500",
-              certification.status === "REVOKED" && "bg-gray-100 text-gray-500",
-            )}
-          >
-            {certification.status === "REJECTED" && (
-              <svg
-                width="72"
-                height="72"
-                viewBox="0 0 72 72"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <circle
-                  cx="36"
-                  cy="36"
-                  r="30"
-                  stroke="currentColor"
-                  strokeWidth="6"
-                  fill="none"
-                  className="reject-icon-circle"
-                />
-                <line
-                  x1="24"
-                  y1="24"
-                  x2="48"
-                  y2="48"
-                  stroke="currentColor"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  className="reject-icon-line-1"
-                />
-                <line
-                  x1="48"
-                  y1="24"
-                  x2="24"
-                  y2="48"
-                  stroke="currentColor"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  className="reject-icon-line-2"
-                />
-              </svg>
-            )}
-            {certification.status === "PENDING" && <Clock size={24} />}
-            {certification.status === "REVOKED" && <Ban size={24} />}
-          </div>
-          <p className="text-sm text-muted-foreground">
-            {typeText(certification.type)}
-          </p>
-          <p className="mt-1 text-base font-semibold">
-            {statusText(certification.status)}
-          </p>
-          {certification.status === "REJECTED" &&
-            certification.reviewReason && (
-              <p className="mt-2 text-sm text-muted-foreground">
-                {t("reviewReason")}: {certification.reviewReason}
-              </p>
-            )}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <form onSubmit={handleSubmit}>
       <p className="mb-6 mt-4 text-sm text-muted-foreground">{t("subtitle")}</p>
-
-      {/* 当前认证状态 */}
-      {/* {certification && (
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-2 text-secondary">
-            {t("recordsTitle")}
-          </label>
-          <div className="space-y-2">
-            <div className="rounded-lg border border-border bg-card p-3 text-sm">
-              <div className="flex items-center justify-between gap-3">
-                <span className="font-medium">
-                  {typeText(certification.type)}
-                </span>
-                <span
-                  className={cn(
-                    "shrink-0 text-xs",
-                    certification.status === "APPROVED" && "text-green-600",
-                    certification.status === "REJECTED" && "text-red-500",
-                    (certification.status === "PENDING" ||
-                      certification.status === undefined) &&
-                      "text-muted-foreground",
-                  )}
-                >
-                  {statusText(certification.status)}
-                </span>
-              </div>
-              {certification.slogan && (
-                <p className="mt-1 text-muted-foreground">
-                  {certification.slogan}
-                </p>
-              )}
-              {certification.reviewReason && (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {t("reviewReason")}: {certification.reviewReason}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      )} */}
 
       {/* 认证类型 */}
       <div className="mb-6">
