@@ -5,7 +5,7 @@ import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { cn } from "@/lib";
 import { useTranslations } from "next-intl";
-import { Crown } from "lucide-react";
+import { BadgeCheck } from "lucide-react";
 
 /**
  * 创作者认证徽章：在昵称旁展示认证标识
@@ -30,22 +30,21 @@ export const CertificationBadge = ({
 }: CertificationBadgeProps) => {
   const t = useTranslations("accountInfo");
 
+
   if (!certification) return null;
 
   const isOfficial = certification.type === "OFFICIAL";
 
   return (
-    <Tooltip content={t("creatorBadge")} position={position}>
+    <Tooltip content={t(isOfficial?"officialBage":"creatorBadge")} position={position}>
       <span
         className={cn(
           "relative size-4 cursor-pointer",
-          isOfficial &&
-            "p-1 rounded-full bg-[#1D9BF0] flex items-center justify-center",
           className,
         )}
       >
         {isOfficial ? (
-          <Crown size={12} fill="white" stroke="white" strokeWidth={2} />
+          <BadgeCheck fill="#1D9BF0" width={18} height={18} stroke="white" strokeWidth={2} />
         ) : (
           <ImageWithFallback
             src={creatorBage.src}
