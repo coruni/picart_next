@@ -79,12 +79,20 @@ function GithubIcon({ className }: { className?: string }) {
   );
 }
 
+// 通用匹配规则：用户名、邮箱、密码、登录账号
+const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,20}$/;
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const PASSWORD_REGEX = /^[a-zA-Z0-9!@#$%^&*()_+\-.]{6,20}$/;
+const LOGIN_ACCOUNT_REGEX =
+  /^(?:[a-zA-Z0-9_]{3,20}|[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/;
+
 export function UserLoginDialog() {
   const t = useTranslations("login");
   const tReg = useTranslations("register");
   const tReset = useTranslations("resetPassword");
   const tForm = useTranslations("form");
   const tError = useTranslations("response.error");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mode, setMode] = useState<"login" | "register" | "reset">("login");
   const [isSendingCode, setIsSendingCode] = useState(false);
@@ -124,9 +132,17 @@ export function UserLoginDialog() {
     validationRules: {
       account: {
         required: tForm("accountRequired"),
+        pattern: {
+          value: LOGIN_ACCOUNT_REGEX,
+          message: tForm("invalidAccount"),
+        },
       },
       password: {
         required: tForm("passwordRequired"),
+        pattern: {
+          value: PASSWORD_REGEX,
+          message: tForm("invalidPassword"),
+        },
       },
     },
     async onSubmit(values) {
@@ -163,11 +179,15 @@ export function UserLoginDialog() {
     validationRules: {
       username: {
         required: tForm("required"),
+        pattern: {
+          value: USERNAME_REGEX,
+          message: tForm("invalidUsername"),
+        },
       },
       email: {
         required: tForm("required"),
         pattern: {
-          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+          value: EMAIL_REGEX,
           message: tForm("invalidEmail"),
         },
       },
@@ -177,9 +197,17 @@ export function UserLoginDialog() {
           value: 6,
           message: tForm("passwordTooShort"),
         },
+        pattern: {
+          value: PASSWORD_REGEX,
+          message: tForm("invalidPassword"),
+        },
       },
       confirmPassword: {
         required: tForm("passwordRequired"),
+        pattern: {
+          value: PASSWORD_REGEX,
+          message: tForm("invalidPassword"),
+        },
         validate: (value) => {
           const password = registerForm.values?.password;
           if (value && password && value !== password) {
@@ -247,7 +275,7 @@ export function UserLoginDialog() {
       email: {
         required: tForm("required"),
         pattern: {
-          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+          value: EMAIL_REGEX,
           message: tForm("invalidEmail"),
         },
       },
@@ -257,9 +285,17 @@ export function UserLoginDialog() {
           value: 6,
           message: tForm("passwordTooShort"),
         },
+        pattern: {
+          value: PASSWORD_REGEX,
+          message: tForm("invalidPassword"),
+        },
       },
       confirmPassword: {
         required: tForm("passwordRequired"),
+        pattern: {
+          value: PASSWORD_REGEX,
+          message: tForm("invalidPassword"),
+        },
         validate: (value) => {
           const password = resetForm.values?.password;
           if (value && password && value !== password) {

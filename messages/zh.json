@@ -79,9 +79,12 @@
     "account": "账号",
     "required": "此字段为必填项",
     "invalidEmail": "邮箱格式不正确",
-    "passwordTooShort": "密码至少需要8个字符",
+    "passwordTooShort": "密码至少需要6个字符",
     "accountRequired": "账号不能为空",
-    "passwordRequired": "密码不能为空"
+    "passwordRequired": "密码不能为空",
+    "invalidUsername": "用户名需为 3-20 位字母、数字或下划线",
+    "invalidPassword": "密码需为 6-20 位，仅支持字母、数字和常见符号",
+    "invalidAccount": "请输入正确的用户名或邮箱"
   },
   "login": {
     "title": "账号登录",

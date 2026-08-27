@@ -15,7 +15,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Dialog, DialogContent } from "@/components/ui/Dialog";
 import { useIsMobile } from "@/hooks";
-import { cn, formatRelativeTime, formatShortDate } from "@/lib";
+import { cn, formatRelativeTime } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
 import { prepareRichTextHtmlForSummary } from "@/lib/rich-text";
 import { useMessageNotificationStore, useUserStore } from "@/stores";
@@ -343,12 +343,11 @@ export function MessageDropdown({
                       </p>
                     </div>
                     <span className="shrink-0 text-xs text-secondary">
-                      {formatShortDate(message.createdAt || "", locale) ||
-                        formatRelativeTime(
-                          message.createdAt || "",
-                          tTime,
-                          locale,
-                        )}
+                      {formatRelativeTime(
+                        message.createdAt || "",
+                        tTime,
+                        locale,
+                      )}
                     </span>
                   </div>
                   <div

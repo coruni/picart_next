@@ -70,6 +70,10 @@ export function ArticleCommentList({
   const [error, setError] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<CommentSortKey>("all");
   const [isSortChanging, setIsSortChanging] = useState(false);
+  // 全局共享回复编辑框状态，同一时间只允许打开一个回复框
+  const [activeReplyParentId, setActiveReplyParentId] = useState<number | null>(
+    null,
+  );
 
   const fetchComments = useCallback(
     async (pageToLoad: number) => {
@@ -328,6 +332,8 @@ export function ArticleCommentList({
               commentAvatarClassName={commentAvatarClassName}
               replyAvatarClassName={replyAvatarClassName}
               compact={compact}
+              activeReplyParentId={activeReplyParentId}
+              setActiveReplyParentId={setActiveReplyParentId}
             />
           ))}
           <div className="min-h-80">

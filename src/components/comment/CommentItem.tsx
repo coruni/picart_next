@@ -60,6 +60,8 @@ type CommentItemProps = {
   commentAvatarClassName?: string;
   replyAvatarClassName?: string;
   compact?: boolean;
+  activeReplyParentId: number | null;
+  setActiveReplyParentId: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
 // 使用 memo 优化性能
@@ -72,6 +74,8 @@ export const CommentItem = memo(function CommentItem({
   commentAvatarClassName = "size-10",
   replyAvatarClassName = "size-5",
   compact = false,
+  activeReplyParentId,
+  setActiveReplyParentId,
 }: CommentItemProps) {
   const tComment = useTranslations("commentList");
   const tCommon = useTranslations("common");
@@ -96,9 +100,6 @@ export const CommentItem = memo(function CommentItem({
   const [viewerImages, setViewerImages] = useState<string[]>([]);
   const [viewerIndex, setViewerIndex] = useState(0);
   const [viewerZIndexClassName, setViewerZIndexClassName] = useState("z-300!");
-  const [activeReplyParentId, setActiveReplyParentId] = useState<number | null>(
-    null,
-  );
   const [isEditing, setIsEditing] = useState(false);
   const [showReportDialog, setShowReportDialog] = useState(false);
   const [reportSubmitting, setReportSubmitting] = useState(false);
@@ -220,13 +221,13 @@ export const CommentItem = memo(function CommentItem({
         current === parentId ? null : parentId,
       );
     },
-    [onReplyClick, isAuthenticated],
+    [onReplyClick, setActiveReplyParentId, isAuthenticated],
   );
 
   const handleReplySubmitted = useCallback(async () => {
     setActiveReplyParentId(null);
     await onSubmitted?.();
-  }, [onSubmitted]);
+  }, [setActiveReplyParentId, onSubmitted]);
 
   const handleDelete = useCallback(async () => {
     if (!commentState.id) return;

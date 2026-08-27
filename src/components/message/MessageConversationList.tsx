@@ -3,7 +3,7 @@
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { cn, formatRelativeTime, formatShortDate } from "@/lib";
+import { cn, formatRelativeTime } from "@/lib";
 import { prepareRichTextHtmlForSummary } from "@/lib/rich-text";
 import {
   Bell,
@@ -177,8 +177,11 @@ export function MessageConversationList({
                         </p>
                       </div>
                       <span className="shrink-0 text-xs text-secondary">
-                        {formatShortDate(item.createdAt || "", locale) ||
-                          formatRelativeTime(item.createdAt || "", tTime, locale)}
+                        {formatRelativeTime(
+                          item.createdAt || "",
+                          tTime,
+                          locale,
+                        )}
                       </span>
                     </div>
                     <div

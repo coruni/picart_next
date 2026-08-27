@@ -23,6 +23,7 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { memo, useCallback, useMemo } from "react";
 import { GuardedLink } from "../shared";
+import { CertificationBadge } from "../shared/CertificationBadge";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 import { Avatar } from "../ui/Avatar";
 import { CommentEditor } from "./CommentEditor";
@@ -97,6 +98,14 @@ export const CommentReplyItem = memo(function CommentReplyItem({
     }
     return null;
   }, [reply.parent, rootCommentId]);
+
+  // 回复作者认证信息（生成的类型未声明该字段，运行时可能返回 certification）
+  const replyAuthorCertification = useMemo(
+    () =>
+      (reply.author as { certification?: { type?: string } | null })
+        .certification,
+    [reply.author],
+  );
 
   // 缓存内容处理结果
   const replyContentHtml = useMemo(
@@ -192,6 +201,10 @@ export const CommentReplyItem = memo(function CommentReplyItem({
               <span className={cn(reply.author?.isMember, "font-semibold")}>
                 {reply.author?.nickname || reply.author?.username}
               </span>
+
+              {replyAuthorCertification && (
+                <CertificationBadge certification={replyAuthorCertification} />
+              )}
 
               {reply.author?.equippedDecorations?.ACHIEVEMENT_BADGE && (
                 <span className="relative size-4 inline-flex items-center justify-center">

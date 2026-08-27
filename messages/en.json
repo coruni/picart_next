@@ -86,9 +86,12 @@
     "account": "Account",
     "required": "This field is required",
     "invalidEmail": "Invalid email format",
-    "passwordTooShort": "Password must be at least 8 characters",
+    "passwordTooShort": "Password must be at least 6 characters",
     "accountRequired": "Account is required",
-    "passwordRequired": "Password is required"
+    "passwordRequired": "Password is required",
+    "invalidUsername": "Username must be 3-20 letters, digits or underscores",
+    "invalidPassword": "Password must be 6-20 characters, letters, digits and common symbols only",
+    "invalidAccount": "Please enter a valid username or email"
   },
   "login": {
     "title": "Account Login",
