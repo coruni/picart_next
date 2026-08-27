@@ -476,6 +476,51 @@ body.viewer-open .fixed {
   to { transform: scaleX(1); }
 }
 
+/* Reject icon: circle stroke-draw */
+@keyframes reject-circle-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Reject icon: X line stroke-draw */
+@keyframes reject-line-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.reject-icon-circle {
+  stroke-dasharray: 188.50;
+  stroke-dashoffset: 188.50;
+  animation: reject-circle-draw 0.5s ease-out forwards;
+}
+
+.reject-icon-line-1 {
+  stroke-dasharray: 33.94;
+  stroke-dashoffset: 33.94;
+  animation: reject-line-draw 0.25s ease-out 0.5s forwards;
+}
+
+.reject-icon-line-2 {
+  stroke-dasharray: 33.94;
+  stroke-dashoffset: 33.94;
+  animation: reject-line-draw 0.25s ease-out 0.75s forwards;
+}
+
+/* Approve icon: check stroke-draw */
+@keyframes approve-check-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.approve-icon-circle {
+  stroke-dasharray: 188.50;
+  stroke-dashoffset: 188.50;
+  animation: reject-circle-draw 0.5s ease-out forwards;
+}
+
+.approve-icon-check {
+  stroke-dasharray: 40;
+  stroke-dashoffset: 40;
+  animation: approve-check-draw 0.3s ease-out 0.5s forwards;
+}
+
 @keyframes ping {
   75%, 100% {
     transform: scale(2);
