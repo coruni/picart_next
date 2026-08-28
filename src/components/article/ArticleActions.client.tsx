@@ -1,8 +1,8 @@
 "use client";
 
 import {
-    articleControllerFavoriteArticle,
-    articleControllerUnfavoriteArticle,
+  articleControllerFavoriteArticle,
+  articleControllerUnfavoriteArticle,
 } from "@/api";
 import { formatCompactNumber, showToast, getErrorMessage } from "@/lib";
 import { openLoginDialog } from "@/lib/modal-helpers";
@@ -41,6 +41,8 @@ type ArticleActionsProps = {
   userReaction?: string;
   likes: number;
   cover?: string;
+  title?: string;
+  summary?: string;
   // 反应变化回调，用于联动 ReactionStats
   onReactionChange?: (
     stats: Record<string, number>,
@@ -57,6 +59,8 @@ export function ArticleActions({
   userReaction: initialUserReaction,
   likes: initialLikes,
   cover,
+  title,
+  summary,
   onReactionChange,
 }: ArticleActionsProps) {
   const locale = useLocale();
@@ -67,8 +71,7 @@ export function ArticleActions({
     useState(favoriteCount);
   const [favoriteSubmitting, setFavoriteSubmitting] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
-  const shareLink =
-    typeof window !== "undefined" ? window.location.href : "";
+  const shareLink = typeof window !== "undefined" ? window.location.href : "";
 
   // 反应状态和点赞数
   const [reactionStats, setReactionStats] =
@@ -246,6 +249,8 @@ export function ArticleActions({
         onOpenChange={setShareOpen}
         cover={cover}
         link={shareLink}
+        title={title}
+        summary={summary}
       />
     </div>
   );

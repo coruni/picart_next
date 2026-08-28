@@ -114,6 +114,66 @@ const registerQuillModules = () => {
 
 registerQuillModules();
 
+// ---------- caption 编辑辅助函数 ----------
+
+// 判断光标是否位于元素内容的开头（start=true）或末尾（start=false）
+const isCaretAtBoundary = (el: HTMLElement, start: boolean): boolean => {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return false;
+  const range = sel.getRangeAt(0);
+  if (start) {
+    const preRange = range.cloneRange();
+    preRange.selectNodeContents(el);
+    preRange.setEnd(range.startContainer, range.startOffset);
+    return preRange.toString().length === 0;
+  }
+  const postRange = range.cloneRange();
+  postRange.selectNodeContents(el);
+  postRange.setStart(range.endContainer, range.endOffset);
+  return postRange.toString().length === 0;
+};
+
+// 获取 root 内第一个文本节点
+const getFirstTextNode = (root: Node): Text | null => {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const node = walker.nextNode();
+  return node ? (node as Text) : null;
+};
+
+// 获取 root 内最后一个文本节点
+const getLastTextNode = (root: Node): Text | null => {
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  let last: Text | null = null;
+  let node: Node | null;
+  while ((node = walker.nextNode())) {
+    last = node as Text;
+  }
+  return last;
+};
+
+// 删除 caption 开头的第一个字符（pos=start）或末尾的最后一个字符（pos=end），光标保持在 caption 内
+const deleteCaptionChar = (caption: HTMLElement, pos: "start" | "end") => {
+  const textNode =
+    pos === "start" ? getFirstTextNode(caption) : getLastTextNode(caption);
+  if (!textNode || textNode.length === 0) return;
+
+  if (pos === "start") {
+    textNode.deleteData(0, 1);
+  } else {
+    textNode.deleteData(textNode.length - 1, 1);
+  }
+
+  // 光标放回 caption 对应边界
+  const sel = window.getSelection();
+  if (sel) {
+    const caret = document.createRange();
+    caret.selectNodeContents(caption);
+    caret.collapse(pos === "start");
+    sel.removeAllRanges();
+    sel.addRange(caret);
+  }
+};
+
 /**
  * 富文本编辑器组件
  * 基于 Quill.js
@@ -637,10 +697,13 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
 
         quill.root.addEventListener("input", handleCaptionInput, true);
 
-        // 阻止 caption 上的键盘事件冒泡到 Quill
+        // 阻止 caption 上的键盘事件冒泡到 Quill，让 caption 作为独立编辑区域
         const handleCaptionKeyDown = (e: KeyboardEvent) => {
           const target = e.target as HTMLElement;
           if (target.classList.contains("ql-image-caption")) {
+            // 阻止事件传播到 Quill，避免 Quill 按 blot selection 误删图片或插入文字
+            e.stopPropagation();
+
             // 允许基本的编辑操作
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -653,10 +716,28 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
                   quill.setSelection(index + 1, 0);
                 }
               }
+              return;
             }
-            // 阻止删除键删除图片本身
-            if (e.key === "Backspace" && target.textContent === "") {
-              e.preventDefault();
+
+            // 删除键：只允许删除 caption 文字，防止误删 image blot
+            if (e.key === "Backspace" || e.key === "Delete") {
+              const text = target.textContent || "";
+              const caretAtStart = isCaretAtBoundary(target, true);
+              const caretAtEnd = isCaretAtBoundary(target, false);
+
+              if (text === "") {
+                // caption 为空：阻止删除，防止光标移出后删除 blot
+                e.preventDefault();
+              } else if (e.key === "Backspace" && caretAtStart) {
+                // 光标在开头：手动删除 caption 首字符，避免光标移出 caption
+                e.preventDefault();
+                deleteCaptionChar(target, "start");
+              } else if (e.key === "Delete" && caretAtEnd) {
+                // 光标在末尾：手动删除 caption 末尾字符，避免光标移出 caption
+                e.preventDefault();
+                deleteCaptionChar(target, "end");
+              }
+              // 其余情况（光标在文字中间）：交给浏览器原生在 caption 内删除
             }
           }
         };

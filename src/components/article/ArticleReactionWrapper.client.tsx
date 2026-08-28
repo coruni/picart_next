@@ -13,6 +13,8 @@ interface ArticleReactionWrapperProps {
   initialIsFavorited: boolean;
   likes: number;
   cover?: string;
+  title?: string;
+  summary?: string;
 }
 
 export function ArticleReactionWrapper({
@@ -24,15 +26,26 @@ export function ArticleReactionWrapper({
   initialIsFavorited,
   likes: initialLikes,
   cover,
+  title,
+  summary,
 }: ArticleReactionWrapperProps) {
-  const [reactionStats, setReactionStats] = useState<Record<string, number>>(initialStats);
-  const [userReaction, setUserReaction] = useState<string | undefined>(initialUserReaction);
+  const [reactionStats, setReactionStats] =
+    useState<Record<string, number>>(initialStats);
+  const [userReaction, setUserReaction] = useState<string | undefined>(
+    initialUserReaction,
+  );
   const [likes, setLikes] = useState(initialLikes);
 
-  const handleReactionChange = (newStats: Record<string, number>, newUserReaction?: string | null) => {
+  const handleReactionChange = (
+    newStats: Record<string, number>,
+    newUserReaction?: string | null,
+  ) => {
     setReactionStats(newStats);
     setUserReaction(newUserReaction || undefined);
-    const totalLikes = Object.values(newStats).reduce((sum, count) => sum + count, 0);
+    const totalLikes = Object.values(newStats).reduce(
+      (sum, count) => sum + count,
+      0,
+    );
     setLikes(totalLikes);
   };
 
@@ -63,6 +76,8 @@ export function ArticleReactionWrapper({
         userReaction={userReaction}
         likes={likes}
         cover={cover}
+        title={title}
+        summary={summary}
         onReactionChange={handleReactionChange}
       />
     </>

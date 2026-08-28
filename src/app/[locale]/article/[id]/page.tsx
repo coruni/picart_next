@@ -420,6 +420,12 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             initialIsFavorited={Boolean(article.isFavorited)}
             likes={article.likes!}
             cover={article?.cover}
+            title={article.title}
+            summary={
+              decodeHtmlEntities(stripHtmlTags(article.summary || ""))
+                .replace(/\s+/g, " ")
+                .trim()
+            }
           />
         </div>
         <ArticleCommentList

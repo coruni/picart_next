@@ -1335,9 +1335,7 @@
   "articleShare": {
     "title": "Share Post",
     "coverAlt": "Post cover",
-    "copyLink": "Copy Link",
-    "downloadQr": "Download QR Code",
-    "copied": "Link copied",
-    "copyFailed": "Copy failed"
+    "promo": "Scan to explore",
+    "downloadPoster": "Download Poster"
   }
 }
