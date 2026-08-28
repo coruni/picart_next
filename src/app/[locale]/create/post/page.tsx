@@ -834,7 +834,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                     <div className="text-sm font-medium text-gray-400">
                       {t("settings.permissionTitle")}
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                    <div className="flex flex-col gap-2">
                       <FormField name="requireLogin">
                         <div className="flex items-center justify-between">
                           <label className="text-black/65 dark:text-white text-sm">
