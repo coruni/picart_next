@@ -419,6 +419,7 @@ export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
             favoriteCount={article.favoriteCount || 0}
             initialIsFavorited={Boolean(article.isFavorited)}
             likes={article.likes!}
+            cover={article?.cover}
           />
         </div>
         <ArticleCommentList
