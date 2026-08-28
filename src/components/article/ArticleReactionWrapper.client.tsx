@@ -12,6 +12,7 @@ interface ArticleReactionWrapperProps {
   favoriteCount: number;
   initialIsFavorited: boolean;
   likes: number;
+  cover?: string;
 }
 
 export function ArticleReactionWrapper({
@@ -22,6 +23,7 @@ export function ArticleReactionWrapper({
   favoriteCount,
   initialIsFavorited,
   likes: initialLikes,
+  cover,
 }: ArticleReactionWrapperProps) {
   const [reactionStats, setReactionStats] = useState<Record<string, number>>(initialStats);
   const [userReaction, setUserReaction] = useState<string | undefined>(initialUserReaction);
@@ -60,6 +62,7 @@ export function ArticleReactionWrapper({
         }}
         userReaction={userReaction}
         likes={likes}
+        cover={cover}
         onReactionChange={handleReactionChange}
       />
     </>

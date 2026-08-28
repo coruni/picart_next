@@ -11,6 +11,7 @@ import { ExternalLink, MessageCircleMore, Star } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { ReactionPanel } from "./ReactionPanel.client";
+import { ArticleShareDialog } from "./ArticleShareDialog.client";
 
 export type ReactionType =
   | "like"
@@ -39,6 +40,7 @@ type ArticleActionsProps = {
   reactionStats: ReactionStats;
   userReaction?: string;
   likes: number;
+  cover?: string;
   // 反应变化回调，用于联动 ReactionStats
   onReactionChange?: (
     stats: Record<string, number>,
@@ -54,6 +56,7 @@ export function ArticleActions({
   reactionStats: initialReactionStats,
   userReaction: initialUserReaction,
   likes: initialLikes,
+  cover,
   onReactionChange,
 }: ArticleActionsProps) {
   const locale = useLocale();
@@ -63,6 +66,9 @@ export function ArticleActions({
   const [currentFavoriteCount, setCurrentFavoriteCount] =
     useState(favoriteCount);
   const [favoriteSubmitting, setFavoriteSubmitting] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const shareLink =
+    typeof window !== "undefined" ? window.location.href : "";
 
   // 反应状态和点赞数
   const [reactionStats, setReactionStats] =
@@ -219,10 +225,14 @@ export function ArticleActions({
         </span>
       </div>
 
-      <div className="group flex cursor-pointer flex-col items-center justify-center">
-        <div className="rounded-full p-1 group-hover:bg-primary/15">
+      <div className="flex flex-col items-center justify-center">
+        <button
+          type="button"
+          className="group rounded-full p-1 transition-colors hover:bg-primary/15"
+          onClick={() => setShareOpen(true)}
+        >
           <ExternalLink className="text-secondary" />
-        </div>
+        </button>
         <span className="text-sm text-secondary">
           {formatCompactNumber(likes, {
             locale,
@@ -230,6 +240,13 @@ export function ArticleActions({
           })}
         </span>
       </div>
+
+      <ArticleShareDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        cover={cover}
+        link={shareLink}
+      />
     </div>
   );
 }

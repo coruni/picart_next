@@ -562,6 +562,7 @@
     "cover": {
       "upload": "上传封面",
       "uploadButton": "封面上传",
+      "dragHint": "将图片拖拽到此处上传",
       "preview": "封面预览",
       "crop": "裁剪封面",
       "cropHint": "滚轮缩放 · 拖动调整位置"
@@ -583,6 +584,8 @@
     "settings": {
       "title": "发布设置",
       "downloads": "下载资源",
+      "resourceTitle": "资源配置",
+      "permissionTitle": "权限配置",
       "requireLogin": "需要登录",
       "requireFollow": "需要关注",
       "requirePayment": "需要付费",
@@ -1321,5 +1324,13 @@
     "public": "公开",
     "empty": "暂无下载资源",
     "noUrl": "无链接"
+  },
+  "articleShare": {
+    "title": "分享帖子",
+    "coverAlt": "帖子封面",
+    "copyLink": "复制链接",
+    "downloadQr": "下载二维码",
+    "copied": "链接已复制",
+    "copyFailed": "复制失败"
   }
 }

@@ -569,6 +569,7 @@
     "cover": {
       "upload": "Upload Cover",
       "uploadButton": "Cover Upload",
+      "dragHint": "Drag and drop an image here to upload",
       "preview": "Cover Preview",
       "crop": "Crop Cover",
       "cropHint": "Scroll to zoom  Drag to reposition"
@@ -590,6 +591,8 @@
     "settings": {
       "title": "Publish Settings",
       "downloads": "Downloads",
+      "resourceTitle": "Resource Settings",
+      "permissionTitle": "Permission Settings",
       "requireLogin": "Require Login",
       "requireFollow": "Require Follow",
       "requirePayment": "Require Payment",
@@ -1328,5 +1331,13 @@
     "public": "Public",
     "empty": "No downloads available",
     "noUrl": "No URL"
+  },
+  "articleShare": {
+    "title": "Share Post",
+    "coverAlt": "Post cover",
+    "copyLink": "Copy Link",
+    "downloadQr": "Download QR Code",
+    "copied": "Link copied",
+    "copyFailed": "Copy failed"
   }
 }

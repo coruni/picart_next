@@ -38,7 +38,7 @@ import {
 import { buildUploadMetadata } from "@/lib/file-hash";
 import { getCropExportType } from "@/lib/imageProcessing";
 import { useUserStore } from "@/stores";
-import { Edit, Loader2, Plus, Trash2, X } from "lucide-react";
+import { Edit, ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import Quill from "quill";
@@ -110,6 +110,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   );
   const [coverScale, setCoverScale] = useState(1);
   const [coverUploading, setCoverUploading] = useState(false);
+  const [coverDragActive, setCoverDragActive] = useState(false);
 
   const [parentCategories, setParentCategories] = useState<CategoryOption[]>(
     [],
@@ -573,6 +574,16 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
     e.target.value = "";
   };
 
+  const handleCoverDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setCoverDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    setSelectedCoverImage(file);
+    setShowCoverEditor(true);
+    setCoverScale(1);
+  };
+
   const handleCoverWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     const newScale = Math.min(Math.max(coverScale - e.deltaY * 0.001, 1), 3);
@@ -689,17 +700,43 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                         </div>
                       </div>
                     ) : (
-                      <div>
-                        <label
-                          htmlFor="cover-upload"
+                      <label
+                        htmlFor="cover-upload"
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          setCoverDragActive(true);
+                        }}
+                        onDragLeave={(e) => {
+                          e.preventDefault();
+                          setCoverDragActive(false);
+                        }}
+                        onDrop={handleCoverDrop}
+                        className={cn(
+                          "flex w-full flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors",
+                          coverDragActive
+                            ? "border-primary bg-primary/5"
+                            : "border-border hover:border-primary hover:bg-muted",
+                        )}
+                      >
+                        <ImagePlus
                           className={cn(
-                            "text-sm cursor-pointer px-4 py-2 text-primary border-primary border rounded-md",
-                            "hover:bg-primary hover:text-white",
+                            "size-8 transition-colors",
+                            coverDragActive
+                              ? "text-primary"
+                              : "text-secondary",
+                          )}
+                        />
+                        <p
+                          className={cn(
+                            "text-sm font-medium transition-colors",
+                            coverDragActive
+                              ? "text-primary"
+                              : "text-secondary",
                           )}
                         >
-                          {t("cover.uploadButton")}
-                        </label>
-                      </div>
+                          {t("cover.dragHint")}
+                        </p>
+                      </label>
                     )}
                   </div>
                 </FormField>
@@ -777,7 +814,10 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                   <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     {t("settings.title")}
                   </label>
-                  <div className="border border-border p-3 rounded-lg inline-block max-w-100 w-full space-y-2">
+                  <div className="border border-border p-3 rounded-lg inline-block max-w-100 w-full space-y-3">
+                    <div className="text-sm font-medium text-gray-400">
+                      {t("settings.resourceTitle")}
+                    </div>
                     <FormField name="ddownloads">
                       <div className="flex items-center justify-between">
                         <label className="text-black/65 dark:text-white text-sm">
@@ -791,34 +831,37 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                         </Button>
                       </div>
                     </FormField>
-                    <FormField name="requireLogin">
-                      <div className="flex items-center justify-between">
-                        <label className="text-black/65 dark:text-white text-sm">
-                          {t("settings.requireLogin")}
-                        </label>
-                        <Switch
-                          checked={values.requireLogin}
-                          onCheckedChange={(checked) =>
-                            setFieldValues({ requireLogin: checked })
-                          }
-                        />
-                      </div>
-                    </FormField>
-                    <FormField name="requireFollow">
-                      <div className="flex items-center justify-between">
-                        <label className="text-black/65 dark:text-white text-sm">
-                          {t("settings.requireFollow")}
-                        </label>
-                        <Switch
-                          checked={values.requireFollow}
-                          onCheckedChange={(checked) =>
-                            setFieldValues({ requireFollow: checked })
-                          }
-                        />
-                      </div>
-                    </FormField>
-                    <FormField name="allowReprint">
-                      <div className="flex flex-col gap-2">
+                    <div className="text-sm font-medium text-gray-400">
+                      {t("settings.permissionTitle")}
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                      <FormField name="requireLogin">
+                        <div className="flex items-center justify-between">
+                          <label className="text-black/65 dark:text-white text-sm">
+                            {t("settings.requireLogin")}
+                          </label>
+                          <Switch
+                            checked={values.requireLogin}
+                            onCheckedChange={(checked) =>
+                              setFieldValues({ requireLogin: checked })
+                            }
+                          />
+                        </div>
+                      </FormField>
+                      <FormField name="requireFollow">
+                        <div className="flex items-center justify-between">
+                          <label className="text-black/65 dark:text-white text-sm">
+                            {t("settings.requireFollow")}
+                          </label>
+                          <Switch
+                            checked={values.requireFollow}
+                            onCheckedChange={(checked) =>
+                              setFieldValues({ requireFollow: checked })
+                            }
+                          />
+                        </div>
+                      </FormField>
+                      <FormField name="allowReprint">
                         <div className="flex items-center justify-between">
                           <label className="text-black/65 dark:text-white text-sm">
                             {t("settings.allowReprint")}
@@ -830,72 +873,75 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
                             }
                           />
                         </div>
-                        {values.allowReprint && (
-                          <div className="space-y-1 text-xs text-secondary p-2 border border-border rounded-lg">
-                            <p>
-                              <span className="font-medium">
-                                {t("settings.allowReprintEnabledTitle")}
-                              </span>{" "}
-                              {t("settings.allowReprintEnabledDescription")}
-                            </p>
-                            <p>
-                              <span className="font-medium">
-                                {t("settings.allowReprintDisabledTitle")}
-                              </span>{" "}
-                              {t("settings.allowReprintDisabledDescription")}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </FormField>
-                    {canRequirePayment && (
-                      <FormField name="requirePayment">
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center justify-between w-full">
-                            <label className="text-black/65 dark:text-white text-sm">
-                              {t("settings.requirePayment")}
-                            </label>
-                            <Switch
-                              checked={values.requirePayment}
-                              onCheckedChange={(checked) =>
-                                setFieldValues({ requirePayment: checked })
-                              }
-                            />
-                          </div>
-                          {values.requirePayment && (
-                            <div className="mt-2 flex justify-end">
-                              <Input
-                                className="h-9 w-full max-w-36 text-right tabular-nums"
-                                type="number"
-                                min={1}
-                                step={1}
-                                max={999}
-                                placeholder={t("settings.pricePlaceholder")}
-                                value={values.viewPrice}
-                                onChange={(value) =>
-                                  setFieldValues({
-                                    viewPrice: Number(value.target.value),
-                                  })
+                      </FormField>
+                      <FormField name="requireMembership">
+                        <div className="flex items-center justify-between">
+                          <label className="text-black/65 dark:text-white text-sm">
+                            {t("settings.requireMembership")}
+                          </label>
+                          <Switch
+                            checked={values.requireMembership}
+                            onCheckedChange={(checked) =>
+                              setFieldValues({ requireMembership: checked })
+                            }
+                          />
+                        </div>
+                      </FormField>
+                      {values.allowReprint && (
+                        <div className="space-y-1 text-xs text-secondary p-2 border border-border rounded-lg col-span-2">
+                          <p>
+                            <span className="font-medium">
+                              {t("settings.allowReprintEnabledTitle")}
+                            </span>{" "}
+                            {t("settings.allowReprintEnabledDescription")}
+                          </p>
+                          <p>
+                            <span className="font-medium">
+                              {t("settings.allowReprintDisabledTitle")}
+                            </span>{" "}
+                            {t("settings.allowReprintDisabledDescription")}
+                          </p>
+                        </div>
+                      )}
+                      {canRequirePayment && (
+                        <FormField
+                          name="requirePayment"
+                          className="col-span-2"
+                        >
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center justify-between w-full">
+                              <label className="text-black/65 dark:text-white text-sm">
+                                {t("settings.requirePayment")}
+                              </label>
+                              <Switch
+                                checked={values.requirePayment}
+                                onCheckedChange={(checked) =>
+                                  setFieldValues({ requirePayment: checked })
                                 }
                               />
                             </div>
-                          )}
-                        </div>
-                      </FormField>
-                    )}
-                    <FormField name="requireMembership">
-                      <div className="flex items-center justify-between">
-                        <label className="text-black/65 dark:text-white text-sm">
-                          {t("settings.requireMembership")}
-                        </label>
-                        <Switch
-                          checked={values.requireMembership}
-                          onCheckedChange={(checked) =>
-                            setFieldValues({ requireMembership: checked })
-                          }
-                        />
-                      </div>
-                    </FormField>
+                            {values.requirePayment && (
+                              <div className="mt-2 flex justify-end">
+                                <Input
+                                  className="h-9 w-full max-w-36 text-right tabular-nums"
+                                  type="number"
+                                  min={1}
+                                  step={1}
+                                  max={999}
+                                  placeholder={t("settings.pricePlaceholder")}
+                                  value={values.viewPrice}
+                                  onChange={(value) =>
+                                    setFieldValues({
+                                      viewPrice: Number(value.target.value),
+                                    })
+                                  }
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </FormField>
+                      )}
+                    </div>
                   </div>
                 </div>
 
