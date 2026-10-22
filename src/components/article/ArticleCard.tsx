@@ -26,22 +26,31 @@ import {
   Play,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
 import { memo, useCallback, useMemo, useState } from "react";
 import { ArticleMenu } from "./ArticleMenu";
-import { ImageViewer } from "./ImageViewer";
 import { ReactionPanel } from "./ReactionPanel.client";
+
+// ImageViewer 依赖 viewerjs，按需加载，避免进入信息流首包
+const ImageViewer = dynamic(
+  () => import("./ImageViewer").then((mod) => mod.ImageViewer),
+  { ssr: false },
+);
 
 type Article = ArticleList[number] | ArticleDetail;
 type ArticleCardProps = {
   article: Article;
   showFollow: boolean;
   showProfilePinLabel?: boolean;
+  /** 首屏前几张卡片才需要抢占高优先级，默认懒加载 */
+  priority?: boolean;
 };
 
 export const ArticleCard = memo(function ArticleCard({
   article,
   showFollow = true,
   showProfilePinLabel = false,
+  priority = false,
 }: ArticleCardProps) {
   const currentUser = useUserStore((state) => state.user);
   const t = useTranslations("time");
@@ -112,8 +121,8 @@ export const ArticleCard = memo(function ArticleCard({
             alt={article?.title || "cover"}
             fill
             quality={75}
-            loading="eager"
-            fetchPriority="high"
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : "auto"}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover"
           />
@@ -172,8 +181,8 @@ export const ArticleCard = memo(function ArticleCard({
               alt={article?.title || "image"}
               fill
               quality={75}
-              loading="eager"
-              fetchPriority="high"
+              loading={priority ? "eager" : "lazy"}
+              fetchPriority={priority ? "high" : "auto"}
               sizes="50vw"
               className="object-cover"
             />

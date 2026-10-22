@@ -216,6 +216,7 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
     const { user, token } = useUserStore();
     const { compressImages, validateFiles } = useImageCompression();
     const quillRef = useRef<Quill | null>(null);
+    const quillListenersRef = useRef<(() => void) | null>(null);
     const uploadAbortControllerRef = useRef<AbortController | null>(null);
     const lastSyncedValueRef = useRef("");
     const onChangeRef = useRef(onChange);
@@ -280,6 +281,27 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
       if (!containerRef.current) return;
 
       const container = containerRef.current;
+      const existingQuill = quillRef.current;
+
+      // 实例已存在（StrictMode 重挂载 / 依赖变化）：上一次 cleanup 已解绑监听，
+      // 这里只负责重新绑定并同步可变选项，避免整段跳过导致 onChange 静默失效
+      if (existingQuill) {
+        quillListenersRef.current?.();
+        existingQuill.root.dataset.placeholder = placeholder;
+        existingQuill.enable(!readOnly);
+
+        if (ref) {
+          if (typeof ref === "function") {
+            ref(existingQuill);
+          } else {
+            ref.current = existingQuill;
+          }
+        }
+
+        return () => {
+          uploadAbortControllerRef.current?.abort();
+        };
+      }
 
       // 创建 editor 容器
       const editorContainer = container.querySelector(".editor-container");
@@ -809,6 +831,15 @@ export const Editor = forwardRef<Quill | null, EditorProps>(
             ref.current = quill;
           }
         }
+
+        // 依赖变化或 StrictMode 重挂载时复用实例，需要能重新绑定这批监听。
+        // addEventListener 传同一函数引用不会重复注册，quill.on 由 cleanup 的 off 保证唯一
+        quillListenersRef.current = () => {
+          quill.on("text-change", handleTextChange);
+          quill.root.addEventListener("keydown", handleKeyDown, true);
+          quill.root.addEventListener("input", handleCaptionInput, true);
+          quill.root.addEventListener("keydown", handleCaptionKeyDown, true);
+        };
 
         return () => {
           uploadAbortControllerRef.current?.abort();

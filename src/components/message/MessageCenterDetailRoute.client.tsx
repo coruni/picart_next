@@ -19,6 +19,8 @@ import type {
 import {
   getMessageDayKey,
   getMessageDayLabel,
+  resolveMessageImageUrl,
+  resolveMessageImageUrls,
 } from "@/components/message/MessageCenter.utils";
 import { MessagePrivateDetailRoutePane } from "@/components/message/MessagePrivateDetailRoutePane";
 import { useIsMobile } from "@/hooks";
@@ -55,31 +57,6 @@ type PrivateHistorySourceItem = {
   recallReason?: string;
   isRecalled?: boolean;
 };
-
-function resolveMessageImageUrl(payload?: PrivateMessagePayload): string | null {
-  if (
-    Array.isArray(payload?.urls) &&
-    payload.urls.length > 0 &&
-    typeof payload.urls[0] === "string" &&
-    payload.urls[0].trim()
-  ) {
-    return payload.urls[0];
-  }
-
-  if (!payload) {
-    return null;
-  }
-
-  if (typeof payload.imageUrl === "string" && payload.imageUrl.trim()) {
-    return payload.imageUrl;
-  }
-
-  if (typeof payload.url === "string" && payload.url.trim()) {
-    return payload.url;
-  }
-
-  return null;
-}
 
 function buildPrivateHistoryCursor(items: PrivateHistoryItem[]): string | null {
   const oldestItem = items[0];
@@ -142,24 +119,6 @@ function normalizePrivateHistoryItem(
   };
 }
 
-function getMessagePayloadUrls(payload?: PrivateMessagePayload): string[] {
-  if (Array.isArray(payload?.urls)) {
-    return payload.urls.filter(
-      (url): url is string => typeof url === "string" && Boolean(url.trim()),
-    );
-  }
-
-  if (typeof payload?.url === "string" && payload.url.trim()) {
-    return [payload.url];
-  }
-
-  if (typeof payload?.imageUrl === "string" && payload.imageUrl.trim()) {
-    return [payload.imageUrl];
-  }
-
-  return [];
-}
-
 function matchesPendingPrivateMessage(
   pending: PrivateHistoryItem,
   incoming: PrivateHistoryItem,
@@ -176,8 +135,8 @@ function matchesPendingPrivateMessage(
     return false;
   }
 
-  const pendingUrls = getMessagePayloadUrls(pending.payload);
-  const incomingUrls = getMessagePayloadUrls(incoming.payload);
+  const pendingUrls = resolveMessageImageUrls(pending.payload);
+  const incomingUrls = resolveMessageImageUrls(incoming.payload);
 
   if (pendingUrls.length !== incomingUrls.length) {
     return false;

@@ -16,26 +16,51 @@ export function formatMessageClock(value?: string) {
   return formatTimeHM(value);
 }
 
-function resolvePreviewImageUrls(payload?: Record<string, unknown> | null) {
-  if (!payload) {
-    return [];
-  }
+type MessageImagePayload =
+  | {
+      urls?: unknown;
+      url?: unknown;
+      imageUrl?: unknown;
+    }
+  | null
+  | undefined;
 
-  if (Array.isArray(payload.urls)) {
-    return payload.urls.filter(
+/**
+ * 私信 payload 的图片地址：urls 优先，其次 imageUrl，最后 url。
+ * 气泡渲染、列表预览、乐观发送去重都必须走这一份，否则同一消息在不同位置会解析出不同图片。
+ */
+export function resolveMessageImageUrls(payload?: MessageImagePayload): string[] {
+  const urls = payload?.urls;
+
+  if (Array.isArray(urls)) {
+    const validUrls = urls.filter(
       (url): url is string => typeof url === "string" && Boolean(url.trim()),
     );
+
+    if (validUrls.length > 0) {
+      return validUrls;
+    }
   }
 
-  if (typeof payload.url === "string" && payload.url.trim()) {
-    return [payload.url];
-  }
-
-  if (typeof payload.imageUrl === "string" && payload.imageUrl.trim()) {
+  if (typeof payload?.imageUrl === "string" && payload.imageUrl.trim()) {
     return [payload.imageUrl];
   }
 
+  if (typeof payload?.url === "string" && payload.url.trim()) {
+    return [payload.url];
+  }
+
   return [];
+}
+
+export function resolveMessageImageUrl(
+  payload?: MessageImagePayload,
+): string | null {
+  return resolveMessageImageUrls(payload)[0] ?? null;
+}
+
+function resolvePreviewImageUrls(payload?: Record<string, unknown> | null) {
+  return resolveMessageImageUrls(payload);
 }
 
 // Composer-serialised messages embed emoji as

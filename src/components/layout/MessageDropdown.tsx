@@ -477,7 +477,7 @@ export function MessageDropdown({
         </button>
 
         {!isMobile && (
-          <div className="invisible absolute right-0 z-50 w-full min-w-lg pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+          <div className="invisible absolute right-0 z-50 w-full min-w-lg pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
             <div className="overflow-hidden rounded-xl border border-border bg-card shadow-lg">
               {renderPanel()}
             </div>

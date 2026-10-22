@@ -1,7 +1,5 @@
 "use client";
 
-import { useUserStore } from "@/stores";
-import { useEffect } from "react";
 import { getNotificationSetting } from "./notification-settings";
 
 /**
@@ -72,44 +70,5 @@ export function showNotification(
   };
 
   return notification;
-}
-
-/**
- * Hook: 自动初始化通知权限（用户登录后）
- */
-export function useNotificationPermission() {
-  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      // 自动请求权限，但不强制
-      void requestNotificationPermission();
-    }
-  }, [isAuthenticated]);
-}
-
-/**
- * Hook: 显示私信通知
- */
-export function usePrivateMessageNotification() {
-  return {
-    showPrivateMessageNotification: (
-      senderName: string,
-      message: string,
-      avatarUrl?: string,
-      onClick?: () => void,
-    ) => {
-      return showNotification(senderName, {
-        body: message,
-        icon: avatarUrl || "/favicon.ico",
-        tag: `private-message-${Date.now()}`,
-        requireInteraction: false,
-        onClick: () => {
-          window.focus();
-          onClick?.();
-        },
-      });
-    },
-  };
 }
 

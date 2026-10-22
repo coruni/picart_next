@@ -127,6 +127,7 @@ export function CommentEditor({
   const emojiPanelRef = useRef<HTMLDivElement>(null);
   const emojiTabsViewportRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<unknown>(null);
+  const quillTextChangeRef = useRef<(() => void) | null>(null);
   const uploadTimersRef = useRef<Record<string, number>>({});
   const attachmentsRef = useRef<UploadedAttachment[]>([]);
   const removedAttachmentIdsRef = useRef(new Set<string>());
@@ -201,6 +202,7 @@ export function CommentEditor({
         setEditorHasContent(hasQuillContent(quill));
       };
       quill.on("text-change", syncEditorState);
+      quillTextChangeRef.current = syncEditorState;
       syncEditorState();
     };
 
@@ -211,7 +213,11 @@ export function CommentEditor({
         off: (event: string, handler: () => void) => void;
       } | null;
       if (quill) {
-        quill.off("text-change", () => {});
+        // 必须传同一个函数引用，否则监听不会被解绑
+        if (quillTextChangeRef.current) {
+          quill.off("text-change", quillTextChangeRef.current);
+          quillTextChangeRef.current = null;
+        }
         quillRef.current = null;
       }
     };

@@ -28,8 +28,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts",
-    "rumtime.config.ts"
-, "src/app/[locale]/channel/[[...id]]", "src/app/[locale]/account/[id]/(edit)/edit/layout.tsx1"  ],
+    "**/*.mts"
+  ],
   "exclude": ["node_modules"]
 }

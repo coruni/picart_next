@@ -4,6 +4,7 @@ import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { prepareRichTextHtmlForDisplay } from "@/lib";
 import { ArticleDetail, ArticleList } from "@/types";
 import { useLocale } from "next-intl";
+import dynamic from "next/dynamic";
 import { parse } from "node-html-parser";
 import {
     createElement,
@@ -17,7 +18,13 @@ import {
     type ReactNode,
 } from "react";
 import { ImageViewer } from "./ImageViewer";
-import { EmbedVideoPlayer } from "./EmbedVideoPlayer.client";
+
+// ArtPlayer 体积较大，只有正文里真的出现直链视频时才加载
+const EmbedVideoPlayer = dynamic(
+  () =>
+    import("./EmbedVideoPlayer.client").then((mod) => mod.EmbedVideoPlayer),
+  { ssr: false },
+);
 type Article = ArticleList[number] | ArticleDetail;
 type ArticleRichContentProps = {
   html: string;

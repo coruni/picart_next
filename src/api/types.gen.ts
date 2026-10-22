@@ -415,6 +415,10 @@ export type UpdateUserConfigDto = {
      */
     hideTags?: boolean;
     /**
+     * 是否开启水印
+     */
+    watermarkEnabled?: boolean;
+    /**
      * 备注
      */
     remark?: string;
@@ -3780,6 +3784,12 @@ export type UserControllerGetUserConfigResponses = {
             enableSmsNotification: boolean;
             enablePushNotification: boolean;
             hideFavorites: boolean;
+            hideComments: boolean;
+            hideCollections: boolean;
+            hideFollowers: boolean;
+            hideFollowings: boolean;
+            hideTags: boolean;
+            watermarkEnabled: boolean;
             remark: unknown;
             createdAt: string;
             updatedAt: string;
@@ -3919,6 +3929,7 @@ export type UserControllerLoginResponses = {
                 enableEmailNotification: boolean;
                 enableSmsNotification: boolean;
                 enablePushNotification: boolean;
+                watermarkEnabled: boolean;
                 hideFavorites: boolean;
                 remark: unknown;
                 createdAt: string;
@@ -4040,6 +4051,7 @@ export type UserControllerRegisterUserResponses = {
                 enableSmsNotification: boolean;
                 enablePushNotification: boolean;
                 hideFavorites: boolean;
+                watermarkEnabled: boolean;
                 remark: unknown;
                 createdAt: string;
                 updatedAt: string;
@@ -11446,6 +11458,26 @@ export type UploadControllerGetFileInfoResponses = {
             size: number;
             mimeType: string;
             referenceCount: number;
+            original: {
+                url: string;
+                path: string;
+                size: number;
+                width: number;
+                height: number;
+            };
+            thumbnails: Array<{
+                url: string;
+                name: string;
+                path: string;
+                size: number;
+                width: number;
+                height: number;
+            }>;
+            processed: boolean;
+            videoCompressionStatus: string;
+            videoCompressionJob: unknown;
+            auditStatus: string;
+            auditResult: unknown;
             createdAt: string;
             updatedAt: string;
         };
@@ -11496,6 +11528,26 @@ export type UploadControllerFindAllResponses = {
             size: number;
             mimeType: string;
             referenceCount: number;
+            original: {
+                url: string;
+                path: string;
+                size: number;
+                width: number;
+                height: number;
+            };
+            thumbnails: Array<{
+                url: string;
+                name: string;
+                path: string;
+                size: number;
+                width: number;
+                height: number;
+            }>;
+            processed: boolean;
+            videoCompressionStatus: string;
+            videoCompressionJob: unknown;
+            auditStatus: string;
+            auditResult: unknown;
             createdAt: string;
             updatedAt: string;
         }>;
@@ -11518,6 +11570,9 @@ export type UploadControllerGetUploadConfigData = {
 };
 
 export type UploadControllerGetUploadConfigResponses = {
+    /**
+     * 获取成功
+     */
     200: {
         code: number;
         message: string;
@@ -11593,6 +11648,7 @@ export type UploadControllerUploadFileData = {
     body: {
         file: Blob | File;
         metadata?: string;
+        scene?: 'image' | 'avatar' | 'other';
     };
     headers?: {
         Authorization?: string;
@@ -11702,6 +11758,218 @@ export type UploadControllerRemoveErrors = {
 export type UploadControllerRemoveResponses = {
     /**
      * 删除文件成功
+     */
+    200: unknown;
+};
+
+export type UploadControllerUploadAvatarData = {
+    body: {
+        metadata?: string;
+        files?: Blob | File;
+    };
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/upload/avatar';
+};
+
+export type UploadControllerUploadAvatarErrors = {
+    /**
+     * 请求参数错误
+     */
+    400: unknown;
+    /**
+     * 权限不足
+     */
+    403: unknown;
+};
+
+export type UploadControllerUploadAvatarResponses = {
+    /**
+     * 上传头像成功
+     */
+    200: Array<{
+        [key: string]: unknown;
+    }>;
+};
+
+export type UploadControllerUploadAvatarResponse = UploadControllerUploadAvatarResponses[keyof UploadControllerUploadAvatarResponses];
+
+export type UploadControllerGeneratePresignedUrlData = {
+    body: {
+        /**
+         * 文件名
+         */
+        filename: string;
+        /**
+         * MIME 类型
+         */
+        contentType: string;
+        /**
+         * 文件大小（字节）
+         */
+        size: number;
+    };
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/upload/presign';
+};
+
+export type UploadControllerGeneratePresignedUrlErrors = {
+    /**
+     * 参数错误或文件类型/大小不支持
+     */
+    400: unknown;
+};
+
+export type UploadControllerGeneratePresignedUrlResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};
+
+export type UploadControllerConfirmUploadData = {
+    body: {
+        /**
+         * S3 Key
+         */
+        key: string;
+        /**
+         * 文件访问 URL
+         */
+        url: string;
+        /**
+         * 原始文件名
+         */
+        originalName: string;
+        /**
+         * MIME 类型
+         */
+        mimeType: string;
+        /**
+         * 文件大小（字节）
+         */
+        size: number;
+        /**
+         * 文件哈希（可选）
+         */
+        hash?: string;
+        /**
+         * 上传场景，默认 image；上传头像请传 avatar，头像不会添加水印
+         */
+        scene?: 'avatar' | 'image' | 'other';
+    };
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/upload/confirm';
+};
+
+export type UploadControllerConfirmUploadErrors = {
+    /**
+     * 参数错误
+     */
+    400: unknown;
+};
+
+export type UploadControllerConfirmUploadResponses = {
+    /**
+     * 创建成功
+     */
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type UploadControllerConfirmUploadResponse = UploadControllerConfirmUploadResponses[keyof UploadControllerConfirmUploadResponses];
+
+export type UploadControllerGetMigrationStatsData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/upload/migration/stats';
+};
+
+export type UploadControllerGetMigrationStatsResponses = {
+    /**
+     * 获取成功
+     */
+    200: unknown;
+};
+
+export type UploadControllerProcessUncompressedImagesData = {
+    body: {
+        /**
+         * 处理数量限制
+         */
+        limit?: number;
+        /**
+         * 模拟运行（不实际处理）
+         */
+        dryRun?: boolean;
+    };
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query: {
+        limit: string;
+        dryRun: string;
+    };
+    url: '/upload/migration/process';
+};
+
+export type UploadControllerProcessUncompressedImagesResponses = {
+    /**
+     * 处理完成
+     */
+    200: unknown;
+};
+
+export type UploadControllerFillMissingMetadataData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path?: never;
+    query: {
+        limit: string;
+    };
+    url: '/upload/migration/metadata';
+};
+
+export type UploadControllerFillMissingMetadataResponses = {
+    /**
+     * 处理完成
      */
     200: unknown;
 };
@@ -17169,9 +17437,10 @@ export type UserCertificationControllerGetMyCertificationStatusResponses = {
             organizationName: string;
             description: string;
             slogan: string;
-            reviewerId: number;
-            reviewReason: string;
-            reviewedAt: string;
+            materials: Array<string>;
+            reviewerId: unknown;
+            reviewReason: unknown;
+            reviewedAt: unknown;
             createdAt: string;
             updatedAt: string;
         };
@@ -17204,8 +17473,29 @@ export type UserCertificationControllerApplyResponses = {
     /**
      * 申请成功，等待审核
      */
-    201: unknown;
+    201: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            userId: number;
+            type: string;
+            status: string;
+            realName: string;
+            organizationName: string;
+            description: string;
+            slogan: string;
+            materials: Array<string>;
+            reviewerId: unknown;
+            reviewReason: unknown;
+            reviewedAt: unknown;
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
 };
+
+export type UserCertificationControllerApplyResponse = UserCertificationControllerApplyResponses[keyof UserCertificationControllerApplyResponses];
 
 export type UserCertificationControllerRevokeData = {
     body?: never;

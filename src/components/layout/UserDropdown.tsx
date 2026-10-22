@@ -178,7 +178,7 @@ export function UserDropdown() {
           />
         </button>
 
-        <div className="invisible absolute right-0 z-50 hidden min-w-90 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 md:block">
+        <div className="invisible absolute right-0 z-50 hidden min-w-90 pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 md:block">
           <div className="rounded-xl border border-border bg-card shadow-lg">
             {isAuthenticated && (
             <>

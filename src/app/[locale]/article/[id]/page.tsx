@@ -18,10 +18,10 @@ import { Link } from "@/i18n/routing";
 import {
   cn,
   detectContentLanguage,
-  generateArticleMetadata,
   isContentMatchingLocale,
   prepareRichTextHtmlForDisplay,
 } from "@/lib";
+import { generateArticleMetadata } from "@/lib/seo";
 import { serverApi } from "@/lib/server-api";
 import {
   Ban,

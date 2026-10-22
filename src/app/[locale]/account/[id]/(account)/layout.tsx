@@ -5,7 +5,7 @@ import backgroundPlaceholder from "@/assets/images/placeholder/background_placeh
 import { AccountInfo, AccountTabs } from "@/components/account";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
 import { Sidebar } from "@/components/sidebar/Sidebar";
-import { generateAuthorMetadata } from "@/lib";
+import { generateAuthorMetadata } from "@/lib/seo";
 import { getCurrentUserId } from "@/lib/current-user";
 import { getAccountUser } from "../account-user";
 interface AccountLayoutProps {

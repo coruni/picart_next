@@ -111,10 +111,22 @@ function resolveMessageSocketUrl(): string {
   }
 }
 
+interface PendingRequest {
+  resolve: (value: unknown) => void;
+  reject: (error: Error) => void;
+  timer: ReturnType<typeof setTimeout>;
+}
+
 class MessageSocketClient {
   private socket: Socket | null = null;
 
   private token: string | null = null;
+
+  // 同一 responseEvent 的并发请求按 FIFO 排队，共用一个监听
+  private pendingResponses = new Map<
+    string,
+    { handler: (response: unknown) => void; queue: PendingRequest[] }
+  >();
 
   private reconnectAttempts = 0;
 
@@ -252,6 +264,8 @@ class MessageSocketClient {
   disconnect() {
     this.isManualDisconnect = true;
 
+    this.rejectPendingRequests();
+
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
@@ -278,13 +292,28 @@ class MessageSocketClient {
     this.reconnectAttempts = 0;
   }
 
+  private rejectPendingRequests() {
+    this.pendingResponses.forEach((channel, responseEvent) => {
+      channel.queue.forEach((entry) => {
+        clearTimeout(entry.timer);
+        entry.reject(
+          new Error(`Message websocket disconnected: ${responseEvent}`),
+        );
+      });
+
+      this.socket?.off(responseEvent, channel.handler);
+    });
+
+    this.pendingResponses.clear();
+  }
+
   request<TResponse>(
     eventName: string,
     responseEvent: string,
     payload?: Record<string, unknown>,
     timeoutMs = SOCKET_REQUEST_TIMEOUT,
   ): Promise<TResponse> {
-    return new Promise((resolve, reject) => {
+    return new Promise<TResponse>((resolve, reject) => {
       const socket = this.socket;
 
       if (!socket) {
@@ -292,31 +321,76 @@ class MessageSocketClient {
         return;
       }
 
-      let settled = false;
-      const timer = window.setTimeout(() => {
-        if (settled) {
-          return;
-        }
+      let channel = this.pendingResponses.get(responseEvent);
 
-        settled = true;
-        socket.off(responseEvent, handleResponse);
-        reject(new Error(`Message websocket request timed out: ${eventName}`));
-      }, timeoutMs);
+      if (!channel) {
+        const handler = (response: unknown) => {
+          const current = this.pendingResponses.get(responseEvent);
+          const next = current?.queue[0];
 
-      const handleResponse = (response: TResponse) => {
-        if (settled) {
-          return;
-        }
+          if (!current || !next) {
+            return;
+          }
 
-        settled = true;
-        window.clearTimeout(timer);
-        socket.off(responseEvent, handleResponse);
-        resolve(response);
+          this.settle(responseEvent, next, null, response);
+        };
+
+        channel = { handler, queue: [] };
+        this.pendingResponses.set(responseEvent, channel);
+        socket.on(responseEvent, handler);
+      }
+
+      const entry: PendingRequest = {
+        resolve: (value) => resolve(value as TResponse),
+        reject,
+        timer: setTimeout(() => {
+          this.settle(
+            responseEvent,
+            entry,
+            new Error(`Message websocket request timed out: ${eventName}`),
+          );
+        }, timeoutMs),
       };
 
-      socket.on(responseEvent, handleResponse);
+      // 服务端响应不带请求标识，按 FIFO 与本次请求配对，
+      // 避免并发时两个监听互相 resolve、或 off 掉对方的监听
+      channel.queue.push(entry);
       socket.emit(eventName, payload);
     });
+  }
+
+  private settle(
+    responseEvent: string,
+    entry: PendingRequest,
+    error: Error | null,
+    response?: unknown,
+  ): void {
+    const channel = this.pendingResponses.get(responseEvent);
+
+    if (!channel) {
+      return;
+    }
+
+    const index = channel.queue.indexOf(entry);
+
+    if (index === -1) {
+      return;
+    }
+
+    channel.queue.splice(index, 1);
+    clearTimeout(entry.timer);
+
+    if (channel.queue.length === 0) {
+      this.socket?.off(responseEvent, channel.handler);
+      this.pendingResponses.delete(responseEvent);
+    }
+
+    if (error) {
+      entry.reject(error);
+      return;
+    }
+
+    entry.resolve(response);
   }
 
   get instance() {

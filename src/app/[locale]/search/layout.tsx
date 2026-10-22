@@ -2,7 +2,7 @@ import { SearchHeader } from "@/components/search/SearchHeader";
 import { SearchPanel } from "@/components/search/SearchPanel";
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Banner } from "@/components/ui/Banner";
-import { getPublicCategories } from "@/lib";
+import { getPublicCategories } from "@/lib/seo";
 import { ReactNode, Suspense } from "react";
 
 type SearchLayoutProps = {

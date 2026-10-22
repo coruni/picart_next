@@ -109,7 +109,7 @@ export function CreateDropdown({
   ];
 
   const renderDesktopMenu = () => (
-    <div className="invisible absolute right-0 z-50 w-auto min-w-xs pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100">
+    <div className="invisible absolute right-0 z-50 w-auto min-w-xs pt-2 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
       <div className="rounded-xl border border-border bg-card shadow-lg">
         <div className="space-y-2 p-3">
           {createOptions.map((option) => (

@@ -151,7 +151,6 @@ const RE_COMMENTS = /<!--[\s\S]*?-->/g;
 const RE_DANGEROUS_TAGS =
   /<\/?(script|style|object|embed|form|input|button|textarea|select|option|meta|link|base|math)[^>]*>/gi;
 const RE_INLINE_EVENT = /\son[a-z-]+\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi;
-const RE_STYLE_ATTR = /\sstyle\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi;
 const RE_STYLE_ATTR_CAPTURE = /\sstyle\s*=\s*("([^"]*)"|'([^']*)')/gi;
 const RE_SRCDOC_ATTR = /\ssrcdoc\s*=\s*(".*?"|'.*?'|[^\s>]+)/gi;
 const RE_JS_URL =
@@ -394,7 +393,6 @@ function sanitizeSvgElement(element: HTMLElement): void {
 
   for (const attr of attributes) {
     const name = attr.name.toLowerCase();
-    const value = attr.value;
 
     if (name.startsWith("on") || name === "style" || name === "srcdoc") {
       element.removeAttribute(attr.name);
@@ -402,14 +400,6 @@ function sanitizeSvgElement(element: HTMLElement): void {
     }
 
     if (!SVG_SAFE_ATTRIBUTES.has(name)) {
-      element.removeAttribute(attr.name);
-      continue;
-    }
-
-    if (
-      (name === "href" || name === "xlink:href" || name === "src") &&
-      !isSafeUrl(value)
-    ) {
       element.removeAttribute(attr.name);
     }
   }
@@ -562,6 +552,47 @@ function normalizeAnchorAttributes(element: HTMLElement): void {
   }
 }
 
+function sanitizeElement(element: HTMLElement, inSafeContainer: boolean): void {
+  const tagName = element.tagName.toLowerCase();
+
+  if (SVG_TAGS.has(tagName)) {
+    sanitizeSvgElement(element);
+    sanitizeNodeTree(element);
+    return;
+  }
+
+  if (isSafeContainer(element)) {
+    sanitizeSafeContainerElement(element);
+    sanitizeNodeTree(element, true);
+    return;
+  }
+
+  if (!ALLOWED_TAGS.has(tagName)) {
+    const hoistedNodes = Array.from(element.childNodes);
+    element.replaceWith(...hoistedNodes);
+
+    // 被提上来的节点不在父节点的快照里，必须逐个重新净化，
+    // 否则 <form><img src=x onerror=...></form> 这类结构的属性会逃逸
+    for (const hoistedNode of hoistedNodes) {
+      if (hoistedNode.nodeType === Node.COMMENT_NODE) {
+        hoistedNode.remove();
+      } else if (hoistedNode.nodeType === Node.ELEMENT_NODE) {
+        sanitizeElement(hoistedNode as HTMLElement, inSafeContainer);
+      }
+    }
+
+    return;
+  }
+
+  sanitizeRegularElementAttributes(element, tagName, inSafeContainer);
+
+  if (tagName === "a") {
+    normalizeAnchorAttributes(element);
+  }
+
+  sanitizeNodeTree(element, inSafeContainer);
+}
+
 function sanitizeNodeTree(node: Node, inSafeContainer = false): void {
   const childNodes = Array.from(node.childNodes);
 
@@ -575,33 +606,7 @@ function sanitizeNodeTree(node: Node, inSafeContainer = false): void {
       continue;
     }
 
-    const element = child as HTMLElement;
-    const tagName = element.tagName.toLowerCase();
-
-    if (SVG_TAGS.has(tagName)) {
-      sanitizeSvgElement(element);
-      sanitizeNodeTree(element);
-      continue;
-    }
-
-    if (isSafeContainer(element)) {
-      sanitizeSafeContainerElement(element);
-      sanitizeNodeTree(element, true);
-      continue;
-    }
-
-    if (!ALLOWED_TAGS.has(tagName)) {
-      element.replaceWith(...Array.from(element.childNodes));
-      continue;
-    }
-
-    sanitizeRegularElementAttributes(element, tagName, inSafeContainer);
-
-    if (tagName === "a") {
-      normalizeAnchorAttributes(element);
-    }
-
-    sanitizeNodeTree(element, inSafeContainer);
+    sanitizeElement(child as HTMLElement, inSafeContainer);
   }
 }
 
@@ -765,10 +770,6 @@ function convertInlineArticleCardsToAnchor(
   return root.toString();
 }
 
-function _extractClass(attrString: string): string {
-  const match = attrString.match(/class=["']([^"']+)["']/i);
-  return match ? match[1] : "";
-}
 export function prepareRichTextHtmlForDisplay(
   html: string,
   locale?: string,

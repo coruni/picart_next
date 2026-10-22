@@ -298,6 +298,7 @@ export const ArticleListClient = ({
           key={`${article.id}_${index}`}
           showFollow={showFollow}
           showProfilePinLabel={showProfilePinLabel}
+          priority={index < 2}
         />
       ))}
 

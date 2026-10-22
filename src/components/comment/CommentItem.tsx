@@ -450,6 +450,7 @@ export const CommentItem = memo(function CommentItem({
                   });
                 }}
                 role="button"
+                tabIndex={0}
               >
                 <ImageWithFallback
                   src={

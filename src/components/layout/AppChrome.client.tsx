@@ -1,5 +1,6 @@
 "use client";
 
+import { CategoriesProvider } from "@/components/providers/CategoriesProvider";
 import { CategoryList } from "@/types";
 import { usePathname } from "next/navigation";
 import { Header } from "./Header";
@@ -21,9 +22,9 @@ export function AppChrome({ categories, children }: AppChromeProps) {
     normalizedPathname.startsWith("/dashboard/");
 
   return (
-    <>
+    <CategoriesProvider categories={categories}>
       {isDashboardRoute ? null : <Header categories={categories} />}
       <main className="flex min-h-screen flex-1 flex-col">{children}</main>
-    </>
+    </CategoriesProvider>
   );
 }

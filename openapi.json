@@ -5981,6 +5981,24 @@
                         "hideFavorites": {
                           "type": "boolean"
                         },
+                        "hideComments": {
+                          "type": "boolean"
+                        },
+                        "hideCollections": {
+                          "type": "boolean"
+                        },
+                        "hideFollowers": {
+                          "type": "boolean"
+                        },
+                        "hideFollowings": {
+                          "type": "boolean"
+                        },
+                        "hideTags": {
+                          "type": "boolean"
+                        },
+                        "watermarkEnabled": {
+                          "type": "boolean"
+                        },
                         "remark": {
                           "type": "null"
                         },
@@ -6011,6 +6029,12 @@
                         "enableSmsNotification",
                         "enablePushNotification",
                         "hideFavorites",
+                        "hideComments",
+                        "hideCollections",
+                        "hideFollowers",
+                        "hideFollowings",
+                        "hideTags",
+                        "watermarkEnabled",
                         "remark",
                         "createdAt",
                         "updatedAt"
@@ -6188,7 +6212,10 @@
               "schema": {
                 "$ref": "#/components/schemas/LoginDto"
               },
-              "examples": {}
+              "example": {
+                "account": "maplene",
+                "password": "Sakura010422"
+              }
             }
           },
           "required": true
@@ -6420,6 +6447,9 @@
                             "enablePushNotification": {
                               "type": "boolean"
                             },
+                            "watermarkEnabled": {
+                              "type": "boolean"
+                            },
                             "hideFavorites": {
                               "type": "boolean"
                             },
@@ -6455,7 +6485,8 @@
                             "hideFavorites",
                             "remark",
                             "createdAt",
-                            "updatedAt"
+                            "updatedAt",
+                            "watermarkEnabled"
                           ]
                         },
                         "createdAt": {
@@ -6838,6 +6869,9 @@
                             "hideFavorites": {
                               "type": "boolean"
                             },
+                            "watermarkEnabled": {
+                              "type": "boolean"
+                            },
                             "remark": {
                               "type": "null"
                             },
@@ -6870,7 +6904,8 @@
                             "hideFavorites",
                             "remark",
                             "createdAt",
-                            "updatedAt"
+                            "updatedAt",
+                            "watermarkEnabled"
                           ]
                         },
                         "createdAt": {
@@ -33321,6 +33356,82 @@
                         "referenceCount": {
                           "type": "integer"
                         },
+                        "original": {
+                          "type": "object",
+                          "properties": {
+                            "url": {
+                              "type": "string"
+                            },
+                            "path": {
+                              "type": "string"
+                            },
+                            "size": {
+                              "type": "integer"
+                            },
+                            "width": {
+                              "type": "integer"
+                            },
+                            "height": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "url",
+                            "path",
+                            "size",
+                            "width",
+                            "height"
+                          ]
+                        },
+                        "thumbnails": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": "string"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "path": {
+                                "type": "string"
+                              },
+                              "size": {
+                                "type": "integer"
+                              },
+                              "width": {
+                                "type": "integer"
+                              },
+                              "height": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "url",
+                              "name",
+                              "path",
+                              "size",
+                              "width",
+                              "height"
+                            ]
+                          }
+                        },
+                        "processed": {
+                          "type": "boolean"
+                        },
+                        "videoCompressionStatus": {
+                          "type": "string"
+                        },
+                        "videoCompressionJob": {
+                          "type": "null"
+                        },
+                        "auditStatus": {
+                          "type": "string"
+                        },
+                        "auditResult": {
+                          "type": "null"
+                        },
                         "createdAt": {
                           "type": "string"
                         },
@@ -33339,6 +33450,13 @@
                         "size",
                         "mimeType",
                         "referenceCount",
+                        "original",
+                        "thumbnails",
+                        "processed",
+                        "videoCompressionStatus",
+                        "videoCompressionJob",
+                        "auditStatus",
+                        "auditResult",
                         "createdAt",
                         "updatedAt"
                       ]
@@ -33359,11 +33477,7 @@
             "headers": {}
           }
         },
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
+        "security": []
       }
     },
     "/upload": {
@@ -33381,6 +33495,7 @@
             "in": "query",
             "description": "页码",
             "required": false,
+            "example": "",
             "schema": {
               "minimum": 1,
               "default": 1,
@@ -33392,6 +33507,7 @@
             "in": "query",
             "description": "每页数量",
             "required": false,
+            "example": "",
             "schema": {
               "minimum": 1,
               "maximum": 100,
@@ -33404,6 +33520,7 @@
             "in": "query",
             "description": "",
             "required": true,
+            "example": "",
             "schema": {
               "type": "string"
             }
@@ -33413,6 +33530,7 @@
             "in": "query",
             "description": "",
             "required": true,
+            "example": "",
             "schema": {
               "type": "string"
             }
@@ -33509,6 +33627,82 @@
                           "referenceCount": {
                             "type": "integer"
                           },
+                          "original": {
+                            "type": "object",
+                            "properties": {
+                              "url": {
+                                "type": "string"
+                              },
+                              "path": {
+                                "type": "string"
+                              },
+                              "size": {
+                                "type": "integer"
+                              },
+                              "width": {
+                                "type": "integer"
+                              },
+                              "height": {
+                                "type": "integer"
+                              }
+                            },
+                            "required": [
+                              "url",
+                              "path",
+                              "size",
+                              "width",
+                              "height"
+                            ]
+                          },
+                          "thumbnails": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "url": {
+                                  "type": "string"
+                                },
+                                "name": {
+                                  "type": "string"
+                                },
+                                "path": {
+                                  "type": "string"
+                                },
+                                "size": {
+                                  "type": "integer"
+                                },
+                                "width": {
+                                  "type": "integer"
+                                },
+                                "height": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "url",
+                                "name",
+                                "path",
+                                "size",
+                                "width",
+                                "height"
+                              ]
+                            }
+                          },
+                          "processed": {
+                            "type": "boolean"
+                          },
+                          "videoCompressionStatus": {
+                            "type": "string"
+                          },
+                          "videoCompressionJob": {
+                            "type": "null"
+                          },
+                          "auditStatus": {
+                            "type": "string"
+                          },
+                          "auditResult": {
+                            "type": "null"
+                          },
                           "createdAt": {
                             "type": "string"
                           },
@@ -33527,6 +33721,13 @@
                           "size",
                           "mimeType",
                           "referenceCount",
+                          "original",
+                          "thumbnails",
+                          "processed",
+                          "videoCompressionStatus",
+                          "videoCompressionJob",
+                          "auditStatus",
+                          "auditResult",
                           "createdAt",
                           "updatedAt"
                         ]
@@ -33544,22 +33745,15 @@
             "headers": {}
           }
         },
-        "security": [
-          {
-            "bearer": []
-          },
-          {
-            "bearer": []
-          }
-        ]
+        "security": []
       }
     },
     "/upload/config": {
       "get": {
-        "summary": "上传配置",
+        "summary": "获取上传配置",
         "deprecated": false,
         "description": "",
-        "operationId": "uploadController_getUploadConfig",
+        "operationId": "UploadController_getUploadConfig",
         "tags": [
           "上传管理"
         ],
@@ -33609,7 +33803,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "获取成功",
             "content": {
               "application/json": {
                 "schema": {
@@ -33935,6 +34129,7 @@
             "name": "Device-Name",
             "in": "header",
             "description": "",
+            "required": false,
             "example": "{{deviceName}}",
             "schema": {
               "type": "string",
@@ -33945,6 +34140,7 @@
             "name": "Device-Type",
             "in": "header",
             "description": "",
+            "required": false,
             "example": "{{deviceType}}",
             "schema": {
               "type": "string",
@@ -33971,6 +34167,15 @@
                   "metadata": {
                     "type": "string",
                     "example": ""
+                  },
+                  "scene": {
+                    "type": "string",
+                    "enum": [
+                      "image",
+                      "avatar",
+                      "other"
+                    ],
+                    "example": ""
                   }
                 },
                 "required": [
@@ -33979,7 +34184,8 @@
               },
               "example": {
                 "file": "",
-                "metadata": ""
+                "metadata": "",
+                "scene": ""
               }
             }
           },
@@ -34131,14 +34337,7 @@
             "headers": {}
           }
         },
-        "security": [
-          {
-            "bearer": []
-          },
-          {
-            "bearer": []
-          }
-        ]
+        "security": []
       }
     },
     "/upload/{id}": {
@@ -34234,6 +34433,571 @@
             "bearer": []
           }
         ]
+      }
+    },
+    "/upload/avatar": {
+      "post": {
+        "summary": "上传头像（不添加水印）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UploadController_uploadAvatar",
+        "tags": [
+          "上传管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "metadata": {
+                    "example": "",
+                    "type": "string"
+                  },
+                  "files": {
+                    "format": "binary",
+                    "type": "string",
+                    "example": ""
+                  }
+                }
+              },
+              "example": {
+                "metadata": "",
+                "files": ""
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "上传头像成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {}
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求参数错误",
+            "headers": {}
+          },
+          "403": {
+            "description": "权限不足",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/upload/presign": {
+      "post": {
+        "summary": "获取 S3 预签名上传 URL（直传）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UploadController_generatePresignedUrl",
+        "tags": [
+          "上传管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filename": {
+                    "type": "string",
+                    "description": "文件名"
+                  },
+                  "contentType": {
+                    "type": "string",
+                    "description": "MIME 类型"
+                  },
+                  "size": {
+                    "type": "number",
+                    "description": "文件大小（字节）"
+                  }
+                },
+                "required": [
+                  "filename",
+                  "contentType",
+                  "size"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          },
+          "400": {
+            "description": "参数错误或文件类型/大小不支持",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/upload/confirm": {
+      "post": {
+        "summary": "确认 S3 直传完成",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UploadController_confirmUpload",
+        "tags": [
+          "上传管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "description": "S3 Key"
+                  },
+                  "url": {
+                    "type": "string",
+                    "description": "文件访问 URL"
+                  },
+                  "originalName": {
+                    "type": "string",
+                    "description": "原始文件名"
+                  },
+                  "mimeType": {
+                    "type": "string",
+                    "description": "MIME 类型"
+                  },
+                  "size": {
+                    "type": "number",
+                    "description": "文件大小（字节）"
+                  },
+                  "hash": {
+                    "type": "string",
+                    "description": "文件哈希（可选）"
+                  },
+                  "scene": {
+                    "type": "string",
+                    "enum": [
+                      "avatar",
+                      "image",
+                      "other"
+                    ],
+                    "description": "上传场景，默认 image；上传头像请传 avatar，头像不会添加水印"
+                  }
+                },
+                "required": [
+                  "key",
+                  "url",
+                  "originalName",
+                  "mimeType",
+                  "size"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "参数错误",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/upload/migration/stats": {
+      "get": {
+        "summary": "获取压缩处理统计（管理员）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UploadController_getMigrationStats",
+        "tags": [
+          "上传管理"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/upload/migration/process": {
+      "post": {
+        "summary": "批量处理未压缩图片（管理员）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UploadController_processUncompressedImages",
+        "tags": [
+          "上传管理"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dryRun",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "limit": {
+                    "type": "number",
+                    "description": "处理数量限制",
+                    "default": 100
+                  },
+                  "dryRun": {
+                    "type": "boolean",
+                    "description": "模拟运行（不实际处理）",
+                    "default": false
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "处理完成",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/upload/migration/metadata": {
+      "post": {
+        "summary": "补充图片元数据（管理员）",
+        "deprecated": false,
+        "description": "",
+        "operationId": "UploadController_fillMissingMetadata",
+        "tags": [
+          "上传管理"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "处理完成",
+            "headers": {}
+          }
+        },
+        "security": []
       }
     },
     "/message": {
@@ -53335,14 +54099,20 @@
                         "slogan": {
                           "type": "string"
                         },
+                        "materials": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
                         "reviewerId": {
-                          "type": "integer"
+                          "type": "null"
                         },
                         "reviewReason": {
-                          "type": "string"
+                          "type": "null"
                         },
                         "reviewedAt": {
-                          "type": "string"
+                          "type": "null"
                         },
                         "createdAt": {
                           "type": "string"
@@ -53360,6 +54130,7 @@
                         "organizationName",
                         "description",
                         "slogan",
+                        "materials",
                         "reviewerId",
                         "reviewReason",
                         "reviewedAt",
@@ -53452,6 +54223,92 @@
         "responses": {
           "201": {
             "description": "申请成功，等待审核",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "userId": {
+                          "type": "integer"
+                        },
+                        "type": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "realName": {
+                          "type": "string"
+                        },
+                        "organizationName": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "slogan": {
+                          "type": "string"
+                        },
+                        "materials": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "reviewerId": {
+                          "type": "null"
+                        },
+                        "reviewReason": {
+                          "type": "null"
+                        },
+                        "reviewedAt": {
+                          "type": "null"
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "updatedAt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "userId",
+                        "type",
+                        "status",
+                        "realName",
+                        "organizationName",
+                        "description",
+                        "slogan",
+                        "materials",
+                        "reviewerId",
+                        "reviewReason",
+                        "reviewedAt",
+                        "createdAt",
+                        "updatedAt"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           },
           "409": {
@@ -54299,6 +55156,10 @@
           "hideTags": {
             "type": "boolean",
             "description": "是否隐藏标签列表"
+          },
+          "watermarkEnabled": {
+            "type": "boolean",
+            "description": "是否开启水印"
           },
           "remark": {
             "type": "string",

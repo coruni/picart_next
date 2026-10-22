@@ -11,6 +11,7 @@ import {
 import DownloadDialog from "@/components/article/DownloadDialog";
 import { Editor } from "@/components/editor";
 import { ImageWithFallback } from "@/components/shared/ImageWithFallback";
+import { useCategories } from "@/components/providers/CategoriesProvider";
 import { useUploadConfig } from "@/components/providers/UploadConfigProvider";
 import { Button } from "@/components/ui/Button";
 import { CategoryOption, CategorySelect } from "@/components/ui/CategorySelect";
@@ -36,12 +37,14 @@ import {
   showToast,
 } from "@/lib";
 import { buildUploadMetadata } from "@/lib/file-hash";
+import { buildCategoryOptions } from "@/lib/category-options";
 import { getCropExportType } from "@/lib/imageProcessing";
 import { useUserStore } from "@/stores";
+import type { CategoryList } from "@/types";
 import { Edit, ImagePlus, Loader2, Plus, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import Quill from "quill";
+import type Quill from "quill";
 import { useEffect, useMemo, useRef, useState } from "react";
 import AvatarEditor from "react-avatar-editor";
 
@@ -85,6 +88,7 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   const tc = useTranslations("common");
   const tTag = useTranslations("tagSelect");
   const { config: uploadConfig } = useUploadConfig();
+  const sharedCategories = useCategories();
   const coverEditorRef = useRef<AvatarEditor>(null);
   const currentUser = useUserStore((state) => state.user);
   const canRequirePayment = currentUser?.isMember === true;
@@ -362,41 +366,43 @@ export default function CreatePostPage(_props: CreatePostPageProps) {
   }, [isEditMode, articleId]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await categoryControllerFindAll();
-        if (response.data?.data?.data) {
-          const parents = response.data.data.data
-            .filter((cat) => !cat.parentId || cat.parentId === 0)
-            .map((cat) => ({
-              value: String(cat.id),
-              label: cat.name,
-              ...(cat.avatar ? { avatar: cat.avatar } : {}),
-            }));
-          setParentCategories(parents);
-          initialParentCategoriesRef.current = parents;
+    // 分类树已由根布局 SSR 取过，缺失时（接口抖动）再兜底请求一次
+    // 已初始化过（含用户刚建的分类）就不再覆盖
+    if (initialParentCategoriesRef.current.length > 0) {
+      setCategoriesLoading(false);
+      return;
+    }
 
-          response.data.data.data.forEach((cat) => {
-            if (cat.children && cat.children.length > 0) {
-              childrenMapRef.current.set(
-                cat.id,
-                cat.children.map((child) => ({
-                  value: String(child.id),
-                  label: child.name,
-                  ...(child.avatar ? { avatar: child.avatar } : {}),
-                })),
-              );
-            }
-          });
-        }
-      } catch (error) {
-        console.error("获取分类失败:", error);
-      } finally {
-        setCategoriesLoading(false);
-      }
+    const applyOptions = (categories: CategoryList) => {
+      const { parents, childrenByParentId } = buildCategoryOptions(categories);
+      setParentCategories(parents);
+      initialParentCategoriesRef.current = parents;
+      childrenByParentId.forEach((children, parentId) => {
+        childrenMapRef.current.set(parentId, children);
+      });
+      setCategoriesLoading(false);
     };
-    fetchCategories();
-  }, []);
+
+    if (sharedCategories.length > 0) {
+      applyOptions(sharedCategories);
+      return;
+    }
+
+    let cancelled = false;
+    categoryControllerFindAll()
+      .then((response) => {
+        if (cancelled) return;
+        applyOptions(response.data?.data?.data ?? []);
+      })
+      .catch((error) => {
+        console.error("获取分类失败:", error);
+        setCategoriesLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [sharedCategories]);
 
   useEffect(() => {
     return () => {

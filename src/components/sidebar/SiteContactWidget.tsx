@@ -1,5 +1,6 @@
 
-import { cn, getPublicConfig } from "@/lib";
+import { cn } from "@/lib";
+import { getPublicConfig } from "@/lib/seo";
 
 export async function SiteContactWidget() {
   let siteContact = "";

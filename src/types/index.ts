@@ -1,11 +1,13 @@
 ﻿/**
  * 通用类型定义
- * - 先导出 `api.ts` 中按领域整理的类型。
- * - 再基于响应类型提取业务常用数据结构。
+ * - 基于 `@/api/types.gen` 的响应类型提取业务常用数据结构。
  */
 
-// 重新导出所有 API 相关类型
-export * from "./api";
+// 供外部直接取用的原始响应类型
+export type {
+  ArticleControllerFindAllResponse,
+  DecorationControllerFindAllResponse,
+} from "@/api/types.gen";
 
 import type {
   ArticleControllerFindAllResponse,

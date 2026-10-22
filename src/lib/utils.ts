@@ -1,6 +1,4 @@
-import { bannerControllerFindActive } from "@/api";
 import { clsx, type ClassValue } from "clsx";
-import { unstable_cache } from "next/cache";
 import { twMerge } from "tailwind-merge";
 
 export {
@@ -27,19 +25,6 @@ export function debounce<T extends (...args: any[]) => void>(
     timeoutId = setTimeout(() => fn(...args), delay);
   };
 }
-
-async function fetchPublicBanners() {
-  const { data } = await bannerControllerFindActive();
-  return data?.data;
-}
-
-export const getPublicBanners = unstable_cache(
-  fetchPublicBanners,
-  ["public-Banners"],
-  {
-    revalidate: 300,
-  },
-);
 
 /**
  * 从 API 错误中提取可读的错误消息

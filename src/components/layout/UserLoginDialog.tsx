@@ -11,7 +11,7 @@ import {
 import loginLogoPng from "@/assets/images/placeholder/loginLogo.png";
 import { useForm } from "@/hooks/useForm";
 import { Link } from "@/i18n/routing";
-import { cn } from "@/lib";
+import { cn, showToast } from "@/lib";
 import { MODAL_IDS } from "@/lib/modal-helpers";
 import { useAppStore, useModalStore, useUserStore } from "@/stores";
 import { UserProfile } from "@/types";
@@ -320,7 +320,7 @@ export function UserLoginDialog() {
         });
 
         // 重置成功后切回登录模式
-        alert(tReset("resetSuccess"));
+        showToast(tReset("resetSuccess"));
         setMode("login");
         resetForm.reset();
       } catch (error) {
