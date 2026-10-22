@@ -27,11 +27,12 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useLocale } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getDashboardCopy } from "./copy";
 import { DashboardLoadingView } from "./DashboardFeedback";
 import { DashboardPageFrame } from "./DashboardPageFrame";
 import { DashboardPanel } from "./DashboardPanel";
+import { DashboardStatCards } from "./DashboardStatCards";
 import { DashboardStatusBadge } from "./DashboardStatusBadge";
 import { useDashboardGuard } from "./useDashboardGuard";
 import { formatDashboardCount } from "./utils";
@@ -106,146 +107,126 @@ export function DashboardSearchPage() {
     }
   };
 
+  const statusItems = useMemo(
+    () => [
+      {
+        key: "enabled",
+        label: copy.pages.search.indexStatus,
+        icon: Database,
+        accent: "from-sky-500/18 via-sky-500/8 to-transparent",
+        valueNode: status ? (
+          <DashboardStatusBadge value={status.enabled ? "active" : "inactive"} />
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        ),
+      },
+      {
+        key: "documents",
+        label: copy.pages.search.documentCount,
+        value: status?.documentCount || 0,
+        icon: Search,
+        accent: "from-violet-500/18 via-violet-500/8 to-transparent",
+      },
+      {
+        key: "size",
+        label: copy.pages.search.indexSize,
+        icon: Database,
+        accent: "from-emerald-500/18 via-emerald-500/8 to-transparent",
+        valueNode: (
+          <span className="text-base">{status?.indexSize || "-"}</span>
+        ),
+      },
+      {
+        key: "lastSync",
+        label: copy.pages.search.lastSyncTime,
+        icon: RefreshCw,
+        accent: "from-amber-500/18 via-amber-500/8 to-transparent",
+        valueNode: <span className="text-base">-</span>,
+      },
+    ],
+    [copy.pages.search, status],
+  );
+
   if (!ready || loading) {
     return <DashboardLoadingView text={copy.common.loading} />;
   }
 
   return (
-    <DashboardPageFrame className="h-full overflow-y-auto">
-      <div className="space-y-6 p-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">
-              {copy.pages.search.title}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              {copy.pages.search.description}
-            </p>
-          </div>
+    <DashboardPageFrame
+      title={copy.pages.search.title}
+      description={copy.pages.search.description}
+      className="h-full overflow-y-auto"
+    >
+      <DashboardStatCards
+        items={statusItems}
+        locale={locale}
+        gridClassName="grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      />
+
+      {/* Actions */}
+      <DashboardPanel title={copy.pages.search.syncStatus}>
+        <div className="flex flex-wrap gap-4">
+          <Button
+            onClick={handleSync}
+            loading={syncing}
+            className="rounded-full"
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            {copy.pages.search.syncArticles}
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => setShowClearDialog(true)}
+            className="rounded-full"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            {copy.pages.search.clearArticles}
+          </Button>
         </div>
+      </DashboardPanel>
 
-        {/* Index Status Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Status Card */}
-          <div className="rounded-xl border border-border bg-card p-4">
-            <div className="flex flex-row items-center justify-between pb-2">
-              <div className="text-sm font-medium text-muted-foreground">
-                {copy.pages.search.indexStatus}
-              </div>
-              <Database className="h-4 w-4 text-muted-foreground" />
-            </div>
-            <div className="text-2xl font-bold">
-              {status ? (
-                <DashboardStatusBadge
-                  value={status.enabled ? "active" : "inactive"}
-                />
-              ) : (
-                "-"
-              )}
-            </div>
+      {/* Hot Search */}
+      <DashboardPanel
+        title={copy.pages.search.hotSearch}
+        description={copy.pages.search.hotSearchManagement}
+      >
+        {hotSearches.length === 0 ? (
+          <div className="text-center py-10 text-muted-foreground">
+            {copy.common.noData}
           </div>
-
-          {/* Document Count Card */}
-          <div className="rounded-xl border border-border bg-card p-4">
-            <div className="flex flex-row items-center justify-between pb-2">
-              <div className="text-sm font-medium text-muted-foreground">
-                {copy.pages.search.documentCount}
-              </div>
-              <Search className="h-4 w-4 text-muted-foreground" />
-            </div>
-            <div className="text-2xl font-bold">
-              {formatDashboardCount(status?.documentCount || 0, locale)}
-            </div>
-          </div>
-
-          {/* Index Size Card */}
-          <div className="rounded-xl border border-border bg-card p-4">
-            <div className="flex flex-row items-center justify-between pb-2">
-              <div className="text-sm font-medium text-muted-foreground">
-                {copy.pages.search.indexSize}
-              </div>
-              <Database className="h-4 w-4 text-muted-foreground" />
-            </div>
-            <div className="text-2xl font-bold">
-              {status?.indexSize || "-"}
-            </div>
-          </div>
-
-          {/* Last Sync Time Card - 从其他 API 获取或从 status 扩展 */}
-          <div className="rounded-xl border border-border bg-card p-4">
-            <div className="flex flex-row items-center justify-between pb-2">
-              <div className="text-sm font-medium text-muted-foreground">
-                {copy.pages.search.lastSyncTime}
-              </div>
-              <RefreshCw className="h-4 w-4 text-muted-foreground" />
-            </div>
-            <div className="text-lg font-bold">-</div>
-          </div>
-        </div>
-
-        {/* Actions */}
-        <DashboardPanel title={copy.pages.search.syncStatus}>
-          <div className="flex flex-wrap gap-4">
-            <Button
-              onClick={handleSync}
-              loading={syncing}
-              className="rounded-full"
-            >
-              <RefreshCw className="mr-2 h-4 w-4" />
-              {copy.pages.search.syncArticles}
-            </Button>
-            <Button
-              variant="danger"
-              onClick={() => setShowClearDialog(true)}
-              className="rounded-full "
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              {copy.pages.search.clearArticles}
-            </Button>
-          </div>
-        </DashboardPanel>
-
-        {/* Hot Search */}
-        <DashboardPanel
-          title={copy.pages.search.hotSearch}
-          description={copy.pages.search.hotSearchManagement}
-        >
-          {hotSearches.length === 0 ? (
-            <div className="text-center py-10 text-muted-foreground">
-              {copy.common.noData}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {hotSearches.map((item, index) => (
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {hotSearches.map((item, index) => (
+              <div
+                key={item.keyword}
+                className="flex items-center gap-4 rounded-xl border border-border bg-card p-4"
+              >
                 <div
-                  key={index}
-                  className="flex items-center gap-4 p-4 rounded-xl border border-border bg-card"
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
+                    index < 3
+                      ? "bg-primary text-white"
+                      : "bg-muted text-muted-foreground"
+                  }`}
                 >
-                  <div
-                    className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${
-                      index < 3
-                        ? "bg-primary text-white"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {index + 1}
+                  {index + 1}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="truncate text-sm font-medium text-foreground">
+                    {item.keyword}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-foreground truncate">
-                      {item.keyword}
-                    </div>
-                    <div className="text-xs text-muted-foreground flex items-center gap-1">
-                      <TrendingUp className="h-3 w-3" />
-                      {formatDashboardCount(item.count || 0, locale)} 次搜索
-                    </div>
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <TrendingUp className="h-3 w-3" />
+                    {copy.pages.search.searchCount.replace(
+                      "{count}",
+                      formatDashboardCount(item.count || 0, locale),
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
-        </DashboardPanel>
-      </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </DashboardPanel>
 
       {/* Clear Confirm Dialog */}
       <Dialog open={showClearDialog} onOpenChange={setShowClearDialog}>

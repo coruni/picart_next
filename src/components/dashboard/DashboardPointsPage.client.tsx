@@ -410,7 +410,7 @@ export function DashboardPointsPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
-        key={refreshKey}
+        refreshKey={refreshKey}
         title={copy.pages.points.title}
         action={
           <Button

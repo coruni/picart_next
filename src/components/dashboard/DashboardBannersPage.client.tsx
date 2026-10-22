@@ -210,7 +210,7 @@ export function DashboardBannersPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
-        key={refreshKey}
+        refreshKey={refreshKey}
         title={copy.pages.banners.title}
         action={
           <button

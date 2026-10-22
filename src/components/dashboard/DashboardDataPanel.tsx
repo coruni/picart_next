@@ -16,8 +16,6 @@ export function DashboardDataPanel({
 }: DashboardDataPanelProps) {
   return (
     <DashboardPanel
-      title=""
-      action={null}
       headerExtra={
         <>
           {toolbar}
@@ -28,7 +26,7 @@ export function DashboardDataPanel({
       }
       className="flex min-h-0 flex-1 flex-col"
       headerClassName="sticky top-0 z-20"
-      contentClassName="flex min-h-0 flex-1 flex-col px-0 py-0 flex-1"
+      contentClassName="flex min-h-0 flex-1 flex-col px-0 py-0"
     >
       <div className="min-h-0 flex-1 ">{children}</div>
     </DashboardPanel>

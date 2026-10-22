@@ -1,5 +1,6 @@
 import { configControllerGetPublicConfigs } from "@/api";
 import { categoryControllerFindAll } from "@/api";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { APP_NAME } from "@/constants";
 import { routing } from "@/i18n/routing";
 import { ArticleDetail, CollectionDetail, TagDetail, UserDetail } from "@/types";
@@ -54,6 +55,7 @@ async function fetchPublicConfig() {
 
 const getPublicConfigCached = unstable_cache(fetchPublicConfig, ["public-config"], {
   revalidate: 300,
+  tags: [CACHE_TAGS.config],
 });
 
 export async function getPublicConfig() {
@@ -87,6 +89,7 @@ export const getPublicCategories = unstable_cache(
   {
     // 分类/channel 数据变更后希望尽快生效，缩短为 1 分钟
     revalidate: 60,
+    tags: [CACHE_TAGS.categories],
   },
 );
 

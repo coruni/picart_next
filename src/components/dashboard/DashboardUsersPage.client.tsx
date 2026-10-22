@@ -241,7 +241,7 @@ export function DashboardUsersPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
-        key={refreshKey}
+        refreshKey={refreshKey}
         title={copy.pages.users.title}
         columns={columns}
         request={async ({ current, pageSize, keyword }) => {

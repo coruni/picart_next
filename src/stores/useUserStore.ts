@@ -17,7 +17,7 @@ export interface UserState {
   setToken: (token: string | null) => void;
   setRefreshToken: (refreshToken: string | null) => void;
   login: (user: UserProfile, token: string, refreshToken: string) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   updateUser: (userData: Partial<UserProfile>) => void;
   clearStorage: () => void;
   refreshAccessToken: () => Promise<boolean>;
@@ -236,6 +236,8 @@ export const useUserStore = create<UserState>()(
     }),
     {
       name: "user-storage",
+      // 关闭自动 hydrate：首帧必须与服务端渲染一致，由 UserStateProvider 在挂载前统一恢复
+      skipHydration: true,
       partialize: (state: UserState) => ({
         user: state.user,
         token: state.token,
@@ -243,5 +245,5 @@ export const useUserStore = create<UserState>()(
         isAuthenticated: state.isAuthenticated,
       }),
     },
-  ) as never,
+  ),
 );

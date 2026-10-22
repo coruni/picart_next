@@ -12,11 +12,7 @@ import { routing } from "@/i18n/routing";
 import { ToastContainer } from "@/lib";
 import { getCurrentUser } from "@/lib/current-user";
 import { getHotSearchKeywordsSSR } from "@/lib/hot-search-server";
-import {
-  buildAuthHeaders,
-  DEVICE_ID_COOKIE_NAME,
-  TOKEN_COOKIE_NAME,
-} from "@/lib/request-auth";
+import { TOKEN_COOKIE_NAME } from "@/lib/request-auth";
 import {
   generateSiteMetadata,
   getPublicCategories,
@@ -26,13 +22,11 @@ import { getServerCookie } from "@/lib/server-cookies";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { unstable_noStore as noStore } from "next/cache";
 import { notFound } from "next/navigation";
 import NextTopLoader from "nextjs-toploader";
 import { LocaleProvider } from "./LocaleProvider";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// 布局读取 cookie 决定登录态，本身已是动态渲染；不再叠加 force-dynamic / noStore
 
 export async function generateMetadata({
   params,
@@ -54,26 +48,23 @@ export default async function LocaleLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }) {
-  noStore();
-
   const { locale } = await params;
 
   if (!routing.locales.includes(locale as "zh" | "en")) {
     notFound();
   }
 
-  const messages = await getMessages();
-  const [initialToken, deviceId, requestHeaders] = await Promise.all([
+  // 只依赖 url/cookie 的两项先并行；其余四项互不依赖，一起并行
+  const [messages, initialToken] = await Promise.all([
+    getMessages(),
     getServerCookie(TOKEN_COOKIE_NAME),
-    getServerCookie(DEVICE_ID_COOKIE_NAME),
-    buildAuthHeaders(),
   ]);
-  const initialUser = initialToken ? await getCurrentUser() : null;
-  const categories = await getPublicCategories();
-  const config = await getPublicConfig();
-  const hotSearchKeywords = await getHotSearchKeywordsSSR();
-  void deviceId;
-  void requestHeaders;
+  const [initialUser, categories, config, hotSearchKeywords] = await Promise.all([
+    initialToken ? getCurrentUser() : Promise.resolve(null),
+    getPublicCategories(),
+    getPublicConfig(),
+    getHotSearchKeywordsSSR(),
+  ]);
 
   return (
     <>

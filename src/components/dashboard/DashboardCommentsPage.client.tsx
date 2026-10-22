@@ -170,7 +170,7 @@ export function DashboardCommentsPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
-        key={refreshKey}
+        refreshKey={refreshKey}
         title={copy.pages.comments.title}
         columns={columns}
         request={async ({ current, pageSize, keyword }) => {

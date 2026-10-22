@@ -13,7 +13,9 @@ import { Switch } from "@/components/ui/Switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { useImageCompression } from "@/hooks/useImageCompression";
 import { cn } from "@/lib";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { buildUploadMetadata } from "@/lib/file-hash";
+import { revalidateCacheTags } from "@/lib/revalidate-cache";
 import {
   Check,
   ChevronDown,
@@ -768,6 +770,7 @@ export function DashboardConfigsPageV2() {
       await configControllerUpdateAll({
         body: configsToUpdate as { id: number; key: string; value: string }[],
       });
+      void revalidateCacheTags([CACHE_TAGS.config]);
 
       // 更新本地状态
       await loadConfigs();

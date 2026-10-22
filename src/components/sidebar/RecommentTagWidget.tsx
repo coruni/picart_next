@@ -1,6 +1,7 @@
 import { tagControllerFindAll } from "@/api";
 import { Link } from "@/i18n/routing";
 import { formatCompactNumber } from "@/lib";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { TagList } from "@/types";
 import { getLocale, getTranslations } from "next-intl/server";
 import { unstable_cache } from "next/cache";
@@ -21,7 +22,7 @@ const getCachedRecommendTags = unstable_cache(
   ["recommend-tags"],
   {
     revalidate: 3600, // 1 hour
-    tags: ["tags"],
+    tags: [CACHE_TAGS.tags],
   },
 );
 

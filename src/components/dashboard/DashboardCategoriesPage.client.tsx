@@ -10,6 +10,8 @@ import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Link } from "@/i18n/routing";
+import { CACHE_TAGS } from "@/lib/cache-tags";
+import { revalidateCacheTags } from "@/lib/revalidate-cache";
 import { MoreHorizontal, PencilLine, Plus, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
@@ -251,6 +253,7 @@ export function DashboardCategoriesPage() {
       await categoryControllerRemove({
         path: { id: String(deletingItem.id) },
       });
+      void revalidateCacheTags([CACHE_TAGS.categories]);
       setDeletingItem(null);
       setRefreshKey((current) => current + 1);
     } finally {
@@ -274,6 +277,7 @@ export function DashboardCategoriesPage() {
           status: (values.status as string) || "ENABLED",
         },
       });
+      void revalidateCacheTags([CACHE_TAGS.categories]);
       setCreating(false);
       setRefreshKey((current) => current + 1);
     } finally {
@@ -301,6 +305,7 @@ export function DashboardCategoriesPage() {
           status: values.status as string | undefined,
         },
       });
+      void revalidateCacheTags([CACHE_TAGS.categories]);
       setEditingItem(null);
       setRefreshKey((current) => current + 1);
     } finally {
@@ -315,7 +320,7 @@ export function DashboardCategoriesPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
-        key={refreshKey}
+        refreshKey={refreshKey}
         title={copy.pages.categories.title}
         action={
           <Button

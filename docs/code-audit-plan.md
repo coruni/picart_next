@@ -29,24 +29,30 @@
 | --- | --- | --- |
 | P0-1 净化器绕过 | ✅ 已修 | `rich-text.ts` 抽出 `sanitizeElement()`，拆包后对提上来的节点递归净化 |
 | P0-2 编辑器 onChange 失效 | ✅ 已修 | 依赖变化 / StrictMode 重挂载时复用实例并重新绑定监听 |
-| P0-3 SSR 被掐断 | ⏸ 已撤回 | **不是一行能改的**，见下方「为什么撤回」 |
+| P0-3 SSR 被掐断 | ✅ 已修 | 去掉 `return null` 门；`useUserStore` / `useAppStore` / `useTranslateStore` 全部 `skipHydration`，由 `UserStateProvider` 在 layout effect 里恢复并覆盖；鉴权头从 request 拦截器下移到 `resilientFetch`（见下方「落地方式」） |
 | P0-4 令牌双存 | ⏸ 待决策 | 真修法需后端改 HttpOnly cookie；只清 localStorage 副本无安全收益 |
 | P0-5 socket 请求串台 | ✅ 已修 | 按 responseEvent 建 FIFO 队列共用一个监听，`disconnect()` 时 reject 全部 pending |
 
 > 本轮改动只做了语法级校验（`tsc` 单文件、过滤 TS1xxx）。仓库当前**没有 `node_modules`**，无法跑完整 `typecheck` / `lint` / `dev`，运行时验证需先 `pnpm install`。
 
-### 为什么 P0-3 撤回
+### P0-3 落地方式（比最初的「一行改法」多了两步，但这是必须的）
 
-初版改法是 `useState(initialUser !== null || initialToken === null)`。动手后发现它会把「空壳 SSR」换成**hydration mismatch**：
+最初的改法（`useState(initialUser !== null || initialToken === null)`）会把「空壳 SSR」换成 **hydration mismatch**：
 
-1. `useUserStore` 用 `persist` + 同步 `localStorage`，zustand v5 在**模块导入时**就完成 rehydrate。所以客户端首帧的 `isAuthenticated` / `user` 已是 `true`，而服务端渲染出来的是空态 → 头部用户区必然不一致。
-2. 反过来在服务端「用 `initialUser` 播种 store」更糟：zustand store 是**模块级单例**，SSR 时会被跨请求共享，等于把 A 用户的资料泄漏给 B 请求。
-3. 全仓没有任何 `mounted` 守卫（`grep mounted src/components/layout` 为空），也没有可用的 auth context，所以没有现成的安全锚点。
+1. `useUserStore` 用 `persist` + 同步 `localStorage`，zustand 在**模块导入时**就 rehydrate，客户端首帧 `isAuthenticated` 已是 `true`，服务端渲染的是空态 → 头部用户区必然不一致；
+2. 反过来在服务端用 `initialUser` 播种 store 更糟：store 是模块级单例，SSR 会跨请求共享，等于把 A 用户资料泄漏给 B 请求。
 
-正确做法（需要单独一批）：
-- 让「依赖登录态的 UI」不再直读 store，而是读由布局传入的 props / context（服务端已拿到 `initialUser`）；
-- 或给 auth 相关 UI 加统一的 `useHydrated()` 守卫，首帧渲染与 SSR 一致的占位；
-- 两者都到位后再删 `return null`，才能既保留 SSR 又不 mismatch。
+最终做法：
+
+| 步骤 | 改动 | 作用 |
+| --- | --- | --- |
+| 1 | `useUserStore` / `useAppStore` / `useTranslateStore` 加 `skipHydration: true` | 客户端首帧与 SSR 一致（都是默认值），从根上消除 mismatch |
+| 2 | `UserStateProvider` 改成 layout effect 里 `persist.rehydrate()` → 用 `initialToken`/`initialUser`/`initialConfig` 覆盖 → `initializeInterceptors()` | 绘制前就把正确状态写回 store，不闪、不 mismatch |
+| 3 | `resilientFetch` 在客户端统一补 `Authorization` / `Device-Id`（`buildAuthHeaders` 会回落到 cookie） | 去掉渲染门后，子组件的 mount 请求仍在「persist 还没恢复」时发出，必须由 cookie 兜底 |
+| 4 | `runtime.config.ts` 删除 request 拦截器（只留 response/error） | 鉴权头只有一处真相；顺带去掉每个请求 2 次 cookie 解析 |
+| 5 | `useUserStore.logout` 类型改为 `() => Promise<void>`，删掉两个 `as never` | `.persist.rehydrate()` 才能被类型系统认出来 |
+
+服务端行为不变：`withClientAuth` 里 `typeof window === "undefined"` 直接返回，`serverApi` 仍自己注入，`sitemap` 这类静态路由不会因为读 cookie 变成动态。
 
 ### P0-1 富文本净化器可被绕过（存储型 XSS）
 
@@ -156,10 +162,48 @@ const [isInitialized, setIsInitialized] = useState(initialUser !== null || initi
 | P1-11 RecommendUserWidget 缓存 | ❌ 撤回建议 | 该组件用 `user.isFollowed` 渲染关注态，是**用户相关数据**，加 `unstable_cache` 会把 A 的关注态泄漏给 B。原审计建议有误 |
 | P1-10 create 页重复请求 | ✅ 已修 | 新增 `CategoriesProvider`（根布局的分类树经 AppChrome 下发），三个 create 页不再各自 `categoryControllerFindAll()`；video 页的 `uploadControllerGetUploadConfig` 改读已有的 `UploadConfigProvider`（顺带发现它的 `uploadConfigRef` 只写不读）。分类映射抽成 `lib/category-options.ts`，消掉第 3、第 4 份拷贝 |
 | P1-4 `@/lib` 桶跨界 | ✅ 已修 | `index.ts` 去掉 `export * from "./seo"`；`utils.ts` 删掉无人调用的 `getPublicBanners`（它是 `@/api` + `next/cache` 进入客户端的唯一入口）。现在桶内 12 个模块**不再引用** `@/api` / `next/*`；6 处 seo 调用方改为从 `@/lib/seo` 直接导入 |
-| 其余 P1 | ⏳ 待定 | P1-1 / P1-3 涉及缓存架构与写操作位置（决策点 3）；P1-9 未开始 |
+| P1-1 根布局三重禁缓存 + 串行取数 | ✅ 已修 | 见下方「P1-1 落地方式」 |
+| P1-3 有缓存无失效 | ✅ 已修 | 见下方「P1-3 落地方式」 |
+| 其余 P1 | ⏳ 待定 | P1-9（i18n 按命名空间拆包）未开始；P1-7 / P1-8 需实测数据后再定 |
 
 > 环境：`pnpm install` 已完成，`tsc` / `eslint` 可跑。本轮改动 **0 新增类型错误、0 新增 lint error**。
 > `next build` 在本沙箱内跑不完：Next 会先清空 `.next/turbopack`（50+ 文件），被命令执行环境的安全删除守卫拦下。本地终端直接 `pnpm build` 不受影响。
+
+### P1-1 落地方式
+
+| 步骤 | 文件 | 内容 |
+| --- | --- | --- |
+| 1 | `src/app/[locale]/layout.tsx` | 删 `export const dynamic = "force-dynamic"`、`export const revalidate = 0`、`unstable_noStore()`；连带删掉只为拼 `buildAuthHeaders` 而存在的 `DEVICE_ID_COOKIE_NAME` import 与 `void deviceId; void requestHeaders;` |
+| 2 | 同上 | 六段串行 await → 两段 `Promise.all`：先 `[getMessages(), getServerCookie(TOKEN_COOKIE_NAME)]`，再 `[initialToken ? getCurrentUser() : null, getPublicCategories(), getPublicConfig(), getHotSearchKeywordsSSR()]`（`getCurrentUser` 依赖 token，天然分两段） |
+| 3 | 同上 | `generateStaticParams()` 在删掉 `force-dynamic` 后重新生效，不再是死代码 |
+| 4 | `src/app/[locale]/loading.tsx`（新建） | 根级骨架屏，配合删掉 `force-dynamic` 后的流式渲染；不再整页空窗 |
+
+**为什么还要先取 cookie 再并行**：`getCurrentUser()` 需要 token，无法和 `getServerCookie` 同一批。但 config / categories / hotSearch 三者互不依赖，从串行 3 跳变并行 1 跳。
+
+**未做**：按路由段声明缓存周期（列表页 60s / 详情页 ISR）。这需要逐页判断「用户相关数据边界」，改动面比本轮大得多，且依赖 P1-3 的失效链路先跑通。现在的状态是：布局不再强制动态，但也没有主动声明 revalidate —— 静态化收益要等这一步才完整。
+
+### P1-3 落地方式
+
+原来的判断是「写操作在浏览器直连 API，要上 `revalidateTag` 必须挪到 Server Action」。实际落地走了更轻的路：**新增一个受鉴权保护的 Route Handler，写操作成功后由客户端打一次失效请求**，不动 19 个后台页的写逻辑。
+
+| 文件 | 内容 |
+| --- | --- |
+| `src/lib/cache-tags.ts`（新建） | `CACHE_TAGS = { config, categories, hotSearch, tags }`、`CacheTag` 类型、`CACHE_TAG_VALUES` 运行时数组（用于路由校验） |
+| `src/lib/seo.ts` | `getPublicConfigCached` 加 `tags: [CACHE_TAGS.config]`；`getPublicCategories` 加 `tags: [CACHE_TAGS.categories]` |
+| `src/lib/hot-search-server.ts` | 加 `tags: [CACHE_TAGS.hotSearch]` |
+| `src/components/sidebar/RecommentTagWidget.tsx` | `tags: ["tags"]`（裸字符串，无人引用）→ `tags: [CACHE_TAGS.tags]` |
+| `src/app/api/revalidate/route.ts`（新建） | POST：读 cookie token → `userControllerGetProfile` → `hasAdminRole` → 校验 tags 是否在 `CACHE_TAG_VALUES` 内 → `revalidateTag(tag, { expire: 0 })`。401 / 403 / 400 分支齐全 |
+| `src/lib/revalidate-cache.ts`（新建） | `revalidateCacheTags(tags)`，打 `/api/revalidate`，失败只 `console.warn`（缓存失效失败不应该让业务操作失败） |
+| 后台写操作（8 处） | `DashboardCategoriesPage`（create/update/remove → `categories`）、`DashboardTagsPage`（create/update/remove → `tags`）、`DashboardConfigsPage` × 1、`DashboardConfigsPageV2` × 1（→ `config`） |
+
+**两个关键点**：
+
+1. **`revalidateTag` 在 Next 16 的签名变了**——第二参数必填，`revalidateTag(tag)` 会报类型错。写成 `revalidateTag(tag, { expire: 0 })`。
+2. **管理员判定复用了已有的 `looksLikeAdminRole` 正则**（`/admin|root|super|manage|运营|管理|super-admin/i`），没有新造一套角色判断。这是刻意的：失效接口一旦比现有后台权限判定更宽松，就是一个越权入口。
+
+**为什么没走 Server Action**：19 个后台页的写操作都长得一样（调 SDK → toast → 刷表），改成 Server Action 要动表单状态管理（`useTransition` / `useActionState`），本轮收益/风险比不划算。Route Handler 这条路把改动压在「加一个文件 + 每个写操作加一行」。
+
+**仍未验证**：`revalidateTag(tag, { expire: 0 })` 的实际失效效果、`/api/revalidate` 在真实鉴权下的行为，都要本地 `pnpm dev` 起后端才能确认。
 
 ### P1-1 根布局三重禁缓存 + 串行取数 + 零 `loading.tsx`
 
@@ -412,6 +456,6 @@ src/app/[locale]/account/[id]/certification/page.tsx(208,44)  TS2322
 
 ## 八、待你确认的 3 个决策点
 
-1. **数据层**：P2-9 选 A（React Query）/ B（薄封装）/ C（只做 dashboard）？我倾向 **C 先落地**，验证收益后再评估 A。
-2. **令牌存储**：P0-4 是否能接受改后端 refresh 流程（改 HttpOnly cookie）？不能的话先只清 localStorage 里的 `refreshToken`。
-3. **缓存失效**：P1-3 的写操作目前在浏览器直连 API，要上 `revalidateTag` 必须把写操作挪到 Route Handler / Server Action。是否接受这个改造范围？若不接受，P1-1 的静态化收益会打折（因为无法主动失效）。
+1. **数据层**：P2-9 选 A（React Query）/ B（薄封装）/ C（只做 dashboard）？我倾向 **C 先落地**，验证收益后再评估 A。**未决，未开始。**
+2. **令牌存储**：P0-4 是否能接受改后端 refresh 流程（改 HttpOnly cookie）？不能的话先只清 localStorage 里的 `refreshToken`。**未决，未开始。**
+3. **缓存失效**：✅ **已解决（2026-10-23）**——没有挪动写操作，改为新增受鉴权保护的 `POST /api/revalidate`，写操作成功后由客户端打一次失效请求。详见「P1-3 落地方式」。

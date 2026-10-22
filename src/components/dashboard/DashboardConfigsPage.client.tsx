@@ -12,7 +12,9 @@ import { Switch } from "@/components/ui/Switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { useImageCompression } from "@/hooks/useImageCompression";
 import { cn } from "@/lib";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { buildUploadMetadata } from "@/lib/file-hash";
+import { revalidateCacheTags } from "@/lib/revalidate-cache";
 import { ImagePlus, Save, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -461,6 +463,7 @@ export function DashboardConfigsPage() {
       await configControllerUpdateAll({
         body: configsToUpdate,
       });
+      void revalidateCacheTags([CACHE_TAGS.config]);
 
       // 更新本地状态
       setConfigs((prev) =>

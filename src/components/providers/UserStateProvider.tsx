@@ -1,13 +1,15 @@
 "use client";
 
 import { userControllerGetProfile } from "@/api";
-import { getCookie } from "@/lib/cookies";
-import { TOKEN_COOKIE_NAME } from "@/lib/request-auth";
 import { initializeInterceptors } from "@/runtime.config";
-import { useAppStore } from "@/stores";
+import { useAppStore, useTranslateStore } from "@/stores";
 import { useUserStore } from "@/stores/useUserStore";
 import type { PublicConfigs, UserProfile } from "@/types";
-import { startTransition, useEffect, useRef, useState } from "react";
+import { startTransition, useEffect, useLayoutEffect, useRef } from "react";
+
+// 服务端没有 layout effect，用 useEffect 兜底
+const useIsomorphicLayoutEffect =
+  typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 interface UserStateProviderProps {
   initialToken: string | null;
@@ -16,95 +18,75 @@ interface UserStateProviderProps {
   children: React.ReactNode;
 }
 
+/**
+ * 登录态初始化。
+ *
+ * 这里刻意不再用 `return null` 拦住子树：那会让整个应用在 SSR 阶段输出空壳。
+ * 为了同时保证「有 SSR」和「首帧不 hydration mismatch」，
+ * useUserStore / useAppStore 都关闭了自动 hydrate，
+ * 由本组件在绘制前（layout effect）恢复 localStorage 并用服务端结果覆盖。
+ */
 export function UserStateProvider({
   initialToken,
   initialUser,
   initialConfig,
   children,
 }: UserStateProviderProps) {
-  const [isInitialized, setIsInitialized] = useState(false);
   const hasInitializedRef = useRef(false);
 
-  const token = useUserStore((state) => state.token);
-  const user = useUserStore((state) => state.user);
-  const setToken = useUserStore((state) => state.setToken);
-  const setUser = useUserStore((state) => state.setUser);
-  const setConfig = useAppStore((state) => state.setSiteConfig);
-
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (hasInitializedRef.current) return;
     hasInitializedRef.current = true;
 
-    const run = async () => {
-      await initializeInterceptors();
+    // 先恢复持久化状态，再用服务端结果覆盖（服务端结果更权威）
+    void useUserStore.persist.rehydrate();
+    void useAppStore.persist.rehydrate();
+    void useTranslateStore.persist.rehydrate();
 
-      const cookieToken = getCookie(TOKEN_COOKIE_NAME);
-      const currentStore = useUserStore.getState();
-      const resolvedToken = initialToken ?? cookieToken ?? null;
+    const userStore = useUserStore.getState();
 
-      if (!resolvedToken) {
-        if (currentStore.token || currentStore.user || currentStore.isAuthenticated) {
-          setToken(null);
-          setUser(null);
-        }
+    if (initialToken) {
+      if (userStore.token !== initialToken) {
+        userStore.setToken(initialToken);
       }
+    } else if (userStore.token || userStore.user || userStore.isAuthenticated) {
+      userStore.setToken(null);
+      userStore.setUser(null);
+    }
 
-      if (resolvedToken && resolvedToken !== currentStore.token) {
-        setToken(resolvedToken);
-      }
+    if (initialUser) {
+      userStore.setUser(initialUser);
+    }
 
-      if (initialConfig) {
-        setConfig(initialConfig);
-      }
+    if (initialConfig) {
+      useAppStore.getState().setSiteConfig(initialConfig);
+    }
 
-      // 优先使用服务端获取的 initialUser，避免客户端重复请求
-      if (initialUser) {
-        setUser(initialUser);
-        setIsInitialized(true);
-      } else if (resolvedToken) {
-        // 服务端未获取到用户信息，但存在 token，尝试客户端获取
-        const fetchProfile = async () => {
-          try {
-            const response = await userControllerGetProfile();
-            const profile = response?.data?.data || null;
+    // 鉴权头已收敛到 resilientFetch，这里只需要 401 重试等响应侧拦截器
+    void initializeInterceptors();
 
-            if (profile) {
-              startTransition(() => {
-                setUser(profile);
-              });
-            }
-          } catch (error) {
-            if (process.env.NODE_ENV === "development") {
-              console.warn("[auth][provider] client profile fetch failed", {
-                error,
-              });
-            }
-          } finally {
-            setIsInitialized(true);
+    // 服务端没拿到 profile（接口抖动）但有 token：客户端补一次
+    if (initialToken && !initialUser) {
+      void (async () => {
+        try {
+          const response = await userControllerGetProfile();
+          const profile = response?.data?.data;
+
+          if (profile) {
+            startTransition(() => {
+              useUserStore.getState().setUser(profile);
+            });
           }
-        };
-
-        const schedule = () => {
-          void fetchProfile();
-        };
-
-        if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-          window.requestIdleCallback(schedule);
-        } else {
-          setTimeout(schedule, 0);
+        } catch (error) {
+          if (process.env.NODE_ENV === "development") {
+            console.warn("[auth][provider] client profile fetch failed", {
+              error,
+            });
+          }
         }
-      } else {
-        setIsInitialized(true);
-      }
-    };
-
-    void run();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      })();
+    }
   }, []);
-
-  if (!isInitialized) {
-    return null;
-  }
 
   return <>{children}</>;
 }

@@ -233,7 +233,7 @@ export function DashboardArticlesPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
-        key={refreshKey}
+        refreshKey={refreshKey}
         title={copy.pages.articles.title}
         columns={columns}
         request={async ({ current, pageSize, ...rest }) => {

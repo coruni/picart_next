@@ -1,5 +1,6 @@
 
 import { articleControllerFindHotSearch } from "@/api";
+import { CACHE_TAGS } from "@/lib/cache-tags";
 import { unstable_cache } from "next/cache";
 
 /**
@@ -46,5 +47,6 @@ export const getHotSearchKeywordsSSR = unstable_cache(
   ["hot-search-keywords"],
   {
     revalidate: 1800, // 30 minutes in seconds
+    tags: [CACHE_TAGS.hotSearch],
   },
 );

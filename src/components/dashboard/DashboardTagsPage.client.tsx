@@ -4,6 +4,8 @@ import { tagControllerCreate, tagControllerFindAll, tagControllerRemove, tagCont
 import { DropdownMenu, type MenuItem } from "@/components/shared";
 import { Avatar } from "@/components/ui/Avatar";
 import { Link } from "@/i18n/routing";
+import { CACHE_TAGS } from "@/lib/cache-tags";
+import { revalidateCacheTags } from "@/lib/revalidate-cache";
 import { MoreHorizontal, PencilLine, Plus, Trash2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useMemo, useState } from "react";
@@ -168,6 +170,7 @@ export function DashboardTagsPage() {
       await tagControllerRemove({
         path: { id: String(deletingItem.id) },
       });
+      void revalidateCacheTags([CACHE_TAGS.tags]);
       setDeletingItem(null);
       setRefreshKey((current) => current + 1);
     } finally {
@@ -182,7 +185,7 @@ export function DashboardTagsPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
-        key={refreshKey}
+        refreshKey={refreshKey}
         title={copy.pages.tags.title}
         action={
           <button
@@ -253,6 +256,7 @@ export function DashboardTagsPage() {
                 sort: values.sort as number | undefined,
               },
             });
+            void revalidateCacheTags([CACHE_TAGS.tags]);
             setEditingItem(null);
             setRefreshKey((current) => current + 1);
           } finally {
@@ -292,6 +296,7 @@ export function DashboardTagsPage() {
                 sort: Number(values.sort) || 0,
               },
             });
+            void revalidateCacheTags([CACHE_TAGS.tags]);
             setIsCreating(false);
             setRefreshKey((current) => current + 1);
           } finally {

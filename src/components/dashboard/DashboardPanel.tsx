@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 type DashboardPanelProps = {
-  title: string;
+  title?: string;
   description?: string;
   action?: React.ReactNode;
   headerExtra?: React.ReactNode;
@@ -62,9 +62,11 @@ export function DashboardPanel({
         >
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-semibold tracking-tight text-foreground">
-                {title}
-              </h2>
+              {title ? (
+                <h2 className="text-sm font-semibold tracking-tight text-foreground">
+                  {title}
+                </h2>
+              ) : null}
               {collapsible && (
                 <ChevronDown
                   className={cn(
@@ -85,8 +87,8 @@ export function DashboardPanel({
       )}
       <div
         className={cn(
-          "transition-all duration-200 flex-1 flex-col flex min-h-0",
-          isCollapsed ? "max-h-0 opacity-0" : "opacity-100",
+          "transition-all duration-200 flex min-h-0 flex-col",
+          isCollapsed ? "max-h-0 overflow-hidden opacity-0" : "flex-1 opacity-100",
         )}
       >
         <div className={cn("px-4 py-4", contentClassName)}>

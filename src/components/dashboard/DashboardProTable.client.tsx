@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { useLocale } from "next-intl";
@@ -49,6 +50,7 @@ type DashboardProTableProps<T> = {
   totalPages?: number;
   loading?: boolean;
   onReload?: () => void;
+  refreshKey?: number;
   getRowKey: (row: T) => string | number;
   emptyText: string;
   className?: string;
@@ -77,6 +79,7 @@ export function DashboardProTable<T>({
   totalPages: externalTotalPages,
   loading: externalLoading,
   onReload,
+  refreshKey,
   getRowKey,
   emptyText,
   className,
@@ -201,6 +204,12 @@ export function DashboardProTable<T>({
         const nextTotalPages =
           result.totalPages ?? Math.max(1, Math.ceil(nextTotal / pageSize));
 
+        // 数据变少后当前页可能越界，回落到最后一页重新拉取
+        if (page > nextTotalPages) {
+          setPage(nextTotalPages);
+          return;
+        }
+
         setInternalRows(result.data);
         setInternalTotal(nextTotal);
         setInternalTotalPages(nextTotalPages);
@@ -224,7 +233,7 @@ export function DashboardProTable<T>({
     return () => {
       mounted = false;
     };
-  }, [enabled, isControlled, page, pageSize, queryValues, reloadKey]);
+  }, [enabled, isControlled, page, pageSize, queryValues, reloadKey, refreshKey]);
 
   const resolvedAction =
     typeof action === "function"
@@ -296,9 +305,10 @@ export function DashboardProTable<T>({
         </div>
 
         <div className="flex shrink-0 flex-wrap items-center justify-end gap-2 xl:pt-0.5">
-          <button
+          <Button
             type="button"
-            className="inline-flex h-7  items-center justify-center rounded-full border border-border/70 px-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+            variant="ghost"
+            className="h-7 rounded-full border border-border/70 px-4 text-sm text-muted-foreground hover:text-foreground"
             onClick={() => {
               setDraftQueryValues(initialQueryValues);
               setQueryValues(initialQueryValues);
@@ -306,26 +316,28 @@ export function DashboardProTable<T>({
             }}
           >
             {copy.common.reset}
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className="inline-flex h-7 items-center justify-center rounded-full bg-primary px-4 text-sm font-medium text-white transition-colors hover:opacity-90"
+            variant="primary"
+            className="h-7 rounded-full px-4 text-sm"
             onClick={() => {
               setPage(1);
               setQueryValues(draftQueryValues);
             }}
           >
             {copy.common.search}
-          </button>
+          </Button>
           {hasExpandableQuery ? (
-            <button
+            <Button
               type="button"
-              className="inline-flex h-7 items-center justify-center rounded-full px-4 text-sm font-medium text-primary transition-colors hover:bg-primary/8"
+              variant="ghost"
+              className="h-7 rounded-full px-4 text-sm text-primary hover:bg-primary/10"
               onClick={() => setQueryExpanded((value) => !value)}
               aria-expanded={queryExpanded}
             >
               {queryExpanded ? copy.common.collapse : copy.common.expand}
-            </button>
+            </Button>
           ) : null}
         </div>
       </div>
@@ -369,13 +381,14 @@ export function DashboardProTable<T>({
             <div className="text-sm text-muted-foreground">
               {copy.common.noPermission}
             </div>
-            <button
+            <Button
               type="button"
-              className="inline-flex h-7 items-center justify-center rounded-full border border-border/70 px-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              variant="ghost"
+              className="h-7 rounded-full border border-border/70 px-4 text-sm text-muted-foreground hover:text-foreground"
               onClick={() => setReloadKey((current) => current + 1)}
             >
               {copy.common.retry}
-            </button>
+            </Button>
           </div>
         </div>
       ) : (

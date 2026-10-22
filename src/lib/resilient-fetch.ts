@@ -1,3 +1,5 @@
+import { buildAuthHeaders } from "./request-auth";
+
 const RETRYABLE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 const RETRYABLE_STATUS_CODES = new Set([408, 425, 429, 500, 502, 503, 504]);
 
@@ -147,10 +149,27 @@ function createFallbackResponse(input: RequestInfo | URL, error: unknown) {
   );
 }
 
+/**
+ * 客户端请求在这里统一补鉴权头。
+ * - store 里的 token 缺失时 buildAuthHeaders 会回落到 cookie，因此不依赖 persist 是否已恢复
+ * - 服务端不走这里：serverApi 自己注入，sitemap 等静态路由本来就不该读 cookie
+ */
+async function withClientAuth(init?: RequestInit): Promise<RequestInit | undefined> {
+  if (typeof window === "undefined") {
+    return init;
+  }
+
+  const authHeaders = await buildAuthHeaders(init?.headers as HeadersInit);
+
+  return { ...init, headers: authHeaders };
+}
+
 export async function resilientFetch(
   input: RequestInfo | URL,
   init?: RequestInit,
 ): Promise<Response> {
+  init = await withClientAuth(init);
+
   const method = getRequestMethod(input, init);
   const requestUrl = getRequestUrl(input);
   let lastError: unknown;

@@ -192,7 +192,7 @@ export function DashboardOrdersPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
-        key={refreshKey}
+        refreshKey={refreshKey}
         title={copy.pages.orders.title}
         columns={columns}
         request={async ({ current, pageSize, keyword, status }) => {

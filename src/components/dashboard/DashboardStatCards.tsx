@@ -8,7 +8,8 @@ import { formatDashboardCount } from "./utils";
 type StatItem = {
   key: string;
   label: string;
-  value: number;
+  value?: number;
+  valueNode?: React.ReactNode;
   description?: string;
   icon: LucideIcon;
   accent: string;
@@ -21,7 +22,11 @@ type StatItem = {
 type DashboardStatCardsProps = {
   items: Array<StatItem>;
   locale?: string;
+  gridClassName?: string;
 };
+
+const DEFAULT_GRID_CLASS =
+  "grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 mb-2";
 
 const StatCard = memo(function StatCard({
   item,
@@ -33,7 +38,8 @@ const StatCard = memo(function StatCard({
   locale?: string;
 }) {
   const Icon = item.icon;
-  const displayValue = formatDashboardCount(item.value, locale);
+  const displayValue =
+    item.valueNode ?? formatDashboardCount(item.value ?? 0, locale);
 
   return (
     <article
@@ -103,9 +109,10 @@ const StatCard = memo(function StatCard({
 export function DashboardStatCards({
   items,
   locale,
+  gridClassName = DEFAULT_GRID_CLASS,
 }: DashboardStatCardsProps) {
   return (
-    <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 mb-2">
+    <section className={gridClassName}>
       {items.map((item, index) => (
         <StatCard key={item.key} item={item} index={index} locale={locale} />
       ))}

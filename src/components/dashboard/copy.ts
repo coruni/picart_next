@@ -9,6 +9,8 @@ const copy = {
       title: "管理后台",
       description: "使用现有 SDK 管理站点核心数据，前后台界面完全隔离。",
       accountEntry: "查看前台账号页",
+      home: "首页",
+      breadcrumb: "面包屑导航",
       noRoleHint:
         "未检测到明确的管理员角色，如果接口返回 403，请先确认账号权限。",
     },
@@ -171,6 +173,12 @@ const copy = {
       achievements: "成就",
       search: "搜索",
       certifications: "认证",
+    },
+    navGroups: {
+      content: "内容",
+      userAccess: "用户与权限",
+      operations: "运营",
+      system: "系统",
     },
     pages: {
       overview: {
@@ -366,6 +374,7 @@ const copy = {
         syncing: "同步中...",
         syncSuccess: "同步成功",
         syncFailed: "同步失败",
+        searchCount: "{count} 次搜索",
         clearConfirm: "确定要清空所有文章搜索索引吗？此操作不可恢复！",
         clearSuccess: "索引已清空",
       },
@@ -549,6 +558,8 @@ const copy = {
       description:
         "Manage core site data through the existing SDK with a dedicated back-office shell.",
       accountEntry: "Open front profile",
+      home: "Home",
+      breadcrumb: "Breadcrumb",
       noRoleHint:
         "No explicit admin role was detected. If APIs return 403, verify account permissions.",
     },
@@ -713,6 +724,12 @@ const copy = {
       achievements: "Achievements",
       search: "Search",
       certifications: "Certifications",
+    },
+    navGroups: {
+      content: "Content",
+      userAccess: "Users & Access",
+      operations: "Operations",
+      system: "System",
     },
     pages: {
       overview: {
@@ -918,6 +935,7 @@ const copy = {
         syncing: "Syncing...",
         syncSuccess: "Sync Successful",
         syncFailed: "Sync Failed",
+        searchCount: "{count} searches",
         clearConfirm: "Are you sure you want to clear all article search indexes? This action cannot be undone!",
         clearSuccess: "Index Cleared",
       },

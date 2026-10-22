@@ -49,8 +49,10 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: "app-storage",
+      // 关闭自动 hydrate：首帧必须与服务端渲染一致，由 UserStateProvider 在挂载前统一恢复
+      skipHydration: true,
     },
-  ) as never,
+  ),
 );
 
 interface TranslateState {
@@ -68,6 +70,8 @@ export const useTranslateStore = create<TranslateState>()(
     {
       name: "translate-storage",
       storage: createJSONStorage(() => sessionStorage),
+      // 同 app-storage：避免首帧与服务端渲染不一致
+      skipHydration: true,
     },
   ),
 );

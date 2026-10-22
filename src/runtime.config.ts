@@ -1,5 +1,4 @@
 import type { CreateClientConfig } from "./api/client.gen";
-import { buildAuthHeaders, getRequestAuthState } from "./lib/request-auth";
 import { resilientFetch } from "./lib/resilient-fetch";
 
 export const createClientConfig: CreateClientConfig = (config) => ({
@@ -19,21 +18,6 @@ export function initializeInterceptors(): Promise<void> {
 
   initializationPromise = import("./api/client.gen")
     .then(({ client }) => {
-      client.interceptors.request.use(async (request) => {
-        try {
-          const { token, deviceId } = await getRequestAuthState();
-          const headers = await buildAuthHeaders(
-            request.headers as HeadersInit,
-          );
-          request.headers = headers;
-
-          void token;
-          void deviceId;
-        } catch (error) {
-          console.error("Error in request interceptor:", error);
-        }
-      });
-
       client.interceptors.response.use(async (response) => response);
 
       client.interceptors.error.use(async (error, response) => {

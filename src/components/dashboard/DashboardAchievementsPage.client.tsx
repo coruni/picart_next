@@ -456,7 +456,7 @@ export function DashboardAchievementsPage() {
   return (
     <DashboardPageFrame className="flex h-full min-h-0 flex-col">
       <DashboardProTable
-        key={refreshKey}
+        refreshKey={refreshKey}
         title={copy.pages.achievements.title}
         action={
           <Button

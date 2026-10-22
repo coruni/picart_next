@@ -181,7 +181,10 @@ export function DashboardTable<T>({
   if (!rows.length) {
     return (
       <div
-        className={`relative flex min-h-40 items-center justify-center rounded-xl border border-dashed border-border/70 px-4 text-sm text-muted-foreground ${className || ""}`}
+        className={cn(
+          "relative flex min-h-40 items-center justify-center rounded-xl border border-dashed border-border/70 px-4 text-sm text-muted-foreground",
+          className,
+        )}
       >
         {loading ? loadingText || emptyText : emptyText}
       </div>
@@ -238,13 +241,36 @@ export function DashboardTable<T>({
 
       <div className="min-h-0 flex-1 overflow-y-auto md:hidden">
         <div className="space-y-3 p-3">
-          {rows.map((row) => (
+          {rows.map((row) => {
+            const rowKey = getRowKey(row);
+            const isExpanded = expandedKeys.has(rowKey);
+            const isExpandable = expandable?.rowExpandable?.(row) ?? true;
+
+            return (
             <article
-              key={getRowKey(row)}
+              key={rowKey}
               className="rounded-xl border border-border/70 bg-card p-3"
             >
-              <div className="min-w-0">
-                {columns[0] ? columns[0].render(row) : null}
+              <div className="flex min-w-0 items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  {columns[0] ? columns[0].render(row) : null}
+                </div>
+                {expandable ? (
+                  expandable.expandIcon ? (
+                    expandable.expandIcon({
+                      expanded: isExpanded,
+                      onExpand: () => toggleExpand(row),
+                      record: row,
+                      expandable: isExpandable,
+                    })
+                  ) : (
+                    <DefaultExpandIcon
+                      expanded={isExpanded}
+                      onExpand={() => toggleExpand(row)}
+                      expandable={isExpandable}
+                    />
+                  )
+                ) : null}
               </div>
               {columns.slice(1).length > 0 ? (
                 <div className="mt-3 space-y-2 border-t border-border/70 pt-3">
@@ -272,8 +298,14 @@ export function DashboardTable<T>({
                   ))}
                 </div>
               ) : null}
+              {expandable?.expandedRowRender && isExpanded ? (
+                <div className="mt-3 border-t border-border/70 pt-3">
+                  {expandable.expandedRowRender(row)}
+                </div>
+              ) : null}
             </article>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -423,6 +455,7 @@ export function DashboardTable<T>({
                 type="button"
                 variant="outline"
                 className="h-7 truncate rounded-full"
+                disabled={pagination.nextDisabled}
                 onClick={pagination.onNext}
               >
                 {paginationLabels.next}

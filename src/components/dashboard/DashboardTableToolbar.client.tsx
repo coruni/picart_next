@@ -54,8 +54,19 @@ export function DashboardTableToolbar<T>({
       }
     };
 
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setDensityOpen(false);
+        setColumnOpen(false);
+      }
+    };
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   const densityOptions = [
@@ -90,6 +101,8 @@ export function DashboardTableToolbar<T>({
             onClick={() => setDensityOpen((value) => !value)}
             aria-label={labels.density}
             title={labels.density}
+            aria-haspopup="menu"
+            aria-expanded={densityOpen}
           >
             <Rows3 className="size-4" />
           </button>
@@ -123,6 +136,8 @@ export function DashboardTableToolbar<T>({
             onClick={() => setColumnOpen((value) => !value)}
             aria-label={labels.columnSetting}
             title={labels.columnSetting}
+            aria-haspopup="menu"
+            aria-expanded={columnOpen}
           >
             <Settings2 className="size-4" />
           </button>
