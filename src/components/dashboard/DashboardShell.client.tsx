@@ -4,7 +4,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib";
 import { useUserStore } from "@/stores/useUserStore";
-import { ChevronRight, Menu, X } from "lucide-react";
+import { ChevronRight, ExternalLink, Menu, X } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { DashboardBreadcrumb } from "./DashboardBreadcrumb";
@@ -319,6 +319,14 @@ export function DashboardShell({ children }: DashboardShellProps) {
           <DashboardBreadcrumb pathname={currentPath} />
 
           <div className="ml-auto flex shrink-0 items-center gap-2">
+            <Link
+              href={user?.id ? `/account/${user.id}` : "/"}
+              aria-label={copy.shell.accountEntry}
+              title={copy.shell.accountEntry}
+              className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:text-foreground"
+            >
+              <ExternalLink className="size-4" aria-hidden="true" />
+            </Link>
             {roleLabels.slice(0, 2).map((role, idx) => (
               <span
                 key={role}

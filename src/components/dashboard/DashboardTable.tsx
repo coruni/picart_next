@@ -247,63 +247,63 @@ export function DashboardTable<T>({
             const isExpandable = expandable?.rowExpandable?.(row) ?? true;
 
             return (
-            <article
-              key={rowKey}
-              className="rounded-xl border border-border/70 bg-card p-3"
-            >
-              <div className="flex min-w-0 items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  {columns[0] ? columns[0].render(row) : null}
+              <article
+                key={rowKey}
+                className="rounded-xl border border-border/70 bg-card p-3"
+              >
+                <div className="flex min-w-0 items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    {columns[0] ? columns[0].render(row) : null}
+                  </div>
+                  {expandable ? (
+                    expandable.expandIcon ? (
+                      expandable.expandIcon({
+                        expanded: isExpanded,
+                        onExpand: () => toggleExpand(row),
+                        record: row,
+                        expandable: isExpandable,
+                      })
+                    ) : (
+                      <DefaultExpandIcon
+                        expanded={isExpanded}
+                        onExpand={() => toggleExpand(row)}
+                        expandable={isExpandable}
+                      />
+                    )
+                  ) : null}
                 </div>
-                {expandable ? (
-                  expandable.expandIcon ? (
-                    expandable.expandIcon({
-                      expanded: isExpanded,
-                      onExpand: () => toggleExpand(row),
-                      record: row,
-                      expandable: isExpandable,
-                    })
-                  ) : (
-                    <DefaultExpandIcon
-                      expanded={isExpanded}
-                      onExpand={() => toggleExpand(row)}
-                      expandable={isExpandable}
-                    />
-                  )
+                {columns.slice(1).length > 0 ? (
+                  <div className="mt-3 space-y-2 border-t border-border/70 pt-3">
+                    {columns.slice(1).map((column) => (
+                      <div
+                        key={column.key}
+                        className="flex items-start justify-between gap-3"
+                      >
+                        <div className="shrink-0 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                          {column.header}
+                        </div>
+                        <div className="min-w-0 flex-1 text-right">
+                          {column.ellipsis ? (
+                            <div
+                              className="ml-auto min-w-0 max-w-full overflow-hidden"
+                              title={column.getTooltip?.(row)}
+                            >
+                              {column.render(row)}
+                            </div>
+                          ) : (
+                            column.render(row)
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 ) : null}
-              </div>
-              {columns.slice(1).length > 0 ? (
-                <div className="mt-3 space-y-2 border-t border-border/70 pt-3">
-                  {columns.slice(1).map((column) => (
-                    <div
-                      key={column.key}
-                      className="flex items-start justify-between gap-3"
-                    >
-                      <div className="shrink-0 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                        {column.header}
-                      </div>
-                      <div className="min-w-0 flex-1 text-right">
-                        {column.ellipsis ? (
-                          <div
-                            className="ml-auto min-w-0 max-w-full overflow-hidden"
-                            title={column.getTooltip?.(row)}
-                          >
-                            {column.render(row)}
-                          </div>
-                        ) : (
-                          column.render(row)
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : null}
-              {expandable?.expandedRowRender && isExpanded ? (
-                <div className="mt-3 border-t border-border/70 pt-3">
-                  {expandable.expandedRowRender(row)}
-                </div>
-              ) : null}
-            </article>
+                {expandable?.expandedRowRender && isExpanded ? (
+                  <div className="mt-3 border-t border-border/70 pt-3">
+                    {expandable.expandedRowRender(row)}
+                  </div>
+                ) : null}
+              </article>
             );
           })}
         </div>

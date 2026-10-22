@@ -33,7 +33,8 @@
 | P0-4 令牌双存 | ⏸ 待决策 | 真修法需后端改 HttpOnly cookie；只清 localStorage 副本无安全收益 |
 | P0-5 socket 请求串台 | ✅ 已修 | 按 responseEvent 建 FIFO 队列共用一个监听，`disconnect()` 时 reject 全部 pending |
 
-> 本轮改动只做了语法级校验（`tsc` 单文件、过滤 TS1xxx）。仓库当前**没有 `node_modules`**，无法跑完整 `typecheck` / `lint` / `dev`，运行时验证需先 `pnpm install`。
+> 校验：`tsc --noEmit` 全仓 **5 个既有错误**（均由 `src/api/types.gen.ts` 重新生成后 `reviewedAt: unknown` 引起，与 P0 改动无关，见第七节）；`eslint` 对 P0 全部改动文件 **0 error / 0 warning**。
+> 未做运行时验证（`next build` / `dev` 在本沙箱跑不完），SSR 首帧、socket 配对、编辑器重挂载行为需本地确认。
 
 ### P0-3 落地方式（比最初的「一行改法」多了两步，但这是必须的）
 
@@ -164,7 +165,7 @@ const [isInitialized, setIsInitialized] = useState(initialUser !== null || initi
 | P1-4 `@/lib` 桶跨界 | ✅ 已修 | `index.ts` 去掉 `export * from "./seo"`；`utils.ts` 删掉无人调用的 `getPublicBanners`（它是 `@/api` + `next/cache` 进入客户端的唯一入口）。现在桶内 12 个模块**不再引用** `@/api` / `next/*`；6 处 seo 调用方改为从 `@/lib/seo` 直接导入 |
 | P1-1 根布局三重禁缓存 + 串行取数 | ✅ 已修 | 见下方「P1-1 落地方式」 |
 | P1-3 有缓存无失效 | ✅ 已修 | 见下方「P1-3 落地方式」 |
-| 其余 P1 | ⏳ 待定 | P1-9（i18n 按命名空间拆包）未开始；P1-7 / P1-8 需实测数据后再定 |
+| 其余 P1 | ⏳ 待定 | P1-9（i18n 按命名空间拆包）未开始，需先定命名空间划分；P1-7（`fill` 缺 `sizes`）需按实际渲染宽度逐处填；P1-8（`resilientFetch` 超时拖垮 SSR）需实测上游延迟后再定阈值 |
 
 > 环境：`pnpm install` 已完成，`tsc` / `eslint` 可跑。本轮改动 **0 新增类型错误、0 新增 lint error**。
 > `next build` 在本沙箱内跑不完：Next 会先清空 `.next/turbopack`（50+ 文件），被命令执行环境的安全删除守卫拦下。本地终端直接 `pnpm build` 不受影响。
