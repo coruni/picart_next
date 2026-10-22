@@ -62,7 +62,12 @@ type FirstResponse<T> = T[keyof T];
 // ==================== 基于响应提取的数据类型 ====================
 
 // 用户
-export type UserProfile = NonNullable<UserControllerGetProfileResponse["data"]>;
+type ProfileResponseData = NonNullable<UserControllerGetProfileResponse["data"]>;
+
+// 登录/注册接口不返回认证信息，会话里的 user 可能没有 certification
+export type UserProfile = Omit<ProfileResponseData, "certification"> & {
+  certification?: ProfileResponseData["certification"];
+};
 export type UserList = NonNullable<UserControllerFindAllResponse["data"]["data"]>;
 export type UserDetail = NonNullable<UserControllerFindOneResponse["data"]>;
 export type LoginResult = NonNullable<UserControllerLoginResponse["data"]>;

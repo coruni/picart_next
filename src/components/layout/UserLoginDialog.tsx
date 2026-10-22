@@ -154,7 +154,9 @@ export function UserLoginDialog() {
         });
         const { token, refreshToken, ...userData } =
           data?.data as UserControllerLoginResponse["data"];
-        login(userData as UserProfile, token, refreshToken || "");
+        // 登录/注册的 schema 落后于 /user/profile：config 缺隐私开关字段、
+        // remark 未定类型，且登录响应不带 certification，后端对齐后可去掉这里的双重断言
+        login(userData as unknown as UserProfile, token, refreshToken || "");
         window.location.reload();
       } catch (error) {
         const message = getLoginErrorMessage(error as { message: string });
@@ -247,7 +249,7 @@ export function UserLoginDialog() {
             ...regUserData
           } = data.data;
           login(
-            regUserData as Parameters<typeof login>[0],
+            regUserData as unknown as Parameters<typeof login>[0],
             regToken,
             regRefreshToken || "",
           );

@@ -47,6 +47,16 @@ export default async function AccountCertificationPage({
   const response = await serverApi.userCertificationControllerGetMyCertificationStatus();
   const certification = response.data?.data ?? null;
 
+  // 后端 schema 未声明 review* 字段类型，SDK 生成为 unknown；运行时是字符串或 null
+  const reviewReason =
+    typeof certification?.reviewReason === "string" && certification.reviewReason
+      ? certification.reviewReason
+      : undefined;
+  const reviewedAt =
+    typeof certification?.reviewedAt === "string" && certification.reviewedAt
+      ? certification.reviewedAt
+      : undefined;
+
   // 有状态时直接展示状态卡片；驳回/撤销允许重新申请，仍展示申请表单
   const showForm =
     !certification ||
@@ -132,13 +142,13 @@ export default async function AccountCertificationPage({
                       <span className="text-right">{certification.slogan}</span>
                     </div>
                   )}
-                  {certification.reviewedAt && (
+                  {reviewedAt && (
                     <div className="flex items-center justify-between gap-6">
                       <span className="shrink-0 text-muted-foreground">
                         {t("certifiedAtLabel")}
                       </span>
                       <span className="text-right">
-                        {formatDateYMD(certification.reviewedAt)}
+                        {formatDateYMD(reviewedAt)}
                       </span>
                     </div>
                   )}
@@ -202,12 +212,11 @@ export default async function AccountCertificationPage({
                 <p className="mt-1 text-base font-semibold">
                   {statusText(certification.status, t)}
                 </p>
-                {certification.status === "REJECTED" &&
-                  certification.reviewReason && (
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {t("reviewReason")}: {certification.reviewReason}
-                    </p>
-                  )}
+                {certification.status === "REJECTED" && reviewReason && (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {t("reviewReason")}: {reviewReason}
+                  </p>
+                )}
               </>
             )}
           </div>
