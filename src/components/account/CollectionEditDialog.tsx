@@ -155,6 +155,7 @@ export function CollectionEditDialog({
         body: {
           file: croppedFile,
           metadata,
+          scene: "other",
         },
       });
 

@@ -13,9 +13,12 @@ export interface UserState {
   token: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
+  /** 有 token 但 profile 还在补拉（服务端没拿到），守卫需等待而不是直接踢人 */
+  isProfileLoading: boolean;
   setUser: (user: UserProfile | null) => void;
   setToken: (token: string | null) => void;
   setRefreshToken: (refreshToken: string | null) => void;
+  setProfileLoading: (loading: boolean) => void;
   login: (user: UserProfile, token: string, refreshToken: string) => void;
   logout: () => Promise<void>;
   updateUser: (userData: Partial<UserProfile>) => void;
@@ -76,6 +79,9 @@ export const useUserStore = create<UserState>()(
       token: null,
       refreshToken: null,
       isAuthenticated: false,
+      isProfileLoading: false,
+
+      setProfileLoading: (loading: boolean) => set({ isProfileLoading: loading }),
 
       setUser: (user: UserProfile | null) =>
         set((state: UserState) => ({

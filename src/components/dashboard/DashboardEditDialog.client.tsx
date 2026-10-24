@@ -367,6 +367,7 @@ export function DashboardEditDialog({
             body: {
               file: compressedFile,
               metadata,
+              scene: "other",
             },
           });
 
@@ -428,6 +429,7 @@ export function DashboardEditDialog({
         body: {
           file: compressedFile,
           metadata,
+          scene: "other",
         },
       });
 

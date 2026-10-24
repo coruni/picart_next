@@ -711,7 +711,7 @@ export function DashboardConfigsPageV2() {
         const metadata = await buildUploadMetadata([originalFile]);
 
         const { data } = await uploadControllerUploadFile({
-          body: { file: compressedResult.file, metadata },
+          body: { file: compressedResult.file, metadata, scene: "other" },
         });
 
         const uploadedUrl = data?.data?.[0]?.url || "";

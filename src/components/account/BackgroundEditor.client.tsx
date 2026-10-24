@@ -72,6 +72,7 @@ export const BackgroundEditor = ({
         body: {
           file: croppedFile,
           metadata,
+          scene: "other",
         },
       });
 

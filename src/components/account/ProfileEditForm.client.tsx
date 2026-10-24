@@ -119,6 +119,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
         body: {
           file: croppedFile,
           metadata,
+          scene: "avatar",
         },
       });
 
@@ -204,6 +205,7 @@ export const ProfileEditForm = ({ user, locale }: ProfileEditFormProps) => {
         body: {
           file: croppedFile,
           metadata,
+          scene: "other",
         },
       });
 

@@ -9,21 +9,27 @@ export function useDashboardGuard() {
   const router = useRouter();
   const user = useUserStore((state) => state.user);
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  const isProfileLoading = useUserStore((state) => state.isProfileLoading);
 
   const hasAdminRole = useMemo(() => {
     return looksLikeAdminRole(user?.roles);
   }, [user?.roles]);
 
   useEffect(() => {
-    if (!isAuthenticated || !user) {
+    if (!isAuthenticated) {
       router.replace("/");
       return;
     }
 
-    if (!hasAdminRole) {
+    // 已登录但 profile 还在补拉：等结果，别在刷新首帧把用户踢回首页
+    if (isProfileLoading) {
+      return;
+    }
+
+    if (!user || !hasAdminRole) {
       router.replace("/");
     }
-  }, [isAuthenticated, router, user, hasAdminRole]);
+  }, [isAuthenticated, isProfileLoading, router, user, hasAdminRole]);
 
   return {
     user,

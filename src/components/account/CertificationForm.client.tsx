@@ -75,7 +75,7 @@ export const CertificationForm = ({
       try {
         const metadata = await buildUploadMetadata([file]);
         const { data } = await uploadControllerUploadFile({
-          body: { file, metadata },
+          body: { file, metadata, scene: "other" },
         });
         const url = data?.data?.[0]?.url;
         if (url) {
