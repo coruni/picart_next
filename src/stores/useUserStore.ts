@@ -1,7 +1,10 @@
 import { userControllerLogout } from "@/api";
+import { AuthSnapshotContext, emptyAuthSnapshot } from "@/lib/auth-snapshot";
 import { removeCookie, setCookie } from "@/lib/cookies";
+import { getRequestAuthState } from "@/lib/request-auth";
 import type { UserProfile } from "@/types";
-import { create } from "zustand";
+import { useContext } from "react";
+import { create, useStore } from "zustand";
 import { persist } from "zustand/middleware";
 
 const TOKEN_COOKIE_NAME = "auth-token";
@@ -15,10 +18,13 @@ export interface UserState {
   isAuthenticated: boolean;
   /** 有 token 但 profile 还在补拉（服务端没拿到），守卫需等待而不是直接踢人 */
   isProfileLoading: boolean;
+  /** store 是否已由 UserStateProvider 用服务端结果接管；false 时 UI 回落到服务端快照 */
+  isAuthReady: boolean;
   setUser: (user: UserProfile | null) => void;
   setToken: (token: string | null) => void;
   setRefreshToken: (refreshToken: string | null) => void;
   setProfileLoading: (loading: boolean) => void;
+  setAuthReady: (ready: boolean) => void;
   login: (user: UserProfile, token: string, refreshToken: string) => void;
   logout: () => Promise<void>;
   updateUser: (userData: Partial<UserProfile>) => void;
@@ -72,7 +78,7 @@ function syncRefreshTokenToCookie(refreshToken: string | null): void {
   }
 }
 
-export const useUserStore = create<UserState>()(
+const baseStore = create<UserState>()(
   persist(
     (set, get) => ({
       user: null,
@@ -80,8 +86,10 @@ export const useUserStore = create<UserState>()(
       refreshToken: null,
       isAuthenticated: false,
       isProfileLoading: false,
+      isAuthReady: false,
 
       setProfileLoading: (loading: boolean) => set({ isProfileLoading: loading }),
+      setAuthReady: (ready: boolean) => set({ isAuthReady: ready }),
 
       setUser: (user: UserProfile | null) =>
         set((state: UserState) => ({
@@ -175,12 +183,15 @@ export const useUserStore = create<UserState>()(
         }
 
         try {
-          // 使用原始 fetch 避免被拦截器拦截导致循环
+          // 使用原始 fetch 避免被拦截器拦截导致循环。
+          // 注意：/user/refresh-token 强制要求 Device-Id 头，漏掉会被后端当成 400 直接拒掉。
           const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api/v1";
+          const { deviceId } = await getRequestAuthState();
           const response = await fetch(`${baseUrl}/user/refresh-token`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              ...(deviceId ? { "Device-Id": deviceId } : {}),
             },
             body: JSON.stringify({ refreshToken: currentRefreshToken }),
           });
@@ -253,3 +264,40 @@ export const useUserStore = create<UserState>()(
     },
   ),
 );
+
+const identitySelector = (state: UserState) => state;
+
+/**
+ * 全局登录态读取入口。
+ *
+ * SSR / hydration 首帧时 store 只有初始空值，此时回落到 AuthSnapshotProvider
+ * 下发的服务端快照，让服务端渲染出来的 HTML 直接带登录态；
+ * store 被 UserStateProvider 接管后（isAuthReady=true）一律以 store 为准。
+ */
+function useUserStoreSelector<T>(selector?: (state: UserState) => T): T {
+  const snapshot = useContext(AuthSnapshotContext);
+  const isAuthReady = useStore(baseStore, (state) => state.isAuthReady);
+  const pick = (selector ?? identitySelector) as (state: UserState) => T;
+  const selected = useStore(baseStore, pick);
+
+  if (isAuthReady) {
+    return selected;
+  }
+
+  const state = baseStore.getState();
+  const merged: UserState =
+    snapshot === emptyAuthSnapshot
+      ? state
+      : {
+          ...state,
+          user: state.user ?? snapshot.user,
+          isAuthenticated: state.isAuthenticated || snapshot.isAuthenticated,
+        };
+
+  return pick(merged);
+}
+
+export const useUserStore = Object.assign(
+  useUserStoreSelector,
+  baseStore,
+) as unknown as typeof baseStore;

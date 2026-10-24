@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { CategoryList } from "@/types";
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ImageWithFallback } from "../shared/ImageWithFallback";
 
 interface TabItem {
@@ -33,12 +33,17 @@ function isTabActive(currentPath: string, tabHref: string): boolean {
 }
 
 const LAST_CHANNEL_KEY = "last-visited-channel";
+const DEFAULT_CHANNEL_HREF = "/channel";
 
 export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
   const channels = categories.filter((category) => !category.link);
   const t = useTranslations("headerTabs");
   const pathname = usePathname();
   const currentPath = pathname;
+
+  // 服务端和客户端首帧都必须渲染同一个 href，否则 hydration 时属性对不上。
+  // 所以初始值固定为 /channel，等挂载后再从 sessionStorage 补上「上次访问的频道」。
+  const [channelHref, setChannelHref] = useState(DEFAULT_CHANNEL_HREF);
 
   useEffect(() => {
     if (currentPath.startsWith("/channel/") && currentPath !== "/channel") {
@@ -47,25 +52,24 @@ export function HeaderTabs({ categories, labelClassName }: HeaderTabsProps) {
       } catch (error) {
         console.error("Failed to save last channel:", error);
       }
+      setChannelHref(currentPath);
+      return;
     }
-  }, [currentPath]);
-
-  const getChannelHref = () => {
-    if (typeof window === "undefined") return "/channel";
 
     try {
-      return sessionStorage.getItem(LAST_CHANNEL_KEY) || "/channel";
-    } catch {
-      return "/channel";
+      const lastChannel = sessionStorage.getItem(LAST_CHANNEL_KEY);
+      if (lastChannel) setChannelHref(lastChannel);
+    } catch (error) {
+      console.error("Failed to read last channel:", error);
     }
-  };
+  }, [currentPath]);
 
   const tabs: TabItem[] = [
     { label: t("home"), value: "home", href: "/" },
     {
       label: t("channels"),
       value: "channels",
-      href: getChannelHref(),
+      href: channelHref,
       hasDropdown: true,
     },
   ];

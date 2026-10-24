@@ -6,6 +6,7 @@ import { useAppStore, useTranslateStore } from "@/stores";
 import { useUserStore } from "@/stores/useUserStore";
 import type { PublicConfigs, UserProfile } from "@/types";
 import { startTransition, useEffect, useLayoutEffect, useRef } from "react";
+import { AuthSnapshotProvider } from "./AuthSnapshotProvider";
 
 // 服务端没有 layout effect，用 useEffect 兜底
 const useIsomorphicLayoutEffect =
@@ -16,6 +17,18 @@ interface UserStateProviderProps {
   initialUser: UserProfile | null;
   initialConfig: PublicConfigs | null;
   children: React.ReactNode;
+}
+
+async function loadProfile(): Promise<UserProfile | null> {
+  try {
+    const response = await userControllerGetProfile();
+    return response?.data?.data ?? null;
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.warn("[auth][provider] profile fetch failed", { error });
+    }
+    return null;
+  }
 }
 
 /**
@@ -67,27 +80,35 @@ export function UserStateProvider({
       useAppStore.getState().setSiteConfig(initialConfig);
     }
 
+    // 到这里 store 已经反映服务端结果，UI 可以从「服务端快照」切回 store
+    useUserStore.getState().setAuthReady(true);
+
     // 鉴权头已收敛到 resilientFetch，这里只需要 401 重试等响应侧拦截器
     void initializeInterceptors();
 
-    // 有 token 但没拿到 profile（接口抖动 / 上面自愈的客户端登录态）：客户端补一次
+    // 有 token 但没拿到 profile（接口抖动 / token 过期 / 上面自愈的客户端登录态）：
+    // 先补拉一次，失败就尝试续期再补拉。
+    // 不能直接放弃——否则「有登录态但 profile 缺失」会被后台守卫当成未登录踢回首页。
     if (useUserStore.getState().token && !useUserStore.getState().user) {
       useUserStore.getState().setProfileLoading(true);
 
       void (async () => {
         try {
-          const response = await userControllerGetProfile();
-          const profile = response?.data?.data;
+          let profile = await loadProfile();
+
+          if (!profile) {
+            // refreshAccessToken 在「没有 refreshToken / refresh 被拒」时会自己清空登录态，
+            // 所以这里无条件调用：能续期就续期，不能续期就干净地登出。
+            const refreshed = await useUserStore.getState().refreshAccessToken();
+
+            if (refreshed) {
+              profile = await loadProfile();
+            }
+          }
 
           if (profile) {
             startTransition(() => {
               useUserStore.getState().setUser(profile);
-            });
-          }
-        } catch (error) {
-          if (process.env.NODE_ENV === "development") {
-            console.warn("[auth][provider] client profile fetch failed", {
-              error,
             });
           }
         } finally {
@@ -97,5 +118,16 @@ export function UserStateProvider({
     }
   }, []);
 
-  return <>{children}</>;
+  return (
+    <AuthSnapshotProvider
+      value={{
+        user: initialUser,
+        // 只有拿到 profile 才算“可渲染的已登录态”：
+        // 有 token 但 profile 没拉到时按未登录渲染，避免服务端产出 /account/undefined 这类链接
+        isAuthenticated: Boolean(initialUser),
+      }}
+    >
+      {children}
+    </AuthSnapshotProvider>
+  );
 }
